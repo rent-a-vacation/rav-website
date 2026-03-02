@@ -1,10 +1,11 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import fs from "fs";
 import { execSync } from "child_process";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 function getGitInfo() {
   try {
@@ -23,7 +24,13 @@ export default defineConfig(({ mode }) => {
     fs.readFileSync(path.resolve(__dirname, "package.json"), "utf-8")
   );
 
+  // Load env vars (including SENTRY_AUTH_TOKEN from .env.local) for plugin config
+  const env = loadEnv(mode, process.cwd(), "");
+
   return {
+    build: {
+      sourcemap: "hidden",
+    },
     server: {
       host: "::",
       port: 8080,
@@ -93,6 +100,20 @@ export default defineConfig(({ mode }) => {
           ],
         },
       }),
+      // Sentry source map upload — runs last, only in production builds with a token
+      mode === "production" &&
+        env.SENTRY_AUTH_TOKEN &&
+        sentryVitePlugin({
+          org: "rent-a-vacation-org",
+          project: "rav-website",
+          authToken: env.SENTRY_AUTH_TOKEN,
+          release: {
+            name: `rav-website@${pkg.version}`,
+          },
+          sourcemaps: {
+            filesToDeleteAfterUpload: "**/*.map",
+          },
+        }),
     ].filter(Boolean),
     resolve: {
       alias: {

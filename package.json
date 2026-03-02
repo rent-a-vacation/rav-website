@@ -86,6 +86,7 @@
     "@percy/cli": "^1.31.8",
     "@percy/playwright": "^1.0.10",
     "@playwright/test": "^1.58.2",
+    "@sentry/vite-plugin": "^5.1.1",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.0.0",
