@@ -28,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { supabase } from "@/lib/supabase";
+import { Sentry } from "@/lib/sentry";
 import {
   RefreshCw,
   Database,
@@ -38,6 +39,7 @@ import {
   Copy,
   Loader2,
   Trash2,
+  Bug,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -359,7 +361,48 @@ export function DevTools() {
         </CardContent>
       </Card>
 
-      {/* Section 4: Stripe Test Cards */}
+      {/* Section 4: Sentry Test */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bug className="h-5 w-5" />
+            Sentry Error Test
+          </CardTitle>
+          <CardDescription>
+            Send a test error to Sentry to verify source maps, browser tracing, and session replay are working.
+            Check the Sentry dashboard after clicking — the error should appear in Issues with a readable stack trace.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-3">
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => {
+              try {
+                throw new Error("Sentry test error from DevTools — verify source maps are working");
+              } catch (e) {
+                Sentry.captureException(e);
+                toast.success("Test error sent to Sentry — check your dashboard");
+              }
+            }}
+          >
+            <Bug className="h-4 w-4 mr-2" />
+            Send Captured Error
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              Sentry.captureMessage("Sentry test message from DevTools", "info");
+              toast.success("Test message sent to Sentry — check your dashboard");
+            }}
+          >
+            Send Test Message
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Section 5: Stripe Test Cards */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
