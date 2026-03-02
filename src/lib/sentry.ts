@@ -10,11 +10,20 @@ export function initSentry() {
     environment: import.meta.env.VITE_SUPABASE_URL?.includes("oukbxqnlxnkainnligfz")
       ? "development"
       : "production",
-    release: `rav-website@${import.meta.env.VITE_APP_VERSION || "0.9.0"}`,
+    release: `rav-website@${__APP_VERSION__}`,
 
-    // Capture 100% of errors, 10% of transactions for performance
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.replayIntegration(),
+    ],
+
+    // Capture 100% of errors, 5% of transactions (free tier: 10K/month)
     sampleRate: 1.0,
-    tracesSampleRate: 0.1,
+    tracesSampleRate: 0.05,
+
+    // Session Replay — only record sessions that hit errors (free tier: 50/month)
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 1.0,
 
     // Filter out noisy/irrelevant errors
     ignoreErrors: [
