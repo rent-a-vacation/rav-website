@@ -1,7 +1,50 @@
 # Completed Phases Archive
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
-> **Last Archived:** February 25, 2026
+> **Last Archived:** March 2, 2026
+
+---
+
+## Session 30: Code Splitting, CI Fix & QA Strategy
+
+**Completed:** March 2, 2026
+**PRs:** #148 (code splitting + CI fix) → main
+
+### What Was Done
+
+#### Route-Level Code Splitting (#108)
+Converted 21 authenticated/deep-journey pages to `React.lazy()` with a single `<Suspense>` boundary in `App.tsx`. Eagerly-loaded pages kept to 8 (SEO-critical + auth entry points). Added `PageLoadingFallback` spinner component.
+
+**Eagerly loaded:** `Index`, `HowItWorksPage`, `Destinations`, `FAQ`, `Login`, `Signup`, `ForgotPassword`, `NotFound`
+
+**Lazy loaded (21 pages):** `Rentals`, `PropertyDetail`, `Checkout`, `BookingSuccess`, `ListProperty`, `OwnerDashboard`, `AdminDashboard`, `ExecutiveDashboard`, `BiddingMarketplace`, `MyBidsDashboard`, `MyBookings`, `AccountSettings`, `TravelerCheckin`, `Documentation`, `UserGuide`, `PendingApproval`, `ResetPassword`, `Contact`, `MaintenanceFeeCalculator`, `UserJourneys`, `Terms`, `Privacy`
+
+**New file:** `src/components/PageLoadingFallback.tsx`
+
+#### CI Test Reporting Fix
+Replaced Qase (`vitest-qase-reporter`) with GitHub-native test reporting:
+- **Root cause:** Qase TestOps API requires Business plan subscription; free plan cannot call `createRun`. No tests had been tagged with `qase()` case IDs so zero traceability value was being delivered.
+- **Fix:** Removed `vitest-qase-reporter` from `package.json`. Switched Vitest reporters to `["default", "junit"]` with `outputFile: { junit: "./test-results/junit.xml" }`. Added `dorny/test-reporter@v1` step to `ci.yml` — publishes a named GitHub Check with inline PR annotations on failed tests.
+- **Result:** CI passing, zero subscription dependency, inline PR annotations on every run.
+
+#### QA Strategy Issue Created (#149)
+Opened GitHub Issue to track a proper QA platform decision post-launch: curated P0 test case library, `qase()` tagging strategy, and test management platform selection.
+
+### Documentation Updated
+- `docs/testing/TESTING-GUIDELINES.md` — Qase section replaced with GitHub CI reporting
+- `docs/testing/TEST-STRATEGY.md` — Tools table updated with dorny/test-reporter, Qase removal note
+- `docs/PROJECT-HUB.md` — Platform status + session handoff updated
+- `docs/COMPLETED-PHASES.md` — This entry
+
+### Files Modified
+- `src/App.tsx` — React.lazy + Suspense
+- `src/components/PageLoadingFallback.tsx` — new file
+- `vitest.config.ts` — reporters changed to junit
+- `.github/workflows/ci.yml` — Qase env vars removed, dorny/test-reporter added
+- `package.json` / `package-lock.json` — vitest-qase-reporter removed
+
+### Test Status
+451 tests passing, 63 test files, 0 TypeScript errors, 0 lint errors, build clean
 
 ---
 

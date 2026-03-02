@@ -54,7 +54,7 @@ def generate():
             ["8", "Sentry", "Error monitoring & performance", "5K errors/mo, 10K transactions", "$26/mo (Team)", "Active"],
             ["9", "Cloudflare", "DNS, email routing (catch-all)", "Free plan", "\u2014", "Active (free)"],
             ["10", "Percy (BrowserStack)", "Visual regression testing", "5K screenshots/mo", "$399/mo (Team)", "Active (CI)"],
-            ["11", "Qase.io", "Test case management & reporting", "500 test cases, 3 users", "$36/mo (Startup)", "Active (CI)"],
+            ["11", "dorny/test-reporter", "CI test result annotations on GitHub PRs (JUnit XML)", "Free (GitHub Action)", "$0", "Active (CI)"],
             ["12", "NewsAPI", "Industry news feed (exec dashboard)", "100 req/day (dev only)", "$449/mo (Business)", "Active (dev key)"],
             ["13", "PostHog", "Product analytics & user behavior", "1M events/mo", "$1,600/yr (Scale Add-on)", "Active (coupon thru Jan 2027)"],
             ["14", "AirDNA", "Vacation rental market intelligence (BYOK)", "\u2014", "~$250\u2013500/mo (user-paid)", "Planned \u2014 BYOK model"],
@@ -159,7 +159,7 @@ def generate():
             ["Sentry", "$0", "Free tier (5K errors/mo)"],
             ["Cloudflare", "$0", "Free plan"],
             ["Percy", "$0", "Free tier for CI"],
-            ["Qase", "$0", "Free tier"],
+            ["dorny/test-reporter", "$0", "Free GitHub Action — no subscription required"],
             ["PostHog", "$0", "Coupon until Jan 2027; then ~$133/mo ($1,600/yr)"],
             ["AirDNA", "$0", "BYOK \u2014 user-paid, not a RAV expense"],
             ["STR Global", "$0", "BYOK \u2014 user-paid, not a RAV expense"],
@@ -213,7 +213,7 @@ def generate():
         ["Secret", "Service", "Used By"],
         [
             ["PERCY_TOKEN", "Percy", "Visual regression tests"],
-            ["QASE_API_TOKEN", "Qase", "Test reporting"],
+            ["SENTRY_AUTH_TOKEN", "Sentry", "Source map uploads on build"],
             ["SUPABASE_URL", "Supabase", "CI test environment"],
             ["SUPABASE_ANON_KEY", "Supabase", "CI test environment"],
             ["RESEND_GITHUB_NOTIFICATIONS_KEY", "Resend", "Issue email notifications"],
@@ -239,7 +239,7 @@ def generate():
             ["Market Data", "AirDNA + STR Global", "Rental market intelligence (planned)"],
             ["DNS / CDN", "Cloudflare + Vercel", "DNS routing, email catch-all, edge CDN"],
             ["CI/CD", "GitHub Actions", "Lint, test, visual regression, deploy"],
-            ["Testing", "Vitest + Playwright + Percy + Qase", "Unit, E2E, visual, reporting"],
+            ["Testing", "Vitest + Playwright + Percy + dorny/test-reporter", "Unit, E2E, visual, GitHub PR annotations"],
         ],
     )
 

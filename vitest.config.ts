@@ -20,9 +20,8 @@ export default defineConfig({
         lines: 25,
       },
     },
-    reporters: process.env.QASE_MODE === "testops"
-      ? ["default", "vitest-qase-reporter"]
-      : ["default"],
+    reporters: ["default", "junit"],
+    outputFile: { junit: "./test-results/junit.xml" },
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },

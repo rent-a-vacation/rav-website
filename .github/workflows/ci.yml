@@ -37,11 +37,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:coverage
-        env:
-          QASE_MODE: ${{ secrets.QASE_API_TOKEN && 'testops' || 'off' }}
-          QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-          QASE_TESTOPS_PROJECT: RAV
-          QASE_TESTOPS_RUN_TITLE: "CI Run #${{ github.run_number }}"
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit & Integration Tests
+          path: test-results/junit.xml
+          reporter: java-junit
+          fail-on-error: false
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
