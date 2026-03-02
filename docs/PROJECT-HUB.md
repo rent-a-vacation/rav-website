@@ -128,6 +128,16 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Demo walkthrough document: docs/DEMO-WALKTHROUGH.md (comprehensive presentation script)
 - Tests: 409→451 (42 new)
 
+**Session 29 — Sentry Source Maps & Optimization (Mar 1):**
+- Source map uploads via `@sentry/vite-plugin` — stack traces now show real file/line/function in Sentry dashboard
+- Browser tracing (`browserTracingIntegration`) — page load metrics, SPA route changes, HTTP request durations
+- Session replay (`replayIntegration`) — DOM recordings of error sessions (50 free/month)
+- `tracesSampleRate` lowered to 5% (free tier budget: 10K/month)
+- `SENTRY_AUTH_TOKEN` added to `.env.local`, Vercel env vars, GitHub Actions secrets
+- DevTools "Sentry Error Test" card for verification (DEV-only)
+- PRs #145 + #146 merged, issue #147 closed
+- Tests: 451 (unchanged — no new business logic)
+
 **Session 28 — Accounting Strategy & Documentation (Feb 28):**
 - Accounting tool evaluation: Puzzle.io selected over QuickBooks (native Stripe, free tier, automated ASC 606)
 - Updated DEC-022 to reflect Puzzle.io + pluggable architecture decision
