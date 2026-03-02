@@ -204,6 +204,9 @@ These are **non-negotiable** - if ANY of these break, users can't use the platfo
 | **Playwright** | E2E testing | Industry standard, great debugging, cross-browser |
 | **Percy.io** | Visual regression | Catch UI bugs automatically (free tier) |
 | **GitHub Actions** | CI/CD | Already using it, 2000 free min/month |
+| **dorny/test-reporter** | PR test annotations | Free, no subscription — annotates failed tests inline on PRs using JUnit XML output from Vitest |
+
+> **Note on test management platforms:** Qase was evaluated and removed (Mar 2026) — the free plan does not support the TestOps API and no tests had been tagged with case IDs. A future QA enhancement issue (#149) tracks selecting and properly integrating a test management platform with a curated P0 test case library. Until then, GitHub native reporting covers CI visibility needs.
 
 ### Test Data Strategy
 - **Unit tests:** Mock data in test files

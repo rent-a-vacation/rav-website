@@ -131,7 +131,7 @@ The CI runs on every push to `main` and on all PRs:
 ```
 
 - **lint-and-typecheck**: Must pass before other jobs run
-- **unit-tests**: Runs with coverage, reports to Qase
+- **unit-tests**: Runs with coverage, publishes JUnit XML report as a GitHub Check via dorny/test-reporter
 - **e2e-tests**: Playwright smoke tests
 - **visual-regression**: Percy snapshots (PRs only)
 - **lighthouse**: Performance + accessibility audit
@@ -143,13 +143,15 @@ The CI runs on every push to `main` and on all PRs:
 3. Approve changes if they're intentional
 4. Percy blocks PR merge if diffs are unapproved (if configured)
 
-## Qase Test Management
+## CI Test Reporting (GitHub Native)
 
-Tests are automatically reported to Qase.io project `RAV` during CI runs.
+Test results are published as a GitHub Check on every CI run using `dorny/test-reporter` + Vitest JUnit XML output.
 
-- View test results: Qase dashboard → Project RAV → Test Runs
-- Each CI run creates a new test run
-- Failed tests are flagged automatically
+- View test results: GitHub PR → Checks tab → "Unit & Integration Tests"
+- Failed tests are annotated inline on the PR diff with file and line number
+- Coverage HTML report is uploaded as a CI artifact (14-day retention)
+
+> **Qase removed (Mar 2026):** Replaced with free GitHub-native reporting. See issue #149 for future QA platform review.
 
 ## Pre-Commit Hook
 

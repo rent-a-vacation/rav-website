@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,39 +6,45 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { PageLoadingFallback } from "@/components/PageLoadingFallback";
 import { trackPageView } from "@/lib/posthog";
 import { initGA4, trackGA4PageView } from "@/lib/analytics";
 import { getCookieConsent } from "@/hooks/useCookieConsent";
+
+// Eagerly loaded — SEO-critical landing pages and auth entry points
 import Index from "./pages/Index";
-import Rentals from "./pages/Rentals";
 import HowItWorksPage from "./pages/HowItWorksPage";
-import ListProperty from "./pages/ListProperty";
-import PropertyDetail from "./pages/PropertyDetail";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import Destinations from "./pages/Destinations";
 import FAQ from "./pages/FAQ";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import NotFound from "./pages/NotFound";
-import OwnerDashboard from "./pages/OwnerDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import BookingSuccess from "./pages/BookingSuccess";
-import BiddingMarketplace from "./pages/BiddingMarketplace";
-import MyBidsDashboard from "./pages/MyBidsDashboard";
-import TravelerCheckin from "./pages/TravelerCheckin";
-import Documentation from "./pages/Documentation";
-import UserGuide from "./pages/UserGuide";
-import PendingApproval from "./pages/PendingApproval";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import Checkout from "./pages/Checkout";
-import UserJourneys from "./pages/UserJourneys";
-import Contact from "./pages/Contact";
-import ExecutiveDashboard from "./pages/ExecutiveDashboard";
-import MaintenanceFeeCalculator from "./pages/MaintenanceFeeCalculator";
-import MyBookings from "./pages/MyBookings";
-import AccountSettings from "./pages/AccountSettings";
+import NotFound from "./pages/NotFound";
+
+// Lazy loaded — authenticated, role-gated, or deep-journey pages
+const Rentals = lazy(() => import("./pages/Rentals"));
+const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const BookingSuccess = lazy(() => import("./pages/BookingSuccess"));
+const ListProperty = lazy(() => import("./pages/ListProperty"));
+const OwnerDashboard = lazy(() => import("./pages/OwnerDashboard"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const ExecutiveDashboard = lazy(() => import("./pages/ExecutiveDashboard"));
+const BiddingMarketplace = lazy(() => import("./pages/BiddingMarketplace"));
+const MyBidsDashboard = lazy(() => import("./pages/MyBidsDashboard"));
+const MyBookings = lazy(() => import("./pages/MyBookings"));
+const AccountSettings = lazy(() => import("./pages/AccountSettings"));
+const TravelerCheckin = lazy(() => import("./pages/TravelerCheckin"));
+const Documentation = lazy(() => import("./pages/Documentation"));
+const UserGuide = lazy(() => import("./pages/UserGuide"));
+const PendingApproval = lazy(() => import("./pages/PendingApproval"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Contact = lazy(() => import("./pages/Contact"));
+const MaintenanceFeeCalculator = lazy(() => import("./pages/MaintenanceFeeCalculator"));
+const UserJourneys = lazy(() => import("./pages/UserJourneys"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
@@ -141,6 +147,7 @@ const App = () => (
           <ErrorBoundary>
           <PageViewTracker />
           <AuthEventHandler />
+          <Suspense fallback={<PageLoadingFallback />}>
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
@@ -184,6 +191,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
           </ErrorBoundary>
         </BrowserRouter>
         </div>

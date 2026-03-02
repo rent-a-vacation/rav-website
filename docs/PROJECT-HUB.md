@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** February 26, 2026 (Sessions 21-23: Payments, Cancellations, Accounting)
+> **Last Updated:** March 2, 2026 (Session 30: Code Splitting, CI Fix, QA Strategy)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -88,11 +88,12 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Platform Status
 - **451 automated tests** (63 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations deployed:** 001-035 on DEV, 001-023 on PROD
 - **Edge functions deployed:** 25 on DEV, 22 on PROD
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev branch:** 2 commits ahead of main
+- **dev branch:** PR #148 open → main (code splitting + CI fix)
 
 ### Session Handoff (Sessions 25-27, Feb 26-28)
 
@@ -127,6 +128,24 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Admin owner filter (#120): Owner dropdown in AdminListings tab
 - Demo walkthrough document: docs/DEMO-WALKTHROUGH.md (comprehensive presentation script)
 - Tests: 409→451 (42 new)
+
+**Session 30 — Code Splitting, CI Fix & QA Strategy (Mar 2):**
+- Route-level code splitting (#108): 21 pages converted to `React.lazy()` + `Suspense`, `PageLoadingFallback` spinner. Build clean.
+- CI/Qase fix: Replaced `vitest-qase-reporter` (required Business plan, zero case IDs tagged) with `dorny/test-reporter` + Vitest JUnit XML output. PR annotations now free and subscription-free.
+- QA platform review issue created (#149): tracks future decision on curated P0 test case library + test management platform selection
+- Docs updated: TESTING-GUIDELINES.md, TEST-STRATEGY.md, PROJECT-HUB.md, COMPLETED-PHASES.md
+- PR #148 open: code splitting + CI fix → main
+- Tests: 451 (unchanged — no new business logic)
+
+**Session 29 — Sentry Source Maps & Optimization (Mar 1):**
+- Source map uploads via `@sentry/vite-plugin` — stack traces now show real file/line/function in Sentry dashboard
+- Browser tracing (`browserTracingIntegration`) — page load metrics, SPA route changes, HTTP request durations
+- Session replay (`replayIntegration`) — DOM recordings of error sessions (50 free/month)
+- `tracesSampleRate` lowered to 5% (free tier budget: 10K/month)
+- `SENTRY_AUTH_TOKEN` added to `.env.local`, Vercel env vars, GitHub Actions secrets
+- DevTools "Sentry Error Test" card for verification (DEV-only)
+- PRs #145 + #146 merged, issue #147 closed
+- Tests: 451 (unchanged — no new business logic)
 
 **Session 28 — Accounting Strategy & Documentation (Feb 28):**
 - Accounting tool evaluation: Puzzle.io selected over QuickBooks (native Stripe, free tier, automated ASC 606)
