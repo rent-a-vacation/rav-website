@@ -17,7 +17,7 @@
 7. [Core Business Flows](#7-core-business-flows)
 8. [Edge Functions (Backend)](#8-edge-functions-backend)
 9. [Email System](#9-email-system)
-10. [Bidding & Marketplace](#10-bidding--marketplace)
+10. [Name Your Price & Flexible Pricing](#10-name-your-price--flexible-pricing)
 11. [Design System](#11-design-system)
 12. [State Management](#12-state-management)
 13. [Environments & Deployment](#13-environments--deployment)
@@ -47,7 +47,7 @@
 ```
 
 **Three user personas:**
-- **Travelers (renters)** — browse listings, bid, book, check in
+- **Travelers (renters)** — browse listings, make offers, book, check in
 - **Property Owners** — list timeshares, manage bookings, verify identity
 - **RAV Team (admin/staff)** — approve listings, verify owners, manage escrow & payouts
 
@@ -181,8 +181,8 @@ src/
 │   ├── OwnerDashboard.tsx     # Tabbed owner management
 │   ├── AdminDashboard.tsx     # Tabbed admin management
 │   ├── ExecutiveDashboard.tsx # Investor-grade strategy dashboard (dark theme, rav_owner only)
-│   ├── BiddingMarketplace.tsx # Browse bids & travel requests
-│   ├── MyBidsDashboard.tsx    # Traveler's bid management
+│   ├── BiddingMarketplace.tsx # Browse flexible pricing listings & travel requests
+│   ├── MyBidsDashboard.tsx    # Traveler's offer & request management
 │   ├── BookingSuccess.tsx     # Post-payment confirmation
 │   ├── TravelerCheckin.tsx    # Check-in confirmation flow
 │   ├── Destinations.tsx       # Destination directory
@@ -252,8 +252,8 @@ All routes are defined in `src/App.tsx`. Key mapping:
 | `/owner-dashboard` | `OwnerDashboard` | Owner | Tabbed: properties, listings, bookings, earnings, verification |
 | `/admin` | `AdminDashboard` | RAV Team | Tabbed: overview, users, listings, bookings, verifications, escrow, payouts, financials, issues |
 | `/executive-dashboard` | `ExecutiveDashboard` | RAV Owner | Investor-grade strategy dashboard (dark theme) |
-| `/bidding` | `BiddingMarketplace` | Auth | Browse biddable listings + travel requests |
-| `/my-bids` | `MyBidsDashboard` | Auth | Traveler's bid & request management |
+| `/bidding` | `BiddingMarketplace` | Auth | Browse flexible pricing listings + travel requests |
+| `/my-bids` | `MyBidsDashboard` | Auth | Traveler's offer & request management |
 | `/my-bookings` | `MyBookings` | Auth | Renter booking history (upcoming/past/cancelled) |
 | `/account` | `AccountSettings` | Auth | Profile editing, password change, account info |
 | `/checkin` | `TravelerCheckin` | Auth | Post-arrival confirmation |
@@ -297,7 +297,7 @@ User Action → Supabase Auth → onAuthStateChange listener
 | `rav_admin` | 🛡️ Shield | Full access except role management |
 | `rav_staff` | 📋 Briefcase | View/manage listings and bookings |
 | `property_owner` | ✓ Verified | Manage own properties, listings, bookings |
-| `renter` | 🧳 Traveler | Browse, bid, book (default role) |
+| `renter` | 🧳 Traveler | Browse, make offers, book (default role) |
 
 **Role checks available:**
 - `hasRole(role)` — exact role check
@@ -565,15 +565,15 @@ infoBox(content, variant): string // Colored info/warning/success/error box
 
 ---
 
-## 10. Bidding & Marketplace
+## 10. Name Your Price & Flexible Pricing
 
 Two-sided marketplace modeled after Priceline:
 
-### Owner-Initiated Bidding
+### Owner-Initiated Flexible Pricing
 
-1. Owner opens a listing for bidding (`open_for_bidding = true`)
+1. Owner opens a listing for offers (`open_for_bidding = true`)
 2. Sets `bidding_ends_at`, optional `min_bid_amount`, `reserve_price`
-3. Travelers place bids via `BidFormDialog`
+3. Travelers make offers via `BidFormDialog`
 4. Owner reviews in `BidsManagerDialog` → accept / reject / counter-offer
 
 ### Traveler-Initiated (Reverse Auction)
@@ -587,12 +587,12 @@ Two-sided marketplace modeled after Priceline:
 
 | Hook | Returns |
 |------|---------|
-| `useListingsOpenForBidding()` | Active biddable listings |
-| `useBidsForListing(id)` | Bids on a specific listing |
-| `useMyBids()` | Current user's bids |
-| `useCreateBid()` | Mutation: place a bid |
+| `useListingsOpenForBidding()` | Active flexible pricing listings |
+| `useBidsForListing(id)` | Offers on a specific listing |
+| `useMyBids()` | Current user's offers |
+| `useCreateBid()` | Mutation: make an offer |
 | `useUpdateBidStatus()` | Mutation: accept/reject/counter |
-| `useOpenListingForBidding()` | Mutation: flag listing for bidding |
+| `useOpenListingForBidding()` | Mutation: enable flexible pricing |
 | `useOpenTravelRequests()` | Active travel requests |
 | `useMyTravelRequests()` | Current user's requests |
 | `useCreateTravelRequest()` | Mutation: post request |

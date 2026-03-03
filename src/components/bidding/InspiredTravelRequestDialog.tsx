@@ -123,7 +123,7 @@ export function InspiredTravelRequestDialog({ listing, open, onOpenChange }: Ins
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-accent" />
-                Request Similar Dates
+                Find Something Similar
               </DialogTitle>
               <DialogDescription>
                 Inspired by {resortName} listing
@@ -131,7 +131,7 @@ export function InspiredTravelRequestDialog({ listing, open, onOpenChange }: Ins
             </DialogHeader>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
-              Post a travel request based on this listing. Owners with similar properties will send you proposals.
+              Post a travel request based on this listing. Owners with similar properties will send you offers.
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">

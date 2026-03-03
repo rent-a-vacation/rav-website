@@ -58,7 +58,7 @@ const Documentation = () => {
     { id: "overview", label: "Platform Overview", icon: Home },
     { id: "user-roles", label: "User Roles & Access", icon: Users },
     { id: "property-management", label: "Property Management", icon: Building2 },
-    { id: "bidding-system", label: "Bidding & Marketplace", icon: Gavel },
+    { id: "bidding-system", label: "Name Your Price & Flexible Pricing", icon: Gavel },
     { id: "booking-flow", label: "Booking Flow", icon: Calendar },
     { id: "payments", label: "Payments & Payouts", icon: CreditCard },
     { id: "trust-safety", label: "Trust & Safety", icon: Shield },
@@ -281,7 +281,7 @@ const Documentation = () => {
                   <h2 className="text-2xl font-semibold mb-4">Name Your Price. Book Your Paradise.</h2>
                   <p className="text-muted-foreground">
                     Unlike traditional vacation rental platforms, Rent-A-Vacation empowers both owners and renters 
-                    through innovative price discovery mechanisms including reverse auctions and competitive bidding.
+                    through innovative price discovery mechanisms including reverse auctions and competitive offers.
                   </p>
                 </div>
 
@@ -290,9 +290,9 @@ const Documentation = () => {
                     <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                       <Gavel className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="font-semibold mb-2">Bidding Marketplace</h3>
+                    <h3 className="font-semibold mb-2">Name Your Price</h3>
                     <p className="text-sm text-muted-foreground">
-                      Renters submit travel requests; owners compete with proposals. Or owners open listings for competitive bidding.
+                      Renters submit travel requests; owners compete with proposals. Or owners open listings for flexible pricing with offers.
                     </p>
                   </div>
                   <div className="bg-card rounded-xl p-6 border shadow-sm">
@@ -414,7 +414,7 @@ const Documentation = () => {
                         <ul className="text-sm space-y-1">
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Owner Dashboard access</li>
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Create and manage own properties</li>
-                          <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Create listings and manage bids</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Create listings and manage offers</li>
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> View earnings and payout history</li>
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Submit booking confirmations</li>
                         </ul>
@@ -434,7 +434,7 @@ const Documentation = () => {
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Browse and search listings</li>
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Book properties via Stripe</li>
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Submit travel requests</li>
-                          <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Place bids on open listings</li>
+                          <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Make offers on open listings</li>
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Confirm check-in on arrival</li>
                           <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Request upgrade to Property Owner role</li>
                         </ul>
@@ -451,7 +451,7 @@ const Documentation = () => {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-muted/50 rounded-lg p-4">
                       <h4 className="font-medium mb-1">I'm a Renter</h4>
-                      <p className="text-xs text-muted-foreground">Assigned the <code className="bg-muted px-1 rounded">renter</code> role. Can browse, book, bid, and submit travel requests.</p>
+                      <p className="text-xs text-muted-foreground">Assigned the <code className="bg-muted px-1 rounded">renter</code> role. Can browse, book, make offers, and submit travel requests.</p>
                     </div>
                     <div className="bg-muted/50 rounded-lg p-4">
                       <h4 className="font-medium mb-1">I'm an Owner</h4>
@@ -550,7 +550,7 @@ const Documentation = () => {
                       <div className="h-12 w-12 rounded-full bg-green-500 text-white flex items-center justify-center font-bold flex-shrink-0 z-10">5</div>
                       <div className="pt-2">
                         <h4 className="font-semibold">Published</h4>
-                        <p className="text-sm text-muted-foreground">Once approved, listing appears on marketplace and can receive bookings or bids.</p>
+                        <p className="text-sm text-muted-foreground">Once approved, listing appears on the Name Your Price marketplace and can receive bookings or offers.</p>
                       </div>
                     </div>
                   </div>
@@ -578,9 +578,9 @@ const Documentation = () => {
             {(isPrinting || activeSection === "bidding-system") && (
               <section className="space-y-8 print:break-after-page">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-4">Bidding & Marketplace</h1>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Name Your Price & Flexible Pricing</h1>
                   <p className="text-xl text-muted-foreground">
-                    Inspired by Priceline's "Name Your Own Price" model, our marketplace enables dynamic price discovery.
+                    Inspired by Priceline's "Name Your Own Price" model, our Name Your Price marketplace enables dynamic price discovery.
                   </p>
                 </div>
 
@@ -590,23 +590,23 @@ const Documentation = () => {
                       <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
                         <Gavel className="h-5 w-5 text-blue-600" />
                       </div>
-                      <h3 className="font-semibold text-lg">Owner-Led Bidding</h3>
+                      <h3 className="font-semibold text-lg">Owner-Led Flexible Pricing</h3>
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Owners open listings for competitive bidding with defined end dates and optional reserve prices.
+                      Owners open listings for competitive offers with defined end dates and optional reserve prices.
                     </p>
                     <ul className="text-sm space-y-2">
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
-                        <span>Set bidding end date and reserve price</span>
+                        <span>Set offer end date and reserve price</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
-                        <span>Renters submit competing bids</span>
+                        <span>Renters submit competing offers</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
-                        <span>Owner selects winning bid</span>
+                        <span>Owner selects winning offer</span>
                       </li>
                     </ul>
                   </div>
@@ -639,7 +639,7 @@ const Documentation = () => {
                 </div>
 
                 <div className="bg-muted/50 rounded-xl p-6">
-                  <h3 className="font-semibold mb-4">Bidding Workflow</h3>
+                  <h3 className="font-semibold mb-4">Offer Workflow</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
@@ -652,27 +652,27 @@ const Documentation = () => {
                       <tbody>
                         <tr className="border-b">
                           <td className="py-3"><span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs">open</span></td>
-                          <td>Actively accepting bids/proposals</td>
-                          <td>Submit bid, withdraw bid</td>
+                          <td>Actively accepting offers/proposals</td>
+                          <td>Submit offer, withdraw offer</td>
                         </tr>
                         <tr className="border-b">
                           <td className="py-3"><span className="px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs">pending</span></td>
-                          <td>Bid submitted, awaiting response</td>
+                          <td>Offer submitted, awaiting response</td>
                           <td>Accept, reject, counter</td>
                         </tr>
                         <tr className="border-b">
                           <td className="py-3"><span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">accepted</span></td>
-                          <td>Bid/proposal accepted</td>
+                          <td>Offer/proposal accepted</td>
                           <td>Proceed to checkout</td>
                         </tr>
                         <tr className="border-b">
                           <td className="py-3"><span className="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs">rejected</span></td>
-                          <td>Bid/proposal declined</td>
-                          <td>Submit new bid</td>
+                          <td>Offer/proposal declined</td>
+                          <td>Submit new offer</td>
                         </tr>
                         <tr>
                           <td className="py-3"><span className="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs">expired</span></td>
-                          <td>Bidding period ended</td>
+                          <td>Offer period ended</td>
                           <td>None</td>
                         </tr>
                       </tbody>
@@ -2036,10 +2036,10 @@ const Documentation = () => {
                   <h3 className="font-semibold text-lg mb-4">6 Dashboard Sections</h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     {[
-                      { name: "Headline Stats", desc: "Earned YTD, fees covered %, active bids count" },
+                      { name: "Headline Stats", desc: "Earned YTD, fees covered %, active offers count" },
                       { name: "Earnings Timeline", desc: "AreaChart with monthly/quarterly view + fee target line" },
                       { name: "My Listings Table", desc: "Status badges, Fair Value badges, idle week alerts" },
-                      { name: "Bid Activity Feed", desc: "Real-time event stream of bid actions" },
+                      { name: "Offer Activity Feed", desc: "Real-time event stream of offer actions" },
                       { name: "Pricing Intelligence", desc: "Per-listing Fair Value score + market range" },
                       { name: "Maintenance Fee Tracker", desc: "Inline editor, coverage bar, YTD progress" },
                     ].map((section) => (
@@ -2107,7 +2107,7 @@ const Documentation = () => {
                   <div className="grid md:grid-cols-2 gap-4">
                     {[
                       { name: "Headline Bar", desc: "Sticky KPI pills: GMV, Revenue, Active Listings, Liquidity Score, Voice Adoption" },
-                      { name: "Business Performance", desc: "4 Recharts charts: GMV trend, bid activity, bid spread index, revenue waterfall" },
+                      { name: "Business Performance", desc: "4 Recharts charts: GMV trend, offer activity, offer spread index, revenue waterfall" },
                       { name: "Marketplace Health", desc: "Proprietary Liquidity Score gauge, supply/demand map, voice vs traditional funnel" },
                       { name: "Market Intelligence", desc: "BYOK pattern: AirDNA comparison, STR Global benchmarks, RAV pricing position" },
                       { name: "Industry Feed", desc: "NewsAPI integration, regulatory radar, macro indicators with sparklines" },
@@ -2152,13 +2152,13 @@ const Documentation = () => {
                     <div className="bg-muted/50 rounded-lg p-4">
                       <h4 className="font-medium text-sm">Layer 2: Inventory</h4>
                       <p className="text-xs text-muted-foreground mt-1">
-                        10 properties (2 per owner, real resort names), 30 listings (15 active, 10 bidding, 5 draft).
+                        10 properties (2 per owner, real resort names), 30 listings (15 active, 10 flexible pricing, 5 draft).
                       </p>
                     </div>
                     <div className="bg-muted/50 rounded-lg p-4">
                       <h4 className="font-medium text-sm">Layer 3: Transactions</h4>
                       <p className="text-xs text-muted-foreground mt-1">
-                        50 renters, 90 completed bookings, 10 pending, 5 in escrow, 20 bids, 10 travel requests.
+                        50 renters, 90 completed bookings, 10 pending, 5 in escrow, 20 offers, 10 travel requests.
                       </p>
                     </div>
                   </div>
@@ -2196,8 +2196,8 @@ const Documentation = () => {
                     <div className="bg-muted/50 rounded-lg p-4">
                       <h4 className="font-medium text-sm">Date Proposals</h4>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Renters can "Propose Different Dates" via BidFormDialog date-proposal mode. The bid amount auto-computes
-                        from nightly_rate x proposed nights. Owners see proposed dates in bid manager.
+                        Renters can "Propose Different Dates" via BidFormDialog date-proposal mode. The offer amount auto-computes
+                        from nightly_rate x proposed nights. Owners see proposed dates in offer manager.
                       </p>
                     </div>
                     <div className="bg-muted/50 rounded-lg p-4">
@@ -2247,7 +2247,7 @@ const Documentation = () => {
                     <h3 className="font-semibold text-lg mb-4">Auto-Expire Listings</h3>
                     <p className="text-sm text-muted-foreground mb-3">
                       Listings with past check-out dates are automatically filtered from public-facing views
-                      (Rentals page, bidding marketplace, listing counts). Owners see an "Expired" orange badge
+                      (Rentals page, Name Your Price marketplace, listing counts). Owners see an "Expired" orange badge
                       on their dashboard for listings that have passed their checkout date.
                     </p>
                   </div>

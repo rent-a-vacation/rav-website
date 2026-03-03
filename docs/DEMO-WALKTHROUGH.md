@@ -89,8 +89,8 @@ Between each section, use these transition phrases to maintain narrative continu
 
 > **Talking point:**
 > "There are three distinct user types in the platform, each with their own dashboard and workflow:
-> 1. **Renters** -- Browse listings, search by voice or text, place bids, book stays, manage reservations
-> 2. **Property Owners** -- List their timeshare weeks, manage properties, receive bids, track earnings, get payouts
+> 1. **Renters** -- Browse listings, search by voice or text, make offers, book stays, manage reservations
+> 2. **Property Owners** -- List their timeshare weeks, manage properties, receive offers, track earnings, get payouts
 > 3. **RAV Admins** -- Oversee the entire marketplace: approve listings, manage escrow, resolve disputes, run financials
 >
 > Every user goes through a verification and approval process before they can transact on the platform."
@@ -264,10 +264,10 @@ Between each section, use these transition phrases to maintain narrative continu
 
 **What to show:**
 1. The Overview tab with headline stats (total properties, active listings, pending bookings, total earnings)
-2. The Phase 17 analytics components: Earnings Timeline chart, My Listings Table, Bid Activity Feed, Pricing Intelligence, Maintenance Fee Tracker
+2. The Phase 17 analytics components: Earnings Timeline chart, My Listings Table, Offer Activity Feed, Pricing Intelligence, Maintenance Fee Tracker
 
 > **Talking point:**
-> "Once approved, the owner lands on their dashboard. The overview tab gives them a complete picture of their portfolio at a glance: how many properties they have registered, active listings, pending bookings, and total earnings. Below that, we have rich analytics -- an earnings timeline showing revenue over time, a table of all their listings with status and pricing, a real-time feed of incoming bids, pricing intelligence comparing their rates to market averages, and a maintenance fee tracker showing how much of their annual fees they have offset through rentals."
+> "Once approved, the owner lands on their dashboard. The overview tab gives them a complete picture of their portfolio at a glance: how many properties they have registered, active listings, pending bookings, and total earnings. Below that, we have rich analytics -- an earnings timeline showing revenue over time, a table of all their listings with status and pricing, a real-time feed of incoming offers, pricing intelligence comparing their rates to market averages, and a maintenance fee tracker showing how much of their annual fees they have offset through rentals."
 
 ### Step 3: Add a Property
 
@@ -304,15 +304,15 @@ Between each section, use these transition phrases to maintain narrative continu
 > **Talking point:**
 > "After submission, the listing goes into a pending state and appears in the admin's approval queue. The admin reviews the listing details, verifies the pricing is reasonable, and approves or rejects it. The owner receives an email notification of the decision. This manual review step ensures listing quality and prevents fraudulent listings."
 
-### Step 6: Receiving Bids and Proposals
+### Step 6: Receiving Offers and Proposals
 
 **What to show:**
 1. Click the "Proposals" tab in the Owner Dashboard
-2. Show how bid notifications appear
-3. Walk through the bid details: offered price, proposed dates (if date proposal), renter information
+2. Show how offer notifications appear
+3. Walk through the offer details: offered price, proposed dates (if date proposal), renter information
 
 > **Talking point:**
-> "Renters can interact with a listing in three ways: book at the listed price, place a bid with a different price, or propose different dates entirely. All of these show up in the owner's Proposals tab. The owner can accept, counter, or decline each proposal. Proposals expire after 24 hours to keep the marketplace moving."
+> "Renters can interact with a listing in three ways: book at the listed price, make an offer with a different price, or propose different dates entirely. All of these show up in the owner's Proposals tab. The owner can accept, counter, or decline each proposal. Proposals expire after 24 hours to keep the marketplace moving."
 
 ### Step 7: Booking Confirmation
 
@@ -456,17 +456,17 @@ If asked about cancellation policies during the owner section, here is the refer
 > **Talking point:**
 > "The property detail page gives the renter everything they need to make a decision. The Fair Value badge is powered by our proprietary scoring algorithm that compares the listing price against comparable properties in the same resort, location, and unit type. A 'Great Value' badge means this listing is priced below the market average. The cancellation policy is clearly displayed so there are no surprises."
 
-### Step 5: Book, Bid, or Propose Dates
+### Step 5: Book, Make an Offer, or Propose Dates
 
 **What to show:**
 1. The "Book Now" button -- explain it goes to Stripe Checkout
-2. The "Place a Bid" button -- click to show the bid form dialog
+2. The "Make an Offer" button -- click to show the offer form dialog
 3. The "Propose Different Dates" option -- show the date proposal mode with date pickers
 
 > **Talking point:**
 > "Renters have three ways to engage with a listing:
 > 1. **Book Now** -- Pay the listed price immediately through Stripe Checkout
-> 2. **Place a Bid** -- Offer a different price. The owner can accept, counter, or decline
+> 2. **Make an Offer** -- Offer a different price. The owner can accept, counter, or decline
 > 3. **Propose Different Dates** -- Same property, but different dates. The system auto-calculates the price based on the nightly rate and the new date range
 >
 > This flexibility is key to our marketplace model. It is not just a booking engine -- it is a negotiation platform."
@@ -520,17 +520,17 @@ If asked about cancellation policies during the owner section, here is the refer
 > **Talking point:**
 > "If a renter cannot find exactly what they want in the current listings, they can post a travel request. This flips the marketplace -- instead of browsing, the renter says 'I want to go to Maui in June for under $2000' and owners with matching inventory can submit proposals. Our matching engine connects requests with relevant property owners automatically."
 
-### Step 9: Bidding Marketplace
+### Step 9: Name Your Price
 
 **Navigate to:** `/bidding`
 
 **What to show:**
-1. The bidding marketplace with active listings open for bids
-2. Show how bid status is tracked
-3. Navigate to `/my-bids` to show the renter's bid history
+1. The Name Your Price marketplace with active listings with flexible pricing
+2. Show how offer status is tracked
+3. Navigate to `/my-bids` to show the renter's offer history
 
 > **Talking point:**
-> "The bidding marketplace is where the negotiation happens. Renters can browse all listings that are open for bids, see the listing price, and place their offer. The My Bids page tracks all their active and past bids with status updates -- pending, accepted, countered, or declined. Real-time notifications keep them informed when an owner responds."
+> "The Name Your Price marketplace is where the negotiation happens. Renters can browse all listings that have flexible pricing, see the listing price, and place their offer. The My Offers page tracks all their active and past offers with status updates -- pending, accepted, countered, or declined. Real-time notifications keep them informed when an owner responds."
 
 ### Step 10: Account Settings
 
@@ -685,13 +685,13 @@ If asked about cancellation policies during the owner section, here is the refer
 1. The dark-themed boardroom layout
 2. The headline bar with key metrics
 3. Business Performance section: GMV trends, revenue charts
-4. Marketplace Health: bid activity, liquidity score, bid spread index
+4. Marketplace Health: offer activity, liquidity score, offer spread index
 5. Market Intelligence: competitive benchmarking, market positioning
 6. Industry Feed: curated timeshare industry news
 7. Unit Economics: per-booking and per-user metrics
 
 > **Talking point:**
-> "The Executive Dashboard is the boardroom-ready view. It is separate from the operational Admin Dashboard and designed for strategic decision-making. The dark theme is intentional -- it looks professional in presentations and board meetings. Key metrics include GMV trends, our proprietary Liquidity Score that measures supply-demand balance, the Bid Spread Index showing price negotiation dynamics, market intelligence from industry data sources, and unit economics like average booking value and customer acquisition cost. This page is desktop-optimized at 1024px+ for presentation screens."
+> "The Executive Dashboard is the boardroom-ready view. It is separate from the operational Admin Dashboard and designed for strategic decision-making. The dark theme is intentional -- it looks professional in presentations and board meetings. Key metrics include GMV trends, our proprietary Liquidity Score that measures supply-demand balance, the Offer Spread Index showing price negotiation dynamics, market intelligence from industry data sources, and unit economics like average booking value and customer acquisition cost. This page is desktop-optimized at 1024px+ for presentation screens."
 
 ### Step 12: Dev Tools (DEV Environment Only)
 
@@ -765,7 +765,7 @@ For quick navigation during the demo, here is what each admin tab contains:
 |-------------|---------|---------------|
 | RAV Admin | Full platform access, admin/executive dashboards | Use the existing RAV admin account on DEV |
 | Property Owner | Owner dashboard, listings, earnings | Create via `/signup` with "Property Owner" role, approve via admin |
-| Renter | Browsing, booking, bidding | Create via `/signup` with "Renter" role, approve via admin |
+| Renter | Browsing, booking, making offers | Create via `/signup` with "Renter" role, approve via admin |
 
 ### Pre-Demo Checklist
 
@@ -805,9 +805,9 @@ Use any future expiration date, any 3-digit CVC, and any ZIP code.
 | User Journeys | `/user-journeys` | Public |
 | Documentation | `/documentation` | RAV Admin |
 | My Bookings | `/my-bookings` | Authenticated |
-| My Bids | `/my-bids` | Authenticated |
+| My Offers | `/my-bids` | Authenticated |
 | Account Settings | `/account` | Authenticated |
-| Bidding Marketplace | `/bidding` | Authenticated |
+| Name Your Price | `/bidding` | Authenticated |
 | User Guide | `/user-guide` | Public |
 | Contact | `/contact` | Public |
 

@@ -69,7 +69,7 @@ const faqCategories = [
       {
         question: "What does it cost to list my property?",
         answer:
-          "Creating a listing is completely free. We only charge a small service fee (typically 3-5%) when you successfully receive a booking. There are no upfront costs or monthly fees.",
+          "Creating a listing is completely free. We charge a 15% service fee when you successfully receive a booking (with tiered discounts for Pro and Business members). There are no upfront costs or monthly fees.",
       },
       {
         question: "How do I get paid?",

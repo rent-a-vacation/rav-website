@@ -82,8 +82,8 @@ describe('BidFormDialog', () => {
       />
     );
 
-    expect(screen.getByText('Place Your Bid')).toBeInTheDocument();
-    expect(screen.getByLabelText('Your Bid Amount ($)')).toBeInTheDocument();
+    expect(screen.getByText('Make Your Offer')).toBeInTheDocument();
+    expect(screen.getByLabelText('Your Offer Amount ($)')).toBeInTheDocument();
     expect(screen.queryByText('Propose your preferred dates')).not.toBeInTheDocument();
   });
 
@@ -97,11 +97,11 @@ describe('BidFormDialog', () => {
       />
     );
 
-    expect(screen.getByText('Propose Different Dates')).toBeInTheDocument();
+    expect(screen.getByText('Request Different Dates')).toBeInTheDocument();
     expect(screen.getByText('Propose your preferred dates')).toBeInTheDocument();
     expect(screen.getByLabelText('Check-in')).toBeInTheDocument();
     expect(screen.getByLabelText('Check-out')).toBeInTheDocument();
-    expect(screen.getByLabelText('Total Bid Amount ($)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Total Offer Amount ($)')).toBeInTheDocument();
   });
 
   it('shows nightly rate in listing info when available', () => {
@@ -138,6 +138,6 @@ describe('BidFormDialog', () => {
       />
     );
 
-    expect(screen.getByText('Submit Bid')).toBeInTheDocument();
+    expect(screen.getByText('Submit Offer')).toBeInTheDocument();
   });
 });

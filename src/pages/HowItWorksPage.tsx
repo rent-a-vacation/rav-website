@@ -337,9 +337,9 @@ const HowItWorksPage = () => {
                   <p className="text-sm text-muted-foreground">Browse all listings, use voice search, and save favorites at no cost.</p>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/50">
-                  <div className="font-display text-2xl font-bold text-primary mb-1">No Fees</div>
-                  <p className="font-medium text-foreground mb-1">Booking & Payment</p>
-                  <p className="text-sm text-muted-foreground">The price you see is the price you pay. No service fees added to your booking.</p>
+                  <div className="font-display text-2xl font-bold text-primary mb-1">Transparent</div>
+                  <p className="font-medium text-foreground mb-1">Pricing & Fees</p>
+                  <p className="text-sm text-muted-foreground">See the nightly rate, service fee, and total upfront — no hidden charges at checkout.</p>
                 </div>
               </div>
             </div>

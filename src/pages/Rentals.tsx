@@ -631,7 +631,7 @@ const Rentals = () => {
                 )}
                 <Link to="/bidding">
                   <Button variant="outline" size="lg">
-                    Browse Bidding Marketplace
+                    Browse Name Your Price
                   </Button>
                 </Link>
               </div>
@@ -793,12 +793,13 @@ const Rentals = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-foreground">
-                          <span className="font-display text-xl font-bold">${listing.final_price.toLocaleString()}</span>
-                          <span className="text-muted-foreground text-sm"> total</span>
+                          <span className="font-display text-xl font-bold">${pricePerNight}</span>
+                          <span className="text-muted-foreground text-sm">/night</span>
+                          <span className="text-muted-foreground text-xs"> + fees</span>
                         </div>
                         {nights > 0 && (
                           <span className="text-muted-foreground text-xs">
-                            ${pricePerNight}/night
+                            {nights} nights
                           </span>
                         )}
                         <ListingFairValueBadge listingId={listing.id} />

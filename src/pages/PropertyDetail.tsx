@@ -38,12 +38,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useListingSocialProof, getFreshnessLabel, getPopularityLabel, getDaysAgo } from "@/hooks/useListingSocialProof";
 import { BidFormDialog } from "@/components/bidding/BidFormDialog";
 import { InspiredTravelRequestDialog } from "@/components/bidding/InspiredTravelRequestDialog";
-import { Gavel } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, DollarSign, MessageCircle, Search } from "lucide-react";
 import { isPast } from "date-fns";
 import { FairValueCard } from "@/components/fair-value/FairValueCard";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewSummary from "@/components/reviews/ReviewSummary";
-import { calculateNights } from "@/lib/pricing";
+import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 
 const BRAND_LABELS: Record<string, string> = {
   hilton_grand_vacations: "Hilton Grand Vacations",
@@ -66,6 +67,7 @@ const PropertyDetail = () => {
   const [dateProposalOpen, setDateProposalOpen] = useState(false);
   const [inspiredRequestOpen, setInspiredRequestOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
 
   // Auth
   const { user } = useAuth();
@@ -109,6 +111,7 @@ const PropertyDetail = () => {
   const unitType = prop?.unit_type as unknown as Record<string, string> | undefined;
   const nights = listing ? calculateNights(listing.check_in_date, listing.check_out_date) : 0;
   const pricePerNight = listing?.nightly_rate || (nights > 0 && listing ? Math.round(listing.final_price / nights) : 0);
+  const fees = listing ? computeFeeBreakdown(pricePerNight, nights, listing.cleaning_fee || 0) : null;
 
   // Build image array from property/resort data
   const images: string[] = [];
@@ -442,17 +445,29 @@ const PropertyDetail = () => {
               <div className="sticky top-24 space-y-6">
                 {/* Booking Card */}
                 <div className="bg-card rounded-2xl shadow-card-hover p-6">
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-3xl font-bold text-foreground">
-                      ${listing.final_price.toLocaleString()}
-                    </span>
-                    <span className="text-muted-foreground">total</span>
+                  {/* Fee Breakdown */}
+                  <div className="space-y-2 text-sm mb-4">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        ${pricePerNight}/night × {nights} nights
+                      </span>
+                      <span>${fees?.baseAmount.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Service fee (15%)</span>
+                      <span>${fees?.serviceFee.toLocaleString()}</span>
+                    </div>
+                    {(listing.cleaning_fee || 0) > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Cleaning fee</span>
+                        <span>${listing.cleaning_fee.toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-semibold pt-2 border-t">
+                      <span>Total before taxes</span>
+                      <span>${fees?.subtotal.toLocaleString()}</span>
+                    </div>
                   </div>
-                  {nights > 0 && (
-                    <p className="text-sm text-muted-foreground mb-4">
-                      ${pricePerNight}/night × {nights} nights
-                    </p>
-                  )}
 
                   <FairValueCard listingId={listing.id} viewerRole={isOwnListing ? 'owner' : 'traveler'} />
 
@@ -504,75 +519,81 @@ const PropertyDetail = () => {
                     </Button>
                   ) : (
                     <>
-                      <Button className="w-full mb-4" size="lg" onClick={handleBookNow}>
-                        {user ? "Book Now" : "Sign In to Book"}
+                      <Button className="w-full" size="lg" onClick={handleBookNow}>
+                        {user ? `Book Now — $${fees?.subtotal.toLocaleString()}` : "Sign In to Book"}
                       </Button>
-
-                      {isBiddable && user && (
-                        <Button
-                          variant="outline"
-                          className="w-full mb-4"
-                          size="lg"
-                          onClick={() => setBidDialogOpen(true)}
-                        >
-                          <Gavel className="w-4 h-4 mr-2" />
-                          Place a Bid
-                        </Button>
-                      )}
-
-                      {user && !isOwnListing && (
-                        <Button
-                          variant="outline"
-                          className="w-full mb-4"
-                          size="lg"
-                          onClick={() => setDateProposalOpen(true)}
-                        >
-                          <Calendar className="w-4 h-4 mr-2" />
-                          Propose Different Dates
-                        </Button>
-                      )}
-
-                      <p className="text-center text-sm text-muted-foreground mb-4">
+                      <p className="text-center text-sm text-muted-foreground mt-2 mb-4">
                         You won't be charged yet
                       </p>
 
                       {user && !isOwnListing && (
-                        <Button
-                          variant="ghost"
-                          className="w-full mb-2"
-                          size="sm"
-                          onClick={() => setInspiredRequestOpen(true)}
-                        >
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          Request Similar Dates
-                        </Button>
+                        <Collapsible open={moreOptionsOpen} onOpenChange={setMoreOptionsOpen}>
+                          <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            More booking options
+                            <ChevronDown className={`w-4 h-4 transition-transform ${moreOptionsOpen ? "rotate-180" : ""}`} />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="space-y-1 pt-2">
+                            {isBiddable && (
+                              <button
+                                className="flex items-start gap-3 w-full p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                                onClick={() => setBidDialogOpen(true)}
+                              >
+                                <DollarSign className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+                                <div>
+                                  <p className="text-sm font-medium">Make an Offer</p>
+                                  <p className="text-xs text-muted-foreground">Suggest a different price for this listing</p>
+                                </div>
+                              </button>
+                            )}
+                            <button
+                              className="flex items-start gap-3 w-full p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                              onClick={() => setDateProposalOpen(true)}
+                            >
+                              <Calendar className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+                              <div>
+                                <p className="text-sm font-medium">Request Different Dates</p>
+                                <p className="text-xs text-muted-foreground">Propose alternative check-in and check-out dates</p>
+                              </div>
+                            </button>
+                            <button
+                              className="flex items-start gap-3 w-full p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                              onClick={() => setInspiredRequestOpen(true)}
+                            >
+                              <Search className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+                              <div>
+                                <p className="text-sm font-medium">Find Something Similar</p>
+                                <p className="text-xs text-muted-foreground">Let owners with similar properties reach out to you</p>
+                              </div>
+                            </button>
+                            <button
+                              className="flex items-start gap-3 w-full p-3 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                              onClick={() => setChatOpen(true)}
+                            >
+                              <MessageCircle className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+                              <div>
+                                <p className="text-sm font-medium">Questions? Ask RAVIO</p>
+                                <p className="text-xs text-muted-foreground">Chat with our AI assistant about this property</p>
+                              </div>
+                            </button>
+                          </CollapsibleContent>
+                        </Collapsible>
                       )}
 
-                      {user && (
-                        <Button
-                          variant="ghost"
-                          className="w-full mb-2"
-                          size="sm"
-                          onClick={() => setChatOpen(true)}
-                        >
-                          Questions? Ask RAVIO
-                        </Button>
+                      {!user && (
+                        <Collapsible open={moreOptionsOpen} onOpenChange={setMoreOptionsOpen}>
+                          <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            More booking options
+                            <ChevronDown className={`w-4 h-4 transition-transform ${moreOptionsOpen ? "rotate-180" : ""}`} />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="pt-2">
+                            <p className="text-sm text-muted-foreground text-center py-4">
+                              Sign in to make offers, request dates, or chat with RAVIO
+                            </p>
+                          </CollapsibleContent>
+                        </Collapsible>
                       )}
                     </>
                   )}
-
-                  <div className="border-t pt-4 space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        ${pricePerNight} × {nights} nights
-                      </span>
-                      <span>${listing.final_price.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between font-semibold pt-2 border-t">
-                      <span>Total</span>
-                      <span>${listing.final_price.toLocaleString()}</span>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Trust Indicators */}
@@ -685,11 +706,12 @@ const PropertyDetail = () => {
                       </div>
                       <div className="flex items-end justify-between">
                         <div>
-                          <span className="text-lg font-bold">${sim.final_price.toLocaleString()}</span>
-                          <span className="text-muted-foreground text-sm"> total</span>
+                          <span className="text-lg font-bold">${simPricePerNight}</span>
+                          <span className="text-muted-foreground text-sm">/night</span>
+                          <span className="text-muted-foreground text-xs"> + fees</span>
                           {simNights > 0 && (
                             <div className="text-muted-foreground text-xs">
-                              ${simPricePerNight}/night • {simNights} nights
+                              {simNights} nights
                             </div>
                           )}
                         </div>
