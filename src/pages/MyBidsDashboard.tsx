@@ -93,16 +93,16 @@ const MyBidsDashboard = () => {
 
       <section className="pt-24 pb-12">
         <div className="container mx-auto px-4">
-          <h1 className="font-display text-3xl font-bold mb-2">My Bidding Activity</h1>
+          <h1 className="font-display text-3xl font-bold mb-2">My Offers & Requests</h1>
           <p className="text-muted-foreground mb-8">
-            Track your bids, travel requests, and proposals
+            Track your offers, travel requests, and proposals
           </p>
 
           <Tabs defaultValue="bids" className="space-y-6">
             <TabsList>
               <TabsTrigger value="bids" className="gap-2">
                 <Gavel className="h-4 w-4" />
-                My Bids
+                My Offers
                 {myBids && myBids.length > 0 && (
                   <Badge variant="secondary" className="ml-1">{myBids.length}</Badge>
                 )}
@@ -166,7 +166,7 @@ const MyBidsDashboard = () => {
                             </div>
                           </div>
                           <div className="text-left sm:text-right flex-shrink-0">
-                            <p className="text-sm text-muted-foreground">My bid</p>
+                            <p className="text-sm text-muted-foreground">My offer</p>
                             <p className="text-2xl font-bold">${bid.bid_amount.toLocaleString()}</p>
                             <p className="text-xs text-muted-foreground mt-1">
                               {formatDistanceToNow(new Date(bid.created_at), { addSuffix: true })}
@@ -244,20 +244,20 @@ const MyBidsDashboard = () => {
                               <AlertDialogTrigger asChild>
                                 <Button variant="outline" size="sm" disabled={updateBidStatus.isPending}>
                                   <XCircle className="h-4 w-4 mr-1" />
-                                  Withdraw Bid
+                                  Withdraw Offer
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>Withdraw this bid?</AlertDialogTitle>
+                                  <AlertDialogTitle>Withdraw this offer?</AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    This will withdraw your ${bid.bid_amount.toLocaleString()} bid on {bid.listing?.property?.resort_name}. You can place a new bid later.
+                                    This will withdraw your ${bid.bid_amount.toLocaleString()} offer on {bid.listing?.property?.resort_name}. You can make a new offer later.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                  <AlertDialogCancel>Keep Bid</AlertDialogCancel>
+                                  <AlertDialogCancel>Keep Offer</AlertDialogCancel>
                                   <AlertDialogAction onClick={() => updateBidStatus.mutate({ bidId: bid.id, status: 'withdrawn' })}>
-                                    Withdraw Bid
+                                    Withdraw Offer
                                   </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>
@@ -292,12 +292,12 @@ const MyBidsDashboard = () => {
                 <Card className="border-dashed">
                   <CardContent className="flex flex-col items-center justify-center py-16">
                     <Gavel className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No bids yet</h3>
+                    <h3 className="text-lg font-semibold mb-2">No offers yet</h3>
                     <p className="text-muted-foreground text-center mb-4">
-                      Start bidding on properties to get great deals
+                      Start making offers on properties to get great deals
                     </p>
                     <Button asChild>
-                      <Link to="/bidding">Browse Biddable Listings</Link>
+                      <Link to="/bidding">Browse Flexible Pricing Listings</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -380,7 +380,7 @@ const MyBidsDashboard = () => {
                       Post your vacation needs and let verified owners come to you
                     </p>
                     <Button asChild>
-                      <Link to="/bidding">Explore Marketplace</Link>
+                      <Link to="/bidding">Explore Name Your Price</Link>
                     </Button>
                   </CardContent>
                 </Card>

@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 2, 2026 (Session 30: Code Splitting, CI Fix, QA Strategy)
+> **Last Updated:** March 3, 2026 (Session 31: P0 UX — CTAs, Pricing, Language)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -93,7 +93,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Edge functions deployed:** 25 on DEV, 22 on PROD
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev branch:** PR #148 open → main (code splitting + CI fix)
+- **dev branch:** PR #167 open → main (P0 UX: CTAs + pricing + language)
 
 ### Session Handoff (Sessions 25-27, Feb 26-28)
 
@@ -129,6 +129,16 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Demo walkthrough document: docs/DEMO-WALKTHROUGH.md (comprehensive presentation script)
 - Tests: 409→451 (42 new)
 
+**Session 31 — P0 UX: CTAs, Pricing Transparency, Marketplace Language (Mar 3):**
+- Closed #150 (Simplify CTAs): PropertyDetail collapsed 5 buttons → 1 primary "Book Now" + Collapsible "More booking options" with descriptions
+- Closed #151 (Pricing Transparency): Fee breakdown (base, 15% service fee, cleaning fee, total) on PropertyDetail + Checkout via `computeFeeBreakdown()`. Listing cards show `$X/night + fees`. FAQ bug fix: "3-5%" → "15%"
+- Closed #154 (Marketplace Language): All UI "bid" → "offer", "Marketplace" → "Name Your Price", "Open for Bidding" → "Flexible Pricing". Database unchanged.
+- 18 files changed across source, tests, flow manifests, docs (UserGuide, Documentation, HowItWorksPage, DEMO-WALKTHROUGH, ARCHITECTURE)
+- Created #165 (Owner Volume Discount — configurable commission tiers based on completed bookings)
+- Created #166 (Revisit membership tier value proposition beyond voice hours)
+- PR #167 open: P0 UX changes → main
+- Tests: 451 (unchanged — no new business logic)
+
 **Session 30 — Code Splitting, CI Fix & QA Strategy (Mar 2):**
 - Route-level code splitting (#108): 21 pages converted to `React.lazy()` + `Suspense`, `PageLoadingFallback` spinner. Build clean.
 - CI/Qase fix: Replaced `vitest-qase-reporter` (required Business plan, zero case IDs tagged) with `dorny/test-reporter` + Vitest JUnit XML output. PR annotations now free and subscription-free.
@@ -158,7 +168,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Issue #63 marked `blocked` with resume instructions
 - PR #144 merged — dev and main in sync
 
-**Open pre-launch issues:** 3 remaining (#80 Legal review, #87 Launch checklist, #127 Business formation — blocked)
+**Open pre-launch issues:** 4 remaining (#80 Legal review, #87 Launch checklist, #127 Business formation — blocked, #152 Owner Onboarding UX)
 
 **Blocked dependency chain:**
 ```

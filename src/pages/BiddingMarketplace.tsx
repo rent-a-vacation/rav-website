@@ -62,7 +62,7 @@ const BiddingMarketplace = () => {
     if (!user) {
       toast({
         title: "Sign in required",
-        description: "Please sign in to place a bid on this listing.",
+        description: "Please sign in to make an offer on this listing.",
       });
       return;
     }
@@ -83,10 +83,10 @@ const BiddingMarketplace = () => {
               Direct from Owners
             </Badge>
             <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Vacation Marketplace
+              Name Your Price
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
-              The open marketplace for vacation rentals. Bid on owner-listed properties 
+              The flexible pricing marketplace for vacation rentals. Make an offer on owner-listed properties
               or post your travel plans and let verified owners compete for your booking.
             </p>
             {user && isRenter() && (
@@ -95,7 +95,7 @@ const BiddingMarketplace = () => {
             {!user && (
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button asChild size="lg">
-                  <Link to="/login">Sign in to start bidding</Link>
+                  <Link to="/login">Sign in to make an offer</Link>
                 </Button>
               </div>
             )}
@@ -123,11 +123,11 @@ const BiddingMarketplace = () => {
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
               <TabsTrigger value="listings" className="gap-2">
                 <Gavel className="h-4 w-4" />
-                Bid on Listings
+                Make an Offer
               </TabsTrigger>
               <TabsTrigger value="requests" className="gap-2">
                 <Send className="h-4 w-4" />
-                Travel Requests
+                Tell Us What You Want
               </TabsTrigger>
             </TabsList>
 
@@ -135,7 +135,7 @@ const BiddingMarketplace = () => {
             <TabsContent value="listings" className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold">Owner Listings Open for Bidding</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold">Flexible Pricing Listings</h2>
                   <p className="text-muted-foreground">
                     Submit your best offer directly to verified property owners
                   </p>
@@ -174,7 +174,7 @@ const BiddingMarketplace = () => {
                 <Card className="border-dashed">
                   <CardContent className="flex flex-col items-center justify-center py-16">
                     <Gavel className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No listings open for bidding</h3>
+                    <h3 className="text-lg font-semibold mb-2">No flexible pricing listings yet</h3>
                     <p className="text-muted-foreground text-center mb-4">
                       Check back soon or browse our regular listings
                     </p>
@@ -260,8 +260,8 @@ const BiddingMarketplace = () => {
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">1</div>
                   <div>
-                    <p className="font-medium">Bid on Properties</p>
-                    <p className="text-sm text-muted-foreground">Browse listings open for bidding and submit your best offer</p>
+                    <p className="font-medium">Make an Offer</p>
+                    <p className="text-sm text-muted-foreground">Browse flexible pricing listings and submit your best offer</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -293,8 +293,8 @@ const BiddingMarketplace = () => {
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">1</div>
                   <div>
-                    <p className="font-medium">Open for Bidding</p>
-                    <p className="text-sm text-muted-foreground">Enable bidding on your listings to attract more interest</p>
+                    <p className="font-medium">Enable Flexible Pricing</p>
+                    <p className="text-sm text-muted-foreground">Allow offers on your listings to attract more interest</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -384,7 +384,7 @@ function BiddableListingCard({ listing, onBidClick, canBid }: BiddableListingCar
         <div className="absolute top-3 left-3 flex gap-2">
           <Badge className="bg-accent text-accent-foreground">
             <Gavel className="h-3 w-3 mr-1" />
-            Open for Bids
+            Flexible Pricing
           </Badge>
         </div>
         
@@ -443,12 +443,12 @@ function BiddableListingCard({ listing, onBidClick, canBid }: BiddableListingCar
           <div className="text-right">
             {listing.min_bid_amount && (
               <p className="text-xs text-muted-foreground">
-                Min bid: ${listing.min_bid_amount.toLocaleString()}
+                Minimum offer: ${listing.min_bid_amount.toLocaleString()}
               </p>
             )}
             {listing.bid_count !== undefined && listing.bid_count > 0 && (
               <p className="text-xs font-medium text-accent">
-                {listing.bid_count} bid{listing.bid_count > 1 ? 's' : ''} placed
+                {listing.bid_count} offer{listing.bid_count > 1 ? 's' : ''} placed
               </p>
             )}
           </div>
@@ -458,7 +458,7 @@ function BiddableListingCard({ listing, onBidClick, canBid }: BiddableListingCar
         {canBid ? (
           <Button onClick={onBidClick} className="w-full group-hover:bg-accent group-hover:text-accent-foreground">
             <Gavel className="h-4 w-4 mr-2" />
-            Place Your Bid
+            Make an Offer
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         ) : (

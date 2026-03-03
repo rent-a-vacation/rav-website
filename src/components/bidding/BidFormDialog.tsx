@@ -103,7 +103,7 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
               Sign In Required
             </DialogTitle>
             <DialogDescription>
-              You need to sign in before placing a bid.
+              You need to sign in before making an offer.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -132,13 +132,13 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
   };
 
   const isDateProposal = mode === 'date-proposal';
-  const dialogTitle = isDateProposal ? 'Propose Different Dates' : 'Place Your Bid';
+  const dialogTitle = isDateProposal ? 'Request Different Dates' : 'Make Your Offer';
   const dialogIcon = isDateProposal ? Calendar : Gavel;
   const DialogIcon = dialogIcon;
-  const successTitle = isDateProposal ? 'Date Proposal Submitted!' : 'Bid Submitted!';
+  const successTitle = isDateProposal ? 'Date Request Submitted!' : 'Offer Submitted!';
   const successDescription = isDateProposal
     ? 'The property owner will review your proposed dates and respond. You\'ll be notified when they accept, reject, or counter your offer.'
-    : 'The property owner will review your bid and respond. You\'ll be notified when they accept, reject, or counter your offer.';
+    : 'The property owner will review your offer and respond. You\'ll be notified when they accept, reject, or counter your offer.';
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -149,7 +149,7 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
             iconClassName="text-primary"
             title={successTitle}
             description={successDescription}
-            referenceLabel="Bid Amount"
+            referenceLabel="Offer Amount"
             referenceValue={`$${submittedBidAmount.toLocaleString()}`}
             actions={[{ label: "Done", onClick: () => handleOpenChange(false) }]}
           />
@@ -188,13 +188,13 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
             )}
             {listing.min_bid_amount && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Minimum Bid</span>
+                <span className="text-muted-foreground">Minimum Offer</span>
                 <span className="font-medium text-primary">${listing.min_bid_amount.toLocaleString()}</span>
               </div>
             )}
             {listing.highest_bid && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Current High Bid</span>
+                <span className="text-muted-foreground">Current Highest Offer</span>
                 <span className="font-bold text-accent">${listing.highest_bid.toLocaleString()}</span>
               </div>
             )}
@@ -203,7 +203,7 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
           {timeRemaining && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
-              Bidding ends {timeRemaining}
+              Offer window closes {timeRemaining}
             </div>
           )}
         </div>
@@ -247,7 +247,7 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
 
           <div className="space-y-2">
             <Label htmlFor="bidAmount">
-              {isDateProposal ? 'Total Bid Amount ($)' : 'Your Bid Amount ($)'}
+              {isDateProposal ? 'Total Offer Amount ($)' : 'Your Offer Amount ($)'}
             </Label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -264,7 +264,7 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
             </div>
             {!isDateProposal && listing.min_bid_amount && bidAmount < listing.min_bid_amount && (
               <p className="text-xs text-destructive">
-                Minimum bid is ${listing.min_bid_amount.toLocaleString()}
+                Minimum offer is ${listing.min_bid_amount.toLocaleString()}
               </p>
             )}
             {isDateProposal && nightlyRate > 0 && proposedNights > 0 && (
@@ -319,7 +319,7 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
                 || (isDateProposal && (!proposedCheckIn || !proposedCheckOut || proposedNights <= 0))
               }
             >
-              {createBid.isPending ? 'Submitting...' : isDateProposal ? 'Submit Proposal' : 'Submit Bid'}
+              {createBid.isPending ? 'Submitting...' : isDateProposal ? 'Submit Proposal' : 'Submit Offer'}
             </Button>
           </DialogFooter>
         </form>

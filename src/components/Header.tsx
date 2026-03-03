@@ -116,7 +116,7 @@ const Header = () => {
             </Link>
             <Link to="/bidding" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               <Store className="h-4 w-4" />
-              Marketplace
+              Name Your Price
             </Link>
             {(isPropertyOwner() || isRavTeam() || !user) && (
               <Link to="/list-property" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -161,7 +161,7 @@ const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/my-bids" className="flex items-center gap-2 cursor-pointer">
                         <Gavel className="h-4 w-4" />
-                        My Bids & Requests
+                        My Offers & Requests
                       </Link>
                     </DropdownMenuItem>
 
@@ -321,7 +321,7 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               <Store className="h-4 w-4" />
-              Vacation Marketplace
+              Name Your Price
             </Link>
             <Link
               to="/calculator"
@@ -356,7 +356,7 @@ const Header = () => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Gavel className="h-4 w-4" />
-                    My Bids & Requests
+                    My Offers & Requests
                   </Link>
                   {isRavTeam() && (
                     <Link

@@ -24,7 +24,7 @@ import {
   Info,
 } from "lucide-react";
 import type { Resort, ResortUnitType } from "@/types/database";
-import { calculateNights } from "@/lib/pricing";
+import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 
 const Checkout = () => {
@@ -47,6 +47,7 @@ const Checkout = () => {
   const unitType = prop?.unit_type as ResortUnitType | null;
   const nights = listing ? calculateNights(listing.check_in_date, listing.check_out_date) : 0;
   const pricePerNight = listing?.nightly_rate || (nights > 0 && listing ? Math.round(listing.final_price / nights) : 0);
+  const fees = listing ? computeFeeBreakdown(pricePerNight, nights, listing.cleaning_fee || 0) : null;
 
   const displayName = resort?.resort_name && unitType
     ? `${unitType.unit_type_name} at ${resort.resort_name}`
@@ -322,11 +323,11 @@ const Checkout = () => {
                       <span className="text-muted-foreground">
                         ${pricePerNight}/night × {nights} nights
                       </span>
-                      <span>${(pricePerNight * nights).toLocaleString()}</span>
+                      <span>${fees?.baseAmount.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">RAV service fee</span>
-                      <span>${Math.round((pricePerNight * nights) * 0.15).toLocaleString()}</span>
+                      <span className="text-muted-foreground">Service fee (15%)</span>
+                      <span>${fees?.serviceFee.toLocaleString()}</span>
                     </div>
                     {(listing.cleaning_fee || 0) > 0 && (
                       <div className="flex justify-between text-sm">
@@ -335,7 +336,7 @@ const Checkout = () => {
                       </div>
                     )}
                     <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>Taxes & fees</span>
+                      <span>Taxes</span>
                       <span>Calculated at payment</span>
                     </div>
                     {(listing.resort_fee || 0) > 0 && (
@@ -345,8 +346,8 @@ const Checkout = () => {
                       </div>
                     )}
                     <div className="flex justify-between font-semibold text-lg pt-3 border-t">
-                      <span>Subtotal</span>
-                      <span>${listing.final_price.toLocaleString()}</span>
+                      <span>Total before taxes</span>
+                      <span>${fees?.subtotal.toLocaleString()}</span>
                     </div>
 
                     {/* Tax Disclosure Notice */}

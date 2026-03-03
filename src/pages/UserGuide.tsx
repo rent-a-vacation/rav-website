@@ -54,7 +54,7 @@ const UserGuide = () => {
     { id: "getting-started", label: "Getting Started", icon: Home },
     { id: "register-property", label: "Register Your Property", icon: Building2 },
     { id: "create-listing", label: "Create a Listing", icon: FileCheck },
-    { id: "manage-bids", label: "Manage Bids & Proposals", icon: Gavel },
+    { id: "manage-bids", label: "Manage Offers & Proposals", icon: Gavel },
     { id: "confirm-bookings", label: "Confirm Bookings", icon: Calendar },
     { id: "receive-payouts", label: "Receive Payouts", icon: DollarSign },
     { id: "cancellations", label: "Cancellations", icon: Ban },
@@ -66,7 +66,7 @@ const UserGuide = () => {
     { id: "getting-started", label: "Getting Started", icon: Home },
     { id: "search-book", label: "Search & Book", icon: Search },
     { id: "travel-requests", label: "Submit Travel Requests", icon: Plane },
-    { id: "place-bids", label: "Place Bids on Listings", icon: Gavel },
+    { id: "place-bids", label: "Make Offers on Listings", icon: Gavel },
     { id: "my-bookings", label: "My Bookings & Cancellations", icon: Calendar },
     { id: "checkin", label: "Check-In Process", icon: Key },
     { id: "protection", label: "Renter Protection", icon: Shield },
@@ -394,7 +394,7 @@ const UserGuide = () => {
                     <li className="flex gap-3">
                       <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                       <div>
-                        <strong>Optionally enable bidding</strong> — Allow renters to submit competitive bids
+                        <strong>Optionally enable flexible pricing</strong> — Allow renters to submit competitive offers
                       </div>
                     </li>
                     <li className="flex gap-3">
@@ -416,10 +416,10 @@ const UserGuide = () => {
                   <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
                     <h4 className="font-semibold mb-3 flex items-center gap-2">
                       <Gavel className="h-4 w-4 text-primary" />
-                      Open for Bidding
+                      Open for Flexible Pricing
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      Enable competitive bidding. Set a reserve price (minimum you'll accept) and bidding deadline. 
+                      Enable flexible pricing. Set a reserve price (minimum you'll accept) and offer deadline.
                       Review and accept the best offer.
                     </p>
                   </div>
@@ -431,7 +431,7 @@ const UserGuide = () => {
             {activeRole === "owner" && (isPrinting || activeSection === "manage-bids") && (
               <section className="space-y-8 print:break-after-page">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-4">Manage Bids & Proposals</h1>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Manage Offers & Proposals</h1>
                   <p className="text-xl text-muted-foreground">
                     The RAV marketplace offers two ways to connect with renters through price negotiation.
                   </p>
@@ -440,27 +440,27 @@ const UserGuide = () => {
                 <div className="bg-card rounded-xl p-6 border">
                   <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                     <Gavel className="h-5 w-5 text-primary" />
-                    Receiving Bids on Your Listings
+                    Receiving Offers on Your Listings
                   </h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    When you enable "Open for Bidding" on a listing, renters can submit offers below your asking price.
+                    When you enable "Open for Flexible Pricing" on a listing, renters can submit offers below your asking price.
                   </p>
                   <ol className="space-y-3 text-sm">
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">1</span>
-                      <span>Go to Owner Dashboard → "My Bids" tab</span>
+                      <span>Go to Owner Dashboard → "My Offers" tab</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">2</span>
-                      <span>Review incoming bids with renter details and offer amounts</span>
+                      <span>Review incoming offers with renter details and offer amounts</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">3</span>
-                      <span>Accept the best bid before the deadline (or let bidding continue)</span>
+                      <span>Accept the best offer before the deadline (or let flexible pricing continue)</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">4</span>
-                      <span>Accepted bids convert to confirmed bookings</span>
+                      <span>Accepted offers convert to confirmed bookings</span>
                     </li>
                   </ol>
                 </div>
@@ -477,7 +477,7 @@ const UserGuide = () => {
                   <ol className="space-y-3 text-sm">
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">1</span>
-                      <span>Browse the Marketplace for matching travel requests</span>
+                      <span>Browse the Name Your Price page for matching travel requests</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">2</span>
@@ -757,7 +757,7 @@ const UserGuide = () => {
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li>• <strong>Booking Updates</strong> — Booking confirmations, cancellations, payout notifications</li>
-                    <li>• <strong>Bidding & Proposals</strong> — New bids on your listings, bid acceptance, bidding deadline reminders</li>
+                    <li>• <strong>Offers & Proposals</strong> — New offers on your listings, offer acceptance, deadline reminders</li>
                     <li>• <strong>Travel Requests</strong> — New matching travel requests, proposal acceptance</li>
                     <li>• <strong>Marketing & Updates</strong> — Product updates, tips, and platform news</li>
                   </ul>
@@ -794,7 +794,7 @@ const UserGuide = () => {
                     { q: "How much does it cost to list?", a: "Listing is free. We only charge a 15% commission when your property is booked." },
                     { q: "What if I need to cancel a booking?", a: "Go to Owner Dashboard → Bookings, click 'Cancel Booking' on the reservation. The renter receives a full refund automatically. Repeated cancellations affect your account standing and search ranking. See the Cancellations section for details." },
                     { q: "How do I get the verified badge?", a: "Upload your government ID and vacation club membership documentation in Owner Dashboard → Verification tab." },
-                    { q: "Can I set a minimum bid amount?", a: "Yes, when enabling bidding you can set a 'reserve price' - the minimum you'll accept. Bids below this are marked accordingly." },
+                    { q: "Can I set a minimum offer amount?", a: "Yes, when enabling flexible pricing you can set a 'reserve price' - the minimum you'll accept. Offers below this are marked accordingly." },
                     { q: "What cancellation policy should I choose?", a: "Flexible policies attract more bookings but carry more risk. Strict policies protect your income but may reduce bookings. Start with Moderate." },
                     { q: "How do I provide check-in instructions?", a: "After confirming a booking, you can add check-in details that are shared with the renter 24 hours before arrival." },
                     { q: "What if the renter reports an issue?", a: "RAV support will contact you to resolve. Maintain accurate listings and prompt communication to avoid disputes." },
@@ -880,7 +880,7 @@ const UserGuide = () => {
                     </div>
                     <div className="bg-card rounded-xl p-6 border text-center">
                       <Gavel className="h-8 w-8 mx-auto mb-3 text-primary" />
-                      <h4 className="font-medium mb-2">Place a Bid</h4>
+                      <h4 className="font-medium mb-2">Make an Offer</h4>
                       <p className="text-xs text-muted-foreground">Offer your price on open listings</p>
                     </div>
                     <div className="bg-card rounded-xl p-6 border text-center">
@@ -1026,7 +1026,7 @@ const UserGuide = () => {
                   <ol className="space-y-3 text-sm">
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">1</span>
-                      <span>Go to Marketplace and click "Post Travel Request"</span>
+                      <span>Go to Name Your Price and click "Post Travel Request"</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">2</span>
@@ -1065,18 +1065,18 @@ const UserGuide = () => {
             {activeRole === "renter" && (isPrinting || activeSection === "place-bids") && (
               <section className="space-y-8 print:break-after-page">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-4">Place Bids on Listings</h1>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Make Offers on Listings</h1>
                   <p className="text-xl text-muted-foreground">
                     Found a property you love? Offer your price and see if the owner accepts.
                   </p>
                 </div>
 
                 <div className="bg-card rounded-xl p-6 border">
-                  <h3 className="font-semibold text-lg mb-4">How to Place a Bid</h3>
+                  <h3 className="font-semibold text-lg mb-4">How to Make an Offer</h3>
                   <ol className="space-y-3 text-sm">
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">1</span>
-                      <span>Find listings marked "Open for Bidding" in search results</span>
+                      <span>Find listings marked "Open for Offers" in search results</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">2</span>
@@ -1084,7 +1084,7 @@ const UserGuide = () => {
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">3</span>
-                      <span>Click "Place Bid" and enter your offer amount</span>
+                      <span>Click "Make Offer" and enter your offer amount</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">4</span>
@@ -1092,17 +1092,17 @@ const UserGuide = () => {
                     </li>
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">5</span>
-                      <span>Submit your bid before the deadline</span>
+                      <span>Submit your offer before the deadline</span>
                     </li>
                   </ol>
                 </div>
 
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-                  <h4 className="font-medium text-amber-800 mb-2">Bidding Tips</h4>
+                  <h4 className="font-medium text-amber-800 mb-2">Offer Tips</h4>
                   <ul className="text-sm text-amber-700 space-y-1">
                     <li>• Research similar listings to make competitive offers</li>
-                    <li>• Bids closer to asking price are more likely to be accepted</li>
-                    <li>• You can update your bid until the deadline</li>
+                    <li>• Offers closer to asking price are more likely to be accepted</li>
+                    <li>• You can update your offer until the deadline</li>
                     <li>• If accepted, you'll proceed to payment immediately</li>
                   </ul>
                 </div>
@@ -1350,7 +1350,7 @@ const UserGuide = () => {
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li>• <strong>Booking Updates</strong> — Confirmation, cancellation, and payout emails</li>
-                    <li>• <strong>Bidding & Proposals</strong> — Bid status and proposal notifications</li>
+                    <li>• <strong>Offers & Proposals</strong> — Offer status and proposal notifications</li>
                     <li>• <strong>Travel Requests</strong> — Updates on your posted travel requests</li>
                     <li>• <strong>Marketing & Updates</strong> — Product news, tips, and platform updates</li>
                   </ul>

@@ -239,12 +239,13 @@ const FeaturedResorts = () => {
                   <div className="flex items-end justify-between">
                     <div>
                       <div className="text-foreground">
-                        <span className="text-xl font-bold">${listing.final_price.toLocaleString()}</span>
-                        <span className="text-muted-foreground text-sm"> total</span>
+                        <span className="text-xl font-bold">${pricePerNight}</span>
+                        <span className="text-muted-foreground text-sm">/night</span>
+                        <span className="text-muted-foreground text-xs"> + fees</span>
                       </div>
                       {nights > 0 && (
                         <span className="text-muted-foreground text-xs">
-                          ${pricePerNight}/night • {nights} nights
+                          {nights} nights
                         </span>
                       )}
                     </div>

@@ -101,19 +101,19 @@ export const ownerLifecycle: FlowDefinition = {
       edgeFunctions: ['match-travel-requests'],
       branches: [
         { condition: 'Renter books directly', targetStepId: 'booking_confirmed', label: 'Renter pays' },
-        { condition: 'Listing open for bidding', targetStepId: 'manage_bids', label: 'Bids open' },
+        { condition: 'Listing has flexible pricing', targetStepId: 'manage_bids', label: 'Flexible pricing' },
       ],
     },
     {
       id: 'manage_bids',
       route: '/owner-dashboard',
-      label: 'Manage Bids & Date Proposals',
+      label: 'Manage Offers & Date Requests',
       component: 'BidsManagerDialog',
       tab: 'listings',
-      description: 'Owner reviews bids, accepts/rejects/counter-offers. Counter-offers trigger re-negotiation on this page. Accepting a bid does NOT create a booking — the renter must still pay at checkout.',
+      description: 'Owner reviews offers, accepts/rejects/counter-offers. Counter-offers trigger re-negotiation on this page. Accepting an offer does NOT create a booking — the renter must still pay at checkout.',
       tables: ['listing_bids'],
       branches: [
-        { condition: 'Bid accepted, renter pays at checkout', targetStepId: 'booking_confirmed', label: 'Accepted → Renter pays' },
+        { condition: 'Offer accepted, renter pays at checkout', targetStepId: 'booking_confirmed', label: 'Accepted → Renter pays' },
       ],
     },
     {
