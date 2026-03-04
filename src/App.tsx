@@ -44,6 +44,7 @@ const MaintenanceFeeCalculator = lazy(() => import("./pages/MaintenanceFeeCalcul
 const UserJourneys = lazy(() => import("./pages/UserJourneys"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -181,6 +182,9 @@ const App = () => (
             <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
             <Route path="/account" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
             <Route path="/checkin" element={<ProtectedRoute><TravelerCheckin /></ProtectedRoute>} />
+
+            {/* Internal tools */}
+            <Route path="/api-docs" element={<ApiDocs />} />
 
             {/* Legacy routes - redirect to proper sections */}
             <Route path="/deals" element={<Navigate to="/rentals" replace />} />

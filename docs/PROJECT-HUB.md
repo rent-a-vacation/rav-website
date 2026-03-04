@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 3, 2026 (Session 33: UX Improvements — #153, #159, #160, #161, #162)
+> **Last Updated:** March 3, 2026 (Session 33b: OpenAPI Spec — #171)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -128,6 +128,14 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Admin owner filter (#120): Owner dropdown in AdminListings tab
 - Demo walkthrough document: docs/DEMO-WALKTHROUGH.md (comprehensive presentation script)
 - Tests: 409→451 (42 new)
+
+**Session 33b — OpenAPI Spec & Swagger UI (#171) (Mar 3):**
+- OpenAPI 3.0.3 spec for all 25 edge functions at `docs/api/openapi.yaml`
+- Swagger UI at `/api-docs` (admin-gated, CDN-loaded, no npm packages)
+- Audit script: `node scripts/generate-openapi.cjs --audit` — confirms 25/25 coverage
+- Tags: AI, Payments, Payouts, Cancellations, Disputes, Escrow, Notifications, Marketplace, GDPR, Data, Admin
+- New files: 6 created, 1 modified (App.tsx route only)
+- Tests: 507 (unchanged — docs-only, no new business logic)
 
 **Session 33 — UX Improvements: 5 Frontend-Only Issues (Mar 3):**
 - Closed #159 (Cancellation Policy): `CancellationPolicyDetail` component + `cancellationPolicy.ts` utility — color-coded refund rules with concrete deadlines. Integrated into PropertyDetail + Checkout.
@@ -650,6 +658,6 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ---
 
-**Last updated:** March 3, 2026 (Session 33: UX Improvements — #153, #159, #160, #161, #162)
+**Last updated:** March 3, 2026 (Session 33b: OpenAPI Spec — #171)
 **Maintained by:** Sujit
 **Tracking:** [GitHub Issues](https://github.com/rent-a-vacation/rav-website/issues) · [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1) · [Milestones](https://github.com/rent-a-vacation/rav-website/milestones)

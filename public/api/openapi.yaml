@@ -1,0 +1,1812 @@
+openapi: 3.0.3
+info:
+  title: Rent-A-Vacation API
+  description: |
+    Internal API reference for all RAV Supabase Edge Functions.
+    These endpoints power the RAV platform including marketplace search,
+    booking/payment flows, owner payouts, notifications, and AI features.
+
+    **Base URL (Production):** `https://xzfllqndrlmhclqfybew.supabase.co/functions/v1`
+    **Base URL (Development):** `https://oukbxqnlxnkainnligfz.supabase.co/functions/v1`
+
+    **Authentication:** Most endpoints require a Supabase JWT bearer token.
+    Include `Authorization: Bearer <token>` in request headers.
+
+    **Rate Limiting:** Many endpoints implement per-user or per-IP rate limiting.
+    Exceeding limits returns HTTP 429 with a `Retry-After` header.
+  version: 1.0.0
+  contact:
+    name: RAV Engineering
+    email: dev@rent-a-vacation.com
+
+servers:
+  - url: https://xzfllqndrlmhclqfybew.supabase.co/functions/v1
+    description: Production
+  - url: https://oukbxqnlxnkainnligfz.supabase.co/functions/v1
+    description: Development
+
+tags:
+  - name: AI
+    description: Voice search and text chat AI features
+  - name: Payments
+    description: Stripe checkout, verification, and webhooks
+  - name: Payouts
+    description: Owner Stripe Connect accounts and payouts
+  - name: Cancellations
+    description: Booking cancellation processing
+  - name: Disputes
+    description: Dispute resolution and refunds
+  - name: Notifications
+    description: Email notifications via Resend
+  - name: Data
+    description: Executive dashboard data feeds
+  - name: Marketplace
+    description: Travel request matching
+  - name: GDPR
+    description: User data export and account deletion
+  - name: Admin
+    description: Seed data management (DEV only)
+  - name: Escrow
+    description: Payment escrow management
+
+paths:
+  # ─── AI ────────────────────────────────────────────────────────────────
+  /voice-search:
+    post:
+      tags: [AI]
+      summary: Search vacation listings via structured query parameters
+      description: |
+        Accepts structured search parameters extracted from voice queries via VAPI,
+        or direct API calls with the same parameter shape.
+        Searches active listings with filtering by destination, price, dates, bedrooms,
+        property type, amenities, and guest count.
+
+        Also accepts VAPI webhook format with `message.functionCall.parameters`.
+
+        **Rate limit:** 30 requests/minute per IP (in-memory sliding window).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoiceSearchRequest'
+            examples:
+              basic:
+                summary: Search by destination and price
+                value:
+                  destination: "Orlando, FL"
+                  max_price: 2000
+                  bedrooms: 2
+              full:
+                summary: Full parameter search
+                value:
+                  destination: "Hawaii"
+                  check_in_date: "2026-06-01"
+                  check_out_date: "2026-06-08"
+                  min_price: 1000
+                  max_price: 3000
+                  bedrooms: 2
+                  max_guests: 4
+                  amenities: ["pool", "beachfront"]
+              vapi:
+                summary: VAPI webhook format
+                value:
+                  message:
+                    type: "function-call"
+                    functionCall:
+                      name: "searchProperties"
+                      parameters:
+                        destination: "Orlando, FL"
+                        max_price: 2000
+      responses:
+        '200':
+          description: Search results returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceSearchResponse'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /text-chat:
+    post:
+      tags: [AI]
+      summary: Chat with RAVIO assistant (streaming SSE)
+      description: |
+        Text chat assistant powered by OpenRouter (Gemini 3 Flash).
+        Returns Server-Sent Events (SSE) stream with search results and tokens.
+        Context-aware system prompts vary by page (rentals, property-detail, bidding, general).
+        Supports tool calling for property search mid-conversation.
+
+        **Rate limit:** 20 requests/minute per user (database-backed) + 60/min per IP.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextChatRequest'
+            example:
+              message: "Find me a 2-bedroom in Hawaii under $2000"
+              conversationHistory: []
+              context: "rentals"
+      responses:
+        '200':
+          description: SSE stream of chat tokens and search results
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  Server-Sent Events stream with events:
+                  - `search_results`: JSON array of SearchResult objects
+                  - `token`: Individual text token from the AI response
+                  - `done`: Empty data signaling end of stream
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '502':
+          description: OpenRouter API unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── Payments ──────────────────────────────────────────────────────────
+  /create-booking-checkout:
+    post:
+      tags: [Payments]
+      summary: Create a Stripe checkout session for booking
+      description: |
+        Creates a pending booking record and generates a Stripe Checkout session URL.
+        Calculates fee breakdown: base amount (nightly rate x nights), 15% service fee,
+        cleaning fee. Supports Stripe Tax (automatic_tax enabled).
+
+        **Rate limit:** 5 requests per 5 minutes per user.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCheckoutRequest'
+            example:
+              listingId: "550e8400-e29b-41d4-a716-446655440000"
+              guestCount: 2
+              specialRequests: "Late check-in around 9pm"
+      responses:
+        '200':
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCheckoutResponse'
+        '500':
+          description: Checkout creation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /verify-booking-payment:
+    post:
+      tags: [Payments]
+      summary: Verify payment after Stripe checkout completes
+      description: |
+        Client-side verification after redirect from Stripe Checkout.
+        Retrieves the Stripe session, confirms payment, updates booking to "confirmed",
+        marks listing as "booked", creates booking_confirmations + checkin_confirmations,
+        contributes 3% of commission to platform guarantee fund, sends confirmation emails.
+        Idempotent — skips if booking already confirmed.
+
+        **Rate limit:** 10 requests/minute per user.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookingId]
+              properties:
+                bookingId:
+                  type: string
+                  format: uuid
+                  description: Booking ID to verify
+            example:
+              bookingId: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Payment verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyPaymentResponse'
+        '500':
+          description: Verification error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /stripe-webhook:
+    post:
+      tags: [Payments]
+      summary: Handle Stripe webhook events
+      description: |
+        Receives Stripe webhook events authenticated via signature verification.
+        Handles 6 event types: checkout.session.completed/expired, charge.refunded,
+        account.updated, transfer.created/reversed.
+        Idempotent — skips already-processed events.
+
+        **Auth:** Stripe signature (not JWT). Requires `STRIPE_WEBHOOK_SECRET`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Raw Stripe event payload (verified via X-Stripe-Signature header)
+      responses:
+        '200':
+          description: Event processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid signature or malformed event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: Only POST method allowed
+
+  # ─── Payouts ───────────────────────────────────────────────────────────
+  /create-connect-account:
+    post:
+      tags: [Payouts]
+      summary: Create or resume Stripe Connect onboarding for property owners
+      description: |
+        Creates a Stripe Express connected account for the property owner,
+        or generates an onboarding link for an existing incomplete account.
+        Returns the Stripe onboarding URL for redirect.
+        If account is already fully onboarded (charges_enabled && payouts_enabled),
+        returns `already_complete: true`.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                returnUrl:
+                  type: string
+                  description: URL to redirect to after onboarding
+                  default: "/owner-dashboard?tab=bookings-earnings&stripe=complete"
+            example:
+              returnUrl: "/owner-dashboard?tab=bookings-earnings&stripe=complete"
+      responses:
+        '200':
+          description: Connect account created or already complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateConnectResponse'
+        '500':
+          description: Account creation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /create-stripe-payout:
+    post:
+      tags: [Payouts]
+      summary: Initiate owner payout via Stripe Transfer (admin only)
+      description: |
+        Admin-initiated payout to property owner via Stripe Transfer to their connected account.
+        Validates booking status (confirmed/completed), owner Stripe account (payouts_enabled).
+        Creates Transfer, updates booking payout_status, sends email notification to owner.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookingId]
+              properties:
+                bookingId:
+                  type: string
+                  format: uuid
+                  description: Booking ID to process payout for
+            example:
+              bookingId: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Payout initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePayoutResponse'
+        '500':
+          description: Payout failed (invalid status, missing Connect account, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── Cancellations ────────────────────────────────────────────────────
+  /process-cancellation:
+    post:
+      tags: [Cancellations]
+      summary: Process a booking cancellation (renter or owner)
+      description: |
+        Processes booking cancellations for both renters and owners.
+        Renter cancellations apply policy-based refunds (flexible/moderate/strict/super_strict).
+        Owner cancellations always issue a full refund to the renter.
+        Updates booking status, reactivates listing, refunds escrow, increments owner
+        cancellation count (for trust scoring), sends cancellation emails.
+
+        **Rate limit:** 3 requests/minute per user.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessCancellationRequest'
+            example:
+              bookingId: "550e8400-e29b-41d4-a716-446655440000"
+              reason: "Change of plans"
+              cancelledBy: "renter"
+      responses:
+        '200':
+          description: Cancellation processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessCancellationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: User not authorized to cancel this booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          description: Server error during cancellation processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── Disputes ──────────────────────────────────────────────────────────
+  /process-dispute-refund:
+    post:
+      tags: [Disputes]
+      summary: Resolve a dispute and optionally issue a refund (admin only)
+      description: |
+        Admin-only endpoint to resolve disputes. Processes Stripe refunds (if amount > 0),
+        updates dispute status, adds resolution message to dispute thread,
+        updates escrow status, and cancels booking if full refund granted.
+
+        **Rate limit:** 5 requests/minute per admin user.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessDisputeRequest'
+            example:
+              disputeId: "550e8400-e29b-41d4-a716-446655440000"
+              refundAmount: 500.00
+              resolutionNotes: "Full refund issued due to property mismatch"
+              status: "resolved_full_refund"
+      responses:
+        '200':
+          description: Dispute resolved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessDisputeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: User is not RAV team member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  # ─── Escrow ────────────────────────────────────────────────────────────
+  /process-escrow-release:
+    post:
+      tags: [Escrow]
+      summary: Release held escrows and initiate owner payouts
+      description: |
+        Releases escrows after the 5-day hold period (post check-out) and initiates
+        Stripe Transfers to owner connected accounts. Can be triggered by admin
+        or run as a scheduled job via service role.
+        Processes all eligible escrows in batch. Errors are captured per-escrow
+        and returned in the response array.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: No body required — processes all eligible escrows
+      responses:
+        '200':
+          description: Escrow release summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EscrowReleaseResponse'
+        '500':
+          description: Critical failure (missing Stripe key, DB connection)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── Notifications ────────────────────────────────────────────────────
+  /send-email:
+    post:
+      tags: [Notifications]
+      summary: Send a generic email via Resend
+      description: |
+        Generic email sender for arbitrary HTML content.
+        Validates email format. Logs email type for observability.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmailRequest'
+            example:
+              to: "user@example.com"
+              subject: "Welcome to RAV"
+              html: "<h1>Welcome!</h1>"
+              type: "welcome"
+      responses:
+        '200':
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailResponse'
+        '500':
+          description: Email delivery failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /send-contact-form:
+    post:
+      tags: [Notifications]
+      summary: Submit a contact form message
+      description: |
+        Sends contact form submissions to the RAV support inbox
+        and a confirmation email to the submitter.
+        No authentication required (public endpoint).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactFormRequest'
+            example:
+              name: "John Doe"
+              email: "john@example.com"
+              subject: "Question about listings"
+              message: "How do I list my timeshare?"
+      responses:
+        '200':
+          description: Contact form submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  email_sent:
+                    type: boolean
+                    example: true
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /send-approval-email:
+    post:
+      tags: [Notifications]
+      summary: Send user/role approval or rejection email
+      description: |
+        Transactional email for user account approvals and role upgrade decisions.
+        Generates context-aware HTML emails (approved/rejected templates).
+        Called from admin workflows, not directly by users.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalEmailRequest'
+            example:
+              user_id: "550e8400-e29b-41d4-a716-446655440000"
+              action: "approved"
+              email_type: "role_upgrade"
+              requested_role: "property_owner"
+      responses:
+        '200':
+          description: Approval email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  email_sent:
+                    type: boolean
+                  action:
+                    type: string
+        '400':
+          description: Missing user_id or action, user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /send-booking-confirmation-reminder:
+    post:
+      tags: [Notifications]
+      summary: Send booking/checkin confirmation reminder emails
+      description: |
+        Sends templated booking and checkin emails to owners and renters.
+        Supports 7 notification types: new_booking, confirmation_reminder,
+        deadline_urgent, checkin_reminder, owner_confirmation_request,
+        owner_extension_notification, owner_confirmation_timeout.
+        Called from other edge functions and scheduled jobs.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingReminderRequest'
+            example:
+              type: "confirmation_reminder"
+              bookingConfirmationId: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Reminder sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '500':
+          description: Sending failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /send-cancellation-email:
+    post:
+      tags: [Notifications]
+      summary: Send cancellation confirmation email to renter
+      description: |
+        Sends a cancellation confirmation email with details about the
+        cancellation type (approved, denied, counter_offer, submitted).
+        Called internally by process-cancellation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [cancellationRequestId]
+              properties:
+                cancellationRequestId:
+                  type: string
+                  format: uuid
+                  description: Cancellation request record ID
+                type:
+                  type: string
+                  description: Cancellation type override
+            example:
+              cancellationRequestId: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  reason:
+                    type: string
+                    nullable: true
+        '500':
+          description: Sending failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /send-verification-notification:
+    post:
+      tags: [Notifications]
+      summary: Send owner verification approval/rejection email
+      description: |
+        Sends verification decision emails to property owners with trust level
+        information and rejection reasons if applicable.
+        Requires caller to be RAV admin/staff (verified via JWT + role check).
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationNotificationRequest'
+            example:
+              ownerEmail: "owner@example.com"
+              ownerName: "Jane Smith"
+              status: "approved"
+              trustLevel: "verified"
+      responses:
+        '200':
+          description: Notification sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    nullable: true
+        '500':
+          description: Sending failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── Marketplace ───────────────────────────────────────────────────────
+  /match-travel-requests:
+    post:
+      tags: [Marketplace]
+      summary: Match a new listing to open travel requests
+      description: |
+        Triggered after a listing is activated. Queries open travel requests
+        matching destination (city), bedrooms, budget, and brand preference.
+        Creates in-app notifications and sends emails to matched travelers.
+        Deduplicates to avoid sending duplicate notifications.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [listing_id]
+              properties:
+                listing_id:
+                  type: string
+                  format: uuid
+                  description: ID of the newly active listing
+            example:
+              listing_id: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Matching results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchTravelResponse'
+        '400':
+          description: Missing listing_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── GDPR ──────────────────────────────────────────────────────────────
+  /export-user-data:
+    post:
+      tags: [GDPR]
+      summary: Export all user data (GDPR data portability)
+      description: |
+        Gathers all user data across 14 tables and returns as downloadable JSON.
+        Includes: profile, account, roles, memberships, bookings, properties,
+        listings, bids, travel requests, travel proposals, notification preferences,
+        voice search history, favorites, disputes, cancellation requests.
+
+        Response includes `Content-Disposition` header for file download.
+
+        **Rate limit:** 3 requests per 5 minutes per user.
+      security:
+        - SupabaseJWT: []
+      responses:
+        '200':
+          description: User data export
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDataExport'
+        '400':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /delete-user-account:
+    post:
+      tags: [GDPR]
+      summary: Request, cancel, or execute account deletion
+      description: |
+        Three-action lifecycle for GDPR account deletion:
+        - **request:** Schedules deletion with 14-day grace period
+        - **cancel:** Cancels a pending deletion request
+        - **execute:** After grace period, anonymizes profile and deletes non-financial data
+
+        Retains bookings, listings, properties, disputes, and cancellation requests
+        for tax/legal compliance. Anonymizes name, email, and Stripe fields.
+
+        **Rate limit:** 3 requests per 5 minutes per user.
+      security:
+        - SupabaseJWT: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAccountRequest'
+            examples:
+              request:
+                summary: Request deletion
+                value:
+                  action: "request"
+                  reason: "No longer need the account"
+              cancel:
+                summary: Cancel deletion
+                value:
+                  action: "cancel"
+              execute:
+                summary: Execute deletion (after grace period)
+                value:
+                  action: "execute"
+      responses:
+        '200':
+          description: Action completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAccountResponse'
+        '400':
+          description: Invalid action or state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  # ─── Data ──────────────────────────────────────────────────────────────
+  /fetch-industry-news:
+    get:
+      tags: [Data]
+      summary: Fetch vacation rental industry news
+      description: |
+        Fetches industry news from NewsAPI (if NEWSAPI_KEY set).
+        Categorizes articles (industry/regulatory/market/technology).
+        Falls back to hardcoded articles on API error or missing key.
+        Returns up to 7 articles sorted by date.
+
+        **Cache:** 60 minutes (in-memory).
+      responses:
+        '200':
+          description: Industry news articles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryNewsResponse'
+
+  /fetch-macro-indicators:
+    get:
+      tags: [Data]
+      summary: Fetch US macroeconomic indicators for travel sector
+      description: |
+        Fetches macro indicators from FRED API: Consumer Sentiment Index,
+        Travel Spending YoY%, CPI Lodging, Unemployment Rate.
+        Includes 6-point sparkline data and trend direction.
+        Falls back to hardcoded indicators on API failure.
+
+        **Cache:** 24 hours (in-memory).
+      responses:
+        '200':
+          description: Macro indicator data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MacroIndicatorsResponse'
+
+  /fetch-airdna-data:
+    post:
+      tags: [Data]
+      summary: Fetch AirDNA market data for top destinations
+      description: |
+        Fetches market data (occupancy, pricing, demand) for vacation destinations.
+        No live API integration yet — returns demo data for 5 Caribbean destinations.
+        Accepts optional `api_key` for future live integration.
+
+        **Cache:** 24 hours (in-memory).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+                  description: AirDNA API key (optional; demo data returned if omitted)
+      responses:
+        '200':
+          description: Market destination data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirDNAResponse'
+
+  /fetch-str-data:
+    post:
+      tags: [Data]
+      summary: Fetch STR Global short-term rental metrics
+      description: |
+        Fetches STR market metrics comparing RAV portfolio to market benchmarks.
+        No live API integration yet — returns demo data.
+        Accepts optional `api_key` for future live integration.
+
+        **Cache:** 24 hours (in-memory).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+                  description: STR Global API key (optional; demo data returned if omitted)
+      responses:
+        '200':
+          description: STR market metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/STRResponse'
+
+  # ─── Notifications (Scheduled) ────────────────────────────────────────
+  /process-deadline-reminders:
+    post:
+      tags: [Notifications]
+      summary: Process scheduled deadline reminders and timeouts
+      description: |
+        Scheduled task that sends multiple reminder types:
+        1. Booking confirmation reminders (12h window before deadline)
+        2. Owner confirmation timeouts (auto-cancel + refund)
+        3. Check-in reminders (within +/-2h of expected arrival)
+        4. Travel request expiry warnings (47-49h before deadline)
+
+        Typically triggered by a cron scheduler using service role key.
+      responses:
+        '200':
+          description: Processing summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadlineRemindersResponse'
+        '500':
+          description: Unexpected failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ─── Admin ─────────────────────────────────────────────────────────────
+  /seed-manager:
+    post:
+      tags: [Admin]
+      summary: Manage seed data (DEV environment only)
+      description: |
+        Development-only utility for managing 3-layer test data.
+        Guarded by `IS_DEV_ENVIRONMENT` secret — will not run in production.
+
+        **Actions:**
+        - `setup`: Create all seed data (foundation users, properties, transactions)
+        - `wipe_layer_2`: Remove properties and listings
+        - `wipe_layer_3`: Remove renters, bookings, proposals, disputes
+        - `wipe_all`: Remove layers 2 + 3 (foundation users preserved)
+        - `status`: Return current table counts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeedManagerRequest'
+            examples:
+              setup:
+                summary: Create all seed data
+                value:
+                  action: "setup"
+              status:
+                summary: Check current status
+                value:
+                  action: "status"
+              wipe:
+                summary: Wipe transactional data
+                value:
+                  action: "wipe_layer_3"
+      responses:
+        '200':
+          description: Seed action completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeedManagerResponse'
+        '400':
+          description: Invalid action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Not DEV environment or database error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    # ─── AI Schemas ────────────────────────────────────────────────────
+    VoiceSearchRequest:
+      type: object
+      properties:
+        destination:
+          type: string
+          description: City, state, or resort name. Supports state abbreviations.
+          example: "Orlando, FL"
+        check_in_date:
+          type: string
+          format: date
+          description: Desired check-in date (YYYY-MM-DD)
+          example: "2026-06-01"
+        check_out_date:
+          type: string
+          format: date
+          description: Desired check-out date (YYYY-MM-DD)
+          example: "2026-06-08"
+        min_price:
+          type: number
+          description: Minimum total price in USD
+        max_price:
+          type: number
+          description: Maximum total price in USD
+        bedrooms:
+          type: integer
+          description: Minimum number of bedrooms required
+        property_type:
+          type: string
+          description: Maps to resort brand filter (partial match)
+          example: "Marriott"
+        amenities:
+          type: array
+          items:
+            type: string
+          description: Required amenities — all must be present
+          example: ["pool", "beachfront"]
+        max_guests:
+          type: integer
+          description: Minimum guest capacity required (maps to sleeps column)
+        flexible_dates:
+          type: boolean
+          description: If true, date filters are relaxed
+          default: false
+
+    SearchResult:
+      type: object
+      properties:
+        listing_id:
+          type: string
+          format: uuid
+        property_name:
+          type: string
+        location:
+          type: string
+          example: "Orlando, FL"
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        price:
+          type: number
+          description: Total price in USD
+        bedrooms:
+          type: integer
+        bathrooms:
+          type: number
+        sleeps:
+          type: integer
+        brand:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+        image_url:
+          type: string
+          nullable: true
+        resort_name:
+          type: string
+          nullable: true
+        resort_rating:
+          type: number
+          nullable: true
+        resort_amenities:
+          type: array
+          items:
+            type: string
+        unit_type_name:
+          type: string
+          nullable: true
+        square_footage:
+          type: number
+          nullable: true
+
+    VoiceSearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+        total_count:
+          type: integer
+        search_params:
+          $ref: '#/components/schemas/VoiceSearchRequest'
+
+    TextChatRequest:
+      type: object
+      required: [message, conversationHistory, context]
+      properties:
+        message:
+          type: string
+          description: User's chat message
+        conversationHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum: [user, assistant, system]
+              content:
+                type: string
+          description: Previous messages in the conversation
+        context:
+          type: string
+          description: Page context for system prompt selection
+          enum: [rentals, property-detail, bidding, general]
+
+    # ─── Payment Schemas ─────────────────────────────────────────────
+    CreateCheckoutRequest:
+      type: object
+      required: [listingId]
+      properties:
+        listingId:
+          type: string
+          format: uuid
+          description: Listing to book
+        guestCount:
+          type: integer
+          description: Number of guests
+          default: 1
+        specialRequests:
+          type: string
+          description: Special requests from the renter
+
+    CreateCheckoutResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Stripe Checkout session URL for redirect
+        booking_id:
+          type: string
+          format: uuid
+          description: Created booking record ID
+        session_id:
+          type: string
+          description: Stripe checkout session ID
+
+    VerifyPaymentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        status:
+          type: string
+          description: Booking status after verification
+          example: "confirmed"
+        message:
+          type: string
+          description: Human-readable result message
+        escrow:
+          type: object
+          nullable: true
+          properties:
+            deadline:
+              type: string
+              format: date-time
+              description: Owner confirmation deadline
+            amount:
+              type: number
+              description: Escrow held amount
+
+    # ─── Payout Schemas ──────────────────────────────────────────────
+    CreateConnectResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        url:
+          type: string
+          format: uri
+          nullable: true
+          description: Stripe Connect onboarding URL (null if already complete)
+        account_id:
+          type: string
+          description: Stripe connected account ID
+        already_complete:
+          type: boolean
+          description: Whether account is already fully onboarded
+
+    CreatePayoutResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        transfer_id:
+          type: string
+          description: Stripe Transfer ID
+        amount:
+          type: number
+          description: Payout amount in USD
+        destination:
+          type: string
+          description: Destination Stripe account ID
+
+    # ─── Cancellation Schemas ────────────────────────────────────────
+    ProcessCancellationRequest:
+      type: object
+      required: [bookingId, reason, cancelledBy]
+      properties:
+        bookingId:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          description: Cancellation reason text
+        cancelledBy:
+          type: string
+          enum: [renter, owner]
+          description: Who initiated the cancellation
+
+    ProcessCancellationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        refund_amount:
+          type: number
+          description: Amount refunded to renter in USD
+        refund_reference:
+          type: string
+          nullable: true
+          description: Stripe refund ID
+        policy:
+          type: string
+          description: Cancellation policy applied
+          example: "moderate"
+        days_until_checkin:
+          type: integer
+          description: Days between cancellation and check-in
+        cancelled_by:
+          type: string
+          enum: [renter, owner]
+
+    # ─── Dispute Schemas ─────────────────────────────────────────────
+    ProcessDisputeRequest:
+      type: object
+      required: [disputeId, refundAmount, status]
+      properties:
+        disputeId:
+          type: string
+          format: uuid
+        refundAmount:
+          type: number
+          description: Amount to refund (can be 0 for no-refund resolution)
+        resolutionNotes:
+          type: string
+          description: Admin notes on the resolution
+        status:
+          type: string
+          description: Resolution status
+          example: "resolved_full_refund"
+
+    ProcessDisputeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        disputeId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        refundAmount:
+          type: number
+        refundReference:
+          type: string
+          nullable: true
+          description: Stripe refund ID (null if amount was 0)
+
+    # ─── Escrow Schemas ──────────────────────────────────────────────
+    EscrowReleaseResponse:
+      type: object
+      properties:
+        released:
+          type: integer
+          description: Number of escrows released
+        payouts_initiated:
+          type: integer
+          description: Number of Stripe payouts initiated
+        skipped:
+          type: integer
+          description: Number of escrows skipped (hold period not elapsed)
+        errors:
+          type: array
+          items:
+            type: string
+          description: Error messages for failed escrows (empty if all succeeded)
+
+    # ─── Notification Schemas ────────────────────────────────────────
+    SendEmailRequest:
+      type: object
+      required: [to, subject, html]
+      properties:
+        to:
+          type: string
+          format: email
+          description: Recipient email address
+        subject:
+          type: string
+          description: Email subject line
+        html:
+          type: string
+          description: Email body as HTML
+        type:
+          type: string
+          enum: [welcome, password-reset, verification, notification, contact]
+          description: Email type for logging/observability
+
+    SendEmailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          nullable: true
+          description: Resend API response data
+
+    ContactFormRequest:
+      type: object
+      required: [name, email, subject, message]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        subject:
+          type: string
+        message:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+          description: Authenticated user ID (optional)
+
+    ApprovalEmailRequest:
+      type: object
+      required: [user_id, action]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: Recipient user UUID
+        action:
+          type: string
+          enum: [approved, rejected]
+        rejection_reason:
+          type: string
+          description: Explanation if rejected
+        email_type:
+          type: string
+          enum: [user_approval, role_upgrade]
+          description: Context for template selection
+        requested_role:
+          type: string
+          description: Role that was requested
+          example: "property_owner"
+
+    BookingReminderRequest:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum:
+            - new_booking
+            - confirmation_reminder
+            - deadline_urgent
+            - checkin_reminder
+            - owner_confirmation_request
+            - owner_extension_notification
+            - owner_confirmation_timeout
+          description: Notification type
+        bookingConfirmationId:
+          type: string
+          format: uuid
+          description: Booking confirmation record ID (for booking-related types)
+        checkinConfirmationId:
+          type: string
+          format: uuid
+          description: Checkin confirmation record ID (for checkin_reminder)
+
+    VerificationNotificationRequest:
+      type: object
+      required: [ownerEmail, status]
+      properties:
+        ownerEmail:
+          type: string
+          format: email
+        ownerName:
+          type: string
+        status:
+          type: string
+          enum: [approved, rejected]
+        trustLevel:
+          type: string
+          enum: [new, verified, trusted, premium]
+          description: Owner's trust level
+        rejectionReason:
+          type: string
+          description: Reason for rejection
+
+    # ─── Marketplace Schemas ─────────────────────────────────────────
+    MatchTravelResponse:
+      type: object
+      properties:
+        matched_count:
+          type: integer
+          description: Number of travelers notified
+        notified_traveler_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: UUIDs of notified travelers
+
+    # ─── GDPR Schemas ────────────────────────────────────────────────
+    UserDataExport:
+      type: object
+      properties:
+        export_metadata:
+          type: object
+          properties:
+            exported_at:
+              type: string
+              format: date-time
+            user_id:
+              type: string
+              format: uuid
+            email:
+              type: string
+              format: email
+            format:
+              type: string
+              example: "JSON"
+            version:
+              type: string
+              example: "1.0"
+        profile:
+          type: object
+          description: User profile data
+        account:
+          type: object
+          properties:
+            email:
+              type: string
+            created_at:
+              type: string
+            last_sign_in_at:
+              type: string
+            email_confirmed_at:
+              type: string
+        roles:
+          type: array
+          items:
+            type: object
+        memberships:
+          type: array
+          items:
+            type: object
+        bookings:
+          type: array
+          items:
+            type: object
+        properties:
+          type: array
+          items:
+            type: object
+        listings:
+          type: array
+          items:
+            type: object
+        bids:
+          type: array
+          items:
+            type: object
+        travel_requests:
+          type: array
+          items:
+            type: object
+        travel_proposals:
+          type: array
+          items:
+            type: object
+        notification_preferences:
+          type: array
+          items:
+            type: object
+        voice_search_history:
+          type: array
+          items:
+            type: object
+        favorites:
+          type: array
+          items:
+            type: object
+        disputes:
+          type: array
+          items:
+            type: object
+        cancellation_requests:
+          type: array
+          items:
+            type: object
+
+    DeleteAccountRequest:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          enum: [request, cancel, execute]
+          description: Deletion lifecycle action
+        reason:
+          type: string
+          description: Reason for deletion (only for "request" action)
+
+    DeleteAccountResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        action:
+          type: string
+          enum: [deletion_requested, deletion_cancelled, account_deleted]
+        scheduled_for:
+          type: string
+          format: date-time
+          description: Deletion scheduled date (only for "request" action)
+          nullable: true
+        grace_period_days:
+          type: integer
+          description: Grace period in days (only for "request" action)
+          nullable: true
+
+    # ─── Data Schemas ────────────────────────────────────────────────
+    IndustryNewsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              source:
+                type: string
+              url:
+                type: string
+                format: uri
+              publishedAt:
+                type: string
+                format: date-time
+              category:
+                type: string
+                enum: [industry, regulatory, market, technology]
+              summary:
+                type: string
+        cached:
+          type: boolean
+        demo:
+          type: boolean
+          description: Whether fallback data was used
+
+    MacroIndicatorsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+              value:
+                type: number
+              previousValue:
+                type: number
+              unit:
+                type: string
+                example: "index"
+              source:
+                type: string
+              updatedAt:
+                type: string
+                format: date-time
+              trend:
+                type: string
+                enum: [up, down, flat]
+              sparklineData:
+                type: array
+                items:
+                  type: number
+                description: Last 6 data points
+        cached:
+          type: boolean
+
+    AirDNAResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            destinations:
+              type: array
+              items:
+                type: object
+                properties:
+                  destination:
+                    type: string
+                  marketAvgPrice:
+                    type: number
+                  ravAvgPrice:
+                    type: number
+                  occupancyRate:
+                    type: number
+                  demandScore:
+                    type: number
+            isDemo:
+              type: boolean
+            updatedAt:
+              type: string
+              format: date-time
+        cached:
+          type: boolean
+
+    STRResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            metrics:
+              type: array
+              items:
+                type: object
+                properties:
+                  label:
+                    type: string
+                  ravValue:
+                    type: number
+                  marketValue:
+                    type: number
+                  unit:
+                    type: string
+            isDemo:
+              type: boolean
+            updatedAt:
+              type: string
+              format: date-time
+        cached:
+          type: boolean
+
+    # ─── Admin Schemas ───────────────────────────────────────────────
+    SeedManagerRequest:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          enum: [setup, wipe_layer_2, wipe_layer_3, wipe_all, status]
+          description: Seed management action
+        layer:
+          type: integer
+          enum: [2, 3]
+          description: Specific layer to target
+
+    SeedManagerResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [success, error]
+        action:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          description: Action-specific details (counts, created records, etc.)
+
+    DeadlineRemindersResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        emailsSent:
+          type: integer
+          description: Total emails sent
+        urgentReminders:
+          type: integer
+          description: Reminders sent with less than 6 hours remaining
+        standardReminders:
+          type: integer
+          description: Reminders sent with 6+ hours remaining
+        expiryWarningsSent:
+          type: integer
+          description: Travel request expiry warnings sent
+
+    # ─── Common Schemas ──────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "An unexpected error occurred"
+
+  responses:
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Too many requests. Please try again later."
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until rate limit resets
+
+    BadRequest:
+      description: Invalid request body or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    SupabaseJWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Supabase Auth JWT token obtained after user login.
+        Include as `Authorization: Bearer <token>` header.
