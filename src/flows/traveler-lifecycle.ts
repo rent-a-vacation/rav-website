@@ -40,9 +40,21 @@ export const travelerLifecycle: FlowDefinition = {
       route: '/destinations',
       label: 'Explore Destinations',
       component: 'Destinations',
-      description: 'Browse featured vacation destinations by region and state',
+      description: 'Browse featured vacation destinations by region and state with dynamic listing counts',
       branches: [
-        { condition: 'Select destination', targetStepId: 'search_listings', label: 'Search in destination' },
+        { condition: 'Select destination', targetStepId: 'destination_detail', label: 'Drill into destination' },
+        { condition: 'Search all listings', targetStepId: 'search_listings', label: 'Search all' },
+      ],
+    },
+    {
+      id: 'destination_detail',
+      route: '/destinations/:destinationSlug',
+      label: 'Destination Detail',
+      component: 'DestinationDetail',
+      description: 'Browse cities within a destination with listing counts, or view city-filtered listings',
+      branches: [
+        { condition: 'Select city', targetStepId: 'search_listings', label: 'Browse city listings' },
+        { condition: 'View all destination listings', targetStepId: 'search_listings', label: 'All listings' },
       ],
     },
     {

@@ -45,6 +45,7 @@ const UserJourneys = lazy(() => import("./pages/UserJourneys"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const ApiDocs = lazy(() => import("./pages/ApiDocs"));
+const DestinationDetail = lazy(() => import("./pages/DestinationDetail"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -159,6 +160,8 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/destinations" element={<Destinations />} />
+            <Route path="/destinations/:destinationSlug" element={<Suspense fallback={<PageLoadingFallback />}><DestinationDetail /></Suspense>} />
+            <Route path="/destinations/:destinationSlug/:citySlug" element={<Suspense fallback={<PageLoadingFallback />}><DestinationDetail /></Suspense>} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
