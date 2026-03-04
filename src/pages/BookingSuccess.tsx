@@ -8,6 +8,8 @@ import { CheckCircle2, ArrowLeft, Calendar, MapPin, Users, Loader2, XCircle, Mai
 import { format } from "date-fns";
 import type { Booking, Listing, Property } from "@/types/database";
 import CancelBookingDialog from "@/components/booking/CancelBookingDialog";
+import { computeBookingTimeline } from "@/lib/bookingTimeline";
+import { BookingTimeline } from "@/components/booking/BookingTimeline";
 
 interface BookingWithDetails extends Booking {
   listing: Listing & { property: Property };
@@ -189,39 +191,20 @@ const BookingSuccess = () => {
           </CardContent>
         </Card>
 
-        {/* What Happens Next */}
+        {/* Booking Timeline */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-base">What Happens Next</CardTitle>
+            <CardTitle className="text-base">Your Booking Journey</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <Mail className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Confirmation Email</p>
-                <p className="text-sm text-muted-foreground">
-                  Check your inbox for booking details and receipt.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Owner Confirmation</p>
-                <p className="text-sm text-muted-foreground">
-                  The property owner will confirm your reservation with the resort (usually within 48 hours).
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Check-in Details</p>
-                <p className="text-sm text-muted-foreground">
-                  You'll receive check-in instructions before your arrival date.
-                </p>
-              </div>
-            </div>
+          <CardContent>
+            <BookingTimeline
+              steps={computeBookingTimeline({
+                status: booking.status,
+                created_at: booking.created_at,
+                check_in_date: booking.listing?.check_in_date,
+                check_out_date: booking.listing?.check_out_date,
+              })}
+            />
           </CardContent>
         </Card>
 

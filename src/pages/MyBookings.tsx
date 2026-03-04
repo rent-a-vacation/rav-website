@@ -14,9 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, DollarSign, Ban, ExternalLink, AlertTriangle, MessageCircle, CheckCircle, Clock, RefreshCw, Star } from "lucide-react";
+import { Calendar, MapPin, Users, DollarSign, Ban, ExternalLink, AlertTriangle, MessageCircle, CheckCircle, Clock, RefreshCw, Star, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import type { Booking, BookingStatus, Listing, Property } from "@/types/database";
+import { computeBookingTimeline } from "@/lib/bookingTimeline";
+import { BookingTimeline } from "@/components/booking/BookingTimeline";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface DisputeInfo {
   id: string;
@@ -250,6 +253,43 @@ const MyBookings = () => {
               </div>
             </div>
           </div>
+
+          {/* Compact Timeline */}
+          {booking.status !== "cancelled" && listing && (
+            <div className="py-1">
+              <BookingTimeline
+                steps={computeBookingTimeline({
+                  status: booking.status,
+                  created_at: booking.created_at,
+                  check_in_date: listing.check_in_date,
+                  check_out_date: listing.check_out_date,
+                  hasReview: reviewedBookingIds.has(booking.id),
+                })}
+                compact
+              />
+            </div>
+          )}
+
+          {/* Expandable Full Timeline */}
+          {listing && (
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <ChevronDown className="h-3 w-3" />
+                Timeline details
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-2">
+                <BookingTimeline
+                  steps={computeBookingTimeline({
+                    status: booking.status,
+                    created_at: booking.created_at,
+                    check_in_date: listing.check_in_date,
+                    check_out_date: listing.check_out_date,
+                    hasReview: reviewedBookingIds.has(booking.id),
+                  })}
+                />
+              </CollapsibleContent>
+            </Collapsible>
+          )}
 
           {/* Guest Count & Total */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
