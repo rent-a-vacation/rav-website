@@ -323,7 +323,7 @@ const ListProperty = () => {
 
       // 3. Clear draft + navigate
       clearDraft();
-      navigate("/owner-dashboard?tab=listings");
+      navigate("/owner-dashboard?tab=my-listings");
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

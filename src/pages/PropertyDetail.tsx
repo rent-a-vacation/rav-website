@@ -511,7 +511,7 @@ const PropertyDetail = () => {
                       className="w-full mb-4"
                       size="lg"
                       variant="outline"
-                      onClick={() => navigate("/owner-dashboard?tab=listings")}
+                      onClick={() => navigate("/owner-dashboard?tab=my-listings")}
                     >
                       <Settings className="w-4 h-4 mr-2" />
                       This is your listing — Manage in Dashboard
