@@ -21,6 +21,7 @@ import {
   Search,
 } from 'lucide-react';
 import { computeRenterOverview, getCheckInCountdown } from '@/lib/renterDashboard';
+import { SavedSearchesList } from '@/components/SavedSearchesList';
 
 // Lazy-load heavy sub-pages
 const MyBookings = lazy(() => import('./MyBookings'));
@@ -254,6 +255,17 @@ const RenterDashboard = () => {
                       </Link>
                     </Button>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Saved Searches */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Saved Searches</CardTitle>
+                  <CardDescription>Pick up where you left off</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SavedSearchesList />
                 </CardContent>
               </Card>
             </TabsContent>

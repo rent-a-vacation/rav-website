@@ -56,6 +56,7 @@ import { PostRequestCTA } from "@/components/bidding/PostRequestCTA";
 import { calculateNights } from "@/lib/pricing";
 import { sortListings, SORT_LABELS, type SortOption } from "@/lib/listingSort";
 import { CompareListingsDialog } from "@/components/CompareListingsDialog";
+import { SaveSearchButton } from "@/components/SaveSearchButton";
 import { Checkbox } from "@/components/ui/checkbox";
 const ITEMS_PER_PAGE = 6;
 
@@ -412,6 +413,18 @@ const Rentals = () => {
               >
                 {compareMode ? "Exit Compare" : "Compare"}
               </Button>
+              <SaveSearchButton
+                criteria={{
+                  searchQuery: searchQuery.trim() || undefined,
+                  minPrice: minPrice || undefined,
+                  maxPrice: maxPrice || undefined,
+                  minGuests: minGuests || undefined,
+                  minBedrooms: minBedrooms || undefined,
+                  brandFilter: brandFilter || undefined,
+                  dateFrom: dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
+                  dateTo: dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
+                }}
+              />
               <span className="text-sm text-muted-foreground">
                 {filteredListings.length} {filteredListings.length === 1 ? "property" : "properties"} found
               </span>
@@ -844,6 +857,12 @@ const Rentals = () => {
                           </span>
                         )}
                         <ListingFairValueBadge listingId={listing.id} />
+                        {(listing as Record<string, unknown>).previous_nightly_rate &&
+                          Number((listing as Record<string, unknown>).previous_nightly_rate) > pricePerNight && (
+                          <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-700 border-green-200">
+                            Price dropped!
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         <Users className="w-3 h-3 inline mr-1" />
