@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import type { VacationClubBrand, Resort, ResortUnitType } from "@/types/database";
 import { supabase } from "@/lib/supabase";
+import { PricingSuggestion } from "@/components/owner/PricingSuggestion";
 import { useAuth } from "@/hooks/useAuth";
 import { RoleUpgradeDialog } from "@/components/RoleUpgradeDialog";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
@@ -715,6 +716,11 @@ const ListProperty = () => {
                     <p className="text-sm text-muted-foreground mt-1">
                       Set your own price — you control your earnings
                     </p>
+                    <PricingSuggestion
+                      currentRate={parseFloat(nightlyRate) || 0}
+                      brand={selectedBrand || undefined}
+                      location={location || undefined}
+                    />
                   </div>
 
                   {/* Cleaning fee */}
