@@ -34,7 +34,7 @@ const ALL_SETTING_KEYS = [
 ];
 
 export function useSystemSettings(): SystemSettings {
-  const { isRavTeam } = useAuth();
+  const { isRavTeam, isRavAdmin } = useAuth();
   const [platformStaffOnly, setPlatformStaffOnly] = useState(true);
   const [requireUserApproval, setRequireUserApproval] = useState(true);
   const [autoApproveRoleUpgrades, setAutoApproveRoleUpgrades] = useState(false);
@@ -110,8 +110,8 @@ export function useSystemSettings(): SystemSettings {
     key: string,
     value: Record<string, unknown>
   ) => {
-    if (!isRavTeam()) {
-      throw new Error("Only RAV team can update system settings");
+    if (!isRavAdmin()) {
+      throw new Error("Only RAV admins can update system settings");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
