@@ -57,11 +57,15 @@ const IS_DEV = import.meta.env.VITE_SUPABASE_URL?.includes("oukbxqnlxnkainnligfz
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { user, isRavTeam, hasRole, isLoading: authLoading } = useAuth();
+  const { user, isRavTeam, isRavAdmin, hasRole, isLoading: authLoading } = useAuth();
   const [pendingCount, setPendingCount] = useState(0);
   const [roleRequestCount, setRoleRequestCount] = useState(0);
 
-  const activeTab = searchParams.get("tab") || "overview";
+  const ADMIN_ONLY_TABS = ['financials', 'tax', 'payouts', 'memberships', 'settings', 'voice', 'dev-tools'];
+
+  const requestedTab = searchParams.get("tab") || "overview";
+  // Redirect staff away from admin-only tabs
+  const activeTab = (!isRavAdmin() && ADMIN_ONLY_TABS.includes(requestedTab)) ? "overview" : requestedTab;
   const initialSearch = searchParams.get("search") || "";
 
   const setActiveTab = (tab: string) => {
@@ -208,18 +212,24 @@ const AdminDashboard = () => {
               <FileCheck className="h-4 w-4" />
               <span className="hidden sm:inline">Verifications</span>
             </TabsTrigger>
-            <TabsTrigger value="financials" className="gap-2">
-              <DollarSign className="h-4 w-4" />
-              <span className="hidden sm:inline">Financials</span>
-            </TabsTrigger>
-            <TabsTrigger value="tax" className="gap-2">
-              <Receipt className="h-4 w-4" />
-              <span className="hidden sm:inline">Tax & 1099</span>
-            </TabsTrigger>
-            <TabsTrigger value="payouts" className="gap-2">
-              <Wallet className="h-4 w-4" />
-              <span className="hidden sm:inline">Payouts</span>
-            </TabsTrigger>
+            {isRavAdmin() && (
+              <TabsTrigger value="financials" className="gap-2">
+                <DollarSign className="h-4 w-4" />
+                <span className="hidden sm:inline">Financials</span>
+              </TabsTrigger>
+            )}
+            {isRavAdmin() && (
+              <TabsTrigger value="tax" className="gap-2">
+                <Receipt className="h-4 w-4" />
+                <span className="hidden sm:inline">Tax & 1099</span>
+              </TabsTrigger>
+            )}
+            {isRavAdmin() && (
+              <TabsTrigger value="payouts" className="gap-2">
+                <Wallet className="h-4 w-4" />
+                <span className="hidden sm:inline">Payouts</span>
+              </TabsTrigger>
+            )}
             <TabsTrigger value="users" className="gap-2">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Users</span>
@@ -233,19 +243,25 @@ const AdminDashboard = () => {
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="memberships" className="gap-2">
-              <Crown className="h-4 w-4" />
-              <span className="hidden sm:inline">Memberships</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="gap-2">
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </TabsTrigger>
-            <TabsTrigger value="voice" className="gap-2">
-              <Mic className="h-4 w-4" />
-              <span className="hidden sm:inline">Voice</span>
-            </TabsTrigger>
-            {IS_DEV && (
+            {isRavAdmin() && (
+              <TabsTrigger value="memberships" className="gap-2">
+                <Crown className="h-4 w-4" />
+                <span className="hidden sm:inline">Memberships</span>
+              </TabsTrigger>
+            )}
+            {isRavAdmin() && (
+              <TabsTrigger value="settings" className="gap-2">
+                <Settings className="h-4 w-4" />
+                <span className="hidden sm:inline">Settings</span>
+              </TabsTrigger>
+            )}
+            {isRavAdmin() && (
+              <TabsTrigger value="voice" className="gap-2">
+                <Mic className="h-4 w-4" />
+                <span className="hidden sm:inline">Voice</span>
+              </TabsTrigger>
+            )}
+            {IS_DEV && isRavAdmin() && (
               <TabsTrigger value="dev-tools" className="gap-2">
                 <Wrench className="h-4 w-4" />
                 <span className="hidden sm:inline">Dev Tools</span>
@@ -300,19 +316,25 @@ const AdminDashboard = () => {
             <AdminVerifications />
           </TabsContent>
 
-          <TabsContent value="financials">
-            <AdminFinancials />
-          </TabsContent>
+          {isRavAdmin() && (
+            <TabsContent value="financials">
+              <AdminFinancials />
+            </TabsContent>
+          )}
 
-          <TabsContent value="tax">
-            <AdminTaxReporting />
-          </TabsContent>
+          {isRavAdmin() && (
+            <TabsContent value="tax">
+              <AdminTaxReporting />
+            </TabsContent>
+          )}
 
-          <TabsContent value="payouts">
-            <AdminPayouts
-              onNavigateToEntity={navigateToEntity}
-            />
-          </TabsContent>
+          {isRavAdmin() && (
+            <TabsContent value="payouts">
+              <AdminPayouts
+                onNavigateToEntity={navigateToEntity}
+              />
+            </TabsContent>
+          )}
 
           <TabsContent value="users">
             <AdminUsers
@@ -327,19 +349,25 @@ const AdminDashboard = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="memberships">
-            <AdminMemberships />
-          </TabsContent>
+          {isRavAdmin() && (
+            <TabsContent value="memberships">
+              <AdminMemberships />
+            </TabsContent>
+          )}
 
-          <TabsContent value="settings">
-            <SystemSettings />
-          </TabsContent>
+          {isRavAdmin() && (
+            <TabsContent value="settings">
+              <SystemSettings />
+            </TabsContent>
+          )}
 
-          <TabsContent value="voice">
-            <VoiceControls />
-          </TabsContent>
+          {isRavAdmin() && (
+            <TabsContent value="voice">
+              <VoiceControls />
+            </TabsContent>
+          )}
 
-          {IS_DEV && (
+          {IS_DEV && isRavAdmin() && (
             <TabsContent value="dev-tools">
               <DevTools />
             </TabsContent>

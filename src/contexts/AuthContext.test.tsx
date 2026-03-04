@@ -320,6 +320,105 @@ describe("AuthContext", () => {
     });
   });
 
+  describe("isRavAdmin", () => {
+    function setupWithRoles(roles: string[]) {
+      const user = mockUser();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mockOnAuthStateChange.mockImplementation((callback: (...args: any[]) => void) => {
+        callback("SIGNED_IN", {
+          user,
+          access_token: "token",
+          refresh_token: "refresh",
+          expires_in: 3600,
+          token_type: "bearer",
+        });
+        return { data: { subscription: { unsubscribe: vi.fn() } } };
+      });
+
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            user,
+            access_token: "token",
+            refresh_token: "refresh",
+            expires_in: 3600,
+            token_type: "bearer",
+          },
+        },
+        error: null,
+      });
+
+      // Mock profiles table (maybeSingle) and user_roles table
+      mockFrom.mockImplementation((table: string) => {
+        if (table === "user_roles") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockResolvedValue({
+                data: roles.map((r) => ({ role: r })),
+                error: null,
+              }),
+            }),
+          };
+        }
+        // profiles table
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+            }),
+          }),
+        };
+      });
+    }
+
+    it("returns true for rav_admin role", async () => {
+      setupWithRoles(["rav_admin"]);
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => expect(result.current.isRavAdmin()).toBe(true));
+    });
+
+    it("returns true for rav_owner role", async () => {
+      setupWithRoles(["rav_owner"]);
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => expect(result.current.isRavAdmin()).toBe(true));
+    });
+
+    it("returns false for rav_staff role", async () => {
+      setupWithRoles(["rav_staff"]);
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: createWrapper(),
+      });
+
+      // Wait for roles to load, then check
+      await waitFor(() => expect(result.current.isRavTeam()).toBe(true));
+      expect(result.current.isRavAdmin()).toBe(false);
+    });
+
+    it("returns false for non-RAV roles", async () => {
+      setupWithRoles(["renter"]);
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      // Wait a tick for roles to propagate
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await waitFor(() => expect(result.current.hasRole("renter" as any)).toBe(true));
+      expect(result.current.isRavAdmin()).toBe(false);
+    });
+  });
+
   describe("resendVerificationEmail", () => {
     it("calls supabase.auth.resend with correct params", async () => {
       mockResend.mockResolvedValue({ error: null });

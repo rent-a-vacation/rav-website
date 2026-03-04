@@ -24,6 +24,7 @@ interface AuthContextType {
   // Role checks
   hasRole: (role: AppRole) => boolean;
   isRavTeam: () => boolean;
+  isRavAdmin: () => boolean;
   isPropertyOwner: () => boolean;
   isRenter: () => boolean;
   isEmailVerified: () => boolean;
@@ -215,6 +216,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return roles.some((r) => ['rav_owner', 'rav_admin', 'rav_staff'].includes(r));
   };
 
+  const isRavAdmin = (): boolean => hasRole('rav_admin') || hasRole('rav_owner');
+
   const isPropertyOwner = (): boolean => hasRole('property_owner');
 
   const isRenter = (): boolean => hasRole('renter');
@@ -245,6 +248,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         clearPasswordRecovery,
         hasRole,
         isRavTeam,
+        isRavAdmin,
         isPropertyOwner,
         isRenter,
         isEmailVerified,

@@ -84,6 +84,7 @@ export function mockAuthContext(overrides: Record<string, unknown> = {}) {
     clearPasswordRecovery: vi.fn(),
     hasRole: (role: AppRole) => roles.includes(role),
     isRavTeam: () => false,
+    isRavAdmin: () => false,
     isPropertyOwner: () => false,
     isRenter: () => true,
     isEmailVerified: () => true,
