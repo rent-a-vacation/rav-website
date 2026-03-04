@@ -45,6 +45,10 @@ import { FairValueCard } from "@/components/fair-value/FairValueCard";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewSummary from "@/components/reviews/ReviewSummary";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
+import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
+import { OwnerProfileCard } from "@/components/OwnerProfileCard";
+import { InquiryDialog } from "@/components/InquiryDialog";
+import { useInquiryCount } from "@/hooks/useListingInquiries";
 
 const BRAND_LABELS: Record<string, string> = {
   hilton_grand_vacations: "Hilton Grand Vacations",
@@ -68,6 +72,7 @@ const PropertyDetail = () => {
   const [inspiredRequestOpen, setInspiredRequestOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
+  const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false);
 
   // Auth
   const { user } = useAuth();
@@ -132,6 +137,9 @@ const PropertyDetail = () => {
   const isBiddable = listing?.open_for_bidding &&
     listing?.bidding_ends_at &&
     !isPast(new Date(listing.bidding_ends_at));
+
+  // Inquiry count for social proof
+  const { data: inquiryCount = 0 } = useInquiryCount(listing?.id);
   const favCount = id ? (favoritesCount.get(id) || 0) : 0;
   const freshnessLabel = listing ? getFreshnessLabel(listing.created_at) : null;
   const popularityLabel = getPopularityLabel(favCount);
@@ -420,13 +428,11 @@ const PropertyDetail = () => {
               </div>
 
               {/* Cancellation Policy */}
-              <div className="mb-8 bg-card rounded-xl p-6 shadow-card">
-                <h2 className="font-display text-xl font-semibold text-foreground mb-2">
-                  Cancellation Policy
-                </h2>
-                <p className="text-muted-foreground capitalize">
-                  {listing.cancellation_policy.replace("_", " ")}
-                </p>
+              <div className="mb-8">
+                <CancellationPolicyDetail
+                  policy={listing.cancellation_policy}
+                  checkInDate={listing.check_in_date}
+                />
               </div>
 
               {/* Guest Reviews */}
@@ -512,7 +518,7 @@ const PropertyDetail = () => {
                       className="w-full mb-4"
                       size="lg"
                       variant="outline"
-                      onClick={() => navigate("/owner-dashboard?tab=listings")}
+                      onClick={() => navigate("/owner-dashboard?tab=my-listings")}
                     >
                       <Settings className="w-4 h-4 mr-2" />
                       This is your listing — Manage in Dashboard
@@ -595,6 +601,30 @@ const PropertyDetail = () => {
                     </>
                   )}
                 </div>
+
+                {/* Owner Profile + Ask a Question */}
+                {listing.owner_id && !isOwnListing && (
+                  <div className="space-y-3">
+                    <OwnerProfileCard ownerId={listing.owner_id} />
+                    {user && (
+                      <div className="bg-card rounded-2xl p-4 shadow-card text-center space-y-2">
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => setInquiryDialogOpen(true)}
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Ask the Owner a Question
+                        </Button>
+                        {inquiryCount > 0 && (
+                          <p className="text-xs text-muted-foreground">
+                            {inquiryCount} traveler{inquiryCount !== 1 ? 's' : ''} asked about this listing
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Trust Indicators */}
                 <div className="bg-card rounded-2xl p-5 shadow-card space-y-3">
@@ -776,6 +806,17 @@ const PropertyDetail = () => {
           listing={listing}
           open={inspiredRequestOpen}
           onOpenChange={setInspiredRequestOpen}
+        />
+      )}
+
+      {/* Inquiry Dialog */}
+      {listing && user && !isOwnListing && (
+        <InquiryDialog
+          open={inquiryDialogOpen}
+          onOpenChange={setInquiryDialogOpen}
+          listingId={listing.id}
+          ownerId={listing.owner_id}
+          propertyName={displayName}
         />
       )}
 

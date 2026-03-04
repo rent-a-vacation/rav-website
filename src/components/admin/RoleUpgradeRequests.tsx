@@ -25,7 +25,6 @@ import {
   useApproveRoleUpgrade,
   useRejectRoleUpgrade,
 } from "@/hooks/useRoleUpgrade";
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { ROLE_LABELS } from "@/types/database";
 
@@ -41,19 +40,13 @@ export function RoleUpgradeRequests() {
   }>({ open: false, requestId: null });
   const [rejectionReason, setRejectionReason] = useState("");
 
-  const handleApprove = async (requestId: string, userId: string) => {
-    await approveUpgrade.mutateAsync(requestId);
-
-    // Send approval email (non-blocking)
-    supabase.functions.invoke("send-approval-email", {
-      body: {
-        user_id: userId,
-        action: "approved",
-        email_type: "role_upgrade",
-        requested_role: "property_owner",
-      },
-    }).catch((err) => {
-      console.error("Email send error:", err);
+  const handleApprove = async (request: typeof pendingRequests extends (infer T)[] | undefined ? T : never) => {
+    await approveUpgrade.mutateAsync({
+      id: request.id,
+      user_id: request.user_id,
+      user_email: request.user?.email,
+      user_name: request.user?.full_name || undefined,
+      requested_role: request.requested_role,
     });
   };
 
@@ -132,7 +125,7 @@ export function RoleUpgradeRequests() {
                 <Button
                   size="sm"
                   variant="default"
-                  onClick={() => handleApprove(request.id, request.user_id)}
+                  onClick={() => handleApprove(request)}
                   disabled={approveUpgrade.isPending || rejectUpgrade.isPending}
                 >
                   {approveUpgrade.isPending ? (

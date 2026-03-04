@@ -33,6 +33,7 @@ const ExecutiveDashboard = lazy(() => import("./pages/ExecutiveDashboard"));
 const BiddingMarketplace = lazy(() => import("./pages/BiddingMarketplace"));
 const MyBidsDashboard = lazy(() => import("./pages/MyBidsDashboard"));
 const MyBookings = lazy(() => import("./pages/MyBookings"));
+const RenterDashboard = lazy(() => import("./pages/RenterDashboard"));
 const AccountSettings = lazy(() => import("./pages/AccountSettings"));
 const TravelerCheckin = lazy(() => import("./pages/TravelerCheckin"));
 const Documentation = lazy(() => import("./pages/Documentation"));
@@ -44,6 +45,8 @@ const MaintenanceFeeCalculator = lazy(() => import("./pages/MaintenanceFeeCalcul
 const UserJourneys = lazy(() => import("./pages/UserJourneys"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const ApiDocs = lazy(() => import("./pages/ApiDocs"));
+const DestinationDetail = lazy(() => import("./pages/DestinationDetail"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -158,6 +161,8 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/destinations" element={<Destinations />} />
+            <Route path="/destinations/:destinationSlug" element={<Suspense fallback={<PageLoadingFallback />}><DestinationDetail /></Suspense>} />
+            <Route path="/destinations/:destinationSlug/:citySlug" element={<Suspense fallback={<PageLoadingFallback />}><DestinationDetail /></Suspense>} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
@@ -177,10 +182,14 @@ const App = () => (
             <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/booking-success" element={<ProtectedRoute><BookingSuccess /></ProtectedRoute>} />
             <Route path="/bidding" element={<ProtectedRoute><BiddingMarketplace /></ProtectedRoute>} />
-            <Route path="/my-bids" element={<ProtectedRoute><MyBidsDashboard /></ProtectedRoute>} />
-            <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
+            <Route path="/my-trips" element={<ProtectedRoute><RenterDashboard /></ProtectedRoute>} />
+            <Route path="/my-bids" element={<Navigate to="/my-trips?tab=offers" replace />} />
+            <Route path="/my-bookings" element={<Navigate to="/my-trips?tab=bookings" replace />} />
             <Route path="/account" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
             <Route path="/checkin" element={<ProtectedRoute><TravelerCheckin /></ProtectedRoute>} />
+
+            {/* Internal tools */}
+            <Route path="/api-docs" element={<ApiDocs />} />
 
             {/* Legacy routes - redirect to proper sections */}
             <Route path="/deals" element={<Navigate to="/rentals" replace />} />

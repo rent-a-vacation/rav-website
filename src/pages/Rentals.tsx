@@ -55,6 +55,9 @@ import { ListingFairValueBadge } from "@/components/fair-value/ListingFairValueB
 import { PostRequestCTA } from "@/components/bidding/PostRequestCTA";
 import { calculateNights } from "@/lib/pricing";
 import { sortListings, SORT_LABELS, type SortOption } from "@/lib/listingSort";
+import { CompareListingsDialog } from "@/components/CompareListingsDialog";
+import { SaveSearchButton } from "@/components/SaveSearchButton";
+import { Checkbox } from "@/components/ui/checkbox";
 const ITEMS_PER_PAGE = 6;
 
 // Brand enum to display label mapping
@@ -117,6 +120,11 @@ const Rentals = () => {
   const [minBedrooms, setMinBedrooms] = useState("");
   const [brandFilter, setBrandFilter] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("newest");
+
+  // Compare mode
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareIds, setCompareIds] = useState<Set<string>>(new Set());
+  const [compareDialogOpen, setCompareDialogOpen] = useState(false);
 
   // Auth state for voice search gating
   const { user, isPropertyOwner, isRavTeam } = useAuth();
@@ -395,6 +403,28 @@ const Rentals = () => {
               </Button>
             </div>
             <div className="flex items-center gap-4">
+              <Button
+                variant={compareMode ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setCompareMode(!compareMode);
+                  if (compareMode) setCompareIds(new Set());
+                }}
+              >
+                {compareMode ? "Exit Compare" : "Compare"}
+              </Button>
+              <SaveSearchButton
+                criteria={{
+                  searchQuery: searchQuery.trim() || undefined,
+                  minPrice: minPrice || undefined,
+                  maxPrice: maxPrice || undefined,
+                  minGuests: minGuests || undefined,
+                  minBedrooms: minBedrooms || undefined,
+                  brandFilter: brandFilter || undefined,
+                  dateFrom: dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
+                  dateTo: dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
+                }}
+              />
               <span className="text-sm text-muted-foreground">
                 {filteredListings.length} {filteredListings.length === 1 ? "property" : "properties"} found
               </span>
@@ -732,6 +762,30 @@ const Rentals = () => {
                         )}
                       </Badge>
                     )}
+                    {compareMode && (
+                      <div
+                        className="absolute top-3 left-3 z-10"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <Checkbox
+                          checked={compareIds.has(listing.id)}
+                          onCheckedChange={(checked) => {
+                            setCompareIds((prev) => {
+                              const next = new Set(prev);
+                              if (checked && next.size < 3) {
+                                next.add(listing.id);
+                              } else {
+                                next.delete(listing.id);
+                              }
+                              return next;
+                            });
+                          }}
+                          disabled={!compareIds.has(listing.id) && compareIds.size >= 3}
+                          className="h-5 w-5 bg-white/90 border-2"
+                          aria-label="Select for comparison"
+                        />
+                      </div>
+                    )}
                     <button
                       onClick={(e) => {
                         e.preventDefault();
@@ -803,6 +857,12 @@ const Rentals = () => {
                           </span>
                         )}
                         <ListingFairValueBadge listingId={listing.id} />
+                        {(listing as Record<string, unknown>).previous_nightly_rate &&
+                          Number((listing as Record<string, unknown>).previous_nightly_rate) > pricePerNight && (
+                          <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-700 border-green-200">
+                            Price dropped!
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         <Users className="w-3 h-3 inline mr-1" />
@@ -849,6 +909,38 @@ const Rentals = () => {
           )}
         </div>
       </section>
+
+      {/* Compare floating bar */}
+      {compareMode && compareIds.size >= 2 && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-card border shadow-lg rounded-full px-6 py-3 flex items-center gap-4">
+          <span className="text-sm font-medium">{compareIds.size} selected</span>
+          <Button size="sm" onClick={() => setCompareDialogOpen(true)}>
+            Compare Now
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setCompareIds(new Set())}
+          >
+            Clear
+          </Button>
+        </div>
+      )}
+
+      {/* Compare Dialog */}
+      <CompareListingsDialog
+        listings={listings.filter((l) => compareIds.has(l.id))}
+        open={compareDialogOpen}
+        onOpenChange={setCompareDialogOpen}
+        onRemove={(id) => {
+          setCompareIds((prev) => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+          if (compareIds.size <= 2) setCompareDialogOpen(false);
+        }}
+      />
 
       <Footer />
 

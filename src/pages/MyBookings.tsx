@@ -14,9 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, DollarSign, Ban, ExternalLink, AlertTriangle, MessageCircle, CheckCircle, Clock, RefreshCw, Star } from "lucide-react";
+import { Calendar, MapPin, Users, DollarSign, Ban, ExternalLink, AlertTriangle, MessageCircle, CheckCircle, Clock, RefreshCw, Star, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import type { Booking, BookingStatus, Listing, Property } from "@/types/database";
+import { computeBookingTimeline } from "@/lib/bookingTimeline";
+import { BookingTimeline } from "@/components/booking/BookingTimeline";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface DisputeInfo {
   id: string;
@@ -56,7 +59,7 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
   completed: "Completed",
 };
 
-const MyBookings = () => {
+const MyBookings = ({ embedded }: { embedded?: boolean }) => {
   usePageMeta("My Bookings", "View and manage your vacation bookings on Rent-A-Vacation.");
   const { user } = useAuth();
   const [bookings, setBookings] = useState<BookingWithListing[]>([]);
@@ -251,6 +254,43 @@ const MyBookings = () => {
             </div>
           </div>
 
+          {/* Compact Timeline */}
+          {booking.status !== "cancelled" && listing && (
+            <div className="py-1">
+              <BookingTimeline
+                steps={computeBookingTimeline({
+                  status: booking.status,
+                  created_at: booking.created_at,
+                  check_in_date: listing.check_in_date,
+                  check_out_date: listing.check_out_date,
+                  hasReview: reviewedBookingIds.has(booking.id),
+                })}
+                compact
+              />
+            </div>
+          )}
+
+          {/* Expandable Full Timeline */}
+          {listing && (
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <ChevronDown className="h-3 w-3" />
+                Timeline details
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-2">
+                <BookingTimeline
+                  steps={computeBookingTimeline({
+                    status: booking.status,
+                    created_at: booking.created_at,
+                    check_in_date: listing.check_in_date,
+                    check_out_date: listing.check_out_date,
+                    hasReview: reviewedBookingIds.has(booking.id),
+                  })}
+                />
+              </CollapsibleContent>
+            </Collapsible>
+          )}
+
           {/* Guest Count & Total */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex items-center gap-2">
@@ -391,18 +431,16 @@ const MyBookings = () => {
     );
   };
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-
-      <main id="main-content" className="flex-1 pt-20 md:pt-24 pb-12 px-4">
-        <div className="container max-w-4xl mx-auto">
+  const content = (
+    <>
+          {!embedded && (
           <div className="mb-6">
             <h1 className="text-3xl font-bold">My Bookings</h1>
             <p className="text-muted-foreground mt-1">
               View and manage your vacation reservations.
             </p>
           </div>
+          )}
 
           {error && (
             <Card className="mb-6 border-destructive">
@@ -437,10 +475,6 @@ const MyBookings = () => {
               {renderBookingList(pastBookings)}
             </TabsContent>
           </Tabs>
-        </div>
-      </main>
-
-      <Footer />
 
       {reportBooking && (
         <ReportIssueDialog
@@ -500,6 +534,20 @@ const MyBookings = () => {
           resortName={reviewBooking.listing?.property?.resort_name || "Vacation Rental"}
         />
       )}
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
+      <main id="main-content" className="flex-1 pt-20 md:pt-24 pb-12 px-4">
+        <div className="container max-w-4xl mx-auto">
+          {content}
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

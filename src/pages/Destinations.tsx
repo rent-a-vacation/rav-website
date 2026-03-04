@@ -1,116 +1,53 @@
 import { Link } from "react-router-dom";
+import { useMemo } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useActiveListings } from "@/hooks/useListings";
+import { DESTINATIONS } from "@/lib/destinations";
 import { ArrowRight, MapPin } from "lucide-react";
 import keralaImage from "@/assets/kerala-backwaters.jpg";
 import utahImage from "@/assets/utah-arches.jpg";
 import yellowstoneImage from "@/assets/yellowstone.jpg";
 import jacksonvilleImage from "@/assets/jacksonville-beach.jpg";
 
-const destinations = [
-  {
-    name: "Hawaii",
-    country: "USA",
-    properties: 456,
-    image: keralaImage,
-    popular: ["Maui", "Oahu", "Big Island", "Kauai"],
-    featured: true,
-  },
-  {
-    name: "Florida",
-    country: "USA",
-    properties: 892,
-    image: jacksonvilleImage,
-    popular: ["Orlando", "Miami", "Tampa", "Jacksonville"],
-    featured: true,
-  },
-  {
-    name: "California",
-    country: "USA",
-    properties: 567,
-    image: utahImage,
-    popular: ["San Diego", "Palm Springs", "Lake Tahoe", "Napa Valley"],
-    featured: false,
-  },
-  {
-    name: "Mexico",
-    country: "North America",
-    properties: 345,
-    image: yellowstoneImage,
-    popular: ["Cancun", "Cabo San Lucas", "Puerto Vallarta", "Riviera Maya"],
-    featured: true,
-  },
-  {
-    name: "Caribbean",
-    country: "Islands",
-    properties: 234,
-    image: keralaImage,
-    popular: ["Aruba", "Jamaica", "Bahamas", "St. Maarten"],
-    featured: false,
-  },
-  {
-    name: "Colorado",
-    country: "USA",
-    properties: 189,
-    image: yellowstoneImage,
-    popular: ["Vail", "Breckenridge", "Aspen", "Steamboat Springs"],
-    featured: false,
-  },
-  {
-    name: "Arizona",
-    country: "USA",
-    properties: 156,
-    image: utahImage,
-    popular: ["Scottsdale", "Sedona", "Phoenix", "Tucson"],
-    featured: false,
-  },
-  {
-    name: "Nevada",
-    country: "USA",
-    properties: 201,
-    image: jacksonvilleImage,
-    popular: ["Las Vegas", "Lake Tahoe", "Reno"],
-    featured: false,
-  },
-  {
-    name: "South Carolina",
-    country: "USA",
-    properties: 145,
-    image: keralaImage,
-    popular: ["Myrtle Beach", "Hilton Head", "Charleston"],
-    featured: false,
-  },
-  {
-    name: "Utah",
-    country: "USA",
-    properties: 89,
-    image: utahImage,
-    popular: ["Park City", "St. George", "Moab"],
-    featured: false,
-  },
-  {
-    name: "Europe",
-    country: "International",
-    properties: 178,
-    image: yellowstoneImage,
-    popular: ["Spain", "Portugal", "Italy", "France"],
-    featured: false,
-  },
-  {
-    name: "Asia Pacific",
-    country: "International",
-    properties: 134,
-    image: keralaImage,
-    popular: ["Thailand", "Bali", "Fiji", "Australia"],
-    featured: false,
-  },
-];
+// Map destination slugs to images (reusing existing assets)
+const DEST_IMAGES: Record<string, string> = {
+  hawaii: keralaImage,
+  florida: jacksonvilleImage,
+  california: utahImage,
+  mexico: yellowstoneImage,
+  caribbean: keralaImage,
+  colorado: yellowstoneImage,
+  arizona: utahImage,
+  nevada: jacksonvilleImage,
+  'south-carolina': keralaImage,
+  utah: utahImage,
+};
 
 const Destinations = () => {
   usePageMeta('Top Destinations', 'Explore top vacation destinations with luxury resort stays at up to 70% off retail prices.');
-  const featuredDestinations = destinations.filter((d) => d.featured);
-  const allDestinations = destinations.filter((d) => !d.featured);
+
+  const { data: allListings } = useActiveListings();
+
+  // Compute dynamic listing counts per destination
+  const destCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    if (!allListings) return counts;
+    for (const dest of DESTINATIONS) {
+      const dv = dest.name.toLowerCase();
+      const count = allListings.filter((l) => {
+        const loc = (l.property?.resort?.location?.city || l.property?.location || '').toLowerCase();
+        const state = (l.property?.resort?.location?.state || '').toLowerCase();
+        return loc.includes(dv) || state.includes(dv) || (l.property?.resort?.resort_name || '').toLowerCase().includes(dv);
+      }).length;
+      counts.set(dest.slug, count);
+    }
+    return counts;
+  }, [allListings]);
+
+  const featuredDestinations = DESTINATIONS.filter((d) => d.featured);
+  const allDestinations = DESTINATIONS.filter((d) => !d.featured);
 
   return (
     <div className="min-h-screen bg-background">
@@ -136,45 +73,50 @@ const Destinations = () => {
             Featured Destinations
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredDestinations.map((dest, index) => (
-              <Link
-                key={index}
-                to={`/rentals?location=${encodeURIComponent(dest.name)}`}
-                className="group relative rounded-2xl overflow-hidden"
-                style={{ minHeight: "300px" }}
-              >
-                <img
-                  src={dest.image}
-                  alt={dest.name}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="flex items-center gap-1 text-white/70 text-sm mb-2">
-                    <MapPin className="w-4 h-4" />
-                    {dest.country}
+            {featuredDestinations.map((dest) => {
+              const count = destCounts.get(dest.slug) || 0;
+              return (
+                <Link
+                  key={dest.slug}
+                  to={`/destinations/${dest.slug}`}
+                  className="group relative rounded-2xl overflow-hidden"
+                  style={{ minHeight: "300px" }}
+                >
+                  <img
+                    src={DEST_IMAGES[dest.slug] || keralaImage}
+                    alt={dest.name}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <div className="flex items-center gap-1 text-white/70 text-sm mb-2">
+                      <MapPin className="w-4 h-4" />
+                      {dest.region}
+                    </div>
+                    <h3 className="font-display text-2xl font-bold text-white mb-2">
+                      {dest.name}
+                    </h3>
+                    <p className="text-white/80 mb-3">
+                      {count > 0 ? `${count} available listings` : 'Explore this destination'}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {dest.cities.slice(0, 3).map((city) => (
+                        <span
+                          key={city.slug}
+                          className="px-2 py-1 bg-white/20 rounded-full text-xs text-white"
+                        >
+                          {city.name}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 text-white group-hover:text-accent transition-colors">
+                      <span className="text-sm font-medium">Explore</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
-                  <h3 className="font-display text-2xl font-bold text-white mb-2">
-                    {dest.name}
-                  </h3>
-                  <p className="text-white/80 mb-3">{dest.properties} properties</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {dest.popular.slice(0, 3).map((place, i) => (
-                      <span
-                        key={i}
-                        className="px-2 py-1 bg-white/20 rounded-full text-xs text-white"
-                      >
-                        {place}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-2 text-white group-hover:text-accent transition-colors">
-                    <span className="text-sm font-medium">Explore</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -186,41 +128,46 @@ const Destinations = () => {
             All Destinations
           </h2>
           <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {allDestinations.map((dest, index) => (
-              <Link
-                key={index}
-                to={`/rentals?location=${encodeURIComponent(dest.name)}`}
-                className="bg-card rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all group"
-              >
-                <div className="h-40 overflow-hidden">
-                  <img
-                    src={dest.image}
-                    alt={dest.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-1 text-muted-foreground text-sm mb-1">
-                    <MapPin className="w-3 h-3" />
-                    {dest.country}
+            {allDestinations.map((dest) => {
+              const count = destCounts.get(dest.slug) || 0;
+              return (
+                <Link
+                  key={dest.slug}
+                  to={`/destinations/${dest.slug}`}
+                  className="bg-card rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all group"
+                >
+                  <div className="h-40 overflow-hidden">
+                    <img
+                      src={DEST_IMAGES[dest.slug] || keralaImage}
+                      alt={dest.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
-                  <h3 className="font-display font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                    {dest.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">{dest.properties} properties</p>
-                  <div className="flex flex-wrap gap-1 mt-3">
-                    {dest.popular.slice(0, 2).map((place, i) => (
-                      <span
-                        key={i}
-                        className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground"
-                      >
-                        {place}
-                      </span>
-                    ))}
+                  <div className="p-4">
+                    <div className="flex items-center gap-1 text-muted-foreground text-sm mb-1">
+                      <MapPin className="w-3 h-3" />
+                      {dest.region}
+                    </div>
+                    <h3 className="font-display font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                      {dest.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {count > 0 ? `${count} listings` : 'Coming soon'}
+                    </p>
+                    <div className="flex flex-wrap gap-1 mt-3">
+                      {dest.cities.slice(0, 2).map((city) => (
+                        <span
+                          key={city.slug}
+                          className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground"
+                        >
+                          {city.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

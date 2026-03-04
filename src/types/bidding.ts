@@ -34,7 +34,9 @@ export type NotificationType =
   // General
   | 'booking_confirmed'
   | 'payment_received'
-  | 'message_received';
+  | 'message_received'
+  // Role
+  | 'role_upgrade_approved';
 
 // ============================================================
 // LISTING BIDDING (Owner-initiated)

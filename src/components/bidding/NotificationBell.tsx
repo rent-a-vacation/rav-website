@@ -1,7 +1,10 @@
 // Notification Bell - Shows unread count and recent notifications
+// Uses Supabase Realtime instead of polling for instant updates
 
 import { useState } from 'react';
 import { useNotifications, useUnreadNotificationCount, useMarkNotificationRead, useMarkAllNotificationsRead } from '@/hooks/useBidding';
+import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -10,15 +13,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { 
-  Bell, 
-  Check, 
+import {
+  Bell,
+  Check,
   CheckCheck,
-  Gavel, 
-  MessageSquare, 
+  Gavel,
+  MessageSquare,
   CreditCard,
   Sparkles,
   Clock,
+  UserCheck,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import type { NotificationType } from '@/types/bidding';
@@ -37,14 +41,25 @@ const NOTIFICATION_ICONS: Record<NotificationType, React.ReactNode> = {
   booking_confirmed: <CreditCard className="h-4 w-4 text-success" />,
   payment_received: <CreditCard className="h-4 w-4 text-success" />,
   message_received: <MessageSquare className="h-4 w-4 text-primary" />,
+  role_upgrade_approved: <UserCheck className="h-4 w-4 text-success" />,
 };
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
   const { data: notifications, isLoading } = useNotifications(10);
   const { data: unreadCount } = useUnreadNotificationCount();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
+
+  // Realtime: instant notification updates via Supabase Realtime
+  useRealtimeSubscription({
+    table: 'notifications',
+    event: 'INSERT',
+    filter: user ? `user_id=eq.${user.id}` : undefined,
+    invalidateKeys: [['notifications'], ['notifications', 'unread-count']],
+    enabled: !!user,
+  });
 
   const handleNotificationClick = (notificationId: string, isRead: boolean) => {
     if (!isRead) {

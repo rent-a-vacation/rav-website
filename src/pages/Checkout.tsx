@@ -26,6 +26,7 @@ import {
 import type { Resort, ResortUnitType } from "@/types/database";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
+import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -402,10 +403,11 @@ const Checkout = () => {
                     </p>
 
                     <div className="pt-3 border-t">
-                      <h4 className="text-sm font-medium mb-1">Cancellation Policy</h4>
-                      <p className="text-xs text-muted-foreground capitalize">
-                        {listing.cancellation_policy.replace("_", " ")}
-                      </p>
+                      <CancellationPolicyDetail
+                        policy={listing.cancellation_policy}
+                        checkInDate={listing.check_in_date}
+                        compact
+                      />
                     </div>
                   </CardContent>
                 </Card>

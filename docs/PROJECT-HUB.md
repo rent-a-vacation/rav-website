@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 3, 2026 (Session 31: P0 UX — CTAs, Pricing, Language)
+> **Last Updated:** March 4, 2026 (Session 34: 8 issues — #104, #117, #155-#158, #163-#164)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -87,13 +87,13 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **451 automated tests** (63 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **574 automated tests** (80 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations deployed:** 001-035 on DEV, 001-023 on PROD
-- **Edge functions deployed:** 25 on DEV, 22 on PROD
+- **Migrations created:** 001-039 (036-039 pending deploy to DEV/PROD)
+- **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev branch:** PR #167 open → main (P0 UX: CTAs + pricing + language)
+- **dev and main:** PR pending (Session 33 + 34 work on dev)
 
 ### Session Handoff (Sessions 25-27, Feb 26-28)
 
@@ -129,6 +129,46 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Demo walkthrough document: docs/DEMO-WALKTHROUGH.md (comprehensive presentation script)
 - Tests: 409→451 (42 new)
 
+**Session 34 — 8 Issues: Realtime, UX Enhancements & Infrastructure (Mar 4):**
+- Closed #104 (Realtime Notifications): `useRealtimeSubscription` hook, replaced polling in NotificationBell (30s), BookingMessageThread (10s), unread counts (30s)
+- Closed #117 (Role Upgrade Notification): In-app notification + email on admin approval, Realtime auto-detection in RoleUpgradeDialog with celebration toast
+- Closed #155 (Owner Profiles): Migration 036 (`get_owner_profile_summary` RPC), OwnerProfileCard with avatar, verification badge, stats. Integrated into PropertyDetail sidebar
+- Closed #158 (Destination Browsing): 10 destinations/35 cities, DestinationDetail page with breadcrumbs and city drill-down, rewrote Destinations page with dynamic listing counts
+- Closed #164 (Renter Dashboard): `/my-trips` with 4 tabs (Overview, Bookings, Offers, Favorites), consolidated nav, saved searches section
+- Closed #157 (Pre-Booking Messaging): Migration 037 (listing_inquiries + inquiry_messages tables), InquiryDialog + InquiryThread, "Ask the Owner" button on PropertyDetail
+- Closed #156 (Saved Searches): Migration 038 (saved_searches table + price tracking columns), SaveSearchButton on Rentals, SavedSearchesList in RenterDashboard, price drop badge
+- Closed #163 (Idle Week Alerts): Migration 039 (alert tracking columns), `idle-listing-alerts` edge function (cron, max 50/run, 60d+30d thresholds), pure utilities
+- Created #172, #173, #174 (API docs follow-up: spec validation, edge-case schemas, public API design)
+- 30 new files, 22 modified files, 4 new migrations, 1 new edge function
+- Tests: 507→574 (+67 new, 80 test files)
+
+**Session 33b — OpenAPI Spec & Swagger UI (#171) (Mar 3):**
+- OpenAPI 3.0.3 spec for all 25 edge functions at `docs/api/openapi.yaml`
+- Swagger UI at `/api-docs` (admin-gated, CDN-loaded, no npm packages)
+- Audit script: `node scripts/generate-openapi.cjs --audit` — confirms 25/25 coverage
+- Tags: AI, Payments, Payouts, Cancellations, Disputes, Escrow, Notifications, Marketplace, GDPR, Data, Admin
+- New files: 6 created, 1 modified (App.tsx route only)
+- Tests: 507 (unchanged — docs-only, no new business logic)
+
+**Session 33 — UX Improvements: 5 Frontend-Only Issues (Mar 3):**
+- Closed #159 (Cancellation Policy): `CancellationPolicyDetail` component + `cancellationPolicy.ts` utility — color-coded refund rules with concrete deadlines. Integrated into PropertyDetail + Checkout.
+- Closed #161 (Booking Timeline): `BookingTimeline` component + `bookingTimeline.ts` — 5-step lifecycle progress (payment → owner confirm → details → check-in → review). Integrated into BookingSuccess + MyBookings (compact + expandable).
+- Closed #162 (Pricing Suggestions): `usePricingSuggestion` hook + `PricingSuggestion` component — market range bar from active listings by brand/location. Integrated into ListProperty + OwnerListings dialog.
+- Closed #160 (Compare Properties): `CompareListingsDialog` + `compareListings.ts` — side-by-side comparison (max 3) with "Best" badges. Compare mode toggle on Rentals page.
+- Closed #153 (Dashboard Consolidation): OwnerDashboard 11 tabs → 4 (Dashboard, My Listings, Bookings & Earnings, Account) with Collapsible sub-sections. Backwards-compatible TAB_REDIRECTS map for old URLs.
+- 12 new files, 9 modified files, flow manifest tab refs updated
+- PR #170 created (dev → main)
+- Tests: 462→507 (+45 new, 69 test files)
+
+**Session 32 — Staff Permissions (#119) (Mar 3):**
+- Closed #119 (rav_staff distinct permissions): Added `isRavAdmin()` helper to AuthContext (true for `rav_admin`/`rav_owner`, false for `rav_staff`)
+- Gated 7 sensitive admin tabs behind `isRavAdmin()`: financials, tax, payouts, memberships, settings, voice, dev-tools
+- Staff sees 10 operational tabs (overview, properties, listings, bookings, escrow, issues, disputes, verifications, users, approvals)
+- `useSystemSettings` mutation guard changed from `isRavTeam()` → `isRavAdmin()`
+- URL redirect: staff navigating to restricted tab via `?tab=financials` gets redirected to overview
+- PR #169 merged to main
+- Tests: 451→462 (+11 new, 4 isRavAdmin role checks + test infrastructure)
+
 **Session 31 — P0 UX: CTAs, Pricing Transparency, Marketplace Language (Mar 3):**
 - Closed #150 (Simplify CTAs): PropertyDetail collapsed 5 buttons → 1 primary "Book Now" + Collapsible "More booking options" with descriptions
 - Closed #151 (Pricing Transparency): Fee breakdown (base, 15% service fee, cleaning fee, total) on PropertyDetail + Checkout via `computeFeeBreakdown()`. Listing cards show `$X/night + fees`. FAQ bug fix: "3-5%" → "15%"
@@ -136,7 +176,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - 18 files changed across source, tests, flow manifests, docs (UserGuide, Documentation, HowItWorksPage, DEMO-WALKTHROUGH, ARCHITECTURE)
 - Created #165 (Owner Volume Discount — configurable commission tiers based on completed bookings)
 - Created #166 (Revisit membership tier value proposition beyond voice hours)
-- PR #167 open: P0 UX changes → main
+- PR #167 merged, PR #168 merged
 - Tests: 451 (unchanged — no new business logic)
 
 **Session 30 — Code Splitting, CI Fix & QA Strategy (Mar 2):**
@@ -168,7 +208,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Issue #63 marked `blocked` with resume instructions
 - PR #144 merged — dev and main in sync
 
-**Open pre-launch issues:** 4 remaining (#80 Legal review, #87 Launch checklist, #127 Business formation — blocked, #152 Owner Onboarding UX)
+**Open pre-launch issues:** 3 remaining (#80 Legal review, #87 Launch checklist, #127 Business formation — blocked)
 
 **Blocked dependency chain:**
 ```
@@ -187,7 +227,9 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 **Next recommended work (not blocked):**
 - #87 Launch readiness checklist
 - #80 Legal review of Terms/Privacy
-- Post-launch enhancements (#117 notifications, #119 staff permissions, #108 code splitting)
+- Deploy migrations 036-039 to Supabase DEV and PROD
+- Deploy `idle-listing-alerts` edge function
+- API docs follow-up (#172, #173, #174)
 
 ---
 
@@ -631,6 +673,6 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ---
 
-**Last updated:** February 28, 2026 (Session 27: Reviews, Messaging, Sort, Portfolio)
+**Last updated:** March 3, 2026 (Session 33b: OpenAPI Spec — #171)
 **Maintained by:** Sujit
 **Tracking:** [GitHub Issues](https://github.com/rent-a-vacation/rav-website/issues) · [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1) · [Milestones](https://github.com/rent-a-vacation/rav-website/milestones)

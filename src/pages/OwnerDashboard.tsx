@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Home,
   Building2,
@@ -28,6 +29,7 @@ import {
   FileText,
   X,
   Pencil,
+  ChevronDown,
 } from "lucide-react";
 import { usePublishDraft, loadDraft, clearDraft, type ListPropertyDraft } from "@/hooks/usePublishDraft";
 import { useToast } from "@/hooks/use-toast";
@@ -55,6 +57,23 @@ import { BidActivityFeed } from "@/components/owner-dashboard/BidActivityFeed";
 import { PricingIntelligence } from "@/components/owner-dashboard/PricingIntelligence";
 import { MaintenanceFeeTracker } from "@/components/owner-dashboard/MaintenanceFeeTracker";
 import PortfolioOverview from "@/components/owner-dashboard/PortfolioOverview";
+
+// Backwards-compatible redirect map: old tab values → new ones
+const TAB_REDIRECTS: Record<string, string> = {
+  overview: "dashboard",
+  properties: "my-listings",
+  listings: "my-listings",
+  proposals: "my-listings",
+  bookings: "bookings-earnings",
+  confirmations: "bookings-earnings",
+  earnings: "bookings-earnings",
+  payouts: "bookings-earnings",
+  portfolio: "dashboard",
+  verification: "account",
+  membership: "account",
+};
+
+const VALID_TABS = new Set(["dashboard", "my-listings", "bookings-earnings", "account"]);
 
 interface DashboardStats {
   totalProperties: number;
@@ -113,11 +132,20 @@ const OwnerDashboard = () => {
   const { data: ownerListingsData, isLoading: listingsDataLoading } = useOwnerListingsData();
   const { data: bidActivity, isLoading: bidActivityLoading } = useOwnerBidActivity();
 
-  const activeTab = searchParams.get("tab") || "overview";
+  const rawTab = searchParams.get("tab") || "dashboard";
+  const activeTab = VALID_TABS.has(rawTab) ? rawTab : (TAB_REDIRECTS[rawTab] || "dashboard");
 
-  const setActiveTab = (tab: string) => {
-    setSearchParams({ tab });
-  };
+  const setActiveTab = useCallback((tab: string) => {
+    const resolved = VALID_TABS.has(tab) ? tab : (TAB_REDIRECTS[tab] || "dashboard");
+    setSearchParams({ tab: resolved });
+  }, [setSearchParams]);
+
+  // Redirect old tab URLs
+  useEffect(() => {
+    if (rawTab !== activeTab) {
+      setSearchParams({ tab: activeTab }, { replace: true });
+    }
+  }, [rawTab, activeTab, setSearchParams]);
 
   // Redirect if not authorized
   useEffect(() => {
@@ -279,7 +307,7 @@ const OwnerDashboard = () => {
                 </p>
               </div>
             </div>
-            <Button onClick={() => setActiveTab("properties")} className="w-full sm:w-auto">
+            <Button onClick={() => setActiveTab("my-listings")} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               Add Property
             </Button>
@@ -290,55 +318,27 @@ const OwnerDashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="flex flex-wrap gap-1 h-auto w-full lg:w-auto lg:inline-grid lg:grid-cols-11">
-            <TabsTrigger value="overview" className="gap-2">
+          <TabsList className="grid w-full grid-cols-4 h-auto">
+            <TabsTrigger value="dashboard" className="gap-2">
               <Home className="h-4 w-4" />
-              <span className="hidden sm:inline">Overview</span>
+              <span className="hidden sm:inline">Dashboard</span>
             </TabsTrigger>
-            <TabsTrigger value="properties" className="gap-2">
+            <TabsTrigger value="my-listings" className="gap-2">
               <Building2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Properties</span>
+              <span className="hidden sm:inline">My Listings</span>
             </TabsTrigger>
-            <TabsTrigger value="listings" className="gap-2">
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Listings</span>
-            </TabsTrigger>
-            <TabsTrigger value="proposals" className="gap-2">
-              <MessageSquare className="h-4 w-4" />
-              <span className="hidden sm:inline">Proposals</span>
-            </TabsTrigger>
-            <TabsTrigger value="bookings" className="gap-2">
-              <Clock className="h-4 w-4" />
-              <span className="hidden sm:inline">Bookings</span>
-            </TabsTrigger>
-            <TabsTrigger value="confirmations" className="gap-2">
-              <FileCheck className="h-4 w-4" />
-              <span className="hidden sm:inline">Confirmations</span>
-            </TabsTrigger>
-            <TabsTrigger value="earnings" className="gap-2">
+            <TabsTrigger value="bookings-earnings" className="gap-2">
               <DollarSign className="h-4 w-4" />
-              <span className="hidden sm:inline">Earnings</span>
+              <span className="hidden sm:inline">Bookings & Earnings</span>
             </TabsTrigger>
-            <TabsTrigger value="payouts" className="gap-2">
-              <Wallet className="h-4 w-4" />
-              <span className="hidden sm:inline">Payouts</span>
-            </TabsTrigger>
-            <TabsTrigger value="portfolio" className="gap-2">
-              <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Portfolio</span>
-            </TabsTrigger>
-            <TabsTrigger value="verification" className="gap-2">
+            <TabsTrigger value="account" className="gap-2">
               <Shield className="h-4 w-4" />
-              <span className="hidden sm:inline">Verification</span>
-            </TabsTrigger>
-            <TabsTrigger value="membership" className="gap-2">
-              <Crown className="h-4 w-4" />
-              <span className="hidden sm:inline">Membership</span>
+              <span className="hidden sm:inline">Account</span>
             </TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="mt-6 space-y-6">
+          {/* ========== Dashboard Tab (Overview + Portfolio) ========== */}
+          <TabsContent value="dashboard" className="mt-6 space-y-6">
             {/* Draft publish banner */}
             {draft && draft.resortName && draft.checkInDate && (
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
@@ -392,23 +392,23 @@ const OwnerDashboard = () => {
               </div>
             )}
 
-            {/* Section 1: Headline Stats */}
+            {/* Headline Stats */}
             <OwnerHeadlineStats stats={dashStats} isLoading={dashStatsLoading} />
 
-            {/* Section 2: Earnings Timeline */}
+            {/* Earnings Timeline */}
             <EarningsTimeline
               data={earningsData}
               isLoading={earningsLoading}
               annualMaintenanceFees={dashStats?.annual_maintenance_fees ?? null}
             />
 
-            {/* Section 3 + 5: Listings + Pricing in 2-column grid */}
+            {/* Listings + Pricing */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <MyListingsTable listings={ownerListingsData} isLoading={listingsDataLoading} />
               <PricingIntelligence listings={ownerListingsData} isLoading={listingsDataLoading} />
             </div>
 
-            {/* Section 4 + 6: Bid Activity + Fee Tracker in 2-column grid */}
+            {/* Bid Activity + Fee Tracker */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <BidActivityFeed events={bidActivity} isLoading={bidActivityLoading} />
               <MaintenanceFeeTracker
@@ -417,7 +417,21 @@ const OwnerDashboard = () => {
               />
             </div>
 
-            {/* Owner Progress Tracker */}
+            {/* Portfolio */}
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  Portfolio
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <PortfolioOverview />
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Progress Tracker */}
             {!isLoading && (
               <Card>
                 <CardHeader className="pb-3">
@@ -431,7 +445,7 @@ const OwnerDashboard = () => {
                     const progressSteps = [
                       {
                         label: "Account Approved",
-                        done: true, // if they're on this page they're approved
+                        done: true,
                         cta: null,
                       },
                       {
@@ -443,7 +457,7 @@ const OwnerDashboard = () => {
                         label: "Listing Created",
                         done: (ownerListingsData?.length ?? 0) > 0,
                         cta: (ownerListingsData?.length ?? 0) === 0
-                          ? { label: "Create Listing", action: () => setActiveTab("listings") }
+                          ? { label: "Create Listing", action: () => setActiveTab("my-listings") }
                           : null,
                       },
                       {
@@ -501,72 +515,130 @@ const OwnerDashboard = () => {
             )}
           </TabsContent>
 
-          {/* Properties Tab */}
-          <TabsContent value="properties" className="mt-6">
-            <OwnerProperties />
+          {/* ========== My Listings Tab (Properties + Listings + Proposals) ========== */}
+          <TabsContent value="my-listings" className="mt-6 space-y-8">
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Building2 className="h-5 w-5 text-primary" />
+                  Properties
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerProperties />
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Listings
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerListings />
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  Proposals
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerProposals />
+              </CollapsibleContent>
+            </Collapsible>
           </TabsContent>
 
-          {/* Listings Tab */}
-          <TabsContent value="listings" className="mt-6">
-            <OwnerListings />
+          {/* ========== Bookings & Earnings Tab ========== */}
+          <TabsContent value="bookings-earnings" className="mt-6 space-y-8">
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-primary" />
+                  Bookings
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerBookings />
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <FileCheck className="h-5 w-5 text-primary" />
+                  Resort Confirmations
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerBookingConfirmations />
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <DollarSign className="h-5 w-5 text-primary" />
+                  Earnings
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerEarnings />
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Wallet className="h-5 w-5 text-primary" />
+                  Payouts
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerPayouts />
+              </CollapsibleContent>
+            </Collapsible>
           </TabsContent>
 
-          {/* Proposals Tab */}
-          <TabsContent value="proposals" className="mt-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold">Your Proposals</h2>
-              <p className="text-muted-foreground">
-                Proposals you've submitted for traveler requests
-              </p>
-            </div>
-            <OwnerProposals />
-          </TabsContent>
+          {/* ========== Account Tab (Verification + Membership) ========== */}
+          <TabsContent value="account" className="mt-6 space-y-8">
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Verification
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerVerification />
+              </CollapsibleContent>
+            </Collapsible>
 
-          {/* Bookings Tab */}
-          <TabsContent value="bookings" className="mt-6">
-            <OwnerBookings />
-          </TabsContent>
-
-          {/* Confirmations Tab */}
-          <TabsContent value="confirmations" className="mt-6">
-            <OwnerBookingConfirmations />
-          </TabsContent>
-
-          {/* Earnings Tab */}
-          <TabsContent value="earnings" className="mt-6">
-            <OwnerEarnings />
-          </TabsContent>
-
-          {/* Payouts Tab */}
-          <TabsContent value="payouts" className="mt-6">
-            <OwnerPayouts />
-          </TabsContent>
-
-          {/* Portfolio Tab */}
-          <TabsContent value="portfolio" className="mt-6">
-            <PortfolioOverview />
-          </TabsContent>
-
-          {/* Verification Tab */}
-          <TabsContent value="verification" className="mt-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold">Owner Verification</h2>
-              <p className="text-muted-foreground">
-                Verify your ownership to unlock more features and build trust
-              </p>
-            </div>
-            <OwnerVerification />
-          </TabsContent>
-
-          {/* Membership Tab */}
-          <TabsContent value="membership" className="mt-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold">Membership Plan</h2>
-              <p className="text-muted-foreground">
-                Your current plan, commission rate, voice quota, and listing limits
-              </p>
-            </div>
-            <MembershipPlans category="owner" />
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Crown className="h-5 w-5 text-primary" />
+                  Membership Plan
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <MembershipPlans category="owner" />
+              </CollapsibleContent>
+            </Collapsible>
           </TabsContent>
         </Tabs>
       </main>

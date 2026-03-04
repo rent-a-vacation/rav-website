@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, ShieldCheck, Gavel, Store, BarChart3, Calculator, BookOpen, Settings, GitBranch } from "lucide-react";
+import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, ShieldCheck, Gavel, Store, BarChart3, Calculator, BookOpen, Settings, GitBranch, Plane } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/bidding/NotificationBell";
@@ -153,15 +153,9 @@ const Header = () => {
                     <DropdownMenuSeparator />
                     
                     <DropdownMenuItem asChild>
-                      <Link to="/my-bookings" className="flex items-center gap-2 cursor-pointer">
-                        <BookOpen className="h-4 w-4" />
-                        My Bookings
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/my-bids" className="flex items-center gap-2 cursor-pointer">
-                        <Gavel className="h-4 w-4" />
-                        My Offers & Requests
+                      <Link to="/my-trips" className="flex items-center gap-2 cursor-pointer">
+                        <Plane className="h-4 w-4" />
+                        My Trips
                       </Link>
                     </DropdownMenuItem>
 
@@ -343,20 +337,12 @@ const Header = () => {
               <>
                 <div className="border-t border-border pt-4">
                   <Link
-                    to="/my-bookings"
+                    to="/my-trips"
                     className="flex items-center gap-2 text-foreground py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <BookOpen className="h-4 w-4" />
-                    My Bookings
-                  </Link>
-                  <Link
-                    to="/my-bids"
-                    className="flex items-center gap-2 text-foreground py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Gavel className="h-4 w-4" />
-                    My Offers & Requests
+                    <Plane className="h-4 w-4" />
+                    My Trips
                   </Link>
                   {isRavTeam() && (
                     <Link

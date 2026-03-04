@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Plus, Calendar, MapPin, Edit, Trash2, XCircle, Gavel, Eye, ShieldCheck, Building2 } from "lucide-react";
+import { PricingSuggestion } from "@/components/owner/PricingSuggestion";
 import { format, formatDistanceToNow, isPast } from "date-fns";
 import type { Property, Listing, ListingStatus, CancellationPolicy, Database } from "@/types/database";
 import { CANCELLATION_POLICY_LABELS, CANCELLATION_POLICY_DESCRIPTIONS } from "@/types/database";
@@ -497,6 +498,16 @@ const OwnerListings = () => {
                         <span>${formPricing.finalPrice.toLocaleString()}</span>
                       </div>
                     </div>
+                  ) : null;
+                })()}
+                {(() => {
+                  const priceProp = properties.find(p => p.id === formData.property_id);
+                  return priceProp ? (
+                    <PricingSuggestion
+                      currentRate={formData.nightly_rate}
+                      brand={priceProp.brand}
+                      location={priceProp.location}
+                    />
                   ) : null;
                 })()}
                 <p className="text-xs text-muted-foreground">
