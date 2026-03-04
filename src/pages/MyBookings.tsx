@@ -59,7 +59,7 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
   completed: "Completed",
 };
 
-const MyBookings = () => {
+const MyBookings = ({ embedded }: { embedded?: boolean }) => {
   usePageMeta("My Bookings", "View and manage your vacation bookings on Rent-A-Vacation.");
   const { user } = useAuth();
   const [bookings, setBookings] = useState<BookingWithListing[]>([]);
@@ -431,18 +431,16 @@ const MyBookings = () => {
     );
   };
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-
-      <main id="main-content" className="flex-1 pt-20 md:pt-24 pb-12 px-4">
-        <div className="container max-w-4xl mx-auto">
+  const content = (
+    <>
+          {!embedded && (
           <div className="mb-6">
             <h1 className="text-3xl font-bold">My Bookings</h1>
             <p className="text-muted-foreground mt-1">
               View and manage your vacation reservations.
             </p>
           </div>
+          )}
 
           {error && (
             <Card className="mb-6 border-destructive">
@@ -477,10 +475,6 @@ const MyBookings = () => {
               {renderBookingList(pastBookings)}
             </TabsContent>
           </Tabs>
-        </div>
-      </main>
-
-      <Footer />
 
       {reportBooking && (
         <ReportIssueDialog
@@ -540,6 +534,20 @@ const MyBookings = () => {
           resortName={reviewBooking.listing?.property?.resort_name || "Vacation Rental"}
         />
       )}
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
+      <main id="main-content" className="flex-1 pt-20 md:pt-24 pb-12 px-4">
+        <div className="container max-w-4xl mx-auto">
+          {content}
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

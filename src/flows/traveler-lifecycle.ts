@@ -143,10 +143,10 @@ export const travelerLifecycle: FlowDefinition = {
     },
     {
       id: 'my_bookings',
-      route: '/my-bookings',
-      label: 'My Bookings',
-      component: 'MyBookings',
-      description: 'Renter views all bookings (upcoming, past, cancelled) with status tracking, cancellation, and issue reporting',
+      route: '/my-trips',
+      label: 'My Trips',
+      component: 'RenterDashboard',
+      description: 'Unified renter dashboard: overview, bookings, offers & requests, favorites. Replaces separate My Bookings and My Bids pages.',
       tables: ['bookings', 'listings', 'properties', 'disputes'],
       branches: [
         { condition: 'Cancel booking', targetStepId: 'renter_cancellation', label: 'Cancel', edgeStyle: 'dashed' },

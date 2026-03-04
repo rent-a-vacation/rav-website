@@ -63,7 +63,7 @@ const STATUS_COLORS = {
   cancelled: 'bg-destructive',
 };
 
-const MyBidsDashboard = () => {
+const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
   const { user } = useAuth();
   const { data: myBids, isLoading: bidsLoading } = useMyBids();
   const { data: myRequests, isLoading: requestsLoading } = useMyTravelRequests();
@@ -87,16 +87,16 @@ const MyBidsDashboard = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      <section className="pt-24 pb-12">
-        <div className="container mx-auto px-4">
-          <h1 className="font-display text-3xl font-bold mb-2">My Offers & Requests</h1>
-          <p className="text-muted-foreground mb-8">
-            Track your offers, travel requests, and proposals
-          </p>
+  const tabsContent = (
+    <>
+          {!embedded && (
+            <>
+            <h1 className="font-display text-3xl font-bold mb-2">My Offers & Requests</h1>
+            <p className="text-muted-foreground mb-8">
+              Track your offers, travel requests, and proposals
+            </p>
+            </>
+          )}
 
           <Tabs defaultValue="bids" className="space-y-6">
             <TabsList>
@@ -387,8 +387,6 @@ const MyBidsDashboard = () => {
               )}
             </TabsContent>
           </Tabs>
-        </div>
-      </section>
 
       {/* Proposals Dialog */}
       {selectedRequest && (
@@ -398,7 +396,19 @@ const MyBidsDashboard = () => {
           onOpenChange={setProposalsDialogOpen}
         />
       )}
+    </>
+  );
 
+  if (embedded) return tabsContent;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <section className="pt-24 pb-12">
+        <div className="container mx-auto px-4">
+          {tabsContent}
+        </div>
+      </section>
       <Footer />
     </div>
   );
