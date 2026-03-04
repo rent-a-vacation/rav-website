@@ -24,8 +24,13 @@ import {
   Crown,
   Percent,
   Wallet,
-  BarChart3
+  BarChart3,
+  FileText,
+  X,
+  Pencil,
 } from "lucide-react";
+import { usePublishDraft, loadDraft, clearDraft, type ListPropertyDraft } from "@/hooks/usePublishDraft";
+import { useToast } from "@/hooks/use-toast";
 import type { Property, Listing, Booking, ListingStatus, BookingStatus } from "@/types/database";
 import { RoleUpgradeDialog } from "@/components/RoleUpgradeDialog";
 import { useLatestRequestForRole } from "@/hooks/useRoleUpgrade";
@@ -76,6 +81,31 @@ const OwnerDashboard = () => {
 
   const pendingRequest = useLatestRequestForRole('property_owner');
   const { effectiveRate, tierName, loading: commissionLoading } = useOwnerCommission();
+  const { publishDraft: publishDraftFn, isPending: isPublishing } = usePublishDraft();
+  const { toast } = useToast();
+
+  // Draft banner state
+  const [draft, setDraft] = useState<ListPropertyDraft | null>(() => loadDraft());
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+
+  async function handlePublishDraft() {
+    if (!user || !draft) return;
+    const result = await publishDraftFn(user.id, draft);
+    if (result.success) {
+      setDraft(null);
+      toast({ title: "Listing created!", description: "Your property and listing have been submitted for review." });
+      setActiveTab("listings");
+    } else {
+      toast({ title: "Error", description: result.error || "Failed to publish draft", variant: "destructive" });
+    }
+  }
+
+  function handleDiscardDraft() {
+    clearDraft();
+    setDraft(null);
+    setShowDiscardConfirm(false);
+    toast({ title: "Draft discarded" });
+  }
 
   // Phase 17: Owner Dashboard data hooks
   const { data: dashStats, isLoading: dashStatsLoading } = useOwnerDashboardStats();
@@ -309,6 +339,59 @@ const OwnerDashboard = () => {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-6 space-y-6">
+            {/* Draft publish banner */}
+            {draft && draft.resortName && draft.checkInDate && (
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <FileText className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm">You have a draft listing ready to publish</p>
+                      <p className="text-sm text-muted-foreground truncate">
+                        {draft.resortName} · {draft.checkInDate} — {draft.checkOutDate} · ${draft.nightlyRate}/night
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button
+                      size="sm"
+                      onClick={handlePublishDraft}
+                      disabled={isPublishing}
+                    >
+                      {isPublishing ? "Publishing..." : "Publish Listing"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => navigate("/list-property")}
+                    >
+                      <Pencil className="w-3 h-3 mr-1" />
+                      Edit
+                    </Button>
+                    {showDiscardConfirm ? (
+                      <div className="flex items-center gap-1">
+                        <Button size="sm" variant="destructive" onClick={handleDiscardDraft}>
+                          Discard
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setShowDiscardConfirm(false)}>
+                          Keep
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => setShowDiscardConfirm(true)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Section 1: Headline Stats */}
             <OwnerHeadlineStats stats={dashStats} isLoading={dashStatsLoading} />
 
@@ -334,41 +417,85 @@ const OwnerDashboard = () => {
               />
             </div>
 
-            {/* Getting Started Guide — shown when no properties */}
-            {stats.totalProperties === 0 && !isLoading && (
-              <Card className="border-dashed">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
-                    Getting Started
+            {/* Owner Progress Tracker */}
+            {!isLoading && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    Your Progress
                   </CardTitle>
-                  <CardDescription>
-                    Follow these steps to start earning from your vacation club membership
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ol className="list-decimal list-inside space-y-3 text-muted-foreground">
-                    <li>
-                      <span className="font-medium text-foreground">Add your property</span> —
-                      Enter details about your vacation club membership
-                    </li>
-                    <li>
-                      <span className="font-medium text-foreground">Create a listing</span> —
-                      Select available dates and set your asking price
-                    </li>
-                    <li>
-                      <span className="font-medium text-foreground">Get approved</span> —
-                      Our team will review and publish your listing
-                    </li>
-                    <li>
-                      <span className="font-medium text-foreground">Receive bookings</span> —
-                      Renters book and pay through our platform
-                    </li>
-                    <li>
-                      <span className="font-medium text-foreground">Get paid</span> —
-                      Receive your payout after the stay is complete
-                    </li>
-                  </ol>
+                  {(() => {
+                    const progressSteps = [
+                      {
+                        label: "Account Approved",
+                        done: true, // if they're on this page they're approved
+                        cta: null,
+                      },
+                      {
+                        label: "Property Added",
+                        done: stats.totalProperties > 0,
+                        cta: stats.totalProperties === 0 ? { label: "Add Property", action: () => navigate("/list-property") } : null,
+                      },
+                      {
+                        label: "Listing Created",
+                        done: (ownerListingsData?.length ?? 0) > 0,
+                        cta: (ownerListingsData?.length ?? 0) === 0
+                          ? { label: "Create Listing", action: () => setActiveTab("listings") }
+                          : null,
+                      },
+                      {
+                        label: "Listing Live",
+                        done: stats.activeListings > 0,
+                        cta: null,
+                      },
+                      {
+                        label: "First Booking",
+                        done: stats.completedBookings > 0 || stats.pendingBookings > 0,
+                        cta: null,
+                      },
+                    ];
+
+                    return (
+                      <div className="flex items-center gap-0 overflow-x-auto pb-1">
+                        {progressSteps.map((step, i) => (
+                          <div key={i} className="flex items-center">
+                            <div className="flex flex-col items-center min-w-[80px]">
+                              <div
+                                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${
+                                  step.done
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {step.done ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
+                              </div>
+                              <span className="text-[11px] text-muted-foreground mt-1 text-center leading-tight">
+                                {step.label}
+                              </span>
+                              {step.cta && (
+                                <button
+                                  className="text-[10px] text-primary hover:underline mt-0.5"
+                                  onClick={step.cta.action}
+                                >
+                                  {step.cta.label}
+                                </button>
+                              )}
+                            </div>
+                            {i < progressSteps.length - 1 && (
+                              <div
+                                className={`w-8 h-0.5 mx-0.5 mt-[-20px] ${
+                                  step.done ? "bg-primary" : "bg-muted"
+                                }`}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
             )}

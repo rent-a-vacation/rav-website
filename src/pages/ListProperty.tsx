@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -16,15 +16,14 @@ import { ResortSelector } from "@/components/resort/ResortSelector";
 import { UnitTypeSelector } from "@/components/resort/UnitTypeSelector";
 import { ResortPreview } from "@/components/resort/ResortPreview";
 import {
-  Home,
   Calendar,
   DollarSign,
   CheckCircle,
   ArrowRight,
+  ArrowLeft,
   Shield,
   Users,
   Star,
-  Upload,
   MapPin,
 } from "lucide-react";
 import type { VacationClubBrand, Resort, ResortUnitType } from "@/types/database";
@@ -32,6 +31,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { RoleUpgradeDialog } from "@/components/RoleUpgradeDialog";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
+import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 
 const benefits = [
   {
@@ -64,21 +64,16 @@ const steps = [
   },
   {
     number: 2,
-    title: "Add Property Details",
-    description: "Select your resort, unit type, and we'll auto-fill the details.",
+    title: "Add Property & Set Pricing",
+    description: "Select your resort, choose dates, and set your nightly rate — all in one form.",
   },
   {
     number: 3,
-    title: "Verify Ownership",
-    description: "Upload proof of ownership for verification (usually takes 24-48 hours).",
+    title: "Review & Approval",
+    description: "Our team reviews your listing. You can save a draft while waiting for approval.",
   },
   {
     number: 4,
-    title: "Set Pricing & Availability",
-    description: "Choose your nightly rate and mark available dates on your calendar.",
-  },
-  {
-    number: 5,
     title: "Start Earning",
     description: "Your listing goes live and renters can book your property!",
   },
@@ -98,6 +93,8 @@ type ResortSummary = Pick<
 
 const DRAFT_STORAGE_KEY = "rav-list-property-draft";
 
+type CancellationPolicy = 'flexible' | 'moderate' | 'strict' | 'super_strict' | '';
+
 interface ListPropertyDraft {
   formStep: number;
   selectedBrand: VacationClubBrand | "";
@@ -108,6 +105,12 @@ interface ListPropertyDraft {
   bathrooms: string;
   sleeps: string;
   description: string;
+  // Listing fields
+  checkInDate: string;
+  checkOutDate: string;
+  nightlyRate: string;
+  cleaningFee: string;
+  cancellationPolicy: CancellationPolicy;
 }
 
 function saveDraft(draft: ListPropertyDraft) {
@@ -154,12 +157,28 @@ const ListProperty = () => {
   const [sleeps, setSleeps] = useState(draft?.sleeps || "");
   const [description, setDescription] = useState(draft?.description || "");
 
-  // Clear draft once user is an owner and navigates to dashboard
-  useEffect(() => {
-    if (user && isPropertyOwner() && draft) {
-      clearDraft();
-    }
-  }, [user, isPropertyOwner]);
+  // Listing fields
+  const [checkInDate, setCheckInDate] = useState(draft?.checkInDate || "");
+  const [checkOutDate, setCheckOutDate] = useState(draft?.checkOutDate || "");
+  const [nightlyRate, setNightlyRate] = useState(draft?.nightlyRate || "");
+  const [cleaningFee, setCleaningFee] = useState(draft?.cleaningFee || "");
+  const [cancellationPolicy, setCancellationPolicy] = useState<CancellationPolicy>(draft?.cancellationPolicy || "");
+
+  // Submission state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Pricing preview
+  const pricingPreview = useMemo(() => {
+    const rate = parseFloat(nightlyRate);
+    const cleaning = parseFloat(cleaningFee) || 0;
+    if (!rate || !checkInDate || !checkOutDate) return null;
+    const nights = calculateNights(checkInDate, checkOutDate);
+    if (nights <= 0) return null;
+    return { ...computeFeeBreakdown(rate, nights, cleaning), nights };
+  }, [nightlyRate, cleaningFee, checkInDate, checkOutDate]);
+
+  const todayStr = new Date().toISOString().split("T")[0];
 
   // Auto-save draft on form changes
   useEffect(() => {
@@ -174,9 +193,14 @@ const ListProperty = () => {
         bathrooms,
         sleeps,
         description,
+        checkInDate,
+        checkOutDate,
+        nightlyRate,
+        cleaningFee,
+        cancellationPolicy,
       });
     }
-  }, [formStep, selectedBrand, isManualEntry, resortName, location, bedrooms, bathrooms, sleeps, description]);
+  }, [formStep, selectedBrand, isManualEntry, resortName, location, bedrooms, bathrooms, sleeps, description, checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy]);
 
   // Load full resort details when selected
   useEffect(() => {
@@ -236,6 +260,76 @@ const ListProperty = () => {
       ? resortName && location && bedrooms && bathrooms && sleeps
       : selectedResort && selectedUnitType;
 
+  const canProceedStep2 =
+    checkInDate && checkOutDate && nightlyRate && cancellationPolicy &&
+    calculateNights(checkInDate, checkOutDate) > 0;
+
+  async function handleSubmit() {
+    if (!user || !isPropertyOwner()) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // 1. Create property
+      const propertyData = {
+        owner_id: user.id,
+        brand: selectedBrand || "other",
+        resort_name: resortName,
+        location,
+        description,
+        bedrooms: parseInt(bedrooms) || 1,
+        bathrooms: parseInt(bathrooms) || 1,
+        sleeps: parseInt(sleeps) || 2,
+        amenities: [] as string[],
+      };
+
+      const { data: newProperty, error: propError } = await supabase
+        .from("properties")
+        .insert(propertyData as never)
+        .select("id")
+        .single();
+
+      if (propError || !newProperty) throw new Error(propError?.message || "Failed to create property");
+
+      // 2. Create listing
+      const rate = parseFloat(nightlyRate);
+      const cleaning = parseFloat(cleaningFee) || 0;
+      const nights = calculateNights(checkInDate, checkOutDate);
+      const ownerPrice = Math.round(rate * nights);
+      const ravMarkup = Math.round(ownerPrice * 0.15);
+      const finalPrice = ownerPrice + ravMarkup;
+
+      const listingData = {
+        property_id: (newProperty as { id: string }).id,
+        owner_id: user.id,
+        check_in_date: checkInDate,
+        check_out_date: checkOutDate,
+        nightly_rate: rate,
+        cleaning_fee: cleaning,
+        resort_fee: 0,
+        owner_price: ownerPrice,
+        rav_markup: ravMarkup,
+        final_price: finalPrice,
+        cancellation_policy: cancellationPolicy,
+        status: "pending_approval",
+      };
+
+      const { error: listError } = await supabase
+        .from("listings")
+        .insert(listingData as never);
+
+      if (listError) throw new Error(listError.message);
+
+      // 3. Clear draft + navigate
+      clearDraft();
+      navigate("/owner-dashboard?tab=listings");
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -254,15 +348,10 @@ const ListProperty = () => {
             variant="hero"
             size="xl"
             onClick={() => {
-              if (user) {
-                clearDraft();
-                navigate("/owner-dashboard?tab=properties");
-              } else {
-                document.getElementById('listing-form')?.scrollIntoView({ behavior: 'smooth' });
-              }
+              document.getElementById('listing-form')?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            {user ? "Go to Owner Dashboard" : "List Your Property Free"}
+            {draft ? "Continue Your Listing" : "List Your Property Free"}
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
@@ -348,27 +437,35 @@ const ListProperty = () => {
 
             <div className="bg-card rounded-2xl shadow-card-hover p-8">
               {/* Progress */}
-              <div className="flex items-center justify-between mb-8">
-                {[1, 2, 3].map((step) => (
-                  <div key={step} className="flex items-center">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                        formStep >= step
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {formStep > step ? <CheckCircle className="w-5 h-5" /> : step}
-                    </div>
-                    {step < 3 && (
-                      <div
-                        className={`w-24 h-1 mx-2 ${
-                          formStep > step ? "bg-primary" : "bg-muted"
-                        }`}
-                      />
-                    )}
-                  </div>
-                ))}
+              <div className="mb-8">
+                <div className="flex items-center justify-between">
+                  {(["Property", "Dates & Pricing", "Review"] as const).map((label, i) => {
+                    const step = i + 1;
+                    return (
+                      <div key={step} className="flex items-center">
+                        <div className="flex flex-col items-center">
+                          <div
+                            className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
+                              formStep >= step
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {formStep > step ? <CheckCircle className="w-5 h-5" /> : step}
+                          </div>
+                          <span className="text-xs text-muted-foreground mt-1 hidden sm:block">{label}</span>
+                        </div>
+                        {step < 3 && (
+                          <div
+                            className={`w-24 h-1 mx-2 ${
+                              formStep > step ? "bg-primary" : "bg-muted"
+                            }`}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Step 1: Property Information with Resort Selection */}
@@ -563,98 +660,246 @@ const ListProperty = () => {
                 </div>
               )}
 
-              {/* Step 2: Photos */}
+              {/* Step 2: Dates & Pricing */}
               {formStep === 2 && (
                 <div className="space-y-6">
-                  <h3 className="font-semibold text-lg mb-4">Photos</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Upload photos of your property. You can add images after creating
-                    your property from the Owner Dashboard.
-                  </p>
-                  <div className="border-2 border-dashed border-border rounded-xl p-12 text-center">
-                    <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground mb-2">
-                      Photos can be uploaded after your property is created
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Go to Owner Dashboard &rarr; Properties &rarr; Edit to add images
+                  <h3 className="font-semibold text-lg mb-4">Dates & Pricing</h3>
+
+                  {/* Date pickers */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Available Dates</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-muted-foreground mb-1">Check-in</label>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            type="date"
+                            className="pl-10"
+                            min={todayStr}
+                            value={checkInDate}
+                            onChange={(e) => setCheckInDate(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-muted-foreground mb-1">Check-out</label>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            type="date"
+                            className="pl-10"
+                            min={checkInDate || todayStr}
+                            value={checkOutDate}
+                            onChange={(e) => setCheckOutDate(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nightly rate */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Nightly Rate ($)</label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        type="number"
+                        placeholder="e.g., 199"
+                        className="pl-10"
+                        min="1"
+                        value={nightlyRate}
+                        onChange={(e) => setNightlyRate(e.target.value)}
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Set your own price — you control your earnings
                     </p>
                   </div>
+
+                  {/* Cleaning fee */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Cleaning Fee ($) <span className="text-muted-foreground font-normal">— optional</span></label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        className="pl-10"
+                        min="0"
+                        value={cleaningFee}
+                        onChange={(e) => setCleaningFee(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Cancellation policy */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Cancellation Policy</label>
+                    <Select
+                      value={cancellationPolicy}
+                      onValueChange={(v) => setCancellationPolicy(v as CancellationPolicy)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a policy" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="flexible">Flexible — full refund up to 24 hrs before</SelectItem>
+                        <SelectItem value="moderate">Moderate — full refund up to 5 days before</SelectItem>
+                        <SelectItem value="strict">Strict — 50% refund up to 7 days before</SelectItem>
+                        <SelectItem value="super_strict">Super Strict — no refund after booking</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Pricing preview */}
+                  {pricingPreview && (
+                    <div className="bg-primary/5 rounded-lg p-4 space-y-2">
+                      <p className="text-sm font-medium text-primary">Pricing Preview</p>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <div className="flex justify-between">
+                          <span>${nightlyRate} x {pricingPreview.nights} night{pricingPreview.nights !== 1 ? "s" : ""}</span>
+                          <span>${pricingPreview.baseAmount}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Service fee (15%)</span>
+                          <span>${pricingPreview.serviceFee}</span>
+                        </div>
+                        {pricingPreview.cleaningFee > 0 && (
+                          <div className="flex justify-between">
+                            <span>Cleaning fee</span>
+                            <span>${pricingPreview.cleaningFee}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between font-medium text-foreground border-t pt-1">
+                          <span>Guest pays</span>
+                          <span>${pricingPreview.subtotal}</span>
+                        </div>
+                        <div className="flex justify-between text-primary">
+                          <span>You earn</span>
+                          <span>${pricingPreview.ownerPayout}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex gap-4">
                     <Button variant="outline" onClick={() => setFormStep(1)}>
+                      <ArrowLeft className="w-4 h-4 mr-2" />
                       Back
                     </Button>
-                    <Button className="flex-1" onClick={() => setFormStep(3)}>
-                      Continue
+                    <Button
+                      className="flex-1"
+                      onClick={() => setFormStep(3)}
+                      disabled={!canProceedStep2}
+                    >
+                      Review & Submit
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
                 </div>
               )}
 
-              {/* Step 3: Pricing */}
+              {/* Step 3: Review & Submit */}
               {formStep === 3 && (
                 <div className="space-y-6">
-                  <h3 className="font-semibold text-lg mb-4">Pricing & Availability</h3>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Nightly Rate ($)</label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input type="number" placeholder="e.g., 199" className="pl-10" />
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Set your own price — you control your earnings
+                  <h3 className="font-semibold text-lg mb-4">Review & Submit</h3>
+
+                  {/* Property summary */}
+                  <div className="rounded-lg border p-4 space-y-2">
+                    <p className="text-sm font-medium">Property</p>
+                    <p className="text-sm text-muted-foreground">
+                      {resortName}{location ? ` — ${location}` : ""}
                     </p>
+                    <p className="text-sm text-muted-foreground">
+                      {bedrooms === "0" ? "Studio" : `${bedrooms} BR`} / {bathrooms} BA / Sleeps {sleeps}
+                    </p>
+                    {description && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">{description}</p>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Available Dates</label>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input type="date" className="pl-10" />
+
+                  {/* Listing summary */}
+                  <div className="rounded-lg border p-4 space-y-2">
+                    <p className="text-sm font-medium">Listing Details</p>
+                    <p className="text-sm text-muted-foreground">
+                      {checkInDate} to {checkOutDate} ({pricingPreview?.nights || 0} night{(pricingPreview?.nights || 0) !== 1 ? "s" : ""})
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      ${nightlyRate}/night · {cancellationPolicy.replace("_", " ")} cancellation
+                    </p>
+                    {pricingPreview && (
+                      <div className="flex justify-between text-sm pt-1 border-t">
+                        <span className="text-muted-foreground">Guest total</span>
+                        <span className="font-medium">${pricingPreview.subtotal}</span>
                       </div>
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input type="date" className="pl-10" />
-                      </div>
-                    </div>
+                    )}
                   </div>
+
                   <div className="bg-muted/50 rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle className="w-5 h-5 text-primary" />
                       <span className="font-medium">No listing fees</span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      We only charge a small service fee when you receive a booking.
+                      We only charge a 15% service fee when you receive a booking.
                     </p>
                   </div>
+
+                  {submitError && (
+                    <div className="bg-destructive/10 text-destructive text-sm rounded-lg p-3">
+                      {submitError}
+                    </div>
+                  )}
+
                   {user && !isEmailVerified() ? (
                     <EmailVerificationBanner blockedAction="list a property" />
                   ) : (
                     <div className="flex gap-4">
                       <Button variant="outline" onClick={() => setFormStep(2)}>
+                        <ArrowLeft className="w-4 h-4 mr-2" />
                         Back
                       </Button>
-                      <Button
-                        className="flex-1"
-                        onClick={() => {
-                          if (!user) {
+                      {!user ? (
+                        <Button
+                          className="flex-1"
+                          onClick={() => {
+                            saveDraft({
+                              formStep, selectedBrand, isManualEntry, resortName, location,
+                              bedrooms, bathrooms, sleeps, description,
+                              checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy,
+                            });
                             navigate("/signup");
-                          } else if (isPropertyOwner()) {
-                            clearDraft();
-                            navigate("/owner-dashboard?tab=properties");
-                          } else {
+                          }}
+                        >
+                          Create Account & List
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      ) : isPropertyOwner() ? (
+                        <Button
+                          className="flex-1"
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? "Creating..." : "Create Property & Listing"}
+                          {!isSubmitting && <ArrowRight className="w-4 h-4 ml-2" />}
+                        </Button>
+                      ) : (
+                        <Button
+                          className="flex-1"
+                          onClick={() => {
+                            saveDraft({
+                              formStep, selectedBrand, isManualEntry, resortName, location,
+                              bedrooms, bathrooms, sleeps, description,
+                              checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy,
+                            });
                             setUpgradeDialogOpen(true);
-                          }
-                        }}
-                      >
-                        {!user
-                          ? "Create Account & List"
-                          : isPropertyOwner()
-                            ? "Go to Owner Dashboard"
-                            : "Become a Property Owner"}
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
+                          }}
+                        >
+                          Save Draft & Request Owner Role
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      )}
                     </div>
                   )}
 
