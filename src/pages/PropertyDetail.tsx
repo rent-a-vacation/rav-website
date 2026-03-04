@@ -47,6 +47,8 @@ import ReviewSummary from "@/components/reviews/ReviewSummary";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { OwnerProfileCard } from "@/components/OwnerProfileCard";
+import { InquiryDialog } from "@/components/InquiryDialog";
+import { useInquiryCount } from "@/hooks/useListingInquiries";
 
 const BRAND_LABELS: Record<string, string> = {
   hilton_grand_vacations: "Hilton Grand Vacations",
@@ -70,6 +72,7 @@ const PropertyDetail = () => {
   const [inspiredRequestOpen, setInspiredRequestOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
+  const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false);
 
   // Auth
   const { user } = useAuth();
@@ -134,6 +137,9 @@ const PropertyDetail = () => {
   const isBiddable = listing?.open_for_bidding &&
     listing?.bidding_ends_at &&
     !isPast(new Date(listing.bidding_ends_at));
+
+  // Inquiry count for social proof
+  const { data: inquiryCount = 0 } = useInquiryCount(listing?.id);
   const favCount = id ? (favoritesCount.get(id) || 0) : 0;
   const freshnessLabel = listing ? getFreshnessLabel(listing.created_at) : null;
   const popularityLabel = getPopularityLabel(favCount);
@@ -596,9 +602,28 @@ const PropertyDetail = () => {
                   )}
                 </div>
 
-                {/* Owner Profile */}
+                {/* Owner Profile + Ask a Question */}
                 {listing.owner_id && !isOwnListing && (
-                  <OwnerProfileCard ownerId={listing.owner_id} />
+                  <div className="space-y-3">
+                    <OwnerProfileCard ownerId={listing.owner_id} />
+                    {user && (
+                      <div className="bg-card rounded-2xl p-4 shadow-card text-center space-y-2">
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => setInquiryDialogOpen(true)}
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Ask the Owner a Question
+                        </Button>
+                        {inquiryCount > 0 && (
+                          <p className="text-xs text-muted-foreground">
+                            {inquiryCount} traveler{inquiryCount !== 1 ? 's' : ''} asked about this listing
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* Trust Indicators */}
@@ -781,6 +806,17 @@ const PropertyDetail = () => {
           listing={listing}
           open={inspiredRequestOpen}
           onOpenChange={setInspiredRequestOpen}
+        />
+      )}
+
+      {/* Inquiry Dialog */}
+      {listing && user && !isOwnListing && (
+        <InquiryDialog
+          open={inquiryDialogOpen}
+          onOpenChange={setInquiryDialogOpen}
+          listingId={listing.id}
+          ownerId={listing.owner_id}
+          propertyName={displayName}
         />
       )}
 
