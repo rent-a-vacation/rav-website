@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 3, 2026 (Session 31: P0 UX — CTAs, Pricing, Language)
+> **Last Updated:** March 3, 2026 (Session 32: Staff Permissions — #119)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -87,13 +87,13 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **451 automated tests** (63 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **462 automated tests** (64 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations deployed:** 001-035 on DEV, 001-023 on PROD
-- **Edge functions deployed:** 25 on DEV, 22 on PROD
+- **Migrations deployed:** 001-035 on both DEV and PROD
+- **Edge functions deployed:** 25 on both DEV and PROD (seed-manager DEV-only)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev branch:** PR #167 open → main (P0 UX: CTAs + pricing + language)
+- **dev and main:** in sync (PR #169 merged — staff permissions)
 
 ### Session Handoff (Sessions 25-27, Feb 26-28)
 
@@ -129,6 +129,15 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Demo walkthrough document: docs/DEMO-WALKTHROUGH.md (comprehensive presentation script)
 - Tests: 409→451 (42 new)
 
+**Session 32 — Staff Permissions (#119) (Mar 3):**
+- Closed #119 (rav_staff distinct permissions): Added `isRavAdmin()` helper to AuthContext (true for `rav_admin`/`rav_owner`, false for `rav_staff`)
+- Gated 7 sensitive admin tabs behind `isRavAdmin()`: financials, tax, payouts, memberships, settings, voice, dev-tools
+- Staff sees 10 operational tabs (overview, properties, listings, bookings, escrow, issues, disputes, verifications, users, approvals)
+- `useSystemSettings` mutation guard changed from `isRavTeam()` → `isRavAdmin()`
+- URL redirect: staff navigating to restricted tab via `?tab=financials` gets redirected to overview
+- PR #169 merged to main
+- Tests: 451→462 (+11 new, 4 isRavAdmin role checks + test infrastructure)
+
 **Session 31 — P0 UX: CTAs, Pricing Transparency, Marketplace Language (Mar 3):**
 - Closed #150 (Simplify CTAs): PropertyDetail collapsed 5 buttons → 1 primary "Book Now" + Collapsible "More booking options" with descriptions
 - Closed #151 (Pricing Transparency): Fee breakdown (base, 15% service fee, cleaning fee, total) on PropertyDetail + Checkout via `computeFeeBreakdown()`. Listing cards show `$X/night + fees`. FAQ bug fix: "3-5%" → "15%"
@@ -136,7 +145,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - 18 files changed across source, tests, flow manifests, docs (UserGuide, Documentation, HowItWorksPage, DEMO-WALKTHROUGH, ARCHITECTURE)
 - Created #165 (Owner Volume Discount — configurable commission tiers based on completed bookings)
 - Created #166 (Revisit membership tier value proposition beyond voice hours)
-- PR #167 open: P0 UX changes → main
+- PR #167 merged, PR #168 merged
 - Tests: 451 (unchanged — no new business logic)
 
 **Session 30 — Code Splitting, CI Fix & QA Strategy (Mar 2):**
@@ -168,7 +177,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Issue #63 marked `blocked` with resume instructions
 - PR #144 merged — dev and main in sync
 
-**Open pre-launch issues:** 4 remaining (#80 Legal review, #87 Launch checklist, #127 Business formation — blocked, #152 Owner Onboarding UX)
+**Open pre-launch issues:** 3 remaining (#80 Legal review, #87 Launch checklist, #127 Business formation — blocked)
 
 **Blocked dependency chain:**
 ```
@@ -187,7 +196,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 **Next recommended work (not blocked):**
 - #87 Launch readiness checklist
 - #80 Legal review of Terms/Privacy
-- Post-launch enhancements (#117 notifications, #119 staff permissions, #108 code splitting)
+- Post-launch enhancements (#117 real-time notifications, #153 consolidate owner dashboard tabs, UX issues #155-#164)
 
 ---
 
@@ -631,6 +640,6 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ---
 
-**Last updated:** February 28, 2026 (Session 27: Reviews, Messaging, Sort, Portfolio)
+**Last updated:** March 3, 2026 (Session 32: Staff Permissions — #119)
 **Maintained by:** Sujit
 **Tracking:** [GitHub Issues](https://github.com/rent-a-vacation/rav-website/issues) · [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1) · [Milestones](https://github.com/rent-a-vacation/rav-website/milestones)
