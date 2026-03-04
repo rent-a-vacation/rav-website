@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -8,15 +8,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Clock, Mail, Shield, XCircle } from "lucide-react";
+import { Clock, Home, Mail, Shield, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+
+const DRAFT_STORAGE_KEY = "rav-list-property-draft";
 
 export default function PendingApproval() {
   const { user, profile, signOut, isRavTeam } = useAuth();
   const navigate = useNavigate();
 
   const isRejected = profile?.approval_status === "rejected";
+
+  const [hasDraft] = useState(() => {
+    try {
+      return !!localStorage.getItem(DRAFT_STORAGE_KEY);
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     if (!user) {
@@ -72,6 +82,29 @@ export default function PendingApproval() {
                     We're currently in beta and carefully reviewing all new
                     accounts to ensure the best experience for our community.
                   </p>
+                </div>
+              </div>
+            )}
+
+            {/* Listing draft CTA — non-rejected users only */}
+            {!isRejected && (
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Home className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-sm">Get your listing ready</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Set up your property and listing now so it goes live as soon as you're approved.
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-1"
+                      onClick={() => navigate("/list-property")}
+                    >
+                      {hasDraft ? "Continue Setting Up My Listing" : "Set Up My First Listing"}
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
