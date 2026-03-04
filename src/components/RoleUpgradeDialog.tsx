@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -11,8 +11,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Users, Loader2, Clock, CheckCircle } from 'lucide-react';
+import { Building2, Users, Loader2, Clock, CheckCircle, PartyPopper } from 'lucide-react';
 import { ActionSuccessCard } from '@/components/ActionSuccessCard';
+import { toast } from 'sonner';
 import {
   useRequestRoleUpgrade,
   useLatestRequestForRole,
@@ -71,6 +72,22 @@ export function RoleUpgradeDialog({
     }
   };
 
+  // Track when status transitions to 'approved' via Realtime — celebrate and auto-reload
+  const prevStatusRef = useRef(latestRequest?.status);
+  useEffect(() => {
+    if (prevStatusRef.current === 'pending' && latestRequest?.status === 'approved') {
+      toast.success('Your role upgrade has been approved!', {
+        description: 'Refreshing your account...',
+        icon: <PartyPopper className="h-4 w-4" />,
+        duration: 3000,
+      });
+      // Auto-reload after short delay to apply new permissions
+      const timer = setTimeout(() => window.location.reload(), 2500);
+      return () => clearTimeout(timer);
+    }
+    prevStatusRef.current = latestRequest?.status;
+  }, [latestRequest?.status]);
+
   // If there's a pending request, show status
   if (latestRequest?.status === 'pending') {
     return (
@@ -120,23 +137,24 @@ export function RoleUpgradeDialog({
     );
   }
 
-  // If approved (shouldn't normally show, but handle gracefully)
+  // If approved, show celebration
   if (latestRequest?.status === 'approved') {
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-              Request Approved
+              <PartyPopper className="h-5 w-5 text-green-500" />
+              Request Approved!
             </DialogTitle>
             <DialogDescription>
-              Your role has been upgraded. You may need to refresh the page to see the changes.
+              Congratulations! Your role has been upgraded. Your page will refresh automatically with your new permissions.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={() => { handleOpenChange(false); window.location.reload(); }}>
-              Refresh Page
+            <Button onClick={() => window.location.reload()}>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Refresh Now
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -13,15 +13,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { 
-  Bell, 
-  Check, 
+import {
+  Bell,
+  Check,
   CheckCheck,
-  Gavel, 
-  MessageSquare, 
+  Gavel,
+  MessageSquare,
   CreditCard,
   Sparkles,
   Clock,
+  UserCheck,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import type { NotificationType } from '@/types/bidding';
@@ -40,6 +41,7 @@ const NOTIFICATION_ICONS: Record<NotificationType, React.ReactNode> = {
   booking_confirmed: <CreditCard className="h-4 w-4 text-success" />,
   payment_received: <CreditCard className="h-4 w-4 text-success" />,
   message_received: <MessageSquare className="h-4 w-4 text-primary" />,
+  role_upgrade_approved: <UserCheck className="h-4 w-4 text-success" />,
 };
 
 export function NotificationBell() {

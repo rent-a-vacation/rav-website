@@ -1,12 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
 import { toast } from 'sonner';
 import type { RoleUpgradeRequest, AppRole } from '@/types/database';
 
-// Fetch user's own role upgrade requests
+// Fetch user's own role upgrade requests (with Realtime updates)
 export function useMyRoleUpgradeRequests() {
   const { user } = useAuth();
+
+  // Realtime: auto-refresh when admin approves/rejects
+  useRealtimeSubscription({
+    table: 'role_upgrade_requests',
+    event: 'UPDATE',
+    filter: user ? `user_id=eq.${user.id}` : undefined,
+    invalidateKeys: [['role-upgrade-requests'], ['roles']],
+    enabled: !!user,
+  });
 
   return useQuery({
     queryKey: ['role-upgrade-requests', 'mine', user?.id],
@@ -81,19 +91,42 @@ export function usePendingRoleUpgradeRequests() {
   });
 }
 
-// Admin: Approve a role upgrade request
+// Admin: Approve a role upgrade request + notify user
 export function useApproveRoleUpgrade() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (requestId: string) => {
+    mutationFn: async (request: { id: string; user_id: string; user_email?: string; user_name?: string; requested_role: string }) => {
+      // 1. Approve the role
       const { data, error } = await supabase.rpc('approve_role_upgrade' as never, {
-        _request_id: requestId,
+        _request_id: request.id,
         _approved_by: user?.id,
       } as never);
-
       if (error) throw error;
+
+      // 2. Insert in-app notification for the user
+      await supabase.from('notifications').insert({
+        user_id: request.user_id,
+        type: 'role_upgrade_approved',
+        title: 'Role Upgrade Approved',
+        message: `Your request to become a ${request.requested_role.replace('_', ' ')} has been approved! You now have access to all ${request.requested_role.replace('_', ' ')} features.`,
+      } as never);
+
+      // 3. Send email notification via edge function (fire-and-forget)
+      if (request.user_email) {
+        supabase.functions.invoke('send-email', {
+          body: {
+            to: request.user_email,
+            subject: 'Your Role Upgrade Has Been Approved!',
+            html: `<p>Hi ${request.user_name || 'there'},</p>
+<p>Great news! Your request to become a <strong>${request.requested_role.replace('_', ' ')}</strong> on Rent-A-Vacation has been approved.</p>
+<p>You can now access all ${request.requested_role.replace('_', ' ')} features. Log in to get started!</p>
+<p>— The Rent-A-Vacation Team</p>`,
+          },
+        }).catch(() => { /* email is best-effort */ });
+      }
+
       return data;
     },
     onSuccess: () => {
