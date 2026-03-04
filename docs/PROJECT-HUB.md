@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 3, 2026 (Session 32: Staff Permissions — #119)
+> **Last Updated:** March 3, 2026 (Session 33: UX Improvements — #153, #159, #160, #161, #162)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -87,13 +87,13 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **462 automated tests** (64 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **507 automated tests** (69 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations deployed:** 001-035 on both DEV and PROD
 - **Edge functions deployed:** 25 on both DEV and PROD (seed-manager DEV-only)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync (PR #169 merged — staff permissions)
+- **dev and main:** PR #170 pending (5 UX issues on dev)
 
 ### Session Handoff (Sessions 25-27, Feb 26-28)
 
@@ -128,6 +128,16 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Admin owner filter (#120): Owner dropdown in AdminListings tab
 - Demo walkthrough document: docs/DEMO-WALKTHROUGH.md (comprehensive presentation script)
 - Tests: 409→451 (42 new)
+
+**Session 33 — UX Improvements: 5 Frontend-Only Issues (Mar 3):**
+- Closed #159 (Cancellation Policy): `CancellationPolicyDetail` component + `cancellationPolicy.ts` utility — color-coded refund rules with concrete deadlines. Integrated into PropertyDetail + Checkout.
+- Closed #161 (Booking Timeline): `BookingTimeline` component + `bookingTimeline.ts` — 5-step lifecycle progress (payment → owner confirm → details → check-in → review). Integrated into BookingSuccess + MyBookings (compact + expandable).
+- Closed #162 (Pricing Suggestions): `usePricingSuggestion` hook + `PricingSuggestion` component — market range bar from active listings by brand/location. Integrated into ListProperty + OwnerListings dialog.
+- Closed #160 (Compare Properties): `CompareListingsDialog` + `compareListings.ts` — side-by-side comparison (max 3) with "Best" badges. Compare mode toggle on Rentals page.
+- Closed #153 (Dashboard Consolidation): OwnerDashboard 11 tabs → 4 (Dashboard, My Listings, Bookings & Earnings, Account) with Collapsible sub-sections. Backwards-compatible TAB_REDIRECTS map for old URLs.
+- 12 new files, 9 modified files, flow manifest tab refs updated
+- PR #170 created (dev → main)
+- Tests: 462→507 (+45 new, 69 test files)
 
 **Session 32 — Staff Permissions (#119) (Mar 3):**
 - Closed #119 (rav_staff distinct permissions): Added `isRavAdmin()` helper to AuthContext (true for `rav_admin`/`rav_owner`, false for `rav_staff`)
@@ -196,7 +206,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 **Next recommended work (not blocked):**
 - #87 Launch readiness checklist
 - #80 Legal review of Terms/Privacy
-- Post-launch enhancements (#117 real-time notifications, #153 consolidate owner dashboard tabs, UX issues #155-#164)
+- Post-launch enhancements (#117 real-time notifications, remaining UX issues #155-#158, #163-#164)
 
 ---
 
@@ -640,6 +650,6 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ---
 
-**Last updated:** March 3, 2026 (Session 32: Staff Permissions — #119)
+**Last updated:** March 3, 2026 (Session 33: UX Improvements — #153, #159, #160, #161, #162)
 **Maintained by:** Sujit
 **Tracking:** [GitHub Issues](https://github.com/rent-a-vacation/rav-website/issues) · [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1) · [Milestones](https://github.com/rent-a-vacation/rav-website/milestones)
