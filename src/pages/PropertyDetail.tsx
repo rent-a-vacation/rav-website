@@ -45,6 +45,7 @@ import { FairValueCard } from "@/components/fair-value/FairValueCard";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewSummary from "@/components/reviews/ReviewSummary";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
+import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 
 const BRAND_LABELS: Record<string, string> = {
   hilton_grand_vacations: "Hilton Grand Vacations",
@@ -420,13 +421,11 @@ const PropertyDetail = () => {
               </div>
 
               {/* Cancellation Policy */}
-              <div className="mb-8 bg-card rounded-xl p-6 shadow-card">
-                <h2 className="font-display text-xl font-semibold text-foreground mb-2">
-                  Cancellation Policy
-                </h2>
-                <p className="text-muted-foreground capitalize">
-                  {listing.cancellation_policy.replace("_", " ")}
-                </p>
+              <div className="mb-8">
+                <CancellationPolicyDetail
+                  policy={listing.cancellation_policy}
+                  checkInDate={listing.check_in_date}
+                />
               </div>
 
               {/* Guest Reviews */}
