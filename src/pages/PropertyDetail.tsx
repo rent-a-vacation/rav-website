@@ -46,6 +46,7 @@ import ReviewList from "@/components/reviews/ReviewList";
 import ReviewSummary from "@/components/reviews/ReviewSummary";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
+import { OwnerProfileCard } from "@/components/OwnerProfileCard";
 
 const BRAND_LABELS: Record<string, string> = {
   hilton_grand_vacations: "Hilton Grand Vacations",
@@ -594,6 +595,11 @@ const PropertyDetail = () => {
                     </>
                   )}
                 </div>
+
+                {/* Owner Profile */}
+                {listing.owner_id && !isOwnListing && (
+                  <OwnerProfileCard ownerId={listing.owner_id} />
+                )}
 
                 {/* Trust Indicators */}
                 <div className="bg-card rounded-2xl p-5 shadow-card space-y-3">
