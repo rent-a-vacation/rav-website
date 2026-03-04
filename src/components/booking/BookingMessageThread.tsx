@@ -5,6 +5,7 @@ import {
   useSendBookingMessage,
   useMarkMessagesRead,
 } from "@/hooks/useBookingMessages";
+import { useRealtimeSubscription } from "@/hooks/useRealtimeSubscription";
 import {
   Sheet,
   SheetContent,
@@ -41,6 +42,15 @@ const BookingMessageThread = ({
   const markRead = useMarkMessagesRead();
   const [body, setBody] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Realtime: instant message updates via Supabase Realtime
+  useRealtimeSubscription({
+    table: 'booking_messages',
+    event: 'INSERT',
+    filter: `booking_id=eq.${bookingId}`,
+    invalidateKeys: [['booking-messages', bookingId], ['unread-messages']],
+    enabled: open && !!bookingId,
+  });
 
   // Mark messages as read when the sheet opens
   useEffect(() => {

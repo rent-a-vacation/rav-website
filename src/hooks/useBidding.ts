@@ -530,7 +530,6 @@ export function useNotifications(limit = 20) {
       return data as Notification[];
     },
     enabled: !!user,
-    refetchInterval: 30000, // Refetch every 30 seconds
   });
 }
 
@@ -542,7 +541,7 @@ export function useUnreadNotificationCount() {
     queryKey: ['notifications', 'unread-count', user?.id],
     queryFn: async () => {
       if (!user) return 0;
-      
+
       const { count, error } = await supabase
         .from('notifications')
         .select('*', { count: 'exact', head: true })
@@ -553,7 +552,6 @@ export function useUnreadNotificationCount() {
       return count || 0;
     },
     enabled: !!user,
-    refetchInterval: 30000,
   });
 }
 

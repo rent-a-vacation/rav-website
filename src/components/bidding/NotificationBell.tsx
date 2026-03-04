@@ -1,7 +1,10 @@
 // Notification Bell - Shows unread count and recent notifications
+// Uses Supabase Realtime instead of polling for instant updates
 
 import { useState } from 'react';
 import { useNotifications, useUnreadNotificationCount, useMarkNotificationRead, useMarkAllNotificationsRead } from '@/hooks/useBidding';
+import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -41,10 +44,20 @@ const NOTIFICATION_ICONS: Record<NotificationType, React.ReactNode> = {
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
   const { data: notifications, isLoading } = useNotifications(10);
   const { data: unreadCount } = useUnreadNotificationCount();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
+
+  // Realtime: instant notification updates via Supabase Realtime
+  useRealtimeSubscription({
+    table: 'notifications',
+    event: 'INSERT',
+    filter: user ? `user_id=eq.${user.id}` : undefined,
+    invalidateKeys: [['notifications'], ['notifications', 'unread-count']],
+    enabled: !!user,
+  });
 
   const handleNotificationClick = (notificationId: string, isRead: boolean) => {
     if (!isRead) {

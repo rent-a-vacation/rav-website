@@ -26,7 +26,6 @@ export function useBookingMessages(bookingId: string | undefined) {
       return data as BookingMessage[];
     },
     enabled: !!bookingId,
-    refetchInterval: 10000, // Poll every 10 seconds for new messages
   });
 }
 
@@ -76,6 +75,5 @@ export function useUnreadMessageCounts() {
       return data as { booking_id: string; unread_count: number }[];
     },
     enabled: !!user?.id,
-    refetchInterval: 30000,
   });
 }
