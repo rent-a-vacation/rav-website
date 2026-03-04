@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 3, 2026 (Session 33b: OpenAPI Spec — #171)
+> **Last Updated:** March 4, 2026 (Session 34: 8 issues — #104, #117, #155-#158, #163-#164)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -87,13 +87,13 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **507 automated tests** (69 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **574 automated tests** (80 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations deployed:** 001-035 on both DEV and PROD
-- **Edge functions deployed:** 25 on both DEV and PROD (seed-manager DEV-only)
+- **Migrations created:** 001-039 (036-039 pending deploy to DEV/PROD)
+- **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** PR #170 pending (5 UX issues on dev)
+- **dev and main:** PR pending (Session 33 + 34 work on dev)
 
 ### Session Handoff (Sessions 25-27, Feb 26-28)
 
@@ -128,6 +128,19 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Admin owner filter (#120): Owner dropdown in AdminListings tab
 - Demo walkthrough document: docs/DEMO-WALKTHROUGH.md (comprehensive presentation script)
 - Tests: 409→451 (42 new)
+
+**Session 34 — 8 Issues: Realtime, UX Enhancements & Infrastructure (Mar 4):**
+- Closed #104 (Realtime Notifications): `useRealtimeSubscription` hook, replaced polling in NotificationBell (30s), BookingMessageThread (10s), unread counts (30s)
+- Closed #117 (Role Upgrade Notification): In-app notification + email on admin approval, Realtime auto-detection in RoleUpgradeDialog with celebration toast
+- Closed #155 (Owner Profiles): Migration 036 (`get_owner_profile_summary` RPC), OwnerProfileCard with avatar, verification badge, stats. Integrated into PropertyDetail sidebar
+- Closed #158 (Destination Browsing): 10 destinations/35 cities, DestinationDetail page with breadcrumbs and city drill-down, rewrote Destinations page with dynamic listing counts
+- Closed #164 (Renter Dashboard): `/my-trips` with 4 tabs (Overview, Bookings, Offers, Favorites), consolidated nav, saved searches section
+- Closed #157 (Pre-Booking Messaging): Migration 037 (listing_inquiries + inquiry_messages tables), InquiryDialog + InquiryThread, "Ask the Owner" button on PropertyDetail
+- Closed #156 (Saved Searches): Migration 038 (saved_searches table + price tracking columns), SaveSearchButton on Rentals, SavedSearchesList in RenterDashboard, price drop badge
+- Closed #163 (Idle Week Alerts): Migration 039 (alert tracking columns), `idle-listing-alerts` edge function (cron, max 50/run, 60d+30d thresholds), pure utilities
+- Created #172, #173, #174 (API docs follow-up: spec validation, edge-case schemas, public API design)
+- 30 new files, 22 modified files, 4 new migrations, 1 new edge function
+- Tests: 507→574 (+67 new, 80 test files)
 
 **Session 33b — OpenAPI Spec & Swagger UI (#171) (Mar 3):**
 - OpenAPI 3.0.3 spec for all 25 edge functions at `docs/api/openapi.yaml`
@@ -214,7 +227,9 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 **Next recommended work (not blocked):**
 - #87 Launch readiness checklist
 - #80 Legal review of Terms/Privacy
-- Post-launch enhancements (#117 real-time notifications, remaining UX issues #155-#158, #163-#164)
+- Deploy migrations 036-039 to Supabase DEV and PROD
+- Deploy `idle-listing-alerts` edge function
+- API docs follow-up (#172, #173, #174)
 
 ---
 
