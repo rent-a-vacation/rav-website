@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,10 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Building2, MapPin, User, Search, Bed, Bath, Users } from "lucide-react";
+import { Building2, MapPin, User, Search, Bed, Bath, Users, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import type { Property, Profile, VacationClubBrand } from "@/types/database";
 import { AdminEntityLink, type AdminNavigationProps } from "./AdminEntityLink";
+import AdminPropertyEditDialog from "./AdminPropertyEditDialog";
 
 interface PropertyWithOwner extends Property {
   owner: Profile;
@@ -34,34 +37,37 @@ const BRAND_LABELS: Record<VacationClubBrand, string> = {
 };
 
 const AdminProperties = ({ initialSearch = "", onNavigateToEntity }: AdminNavigationProps) => {
+  const { isRavAdmin } = useAuth();
   const [properties, setProperties] = useState<PropertyWithOwner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [editProperty, setEditProperty] = useState<PropertyWithOwner | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   useEffect(() => {
     if (initialSearch) setSearchQuery(initialSearch);
   }, [initialSearch]);
 
+  const fetchProperties = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("properties")
+        .select(`
+          *,
+          owner:profiles(*)
+        `)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setProperties(data as PropertyWithOwner[] || []);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("properties")
-          .select(`
-            *,
-            owner:profiles(*)
-          `)
-          .order("created_at", { ascending: false });
-
-        if (error) throw error;
-        setProperties(data as PropertyWithOwner[] || []);
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchProperties();
   }, []);
 
@@ -119,6 +125,7 @@ const AdminProperties = ({ initialSearch = "", onNavigateToEntity }: AdminNaviga
                   <TableHead>Owner</TableHead>
                   <TableHead>Details</TableHead>
                   <TableHead>Registered</TableHead>
+                  {isRavAdmin() && <TableHead className="w-16">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -168,6 +175,20 @@ const AdminProperties = ({ initialSearch = "", onNavigateToEntity }: AdminNaviga
                     <TableCell className="text-sm text-muted-foreground">
                       {format(new Date(property.created_at), "MMM d, yyyy")}
                     </TableCell>
+                    {isRavAdmin() && (
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setEditProperty(property);
+                            setEditDialogOpen(true);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -175,6 +196,13 @@ const AdminProperties = ({ initialSearch = "", onNavigateToEntity }: AdminNaviga
           )}
         </CardContent>
       </Card>
+
+      <AdminPropertyEditDialog
+        property={editProperty}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSaved={fetchProperties}
+      />
     </div>
   );
 };

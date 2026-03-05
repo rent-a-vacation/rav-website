@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 4, 2026 (Session 35: #172, #149A, #101)
+> **Last Updated:** March 4, 2026 (Session 36: #176-#180)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -94,9 +94,19 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** dev is 1 commit ahead (Session 35 work)
+- **dev and main:** dev ahead of main (Sessions 35-36 work)
+- **Migrations pending:** 036-041 (need deploy to DEV and PROD)
 
-### Session Handoff (Sessions 25-35)
+### Session Handoff (Sessions 25-36)
+
+**Session 36 — Admin Tools, Docs & Dispute Expansion (Mar 4):**
+- Closed #176 (UserGuide & Documentation): 13 new UserGuide sections (6 owner + 7 renter) + 12 new Documentation sections covering Sessions 27-35 features
+- Closed #177 (Admin Property Editing): AdminPropertyEditDialog with audit trail. Migration 040 (shared with #178): last_edited_by/at on properties + listings, admin_edit_notes on listings. 6 tests.
+- Closed #178 (Admin Listing Editing): AdminListingEditDialog with live price calc via computeListingPricing(). Disabled for booked/completed. 7 tests.
+- Closed #179 (Resort Data Import): AdminResortImport 3-step UI + resortImportUtils (validate, duplicate check, template). New "Resorts" admin tab. 11 tests.
+- Closed #180 (Dispute Expansion): Migration 041 — 5 owner dispute categories + evidence_urls. useDisputeEvidence hook + EvidenceUpload component. Role-aware ReportIssueDialog. "Report Issue" in OwnerBookings. Evidence thumbnails in AdminDisputes. 11 tests.
+- Tests: 592→627 (+35 new, 86 test files)
+- PR #181 created
 
 **Session 35 — OpenAPI Validation, P0 Tests & iCal Export (Mar 4):**
 - Closed #172 (OpenAPI Spec Validation): Fixed 14 errors (missing security declarations) + 35 warnings. Added `operationId`, `security`, `x-rate-limit` extensions to all 26 endpoints. `StripeSignature` security scheme. Added missing `idle-listing-alerts` endpoint.

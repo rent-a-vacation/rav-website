@@ -25,6 +25,7 @@ vi.mock("@/contexts/AuthContext", () => ({
     user: { id: "admin-1" },
     hasRole: () => true,
     isRavTeam: () => true,
+    isRavAdmin: () => true,
   }),
 }));
 

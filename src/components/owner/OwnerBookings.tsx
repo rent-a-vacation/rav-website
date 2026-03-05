@@ -5,11 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, MapPin, Users, DollarSign, Clock, CheckCircle, XCircle, Mail, Ban, MessageCircle, Download } from "lucide-react";
+import { Calendar, MapPin, Users, DollarSign, Clock, CheckCircle, XCircle, Mail, Ban, MessageCircle, Download, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import type { Booking, BookingStatus, Property, Listing, Profile } from "@/types/database";
 import CancelBookingDialog from "@/components/booking/CancelBookingDialog";
 import BookingMessageThread from "@/components/booking/BookingMessageThread";
+import ReportIssueDialog from "@/components/booking/ReportIssueDialog";
 import { Button } from "@/components/ui/button";
 import { useOwnerCalendarExport } from "@/hooks/useOwnerCalendarExport";
 
@@ -39,6 +40,7 @@ const OwnerBookings = () => {
   const [activeFilter, setActiveFilter] = useState<"all" | "upcoming" | "past">("all");
   const [cancelBookingId, setCancelBookingId] = useState<string | null>(null);
   const [messageBookingId, setMessageBookingId] = useState<string | null>(null);
+  const [reportBookingId, setReportBookingId] = useState<string | null>(null);
   const { exportCalendar, isExporting } = useOwnerCalendarExport();
 
   // Fetch bookings for owner's listings
@@ -291,6 +293,15 @@ const OwnerBookings = () => {
                             Cancel Booking
                           </Button>
                         )}
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setReportBookingId(booking.id)}
+                        >
+                          <AlertTriangle className="mr-2 h-4 w-4" />
+                          Report Issue
+                        </Button>
                       </div>
                     )}
                   </CardContent>
@@ -335,6 +346,21 @@ const OwnerBookings = () => {
             bookingId={target.id}
             bookingRef={target.id.slice(0, 8).toUpperCase()}
             otherPartyName={target.renter?.full_name || "Renter"}
+          />
+        );
+      })()}
+      {/* Report Issue Dialog */}
+      {reportBookingId && (() => {
+        const target = bookings.find((b) => b.id === reportBookingId);
+        if (!target) return null;
+        return (
+          <ReportIssueDialog
+            open={!!reportBookingId}
+            onOpenChange={(open) => { if (!open) setReportBookingId(null); }}
+            bookingId={target.id}
+            ownerId={target.renter?.id}
+            resortName={target.listing?.property?.resort_name}
+            role="owner"
           />
         );
       })()}

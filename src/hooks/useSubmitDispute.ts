@@ -10,6 +10,7 @@ export interface SubmitDisputeParams {
   category: DisputeCategory;
   description: string;
   reportedUserId?: string;
+  evidenceUrls?: string[];
 }
 
 export function useSubmitDispute() {
@@ -28,6 +29,7 @@ export function useSubmitDispute() {
           reported_user_id: params.reportedUserId || null,
           category: params.category,
           description: params.description,
+          evidence_urls: params.evidenceUrls?.length ? params.evidenceUrls : null,
         })
         .select()
         .single();
