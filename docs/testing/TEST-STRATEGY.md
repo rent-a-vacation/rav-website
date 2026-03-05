@@ -1,9 +1,10 @@
 # Test Strategy - Rent-A-Vacation Platform
 
-**Version:** 1.0  
-**Created:** February 13, 2026  
-**Author:** Testing Architecture Team  
-**Status:** Ready for Implementation
+**Version:** 2.0
+**Created:** February 13, 2026
+**Updated:** March 4, 2026
+**Author:** Testing Architecture Team
+**Status:** Implemented & Active
 
 ---
 
@@ -25,19 +26,20 @@ This document defines the testing strategy for Rent-A-Vacation, a vacation renta
 
 ---
 
-## 📊 Testing Pyramid (Target Coverage)
+## 📊 Testing Pyramid (Current State — March 2026)
 
 ```
         /\
-       /E2E\        10-15 critical user flows (Playwright)
-      /-----\       Example: Complete booking flow end-to-end
-     /  INT  \      20-30 integration tests (Vitest)
-    /---------\     Example: Stripe checkout creation + DB update
-   /   UNIT    \    40-60 unit tests (Vitest)
-  /-------------\   Example: Cancellation refund calculation
+       /E2E\        3 Playwright smoke tests (homepage, rentals, navigation)
+      /-----\       Visual regression via Percy (disabled — private repo)
+     /  INT  \      ~350 integration tests (hooks, components, contexts)
+    /---------\     Example: Stripe checkout, bidding, cancellation, messaging
+   /   UNIT    \    ~240 unit tests (pure functions in src/lib/)
+  /-------------\   Example: pricing, sort, cancellation policy, iCal, timeline
 ```
 
-**Total Target:** ~80-100 tests (achievable in 2-3 weeks)
+**Current Total:** 592 tests across 81 test files (all passing)
+**P0 Critical Path:** 97 tests tagged `@p0` across 14 files — run with `npm run test:p0`
 
 ---
 
@@ -125,28 +127,46 @@ These are **non-negotiable** - if ANY of these break, users can't use the platfo
 
 ## 🎯 SECONDARY FEATURES (Should Have Tests)
 
-### 6. Bidding System (P2)
-| Test | Type | Priority |
-|------|------|----------|
-| Place bid on listing | Integration | P2 |
-| Accept/reject bid | Integration | P2 |
-| Create travel request | Integration | P2 |
-| Submit proposal to travel request | Integration | P2 |
+### 6. Bidding System (P2) ✅ TESTED
+| Test | Type | Priority | Status |
+|------|------|----------|--------|
+| Place bid on listing | Integration | P2 | ✅ useBidding.test.ts |
+| Accept/reject bid | Integration | P2 | ✅ useBidding.test.ts |
+| Create travel request | Integration | P2 | ✅ Covered |
+| Submit proposal to travel request | Integration | P2 | ✅ Covered |
+| Bid form dialog validation | Component | P2 | ✅ BidFormDialog.test.tsx |
 
-### 7. Cancellation Flow (P2)
-| Test | Type | Priority |
-|------|------|----------|
-| Calculate refund based on policy | Unit | P1 |
-| Request cancellation | Integration | P2 |
-| Approve/deny cancellation | Integration | P2 |
-| Process refund | Integration | P0 |
+### 7. Cancellation Flow (P2) ✅ TESTED
+| Test | Type | Priority | Status |
+|------|------|----------|--------|
+| Calculate refund based on policy | Unit | P1 | ✅ cancellation.test.ts |
+| Cancellation policy display | Unit | P1 | ✅ cancellationPolicy.test.ts |
+| Request cancellation | Integration | P2 | ✅ useCancelBooking.test.ts |
+| Process refund | Integration | P0 | ✅ useCancelBooking.test.ts |
 
-### 8. Email Notifications (P2)
-| Test | Type | Priority |
-|------|------|----------|
-| Booking confirmation email | Integration | P0 |
-| Owner reminder email (CRON) | Integration | P2 |
-| Cancellation notification | Integration | P2 |
+### 8. Email Notifications (P2) ✅ PARTIAL
+| Test | Type | Priority | Status |
+|------|------|----------|--------|
+| Email template rendering | Unit | P2 | ✅ email.test.ts |
+| Idle listing alerts (CRON) | Unit | P2 | ✅ idleListingAlerts.test.ts |
+
+### 9. Additional Features Tested (added since v1.0)
+| Feature | Test File | Count |
+|---------|-----------|-------|
+| Messaging (booking) | useBookingMessages.test.ts | 9 |
+| Messaging (pre-booking inquiries) | useListingInquiries.test.ts | 8 |
+| Reviews | useReviews.test.ts | 8 |
+| Disputes | useSubmitDispute.test.ts | 4 |
+| GDPR/Account deletion | useAccountDeletion.test.ts | 6 |
+| Saved searches | useSavedSearches.test.ts | 12 |
+| Realtime subscriptions | useRealtimeSubscription.test.ts | 7 |
+| iCal calendar export | icalendar.test.ts | 18 |
+| Owner portfolio | PortfolioOverview/PropertyCalendar | 19 |
+| Compare listings | compareListings.test.ts | 9 |
+| Booking timeline | bookingTimeline.test.ts | 11 |
+| Pricing suggestions | usePricingSuggestion.test.ts | 6 |
+| Destinations | destinations.test.ts | 6 |
+| Renter dashboard | renterDashboard.test.ts | 8 |
 
 ---
 
@@ -198,20 +218,22 @@ These are **non-negotiable** - if ANY of these break, users can't use the platfo
 ## 🛠️ TOOLS & INFRASTRUCTURE
 
 ### Testing Stack
-| Tool | Purpose | Why |
-|------|---------|-----|
-| **Vitest** | Unit + Integration | Fast, native Vite support, better DX than Jest |
-| **Playwright** | E2E testing | Industry standard, great debugging, cross-browser |
-| **Percy.io** | Visual regression | Catch UI bugs automatically (free tier) |
-| **GitHub Actions** | CI/CD | Already using it, 2000 free min/month |
-| **dorny/test-reporter** | PR test annotations | Free, no subscription — annotates failed tests inline on PRs using JUnit XML output from Vitest |
+| Tool | Purpose | Status |
+|------|---------|--------|
+| **Vitest** | Unit + Integration | ✅ Active — 592 tests |
+| **Playwright** | E2E testing | ✅ Active — 3 smoke tests |
+| **Percy.io** | Visual regression | ⏸ Disabled (private repo requires paid plan) |
+| **GitHub Actions** | CI/CD | ✅ Active — lint → test → e2e → lighthouse |
+| **dorny/test-reporter** | PR test annotations | ✅ Active — JUnit XML → inline PR annotations |
+| **Lighthouse CI** | Performance audit | ✅ Active |
+| **Husky + lint-staged** | Pre-commit | ✅ Active — lint + related tests on staged files |
 
-> **Note on test management platforms:** Qase was evaluated and removed (Mar 2026) — the free plan does not support the TestOps API and no tests had been tagged with case IDs. A future QA enhancement issue (#149) tracks selecting and properly integrating a test management platform with a curated P0 test case library. Until then, GitHub native reporting covers CI visibility needs.
+> **Note on test management platforms:** Qase was evaluated and removed (Mar 2026) — the free plan does not support the TestOps API. P0 test case library (#149 Phase A) completed with `@p0` tagging and `npm run test:p0`. Phase B (Playwright E2E) and Phase C (Qase/platform sync) remain open.
 
 ### Test Data Strategy
-- **Unit tests:** Mock data in test files
-- **Integration tests:** Supabase local database (via Docker)
-- **E2E tests:** Dedicated test database (separate Supabase project)
+- **Unit tests:** Mock data in test files + fixtures in `src/test/fixtures/`
+- **Integration tests:** Mocked Supabase client (vi.mock pattern)
+- **E2E tests:** Against Supabase DEV instance
 
 ### CI/CD Pipeline
 ```
@@ -264,61 +286,44 @@ describe('Authentication', () => {
 
 ---
 
-## 🎯 IMPLEMENTATION PHASES
+## 🎯 IMPLEMENTATION PHASES (COMPLETED)
 
-### Phase 1: Foundation (Week 1)
-**Goal:** Setup infrastructure + critical P0 tests
+> All phases completed between Feb 13 - Mar 4, 2026. Keeping for historical reference.
 
-**Tasks:**
-1. Install Vitest + Playwright
-2. Configure test environment
-3. Setup GitHub Actions workflow
-4. Write 5 critical E2E tests (auth + booking)
-5. Write 10 integration tests (payment flow)
+### Phase 1: Foundation ✅ (Feb 13)
+- Vitest + Playwright installed and configured
+- CI/CD pipeline set up (GitHub Actions)
+- First unit tests (cancellation, pricing) + integration tests (AuthContext)
 
-**Deliverable:** CI/CD pipeline blocks deployment if tests fail
+### Phase 2: Coverage Expansion ✅ (Feb 14-25)
+- Grew from ~30 to ~400 tests across hooks, contexts, components, lib
+- Percy visual regression set up (later disabled for private repo)
+- Comprehensive business logic coverage
 
----
-
-### Phase 2: Coverage Expansion (Week 2)
-**Goal:** Add P1 tests + integration tests
-
-**Tasks:**
-1. Add 20 integration tests (hooks, edge functions)
-2. Add 5 more E2E tests (owner dashboard, admin)
-3. Setup Percy for visual regression
-4. Write unit tests for business logic
-
-**Deliverable:** 50+ tests, 60% integration coverage
-
----
-
-### Phase 3: Polish & Automation (Week 3)
-**Goal:** Complete secondary features + visual regression
-
-**Tasks:**
-1. Add P2 tests (bidding, cancellation)
-2. Setup visual regression for key pages
-3. Add test coverage reporting
-4. Document testing guidelines for future development
-
-**Deliverable:** 80+ tests, full CI/CD automation
+### Phase 3: Polish & Automation ✅ (Feb 25 - Mar 4)
+- Pre-commit hooks (Husky + lint-staged)
+- P0 test case library with `@p0` tagging (97 tests)
+- CI test reporting via dorny/test-reporter (JUnit XML)
+- Lighthouse CI audit
+- **Final: 592 tests, 81 test files, all passing**
 
 ---
 
 ## 🚀 SUCCESS METRICS
 
-### Quantitative
-- **Test Execution Time:** <5 minutes (CI/CD)
-- **Test Coverage:** 60% integration, 70% unit
-- **E2E Tests:** 15 critical flows
+### Quantitative (Actual as of March 2026)
+- **Test Execution Time:** ~64s locally, <3 min in CI
+- **Total Tests:** 592 (81 test files)
+- **P0 Tests:** 97 tagged `@p0` across 14 files
+- **E2E Tests:** 3 smoke tests (homepage, rentals, navigation)
 - **CI/CD Pass Rate:** >95%
+- **Coverage Thresholds (enforced):** Statements 25%, Branches 25%, Functions 30%, Lines 25%
 
 ### Qualitative
 - Zero production incidents from untested code
-- Developers confident to ship features
-- Tests don't slow down development
-- Easy for AI agents to add new tests
+- Every new feature ships with tests (CLAUDE.md enforced)
+- Tests run pre-commit (lint-staged) and in CI
+- AI agent (Claude Code) generates tests alongside features
 
 ---
 
@@ -347,10 +352,20 @@ describe('Authentication', () => {
 - Testing Library Best Practices: https://kentcdodds.com/blog/common-mistakes-with-react-testing-library
 
 ### Test Data Fixtures
-Will be stored in:
-- `tests/fixtures/users.ts` - Sample user data
-- `tests/fixtures/properties.ts` - Sample property data
-- `tests/fixtures/bookings.ts` - Sample booking data
+Located in `src/test/fixtures/`:
+- `users.ts` — `mockUser()`, `mockSession()`, `mockProfile()`, `mockAuthContext()`
+- `listings.ts` — Listing and property fixtures
+- `memberships.ts` — Membership tier fixtures
+
+### Test Helpers
+Located in `src/test/helpers/`:
+- `render.tsx` — `createHookWrapper()`, `renderWithProviders()`
+- `supabase-mock.ts` — `createSupabaseMock()`, `emptyResponse()`, `errorResponse()`
+
+### P0 Test Case Library
+- **Docs:** `docs/P0-TEST-CASES.md` — 20 critical-path scenarios across 7 journeys
+- **Run:** `npm run test:p0` — executes 97 `@p0`-tagged tests
+- **Coverage:** Auth, Search, Pricing, Bidding, Owner Dashboard, Cancellation, Messaging
 
 ---
 

@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 4, 2026 (Session 34: 8 issues — #104, #117, #155-#158, #163-#164)
+> **Last Updated:** March 4, 2026 (Session 35: #172, #149A, #101)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -87,15 +87,23 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **574 automated tests** (80 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **592 automated tests** (81 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 97 critical-path tests tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-039 (036-039 pending deploy to DEV/PROD)
 - **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** PR pending (Session 33 + 34 work on dev)
+- **dev and main:** dev is 1 commit ahead (Session 35 work)
 
-### Session Handoff (Sessions 25-27, Feb 26-28)
+### Session Handoff (Sessions 25-35)
+
+**Session 35 — OpenAPI Validation, P0 Tests & iCal Export (Mar 4):**
+- Closed #172 (OpenAPI Spec Validation): Fixed 14 errors (missing security declarations) + 35 warnings. Added `operationId`, `security`, `x-rate-limit` extensions to all 26 endpoints. `StripeSignature` security scheme. Added missing `idle-listing-alerts` endpoint.
+- Closed #101 (iCal Calendar Export): `src/lib/icalendar.ts` — RFC 5545 compliant, zero dependencies. `useOwnerCalendarExport` hook. "Export Calendar" button in OwnerBookings. 18 tests.
+- #149 Phase A completed (P0 Test Library): `docs/P0-TEST-CASES.md` — 20 scenarios across 7 journeys. 97 tests tagged `@p0` across 14 files. `npm run test:p0` script. Phase B (Playwright E2E) and Phase C (Qase sync) remain open.
+- Updated `docs/testing/` — TEST-STRATEGY.md, TESTING-GUIDELINES.md, OPERATIONAL-GUIDE.md, TEST-SETUP-CHECKLIST.md brought current with 592-test reality.
+- Tests: 574→592 (+18 new, 81 test files)
 
 **Session 24 — GDPR, Disputes & Security Hardening (Feb 26):**
 - Dispute Resolution (#79): Migration 026, `process-dispute-refund` edge fn, AdminDisputes.tsx, ReportIssueDialog.tsx
