@@ -32,6 +32,7 @@ import {
   Mic,
   Scale,
   Receipt,
+  Database,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminProperties from "@/components/admin/AdminProperties";
@@ -51,6 +52,7 @@ import { DevTools } from "@/components/admin/DevTools";
 import { VoiceControls } from "@/components/admin/VoiceControls";
 import AdminDisputes from "@/components/admin/AdminDisputes";
 import AdminTaxReporting from "@/components/admin/AdminTaxReporting";
+import AdminResortImport from "@/components/admin/AdminResortImport";
 
 const IS_DEV = import.meta.env.VITE_SUPABASE_URL?.includes("oukbxqnlxnkainnligfz");
 
@@ -261,6 +263,12 @@ const AdminDashboard = () => {
                 <span className="hidden sm:inline">Voice</span>
               </TabsTrigger>
             )}
+            {isRavAdmin() && (
+              <TabsTrigger value="resorts" className="gap-2">
+                <Database className="h-4 w-4" />
+                <span className="hidden sm:inline">Resorts</span>
+              </TabsTrigger>
+            )}
             {IS_DEV && isRavAdmin() && (
               <TabsTrigger value="dev-tools" className="gap-2">
                 <Wrench className="h-4 w-4" />
@@ -364,6 +372,12 @@ const AdminDashboard = () => {
           {isRavAdmin() && (
             <TabsContent value="voice">
               <VoiceControls />
+            </TabsContent>
+          )}
+
+          {isRavAdmin() && (
+            <TabsContent value="resorts">
+              <AdminResortImport />
             </TabsContent>
           )}
 
