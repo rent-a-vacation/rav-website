@@ -1,7 +1,143 @@
 # Completed Phases Archive
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
-> **Last Archived:** March 2, 2026
+> **Last Archived:** March 4, 2026
+
+---
+
+## Session 36: Admin Tools, Docs & Dispute Expansion
+
+**Completed:** March 4, 2026
+**PR:** #181 → main
+**Issues Closed:** #176, #177, #178, #179, #180
+
+### What Was Done
+
+#### UserGuide & Documentation Update (#176)
+Added 13 new sections to UserGuide.tsx (6 owner: portfolio, pricing suggestions, iCal export, idle alerts, owner profiles, dashboard navigation; 7 renter: saved searches, pre-booking messaging, renter dashboard, compare properties, booking timeline, reviews, destinations). Added 12 new sections to Documentation.tsx covering disputes, GDPR, Stripe Connect, GA4, realtime, reviews, messaging, saved searches, pre-booking inquiries, idle alerts, OpenAPI/Swagger, and iCal export.
+
+#### Admin Property Editing (#177)
+`AdminPropertyEditDialog.tsx` — form with brand, resort_name, location, bedrooms, bathrooms, sleeps, description, amenities. Audit trail columns (last_edited_by, last_edited_at) via migration 040. Edit button gated behind `isRavAdmin()`. 6 tests.
+
+#### Admin Listing Editing (#178)
+`AdminListingEditDialog.tsx` — form with dates, nightly_rate, cleaning_fee, cancellation_policy, notes, admin_edit_notes. Live price calculation using `computeListingPricing()` from `src/lib/pricing.ts`. Disabled for booked/completed listings with warning message. Shared migration 040. 7 tests.
+
+#### Resort Data Import (#179)
+`resortImportUtils.ts` — `validateResortJson()`, `findDuplicateResorts()`, `generateTemplateJson()` pure functions. `AdminResortImport.tsx` — 3-step UI: upload JSON → preview table with NEW/DUPLICATE badges → import results summary. New "Resorts" tab in AdminDashboard (isRavAdmin gated). 11 tests.
+
+#### Dispute System Expansion (#180)
+Migration 041: 5 new owner-specific dispute categories (renter_damage, renter_no_show, unauthorized_guests, rule_violation, late_checkout) + evidence_urls column. `useDisputeEvidence.ts` hook — file upload to Supabase Storage (dispute-evidence bucket) with type/size validation. `EvidenceUpload.tsx` — file input UI with type icons and remove buttons. `ReportIssueDialog.tsx` — role-aware categories (renter vs owner), evidence upload integration. "Report Issue" button added to OwnerBookings for confirmed/completed bookings. AdminDisputes — evidence thumbnail/link display. 11 tests.
+
+### Migrations
+- **040_admin_audit_trail.sql:** last_edited_by/last_edited_at on properties + listings, admin_edit_notes on listings
+- **041_expand_disputes.sql:** 5 owner dispute categories + evidence_urls column
+
+### Files Created (11)
+- `src/components/admin/AdminPropertyEditDialog.tsx`
+- `src/components/admin/AdminPropertyEditDialog.test.tsx`
+- `src/components/admin/AdminListingEditDialog.tsx`
+- `src/components/admin/AdminListingEditDialog.test.tsx`
+- `src/lib/resortImportUtils.ts`
+- `src/lib/resortImportUtils.test.ts`
+- `src/components/admin/AdminResortImport.tsx`
+- `src/hooks/useDisputeEvidence.ts`
+- `src/hooks/useDisputeEvidence.test.ts`
+- `src/components/booking/EvidenceUpload.tsx`
+- `src/components/booking/ReportIssueDialog.test.tsx`
+
+### Files Modified (10)
+- `src/pages/UserGuide.tsx`, `src/pages/Documentation.tsx`
+- `src/components/admin/AdminProperties.tsx`, `AdminListings.tsx`, `AdminListings.test.tsx`, `AdminDisputes.tsx`
+- `src/pages/AdminDashboard.tsx`
+- `src/components/booking/ReportIssueDialog.tsx`
+- `src/hooks/useSubmitDispute.ts`, `useSubmitDispute.test.ts`
+- `src/components/owner/OwnerBookings.tsx`
+
+### Test Status
+627 tests passing, 86 test files, 0 TypeScript errors, 0 lint errors, build clean
+
+---
+
+## Session 35: OpenAPI Validation, P0 Tests & iCal Export
+
+**Completed:** March 4, 2026
+**Issues Closed:** #172, #149A, #101
+
+### What Was Done
+- **#172 OpenAPI Validation:** Fixed 14 errors + 35 warnings in `docs/api/openapi.yaml`. Added `operationId`, `security`, `x-rate-limit` to all 26 endpoints. `StripeSignature` security scheme. Added `idle-listing-alerts` endpoint.
+- **#149A P0 Test Library:** `docs/P0-TEST-CASES.md` — 20 scenarios across 7 journeys. 97 tests tagged `@p0` across 14 files. `npm run test:p0` script.
+- **#101 iCal Export:** `src/lib/icalendar.ts` (RFC 5545 compliant, zero deps) + `useOwnerCalendarExport` hook + "Export Calendar" button in OwnerBookings. 18 tests.
+- Updated all `docs/testing/` files to current state.
+
+### Test Status
+592 tests passing, 81 test files
+
+---
+
+## Session 34: Realtime, UX & Infrastructure (8 Issues)
+
+**Completed:** March 4, 2026
+**Issues Closed:** #104, #117, #155, #158, #164, #157, #156, #163
+
+### What Was Done
+- **#104 Realtime:** `useRealtimeSubscription` hook replacing polling in NotificationBell, BookingMessageThread, unread counts. 7 tests.
+- **#117 Role Upgrade:** Notification + email on approval, Realtime auto-detect. 4 tests.
+- **#155 Owner Profiles:** Migration 036, `get_owner_profile_summary` RPC, OwnerProfileCard. 8 tests.
+- **#158 Destinations:** 10 destinations/35 cities in `src/lib/destinations.ts`, DestinationDetail page. 6 tests.
+- **#164 Renter Dashboard:** `/my-trips` with 4 tabs, `computeRenterOverview`/`getCheckInCountdown` utilities. 8 tests.
+- **#157 Pre-Booking Messaging:** Migration 037 (listing_inquiries + inquiry_messages), InquiryDialog + InquiryThread. 8 tests.
+- **#156 Saved Searches:** Migration 038 (saved_searches + price tracking), SaveSearchButton + SavedSearchesList. 12 tests.
+- **#163 Idle Week Alerts:** Migration 039, `idle-listing-alerts` edge fn (cron), pure utilities. 14 tests.
+
+### Test Status
+574 tests passing, 78 test files
+
+---
+
+## Session 33: UX Improvements (5 Frontend-Only Issues)
+
+**Completed:** March 3, 2026
+**PR:** #170 → main
+**Issues Closed:** #159, #161, #162, #160, #153
+
+### What Was Done
+- **#159 Cancellation Policy:** `cancellationPolicy.ts` + `CancellationPolicyDetail.tsx`. 12 tests.
+- **#161 Booking Timeline:** `bookingTimeline.ts` + `BookingTimeline.tsx`. 11 tests.
+- **#162 Pricing Suggestions:** `usePricingSuggestion.ts` + `PricingSuggestion.tsx`. 6 tests.
+- **#160 Compare Properties:** `compareListings.ts` + `CompareListingsDialog.tsx`. 9 tests.
+- **#153 Dashboard Consolidation:** OwnerDashboard 11 tabs → 4 with Collapsible sub-sections. 7 tests.
+
+### Test Status
+507 tests passing, 74 test files
+
+---
+
+## Session 32: Staff Permissions
+
+**Completed:** March 3, 2026
+**PR:** #169 → main
+**Issue Closed:** #119
+
+### What Was Done
+- `isRavAdmin()` gates 7 admin tabs (financial, settings, dev tools). `rav_staff` role sees 10 operational tabs only.
+- Migration for `rav_staff` role support.
+
+### Test Status
+462 tests passing, 69 test files
+
+---
+
+## Session 31: P0 UX Issues
+
+**Completed:** March 2, 2026
+**Issues Closed:** #150, #151, #152, #154
+
+### What Was Done
+- **#150/#151/#154:** Simplified CTAs, pricing transparency, marketplace language reframing.
+- **#152:** Streamlined owner onboarding — combined property+listing form.
+
+### Test Status
+451 tests passing, 63 test files
 
 ---
 

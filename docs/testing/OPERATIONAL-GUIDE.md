@@ -4,7 +4,7 @@
 
 | Command | What It Does |
 |---------|--------------|
-| `npm test` | Run all unit + integration tests (592 tests) |
+| `npm test` | Run all unit + integration tests (627 tests) |
 | `npm run test:p0` | Run P0 critical-path tests only (97 tests, ~2s) |
 | `npm run test:watch` | Watch mode (re-run on change) |
 | `npm run test:coverage` | Tests + coverage report |
@@ -17,7 +17,7 @@
 
 ### Unit + Integration Tests
 ```bash
-# Run all tests (592 tests, ~64s)
+# Run all tests (627 tests, ~64s)
 npm test
 
 # Run P0 critical-path tests only (97 tests, ~2s)

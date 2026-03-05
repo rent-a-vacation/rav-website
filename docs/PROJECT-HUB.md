@@ -87,15 +87,14 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **592 automated tests** (81 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **627 automated tests** (86 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-039 (036-039 pending deploy to DEV/PROD)
+- **Migrations created:** 001-041 (036-041 pending deploy to DEV/PROD)
 - **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** dev ahead of main (Sessions 35-36 work)
-- **Migrations pending:** 036-041 (need deploy to DEV and PROD)
+- **dev and main:** in sync (PR #181 merged)
 
 ### Session Handoff (Sessions 25-36)
 
@@ -691,6 +690,6 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ---
 
-**Last updated:** March 3, 2026 (Session 33b: OpenAPI Spec — #171)
+**Last updated:** March 4, 2026 (Session 36: Admin Tools, Docs & Disputes — #176-#180)
 **Maintained by:** Sujit
 **Tracking:** [GitHub Issues](https://github.com/rent-a-vacation/rav-website/issues) · [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1) · [Milestones](https://github.com/rent-a-vacation/rav-website/milestones)
