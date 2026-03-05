@@ -29,7 +29,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('useCancelBooking', () => {
+describe('useCancelBooking @p0', () => {
   it('calls process-cancellation edge function with correct params', async () => {
     mockInvoke.mockResolvedValue({
       data: {

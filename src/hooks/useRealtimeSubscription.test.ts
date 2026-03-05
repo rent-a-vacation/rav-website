@@ -35,7 +35,7 @@ vi.mock('@/contexts/AuthContext', () => ({
 // Import after mocks are set up
 import { useRealtimeSubscription } from './useRealtimeSubscription';
 
-describe('useRealtimeSubscription', () => {
+describe('useRealtimeSubscription @p0', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockChannel.on.mockReturnThis();

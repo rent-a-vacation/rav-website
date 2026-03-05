@@ -14,7 +14,13 @@ info:
 
     **Rate Limiting:** Many endpoints implement per-user or per-IP rate limiting.
     Exceeding limits returns HTTP 429 with a `Retry-After` header.
+
+    **Rate Limit Headers:** Rate-limited responses include:
+    - `Retry-After` — seconds until the limit resets
   version: 1.0.0
+  license:
+    name: Proprietary
+    url: https://rent-a-vacation.com/terms
   contact:
     name: RAV Engineering
     email: dev@rent-a-vacation.com
@@ -48,11 +54,14 @@ tags:
     description: Seed data management (DEV only)
   - name: Escrow
     description: Payment escrow management
+  - name: Alerts
+    description: Automated listing alerts and cron jobs
 
 paths:
   # ─── AI ────────────────────────────────────────────────────────────────
   /voice-search:
     post:
+      operationId: voiceSearch
       tags: [AI]
       summary: Search vacation listings via structured query parameters
       description: |
@@ -64,6 +73,13 @@ paths:
         Also accepts VAPI webhook format with `message.functionCall.parameters`.
 
         **Rate limit:** 30 requests/minute per IP (in-memory sliding window).
+      security: []
+      x-rate-limit:
+        max: 30
+        window: 60
+        unit: seconds
+        scope: ip
+        storage: in-memory
       requestBody:
         required: false
         content:
@@ -105,13 +121,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VoiceSearchResponse'
-        '429':
-          $ref: '#/components/responses/RateLimited'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimited'
 
   /text-chat:
     post:
+      operationId: textChat
       tags: [AI]
       summary: Chat with RAVIO assistant (streaming SSE)
       description: |
@@ -121,8 +138,22 @@ paths:
         Supports tool calling for property search mid-conversation.
 
         **Rate limit:** 20 requests/minute per user (database-backed) + 60/min per IP.
+
+        **SSE Event Types:**
+        - `search_results` — JSON array of SearchResult objects (when tool call triggers search)
+        - `token` — Individual text token from the AI response
+        - `done` — Empty data signaling end of stream
+
+        Note: OpenAPI 3.0 does not natively model SSE streams. The response
+        content type is `text/event-stream`. Consider AsyncAPI for formal SSE modeling.
       security:
         - SupabaseJWT: []
+      x-rate-limit:
+        max: 20
+        window: 60
+        unit: seconds
+        scope: user
+        storage: database
       requestBody:
         required: true
         content:
@@ -141,10 +172,10 @@ paths:
               schema:
                 type: string
                 description: |
-                  Server-Sent Events stream with events:
-                  - `search_results`: JSON array of SearchResult objects
-                  - `token`: Individual text token from the AI response
-                  - `done`: Empty data signaling end of stream
+                  Server-Sent Events stream. Each event has format:
+                  `event: <type>\ndata: <json>\n\n`
+
+                  Event types: search_results, token, done
         '401':
           $ref: '#/components/responses/Unauthorized'
         '429':
@@ -159,6 +190,7 @@ paths:
   # ─── Payments ──────────────────────────────────────────────────────────
   /create-booking-checkout:
     post:
+      operationId: createBookingCheckout
       tags: [Payments]
       summary: Create a Stripe checkout session for booking
       description: |
@@ -169,6 +201,12 @@ paths:
         **Rate limit:** 5 requests per 5 minutes per user.
       security:
         - SupabaseJWT: []
+      x-rate-limit:
+        max: 5
+        window: 300
+        unit: seconds
+        scope: user
+        storage: database
       requestBody:
         required: true
         content:
@@ -186,6 +224,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateCheckoutResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
         '500':
           description: Checkout creation failed
           content:
@@ -195,6 +237,7 @@ paths:
 
   /verify-booking-payment:
     post:
+      operationId: verifyBookingPayment
       tags: [Payments]
       summary: Verify payment after Stripe checkout completes
       description: |
@@ -207,6 +250,12 @@ paths:
         **Rate limit:** 10 requests/minute per user.
       security:
         - SupabaseJWT: []
+      x-rate-limit:
+        max: 10
+        window: 60
+        unit: seconds
+        scope: user
+        storage: database
       requestBody:
         required: true
         content:
@@ -228,6 +277,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VerifyPaymentResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           description: Verification error
           content:
@@ -237,6 +288,7 @@ paths:
 
   /stripe-webhook:
     post:
+      operationId: stripeWebhook
       tags: [Payments]
       summary: Handle Stripe webhook events
       description: |
@@ -246,13 +298,50 @@ paths:
         Idempotent — skips already-processed events.
 
         **Auth:** Stripe signature (not JWT). Requires `STRIPE_WEBHOOK_SECRET`.
+        The `stripe-signature` header is verified using Stripe's HMAC signature scheme.
+      security:
+        - StripeSignature: []
+      parameters:
+        - name: stripe-signature
+          in: header
+          required: true
+          description: |
+            Stripe webhook signature for request verification.
+            Format: `t=<timestamp>,v1=<signature>`
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              description: Raw Stripe event payload (verified via X-Stripe-Signature header)
+              description: |
+                Raw Stripe event payload. See Stripe API docs for event schemas:
+                - [checkout.session.completed](https://docs.stripe.com/api/events/types#event_types-checkout.session.completed)
+                - [checkout.session.expired](https://docs.stripe.com/api/events/types#event_types-checkout.session.expired)
+                - [charge.refunded](https://docs.stripe.com/api/events/types#event_types-charge.refunded)
+                - [account.updated](https://docs.stripe.com/api/events/types#event_types-account.updated)
+                - [transfer.created](https://docs.stripe.com/api/events/types#event_types-transfer.created)
+                - [transfer.reversed](https://docs.stripe.com/api/events/types#event_types-transfer.reversed)
+              properties:
+                id:
+                  type: string
+                  description: Stripe event ID
+                  example: "evt_1234567890"
+                type:
+                  type: string
+                  description: Stripe event type
+                  enum:
+                    - checkout.session.completed
+                    - checkout.session.expired
+                    - charge.refunded
+                    - account.updated
+                    - transfer.created
+                    - transfer.reversed
+                data:
+                  type: object
+                  description: Event data object (varies by event type)
       responses:
         '200':
           description: Event processed
@@ -276,6 +365,7 @@ paths:
   # ─── Payouts ───────────────────────────────────────────────────────────
   /create-connect-account:
     post:
+      operationId: createConnectAccount
       tags: [Payouts]
       summary: Create or resume Stripe Connect onboarding for property owners
       description: |
@@ -306,6 +396,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateConnectResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           description: Account creation failed
           content:
@@ -315,6 +407,7 @@ paths:
 
   /create-stripe-payout:
     post:
+      operationId: createStripePayout
       tags: [Payouts]
       summary: Initiate owner payout via Stripe Transfer (admin only)
       description: |
@@ -344,6 +437,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreatePayoutResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: User is not RAV admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Payout failed (invalid status, missing Connect account, etc.)
           content:
@@ -354,6 +455,7 @@ paths:
   # ─── Cancellations ────────────────────────────────────────────────────
   /process-cancellation:
     post:
+      operationId: processCancellation
       tags: [Cancellations]
       summary: Process a booking cancellation (renter or owner)
       description: |
@@ -366,6 +468,12 @@ paths:
         **Rate limit:** 3 requests/minute per user.
       security:
         - SupabaseJWT: []
+      x-rate-limit:
+        max: 3
+        window: 60
+        unit: seconds
+        scope: user
+        storage: database
       requestBody:
         required: true
         content:
@@ -405,6 +513,7 @@ paths:
   # ─── Disputes ──────────────────────────────────────────────────────────
   /process-dispute-refund:
     post:
+      operationId: processDisputeRefund
       tags: [Disputes]
       summary: Resolve a dispute and optionally issue a refund (admin only)
       description: |
@@ -415,6 +524,12 @@ paths:
         **Rate limit:** 5 requests/minute per admin user.
       security:
         - SupabaseJWT: []
+      x-rate-limit:
+        max: 5
+        window: 60
+        unit: seconds
+        scope: user
+        storage: database
       requestBody:
         required: true
         content:
@@ -449,16 +564,21 @@ paths:
   # ─── Escrow ────────────────────────────────────────────────────────────
   /process-escrow-release:
     post:
+      operationId: processEscrowRelease
       tags: [Escrow]
       summary: Release held escrows and initiate owner payouts
       description: |
         Releases escrows after the 5-day hold period (post check-out) and initiates
         Stripe Transfers to owner connected accounts. Can be triggered by admin
-        or run as a scheduled job via service role.
+        (JWT auth) or run as a scheduled job (service role key).
         Processes all eligible escrows in batch. Errors are captured per-escrow
         and returned in the response array.
+
+        **Dual auth:** Accepts either Supabase JWT (admin manual trigger) or
+        service role key (scheduled cron invocation).
       security:
         - SupabaseJWT: []
+        - {}
       requestBody:
         required: false
         content:
@@ -473,6 +593,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EscrowReleaseResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           description: Critical failure (missing Stripe key, DB connection)
           content:
@@ -483,11 +605,14 @@ paths:
   # ─── Notifications ────────────────────────────────────────────────────
   /send-email:
     post:
+      operationId: sendEmail
       tags: [Notifications]
       summary: Send a generic email via Resend
       description: |
         Generic email sender for arbitrary HTML content.
         Validates email format. Logs email type for observability.
+        Internal endpoint — called by other edge functions.
+      security: []
       requestBody:
         required: true
         content:
@@ -506,6 +631,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SendEmailResponse'
+        '400':
+          description: Invalid email format or missing fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Email delivery failed
           content:
@@ -515,12 +646,14 @@ paths:
 
   /send-contact-form:
     post:
+      operationId: sendContactForm
       tags: [Notifications]
       summary: Submit a contact form message
       description: |
         Sends contact form submissions to the RAV support inbox
         and a confirmation email to the submitter.
         No authentication required (public endpoint).
+      security: []
       requestBody:
         required: true
         content:
@@ -555,12 +688,14 @@ paths:
 
   /send-approval-email:
     post:
+      operationId: sendApprovalEmail
       tags: [Notifications]
       summary: Send user/role approval or rejection email
       description: |
         Transactional email for user account approvals and role upgrade decisions.
         Generates context-aware HTML emails (approved/rejected templates).
         Called from admin workflows, not directly by users.
+      security: []
       requestBody:
         required: true
         content:
@@ -595,6 +730,7 @@ paths:
 
   /send-booking-confirmation-reminder:
     post:
+      operationId: sendBookingConfirmationReminder
       tags: [Notifications]
       summary: Send booking/checkin confirmation reminder emails
       description: |
@@ -603,6 +739,7 @@ paths:
         deadline_urgent, checkin_reminder, owner_confirmation_request,
         owner_extension_notification, owner_confirmation_timeout.
         Called from other edge functions and scheduled jobs.
+      security: []
       requestBody:
         required: true
         content:
@@ -622,6 +759,12 @@ paths:
                 properties:
                   success:
                     type: boolean
+        '400':
+          description: Missing or invalid notification type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Sending failed
           content:
@@ -631,12 +774,14 @@ paths:
 
   /send-cancellation-email:
     post:
+      operationId: sendCancellationEmail
       tags: [Notifications]
       summary: Send cancellation confirmation email to renter
       description: |
         Sends a cancellation confirmation email with details about the
         cancellation type (approved, denied, counter_offer, submitted).
         Called internally by process-cancellation.
+      security: []
       requestBody:
         required: true
         content:
@@ -667,6 +812,12 @@ paths:
                   reason:
                     type: string
                     nullable: true
+        '400':
+          description: Missing cancellationRequestId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Sending failed
           content:
@@ -676,6 +827,7 @@ paths:
 
   /send-verification-notification:
     post:
+      operationId: sendVerificationNotification
       tags: [Notifications]
       summary: Send owner verification approval/rejection email
       description: |
@@ -708,6 +860,8 @@ paths:
                   data:
                     type: object
                     nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           description: Sending failed
           content:
@@ -718,6 +872,7 @@ paths:
   # ─── Marketplace ───────────────────────────────────────────────────────
   /match-travel-requests:
     post:
+      operationId: matchTravelRequests
       tags: [Marketplace]
       summary: Match a new listing to open travel requests
       description: |
@@ -725,6 +880,8 @@ paths:
         matching destination (city), bedrooms, budget, and brand preference.
         Creates in-app notifications and sends emails to matched travelers.
         Deduplicates to avoid sending duplicate notifications.
+        Internal endpoint — called from listing approval workflow.
+      security: []
       requestBody:
         required: true
         content:
@@ -756,6 +913,7 @@ paths:
   # ─── GDPR ──────────────────────────────────────────────────────────────
   /export-user-data:
     post:
+      operationId: exportUserData
       tags: [GDPR]
       summary: Export all user data (GDPR data portability)
       description: |
@@ -769,6 +927,12 @@ paths:
         **Rate limit:** 3 requests per 5 minutes per user.
       security:
         - SupabaseJWT: []
+      x-rate-limit:
+        max: 3
+        window: 300
+        unit: seconds
+        scope: user
+        storage: database
       responses:
         '200':
           description: User data export
@@ -787,6 +951,7 @@ paths:
 
   /delete-user-account:
     post:
+      operationId: deleteUserAccount
       tags: [GDPR]
       summary: Request, cancel, or execute account deletion
       description: |
@@ -801,6 +966,12 @@ paths:
         **Rate limit:** 3 requests per 5 minutes per user.
       security:
         - SupabaseJWT: []
+      x-rate-limit:
+        max: 3
+        window: 300
+        unit: seconds
+        scope: user
+        storage: database
       requestBody:
         required: true
         content:
@@ -840,6 +1011,7 @@ paths:
   # ─── Data ──────────────────────────────────────────────────────────────
   /fetch-industry-news:
     get:
+      operationId: fetchIndustryNews
       tags: [Data]
       summary: Fetch vacation rental industry news
       description: |
@@ -849,6 +1021,7 @@ paths:
         Returns up to 7 articles sorted by date.
 
         **Cache:** 60 minutes (in-memory).
+      security: []
       responses:
         '200':
           description: Industry news articles
@@ -856,9 +1029,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IndustryNewsResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /fetch-macro-indicators:
     get:
+      operationId: fetchMacroIndicators
       tags: [Data]
       summary: Fetch US macroeconomic indicators for travel sector
       description: |
@@ -868,6 +1048,7 @@ paths:
         Falls back to hardcoded indicators on API failure.
 
         **Cache:** 24 hours (in-memory).
+      security: []
       responses:
         '200':
           description: Macro indicator data
@@ -875,9 +1056,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MacroIndicatorsResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /fetch-airdna-data:
     post:
+      operationId: fetchAirDNAData
       tags: [Data]
       summary: Fetch AirDNA market data for top destinations
       description: |
@@ -886,6 +1074,7 @@ paths:
         Accepts optional `api_key` for future live integration.
 
         **Cache:** 24 hours (in-memory).
+      security: []
       requestBody:
         required: false
         content:
@@ -903,9 +1092,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AirDNAResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /fetch-str-data:
     post:
+      operationId: fetchSTRData
       tags: [Data]
       summary: Fetch STR Global short-term rental metrics
       description: |
@@ -914,6 +1110,7 @@ paths:
         Accepts optional `api_key` for future live integration.
 
         **Cache:** 24 hours (in-memory).
+      security: []
       requestBody:
         required: false
         content:
@@ -931,10 +1128,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/STRResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   # ─── Notifications (Scheduled) ────────────────────────────────────────
   /process-deadline-reminders:
     post:
+      operationId: processDeadlineReminders
       tags: [Notifications]
       summary: Process scheduled deadline reminders and timeouts
       description: |
@@ -945,6 +1149,7 @@ paths:
         4. Travel request expiry warnings (47-49h before deadline)
 
         Typically triggered by a cron scheduler using service role key.
+      security: []
       responses:
         '200':
           description: Processing summary
@@ -959,9 +1164,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  # ─── Alerts (Scheduled) ──────────────────────────────────────────────
+  /idle-listing-alerts:
+    post:
+      operationId: idleListingAlerts
+      tags: [Alerts]
+      summary: Send proactive email alerts for idle listings (cron)
+      description: |
+        Cron-triggered function that sends email alerts to owners whose active listings have:
+        - No bids (bid_count = 0)
+        - Check-in within 60 or 30 days
+        - Not already been alerted at that threshold
+        - Not opted out of alerts (`idle_alert_opt_out = false`)
+
+        Processes up to 50 emails per invocation.
+
+        **Auth:** Service role key (no user auth required).
+        **Schedule:** Daily via Supabase cron or external cron service.
+      security: []
+      responses:
+        '200':
+          description: Alert processing summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdleListingAlertsResponse'
+        '500':
+          description: Unexpected failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   # ─── Admin ─────────────────────────────────────────────────────────────
   /seed-manager:
     post:
+      operationId: seedManager
       tags: [Admin]
       summary: Manage seed data (DEV environment only)
       description: |
@@ -974,6 +1212,7 @@ paths:
         - `wipe_layer_3`: Remove renters, bookings, proposals, disputes
         - `wipe_all`: Remove layers 2 + 3 (foundation users preserved)
         - `status`: Return current table counts
+      security: []
       requestBody:
         required: true
         content:
@@ -1018,6 +1257,10 @@ components:
     # ─── AI Schemas ────────────────────────────────────────────────────
     VoiceSearchRequest:
       type: object
+      description: |
+        Direct search parameters OR VAPI webhook payload.
+        When receiving VAPI webhooks, parameters are extracted from
+        `message.functionCall.parameters`.
       properties:
         destination:
           type: string
@@ -1059,6 +1302,19 @@ components:
           type: boolean
           description: If true, date filters are relaxed
           default: false
+        message:
+          type: object
+          description: VAPI webhook payload (alternative input format)
+          properties:
+            type:
+              type: string
+            functionCall:
+              type: object
+              properties:
+                name:
+                  type: string
+                parameters:
+                  type: object
 
     SearchResult:
       type: object
@@ -1711,6 +1967,28 @@ components:
         cached:
           type: boolean
 
+    # ─── Alert Schemas ───────────────────────────────────────────────
+    IdleListingAlertsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        alerts_sent:
+          type: integer
+          description: Number of alert emails sent
+        listings_checked:
+          type: integer
+          description: Total idle listings evaluated
+        thresholds:
+          type: object
+          properties:
+            sixty_day:
+              type: integer
+              description: Alerts sent for 60-day threshold
+            thirty_day:
+              type: integer
+              description: Alerts sent for 30-day threshold
+
     # ─── Admin Schemas ───────────────────────────────────────────────
     SeedManagerRequest:
       type: object
@@ -1810,3 +2088,13 @@ components:
       description: |
         Supabase Auth JWT token obtained after user login.
         Include as `Authorization: Bearer <token>` header.
+
+    StripeSignature:
+      type: apiKey
+      in: header
+      name: stripe-signature
+      description: |
+        Stripe webhook signature for request verification.
+        Format: `t=<timestamp>,v1=<signature>`.
+        Verified against the `STRIPE_WEBHOOK_SECRET` environment variable.
+        See: https://docs.stripe.com/webhooks/signatures
