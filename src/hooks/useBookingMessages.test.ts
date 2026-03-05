@@ -88,7 +88,7 @@ describe('useBookingMessages', () => {
   });
 });
 
-describe('useSendBookingMessage', () => {
+describe('useSendBookingMessage @p0', () => {
   it('inserts a message and returns data', async () => {
     const inserted = { id: 'msg-new', booking_id: 'b-1', sender_id: 'user-123', body: 'Test' };
     mockFrom.mockReturnValue(createQueryChain({ data: inserted, error: null }));

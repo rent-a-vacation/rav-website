@@ -7,7 +7,7 @@ const makeListings = () => [
   { created_at: "2026-01-20", final_price: 1200, check_in_date: "2026-05-01", property: { resort: null } },
 ] as unknown as import("@/hooks/useListings").ActiveListing[];
 
-describe("sortListings", () => {
+describe("sortListings @p0", () => {
   it("sorts by newest first (default)", () => {
     const result = sortListings(makeListings(), "newest");
     expect(result[0].final_price).toBe(800); // Feb 15 is newest

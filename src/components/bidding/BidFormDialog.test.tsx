@@ -66,7 +66,7 @@ const mockListing: ListingWithBidding = {
   allow_counter_offers: true,
 };
 
-describe('BidFormDialog', () => {
+describe('BidFormDialog @p0', () => {
   const onOpenChange = vi.fn();
 
   beforeEach(() => {

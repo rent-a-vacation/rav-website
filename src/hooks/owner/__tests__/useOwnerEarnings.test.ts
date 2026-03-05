@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { fillMissingMonths } from '../useOwnerEarnings';
 import type { MonthlyEarning } from '@/types/ownerDashboard';
 
-describe('fillMissingMonths', () => {
+describe('fillMissingMonths @p0', () => {
   it('returns 12 entries for empty input', () => {
     const result = fillMissingMonths([]);
     expect(result).toHaveLength(12);

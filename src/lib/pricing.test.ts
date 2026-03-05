@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { calculateNights, computeListingPricing, computeFeeBreakdown } from './pricing';
 
-describe('calculateNights', () => {
+describe('calculateNights @p0', () => {
   it('returns correct nights for a standard week', () => {
     expect(calculateNights('2026-03-15', '2026-03-22')).toBe(7);
   });
@@ -27,7 +27,7 @@ describe('calculateNights', () => {
   });
 });
 
-describe('computeListingPricing', () => {
+describe('computeListingPricing @p0', () => {
   it('computes correct pricing for $200/night x 7 nights', () => {
     const result = computeListingPricing(200, 7);
     expect(result.ownerPrice).toBe(1400);
@@ -64,7 +64,7 @@ describe('computeListingPricing', () => {
   });
 });
 
-describe('computeFeeBreakdown', () => {
+describe('computeFeeBreakdown @p0', () => {
   it('computes correct breakdown for $200/night x 7 nights, no cleaning fee', () => {
     const result = computeFeeBreakdown(200, 7);
     expect(result.baseAmount).toBe(1400);

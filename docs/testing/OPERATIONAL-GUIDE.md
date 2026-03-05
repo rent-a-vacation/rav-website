@@ -4,20 +4,24 @@
 
 | Command | What It Does |
 |---------|--------------|
-| `npm test` | Run all unit + integration tests |
+| `npm test` | Run all unit + integration tests (592 tests) |
+| `npm run test:p0` | Run P0 critical-path tests only (97 tests, ~2s) |
 | `npm run test:watch` | Watch mode (re-run on change) |
 | `npm run test:coverage` | Tests + coverage report |
 | `npm run test:e2e` | Playwright E2E tests |
 | `npm run test:e2e:ui` | Playwright with visual UI debugger |
-| `npm run test:visual` | Percy visual regression snapshots |
+| `npm run test:visual` | Percy visual regression snapshots (disabled) |
 | `npm run test:lighthouse` | Lighthouse CI audit |
 
 ## Running Tests Locally
 
 ### Unit + Integration Tests
 ```bash
-# Run all tests
+# Run all tests (592 tests, ~64s)
 npm test
+
+# Run P0 critical-path tests only (97 tests, ~2s)
+npm run test:p0
 
 # Run specific test file
 npx vitest run src/lib/cancellation.test.ts

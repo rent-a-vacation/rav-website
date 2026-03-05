@@ -12,29 +12,37 @@
 src/
 ├── lib/
 │   ├── cancellation.ts
-│   └── cancellation.test.ts      ← unit test
+│   ├── cancellation.test.ts       ← unit test
+│   ├── icalendar.ts
+│   └── icalendar.test.ts          ← unit test
 ├── hooks/
 │   ├── useListings.ts
-│   └── useListings.test.ts       ← integration test
+│   ├── useListings.test.ts        ← integration test
+│   └── owner/__tests__/           ← nested hook tests
+├── components/
+│   └── bidding/__tests__/         ← component tests
 ├── contexts/
 │   ├── AuthContext.tsx
-│   └── AuthContext.test.tsx       ← integration test
+│   └── AuthContext.test.tsx        ← integration test
 └── test/
-    ├── setup.ts                   ← global setup
+    ├── setup.ts                    ← global setup
     ├── helpers/
-    │   ├── render.tsx             ← renderWithProviders
-    │   └── supabase-mock.ts       ← supabase mock factory
+    │   ├── render.tsx              ← createHookWrapper, renderWithProviders
+    │   └── supabase-mock.ts        ← supabase mock factory
     └── fixtures/
-        ├── listings.ts            ← listing factories
-        └── users.ts               ← user/session factories
+        ├── listings.ts             ← listing factories
+        ├── users.ts                ← user/session/profile factories
+        └── memberships.ts          ← membership tier fixtures
 
 e2e/
 ├── smoke/
 │   ├── homepage.spec.ts
 │   └── rentals.spec.ts
 └── visual/
-    └── pages.spec.ts              ← Percy snapshots
+    └── pages.spec.ts               ← Percy snapshots (disabled)
 ```
+
+**Current total:** 592 tests across 81 test files (March 2026)
 
 ## Test Types
 
@@ -122,6 +130,18 @@ No third-party account or subscription is required.
 
 > **Qase removed (Mar 2026):** `vitest-qase-reporter` was removed because the free Qase plan does not support the TestOps API (`createRun`), and no tests had been tagged with `qase()` case IDs so no value was being delivered. A GitHub Issue (#149) tracks a future QA platform review.
 
+## P0 Test Case Library
+
+Critical-path tests are tagged with `@p0` in their `describe()` block name. Run them with:
+
+```bash
+npm run test:p0    # 97 tests across 14 files (~2s)
+```
+
+Tagged test files include: AuthContext, useListings, pricing (3 describes), listingSort, cancellation, useBidding (2 describes), BidFormDialog, owner dashboard/listings/earnings, useCancelBooking, useSubmitDispute, useBookingMessages, useRealtimeSubscription.
+
+See `docs/P0-TEST-CASES.md` for the full P0 scenario library.
+
 ## Coverage
 
 Coverage is tracked for business logic directories only:
@@ -130,9 +150,9 @@ Coverage is tracked for business logic directories only:
 - `src/contexts/**` — context providers
 
 Thresholds (enforced in `vitest.config.ts`):
-- Statements: 30%
+- Statements: 25%
 - Branches: 25%
 - Functions: 30%
-- Lines: 30%
+- Lines: 25%
 
 Run `npm run test:coverage` to see the report locally.

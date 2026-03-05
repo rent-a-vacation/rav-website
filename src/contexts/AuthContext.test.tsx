@@ -61,7 +61,7 @@ beforeEach(() => {
   });
 });
 
-describe("AuthContext", () => {
+describe("AuthContext @p0", () => {
   it("provides initial unauthenticated state", async () => {
     const { result } = renderHook(() => useAuth(), {
       wrapper: createWrapper(),

@@ -5,12 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, MapPin, Users, DollarSign, Clock, CheckCircle, XCircle, Mail, Ban, MessageCircle } from "lucide-react";
+import { Calendar, MapPin, Users, DollarSign, Clock, CheckCircle, XCircle, Mail, Ban, MessageCircle, Download } from "lucide-react";
 import { format } from "date-fns";
 import type { Booking, BookingStatus, Property, Listing, Profile } from "@/types/database";
 import CancelBookingDialog from "@/components/booking/CancelBookingDialog";
 import BookingMessageThread from "@/components/booking/BookingMessageThread";
 import { Button } from "@/components/ui/button";
+import { useOwnerCalendarExport } from "@/hooks/useOwnerCalendarExport";
 
 interface BookingWithDetails extends Booking {
   listing: Listing & { property: Property };
@@ -38,6 +39,7 @@ const OwnerBookings = () => {
   const [activeFilter, setActiveFilter] = useState<"all" | "upcoming" | "past">("all");
   const [cancelBookingId, setCancelBookingId] = useState<string | null>(null);
   const [messageBookingId, setMessageBookingId] = useState<string | null>(null);
+  const { exportCalendar, isExporting } = useOwnerCalendarExport();
 
   // Fetch bookings for owner's listings
   const fetchBookings = async () => {
@@ -127,6 +129,15 @@ const OwnerBookings = () => {
             View bookings on your properties
           </p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={exportCalendar}
+          disabled={isExporting}
+        >
+          <Download className="h-4 w-4 mr-2" />
+          {isExporting ? "Exporting..." : "Export Calendar"}
+        </Button>
       </div>
 
       <Tabs value={activeFilter} onValueChange={(v) => setActiveFilter(v as typeof activeFilter)}>

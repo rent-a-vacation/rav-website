@@ -6,7 +6,7 @@ import {
   estimatePayoutDate,
 } from "./cancellation";
 
-describe("calculatePolicyRefund", () => {
+describe("calculatePolicyRefund @p0", () => {
   const amount = 1000;
 
   describe("flexible policy", () => {

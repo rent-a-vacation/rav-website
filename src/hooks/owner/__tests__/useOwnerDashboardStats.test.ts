@@ -46,7 +46,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('useOwnerDashboardStats', () => {
+describe('useOwnerDashboardStats @p0', () => {
   it('fetches dashboard stats via RPC', async () => {
     const stats = {
       total_earned_ytd: 5000,

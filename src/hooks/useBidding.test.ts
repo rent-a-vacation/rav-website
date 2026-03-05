@@ -140,7 +140,7 @@ describe("useMyBids", () => {
   });
 });
 
-describe("useCreateBid", () => {
+describe("useCreateBid @p0", () => {
   it("creates a bid successfully", async () => {
     const newBid = { id: "b-new", bid_amount: 450, listing_id: "l1" };
     mockFrom.mockReturnValue(chain({ data: newBid, error: null }));
@@ -162,7 +162,7 @@ describe("useCreateBid", () => {
   });
 });
 
-describe("useUpdateBidStatus", () => {
+describe("useUpdateBidStatus @p0", () => {
   it("updates bid status to accepted", async () => {
     const updated = { id: "b1", status: "accepted" };
     mockFrom.mockReturnValue(chain({ data: updated, error: null }));

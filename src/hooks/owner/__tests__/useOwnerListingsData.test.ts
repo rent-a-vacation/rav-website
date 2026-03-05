@@ -48,7 +48,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('useOwnerListingsData', () => {
+describe('useOwnerListingsData @p0', () => {
   it('transforms listings with bid counts and days calculation', async () => {
     // Set a fixed "today" for deterministic test
     const today = new Date('2026-03-01T12:00:00Z');
