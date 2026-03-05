@@ -59,6 +59,7 @@ describe('useSubmitDispute @p0', () => {
       reported_user_id: 'owner-1',
       category: 'cleanliness',
       description: 'Room was not clean',
+      evidence_urls: null,
     });
   });
 

@@ -688,19 +688,33 @@ const AdminDisputes = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
                 {/* Evidence */}
                 {selectedDispute.evidence_urls.length > 0 && (
                   <div>
-                    <Label className="text-sm font-medium">Evidence</Label>
-                    <div className="flex gap-2 mt-1">
-                      {selectedDispute.evidence_urls.map((url, i) => (
-                        <a
-                          key={i}
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-primary underline"
-                        >
-                          Attachment {i + 1}
-                        </a>
-                      ))}
+                    <Label className="text-sm font-medium">Evidence ({selectedDispute.evidence_urls.length} file{selectedDispute.evidence_urls.length !== 1 ? "s" : ""})</Label>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {selectedDispute.evidence_urls.map((url, i) => {
+                        const isImage = /\.(jpe?g|png|webp)(\?|$)/i.test(url);
+                        return (
+                          <a
+                            key={i}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block border rounded-lg overflow-hidden hover:ring-2 hover:ring-primary transition-all"
+                          >
+                            {isImage ? (
+                              <img
+                                src={url}
+                                alt={`Evidence ${i + 1}`}
+                                className="w-20 h-20 object-cover"
+                              />
+                            ) : (
+                              <div className="w-20 h-20 bg-muted flex flex-col items-center justify-center text-muted-foreground">
+                                <span className="text-lg">PDF</span>
+                                <span className="text-xs">#{i + 1}</span>
+                              </div>
+                            )}
+                          </a>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
