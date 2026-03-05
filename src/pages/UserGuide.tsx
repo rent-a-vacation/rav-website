@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
-import { 
-  ChevronRight, 
-  Home, 
-  Building2, 
-  Gavel, 
-  CreditCard, 
-  Shield, 
+import {
+  ChevronRight,
+  Home,
+  Building2,
+  Gavel,
+  CreditCard,
+  Shield,
   Download,
   Menu,
   X,
@@ -31,7 +31,18 @@ import {
   Settings,
   Ban,
   Wallet,
-  MailCheck
+  MailCheck,
+  BarChart3,
+  TrendingUp,
+  CalendarCheck,
+  AlertCircle,
+  UserCheck,
+  LayoutDashboard,
+  Bookmark,
+  Mail,
+  GitCompare,
+  Star,
+  Compass
 } from "lucide-react";
 
 const UserGuide = () => {
@@ -58,6 +69,12 @@ const UserGuide = () => {
     { id: "confirm-bookings", label: "Confirm Bookings", icon: Calendar },
     { id: "receive-payouts", label: "Receive Payouts", icon: DollarSign },
     { id: "cancellations", label: "Cancellations", icon: Ban },
+    { id: "portfolio", label: "Portfolio Overview", icon: BarChart3 },
+    { id: "pricing-suggestions", label: "Pricing Suggestions", icon: TrendingUp },
+    { id: "ical-export", label: "Calendar Export (iCal)", icon: CalendarCheck },
+    { id: "idle-alerts", label: "Idle Week Alerts", icon: AlertCircle },
+    { id: "owner-profiles", label: "Owner Profiles", icon: UserCheck },
+    { id: "dashboard-nav", label: "Dashboard Navigation", icon: LayoutDashboard },
     { id: "account-settings", label: "Account & Preferences", icon: Settings },
     { id: "owner-faq", label: "Owner FAQ", icon: MessageSquare },
   ];
@@ -69,6 +86,13 @@ const UserGuide = () => {
     { id: "place-bids", label: "Make Offers on Listings", icon: Gavel },
     { id: "my-bookings", label: "My Bookings & Cancellations", icon: Calendar },
     { id: "checkin", label: "Check-In Process", icon: Key },
+    { id: "saved-searches", label: "Saved Searches & Price Alerts", icon: Bookmark },
+    { id: "pre-booking-messaging", label: "Pre-Booking Messaging", icon: Mail },
+    { id: "renter-dashboard", label: "My Trips Dashboard", icon: LayoutDashboard },
+    { id: "compare-properties", label: "Compare Properties", icon: GitCompare },
+    { id: "booking-timeline", label: "Booking Timeline", icon: Clock },
+    { id: "reviews", label: "Reviews & Ratings", icon: Star },
+    { id: "destinations", label: "Explore Destinations", icon: Compass },
     { id: "protection", label: "Renter Protection", icon: Shield },
     { id: "account-settings", label: "Account & Preferences", icon: Settings },
     { id: "renter-faq", label: "Renter FAQ", icon: MessageSquare },
@@ -713,6 +737,250 @@ const UserGuide = () => {
               </section>
             )}
 
+            {/* Portfolio Overview */}
+            {activeRole === "owner" && (isPrinting || activeSection === "portfolio") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Portfolio Overview</h1>
+                  <p className="text-xl text-muted-foreground">
+                    See all your properties and their performance at a glance.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">What You'll See</h3>
+                  <ul className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Property Cards</strong> — Each property shows its brand, location, unit details, and key stats (active listings, bookings, revenue)</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Status Calendar</strong> — Color-coded date bars showing availability, bookings, and expired listings for each property</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Summary Stats</strong> — Total properties, active listings, total bookings, and lifetime revenue across your portfolio</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">How to Access</h4>
+                  <p className="text-sm text-blue-700">
+                    Go to Owner Dashboard → "Dashboard" tab → "Portfolio Overview" section. Click any property card to jump to its listings.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Pricing Suggestions */}
+            {activeRole === "owner" && (isPrinting || activeSection === "pricing-suggestions") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Pricing Suggestions</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Get market-based pricing guidance when setting your nightly rate.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How It Works</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    When you create or edit a listing, the platform analyzes similar listings (same brand and location)
+                    to show you the current market rate range.
+                  </p>
+                  <ul className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Market Range Bar</strong> — Visual gradient showing the low, average, and high nightly rates for comparable listings</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Competitive Label</strong> — Your rate is labeled as "Below Market", "Competitive", or "Above Market"</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Smart Filtering</strong> — Only active, approved listings from the same brand and location are compared</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                  <h4 className="font-medium text-amber-800 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5" />
+                    Tip
+                  </h4>
+                  <p className="text-sm text-amber-700">
+                    Pricing suggestions appear in the List Property form (Step 2) and when editing listing rates in
+                    your Owner Dashboard. If there aren't enough comparable listings, no suggestion is shown.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* iCal Export */}
+            {activeRole === "owner" && (isPrinting || activeSection === "ical-export") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Calendar Export (iCal)</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Export your bookings to Google Calendar, Apple Calendar, Outlook, or any calendar app.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How to Export</h3>
+                  <ol className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                      <span>Go to Owner Dashboard → "Bookings & Earnings" tab → "Bookings" section</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                      <span>Click the "Export Calendar" button in the toolbar</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                      <span>A <code className="bg-muted px-1 rounded">.ics</code> file downloads containing all confirmed bookings</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">4</span>
+                      <span>Open the file with your calendar app — events include resort name, dates, and guest details</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">Supported Calendars</h4>
+                  <p className="text-sm text-blue-700">
+                    The iCal format (RFC 5545) works with Google Calendar, Apple Calendar, Microsoft Outlook,
+                    Yahoo Calendar, and most other calendar applications. Each booking appears as an all-day event.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Idle Week Alerts */}
+            {activeRole === "owner" && (isPrinting || activeSection === "idle-alerts") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Idle Week Alerts</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Get notified when your weeks are sitting idle so you can take action before they go unused.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How It Works</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    The platform automatically monitors your listings and sends email alerts at two key milestones:
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex gap-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                      <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-amber-800">60-Day Warning</h4>
+                        <p className="text-sm text-amber-700">Your listing check-in is 60 days away with no bookings yet. Consider adjusting your price.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4 p-3 bg-red-50 rounded-lg border border-red-200">
+                      <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-red-800">30-Day Urgent Alert</h4>
+                        <p className="text-sm text-red-700">Only 30 days left and still no bookings. Strong recommendation to lower your price or promote.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">Note</h4>
+                  <p className="text-sm text-blue-700">
+                    Alerts are sent automatically — no setup required. You'll only receive each alert once per listing.
+                    Alerts include a direct link to edit your listing's pricing.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Owner Profiles */}
+            {activeRole === "owner" && (isPrinting || activeSection === "owner-profiles") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Owner Profiles</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Your public profile helps renters trust you and learn about your properties.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">What Renters See</h3>
+                  <ul className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Profile Card</strong> — Your name, membership tier, verified badge, and member-since date</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Property Count</strong> — How many properties you have listed on the platform</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Review Summary</strong> — Average rating and total review count from past guests</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Response Rate</strong> — How quickly you typically respond to inquiries and offers</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">Where It Appears</h4>
+                  <p className="text-sm text-blue-700">
+                    Your owner profile card is shown on each of your property detail pages. Getting verified
+                    and maintaining good reviews helps attract more bookings.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Dashboard Navigation */}
+            {activeRole === "owner" && (isPrinting || activeSection === "dashboard-nav") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Dashboard Navigation</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Your Owner Dashboard is organized into 4 main tabs with collapsible sub-sections.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {[
+                    { tab: "Dashboard", desc: "Overview stats, portfolio overview, pricing intelligence, and demand signals. Your home base for quick insights.", sections: "Overview Stats, Portfolio, Pricing Intelligence, Demand Signals" },
+                    { tab: "My Listings", desc: "All your properties and listings. Add properties, create listings, edit pricing, and manage availability.", sections: "My Properties, My Listings (active/pending/expired)" },
+                    { tab: "Bookings & Earnings", desc: "Track bookings, manage payouts, view earnings breakdown, and export calendar.", sections: "Bookings, Earnings, Stripe Connect, Calendar Export" },
+                    { tab: "Account", desc: "Profile settings, verification status, and notification preferences.", sections: "Account Settings, Verification, Notifications" },
+                  ].map((item, i) => (
+                    <div key={i} className="bg-card rounded-xl p-6 border">
+                      <h4 className="font-medium mb-2">{item.tab}</h4>
+                      <p className="text-sm text-muted-foreground mb-2">{item.desc}</p>
+                      <p className="text-xs text-muted-foreground"><strong>Sub-sections:</strong> {item.sections}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">Tip</h4>
+                  <p className="text-sm text-blue-700">
+                    Each sub-section is collapsible — click the header to expand or collapse it.
+                    If you bookmarked an old tab URL, it will automatically redirect to the correct new tab.
+                  </p>
+                </div>
+              </section>
+            )}
+
             {/* Owner Account & Preferences */}
             {activeRole === "owner" && (isPrinting || activeSection === "account-settings") && (
               <section className="space-y-8 print:break-after-page">
@@ -1257,6 +1525,279 @@ const UserGuide = () => {
                     If something is wrong (access problems, cleanliness, safety concerns), report it immediately 
                     during check-in. RAV support will work with you and the owner to resolve the issue.
                   </p>
+                </div>
+              </section>
+            )}
+
+            {/* Saved Searches & Price Alerts */}
+            {activeRole === "renter" && (isPrinting || activeSection === "saved-searches") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Saved Searches & Price Alerts</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Save your search criteria and get notified when prices drop.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How to Save a Search</h3>
+                  <ol className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                      <span>Browse listings on the Rentals page and apply your desired filters (location, dates, price range)</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                      <span>Click the "Save Search" button in the toolbar</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                      <span>Give your search a name (e.g., "Orlando Spring Break")</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">Price Drop Alerts</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Each saved search automatically tracks prices. When a listing matching your criteria drops in price,
+                    you'll see a "Price Drop" badge on your My Trips dashboard. This helps you find deals without
+                    manually checking every day.
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">Where to Find Saved Searches</h4>
+                  <p className="text-sm text-blue-700">
+                    Go to My Trips → the "Saved Searches" section shows all your saved searches with the latest
+                    matching listings and price changes.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Pre-Booking Messaging */}
+            {activeRole === "renter" && (isPrinting || activeSection === "pre-booking-messaging") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Pre-Booking Messaging</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Ask the owner questions before you book — no commitment required.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How to Send an Inquiry</h3>
+                  <ol className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                      <span>Visit any property detail page</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                      <span>Click "Ask the Owner" button</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                      <span>Type your question about the property, amenities, check-in process, or anything else</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">4</span>
+                      <span>The owner receives a notification and can reply directly. You'll see responses in the same thread.</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">Good Questions to Ask</h4>
+                  <p className="text-sm text-blue-700">
+                    Check-in/check-out procedures, parking details, kitchen equipment,
+                    nearby restaurants, shuttle services, or special accommodation needs.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Renter Dashboard */}
+            {activeRole === "renter" && (isPrinting || activeSection === "renter-dashboard") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">My Trips Dashboard</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Your personal travel hub at <code className="bg-muted px-1 rounded">/my-trips</code>.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {[
+                    { tab: "Overview", desc: "Quick stats — upcoming trips, active offers, saved searches. Check-in countdown shows days until your next trip." },
+                    { tab: "Bookings", desc: "All your bookings with status, timeline visualization, review buttons, and cancellation options." },
+                    { tab: "Offers", desc: "Track all your active bids and offers. See which are pending, accepted, or expired." },
+                    { tab: "Favorites", desc: "Properties you've saved, plus your saved searches with price drop alerts." },
+                  ].map((item, i) => (
+                    <div key={i} className="bg-card rounded-xl p-6 border">
+                      <h4 className="font-medium mb-2">{item.tab}</h4>
+                      <p className="text-sm text-muted-foreground">{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Compare Properties */}
+            {activeRole === "renter" && (isPrinting || activeSection === "compare-properties") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Compare Properties</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Compare up to 3 properties side by side to find your best option.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How to Compare</h3>
+                  <ol className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                      <span>On the Rentals page, click "Compare" to enter comparison mode</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                      <span>Select up to 3 listings by clicking their checkboxes</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                      <span>Click "Compare Selected" in the floating bar to open the comparison dialog</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">What's Compared</h3>
+                  <p className="text-sm text-muted-foreground">
+                    The comparison table shows price per night, total price, dates, location, bedrooms,
+                    bathrooms, max guests, amenities, cancellation policy, and fair value score.
+                    "Best" badges highlight the top option for each category.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Booking Timeline */}
+            {activeRole === "renter" && (isPrinting || activeSection === "booking-timeline") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Booking Timeline</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Track your booking's progress from confirmation to checkout.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">Timeline Steps</h3>
+                  <div className="space-y-3">
+                    {[
+                      { step: "Booked", desc: "Your reservation is confirmed and payment is held in escrow" },
+                      { step: "Confirmed", desc: "The owner has confirmed your booking" },
+                      { step: "Check-In Ready", desc: "Check-in instructions are available (24h before arrival)" },
+                      { step: "In Progress", desc: "You're currently on your vacation" },
+                      { step: "Completed", desc: "Your stay is complete — leave a review!" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex gap-4 p-3 bg-muted/50 rounded-lg">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold flex-shrink-0 text-sm">
+                          {i + 1}
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.step}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">Where to Find It</h4>
+                  <p className="text-sm text-blue-700">
+                    The timeline appears on your booking confirmation page and in My Bookings.
+                    A compact horizontal version shows at a glance; click to expand the full vertical timeline.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Reviews & Ratings */}
+            {activeRole === "renter" && (isPrinting || activeSection === "reviews") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Reviews & Ratings</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Share your experience and help other renters make informed decisions.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How to Write a Review</h3>
+                  <ol className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                      <span>After your stay completes, go to My Bookings</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                      <span>Click "Write Review" on the completed booking card</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                      <span>Rate your stay (1-5 stars) and write your review</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">4</span>
+                      <span>Your review appears on the property detail page and contributes to the owner's rating</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">Reading Reviews</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Every property detail page shows a review summary (average rating and count) in the sidebar,
+                    plus a full list of reviews with star ratings at the bottom of the page.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Explore Destinations */}
+            {activeRole === "renter" && (isPrinting || activeSection === "destinations") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Explore Destinations</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Discover vacation club properties across 10 popular destinations and 35 cities.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How to Browse</h3>
+                  <ol className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                      <span>Click "Destinations" in the main navigation</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                      <span>Browse destination cards showing popular regions (Florida, Hawaii, California, etc.)</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                      <span>Click a destination to see available cities and properties in that area</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">4</span>
+                      <span>Click any city to jump directly to filtered rental listings for that location</span>
+                    </li>
+                  </ol>
                 </div>
               </section>
             )}

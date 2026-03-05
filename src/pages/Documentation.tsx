@@ -35,7 +35,17 @@ import {
   Compass,
   BarChart3,
   Database,
-  Wrench
+  Wrench,
+  Scale,
+  Trash2,
+  Link2,
+  Activity,
+  Wifi,
+  Star,
+  Bookmark,
+  CalendarCheck,
+  FileCode,
+  CalendarDays
 } from "lucide-react";
 
 const Documentation = () => {
@@ -78,6 +88,18 @@ const Documentation = () => {
     { id: "seed-data", label: "Seed Data System", icon: Database },
     { id: "per-night-pricing", label: "Per-Night Pricing", icon: DollarSign },
     { id: "platform-improvements", label: "Platform Improvements", icon: Wrench },
+    { id: "disputes", label: "Disputes & Resolution", icon: Scale },
+    { id: "gdpr", label: "GDPR & Data Deletion", icon: Trash2 },
+    { id: "stripe-connect", label: "Stripe Connect", icon: Link2 },
+    { id: "ga4", label: "Google Analytics (GA4)", icon: Activity },
+    { id: "realtime", label: "Realtime Subscriptions", icon: Wifi },
+    { id: "reviews-system", label: "Reviews System", icon: Star },
+    { id: "messaging", label: "Messaging System", icon: MessageSquare },
+    { id: "saved-searches-system", label: "Saved Searches & Price Tracking", icon: Bookmark },
+    { id: "pre-booking-inquiries", label: "Pre-Booking Inquiries", icon: Mail },
+    { id: "idle-listing-alerts", label: "Idle Listing Alerts", icon: CalendarCheck },
+    { id: "openapi-swagger", label: "OpenAPI / Swagger", icon: FileCode },
+    { id: "ical-export", label: "iCal Calendar Export", icon: CalendarDays },
   ];
 
   const currentDate = new Date().toLocaleDateString('en-US', { 
@@ -2294,6 +2316,391 @@ const Documentation = () => {
                       The "Add Property" vacation club brand dropdown no longer pre-selects a default brand.
                       Users must explicitly choose their brand, preventing accidental misclassification.
                       The submit button is disabled until a brand is selected.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Disputes & Resolution */}
+            {(activeSection === "disputes" || isPrinting) && (
+              <section id="disputes" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Disputes & Resolution</h1>
+                  <p className="text-xl text-muted-foreground">
+                    How disputes are filed, tracked, and resolved on the platform.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Dispute Workflow</h3>
+                    <ol className="space-y-2 text-sm text-muted-foreground">
+                      <li><strong>1. Filing:</strong> Renter clicks "Report Issue" on a booking → selects category (property_not_as_described, access_issues, safety_concerns, etc.) → describes the problem</li>
+                      <li><strong>2. Triage:</strong> Admin sees dispute in Admin Dashboard → Disputes tab with priority/status/assignment filters</li>
+                      <li><strong>3. Investigation:</strong> Admin updates status (open → investigating), assigns to team member, sends messages to parties via internal thread</li>
+                      <li><strong>4. Resolution:</strong> Admin resolves with optional refund amount → dispute closed, booking/escrow updated</li>
+                    </ol>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Dispute Categories</h3>
+                    <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                      <span>• Property not as described</span>
+                      <span>• Access issues</span>
+                      <span>• Safety concerns</span>
+                      <span>• Cleanliness</span>
+                      <span>• Amenities missing</span>
+                      <span>• Communication issues</span>
+                      <span>• Billing dispute</span>
+                      <span>• Other</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Technical Details</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Database: <code className="bg-muted px-1 rounded">disputes</code> + <code className="bg-muted px-1 rounded">dispute_messages</code> tables.
+                      Migration 026. Admin component: <code className="bg-muted px-1 rounded">AdminDisputes.tsx</code>.
+                      Renter component: <code className="bg-muted px-1 rounded">ReportIssueDialog.tsx</code>.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* GDPR & Data Deletion */}
+            {(activeSection === "gdpr" || isPrinting) && (
+              <section id="gdpr" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">GDPR & Data Deletion</h1>
+                  <p className="text-xl text-muted-foreground">
+                    User data deletion and privacy compliance.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Delete Account Flow</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Users can request full account deletion from Account Settings → "Delete My Account".
+                      The deletion is permanent and irrevocable.
+                    </p>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• Profile data is anonymized (name, email, phone replaced with "[deleted]")</li>
+                      <li>• Auth account is deleted from Supabase Auth</li>
+                      <li>• Active bookings are cancelled with appropriate refunds</li>
+                      <li>• Listings are deactivated</li>
+                      <li>• Reviews and dispute history are retained (anonymized) for platform integrity</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Technical Details</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Edge function: <code className="bg-muted px-1 rounded">gdpr-delete-user</code>.
+                      Migration 028. Requires email confirmation before processing.
+                      Rate limited to prevent abuse.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Stripe Connect */}
+            {(activeSection === "stripe-connect" || isPrinting) && (
+              <section id="stripe-connect" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Stripe Connect</h1>
+                  <p className="text-xl text-muted-foreground">
+                    How property owners receive automated payouts via Stripe Express accounts.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Owner Onboarding</h3>
+                    <ol className="space-y-2 text-sm text-muted-foreground">
+                      <li><strong>1.</strong> Owner clicks "Connect Stripe" banner in Owner Dashboard → Earnings tab</li>
+                      <li><strong>2.</strong> <code className="bg-muted px-1 rounded">create-connect-account</code> edge function creates a Stripe Express account</li>
+                      <li><strong>3.</strong> Owner completes Stripe's hosted onboarding (bank details, identity verification)</li>
+                      <li><strong>4.</strong> On return, <code className="bg-muted px-1 rounded">stripe_account_id</code>, <code className="bg-muted px-1 rounded">onboarding_complete</code>, <code className="bg-muted px-1 rounded">charges_enabled</code>, <code className="bg-muted px-1 rounded">payouts_enabled</code> fields are updated</li>
+                    </ol>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Payout Flow</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Admin initiates payouts via Admin Dashboard → Payouts → "Pay via Stripe". The
+                      <code className="bg-muted px-1 rounded"> create-stripe-payout</code> edge function creates a Stripe Transfer
+                      from the RAV platform account to the owner's connected account. Transfer ID is recorded on the booking.
+                    </p>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Banner States</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Not connected:</strong> "Connect your Stripe account to receive payouts" with setup button</li>
+                      <li>• <strong>Onboarding incomplete:</strong> "Complete your Stripe setup" with continue button</li>
+                      <li>• <strong>Connected:</strong> Green success message (auto-hides after first view)</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Google Analytics (GA4) */}
+            {(activeSection === "ga4" || isPrinting) && (
+              <section id="ga4" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Google Analytics (GA4)</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Analytics integration with cookie consent compliance.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Integration Details</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Measurement ID:</strong> G-G2YCVHNS25</li>
+                      <li>• <strong>Consent gating:</strong> GA4 script only loads after user accepts cookies via the CookieConsent banner</li>
+                      <li>• <strong>Page views:</strong> Automatically tracked via React Router navigation</li>
+                      <li>• <strong>Custom events:</strong> Can be sent via <code className="bg-muted px-1 rounded">gtag('event', ...)</code> after consent</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Cookie Consent</h3>
+                    <p className="text-sm text-muted-foreground">
+                      A bottom banner appears on first visit asking users to accept or decline cookies.
+                      If declined, no GA4 tracking occurs. Preference is stored in localStorage.
+                      Component: <code className="bg-muted px-1 rounded">CookieConsent.tsx</code>.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Realtime Subscriptions */}
+            {(activeSection === "realtime" || isPrinting) && (
+              <section id="realtime" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Realtime Subscriptions</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Live updates via Supabase Realtime replace polling throughout the app.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Where Realtime is Used</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>NotificationBell:</strong> New notifications appear instantly (replaced 30s polling)</li>
+                      <li>• <strong>BookingMessageThread:</strong> Messages arrive in real-time (replaced 10s polling)</li>
+                      <li>• <strong>Unread counts:</strong> Badge counts update live (replaced 30s polling)</li>
+                      <li>• <strong>Role upgrades:</strong> Approval status detected instantly without page refresh</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Technical Details</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Hook: <code className="bg-muted px-1 rounded">useRealtimeSubscription</code> wraps Supabase
+                      <code className="bg-muted px-1 rounded"> postgres_changes</code> channel. Subscribes to INSERT/UPDATE/DELETE
+                      events on specified tables with optional filters. Channels are cleaned up on unmount.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Reviews System */}
+            {(activeSection === "reviews-system" || isPrinting) && (
+              <section id="reviews-system" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Reviews System</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Guest reviews and property ratings architecture.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Table:</strong> <code className="bg-muted px-1 rounded">reviews</code> (migration 033) — rating (1-5), comment, reviewer_id, property_id, booking_id</li>
+                      <li>• <strong>RPC:</strong> <code className="bg-muted px-1 rounded">get_property_review_summary</code> — returns avg rating + count per property</li>
+                      <li>• <strong>Hooks:</strong> <code className="bg-muted px-1 rounded">useReviews</code> — 4 hooks (list, submit, summary, check-if-reviewed)</li>
+                      <li>• <strong>Components:</strong> StarRating (read-only + interactive), ReviewForm (dialog), ReviewList, ReviewSummary</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Integration Points</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• PropertyDetail sidebar: review summary (avg rating + count)</li>
+                      <li>• PropertyDetail bottom: full review list with star ratings</li>
+                      <li>• MyBookings: "Write Review" button on completed bookings (one review per booking)</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Messaging System */}
+            {(activeSection === "messaging" || isPrinting) && (
+              <section id="messaging" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Messaging System</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Post-booking messaging between owners and renters.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Table:</strong> <code className="bg-muted px-1 rounded">booking_messages</code> (migration 034) — sender_id, booking_id, content, read_at</li>
+                      <li>• <strong>RPC:</strong> <code className="bg-muted px-1 rounded">get_unread_message_counts</code> — returns per-booking unread counts</li>
+                      <li>• <strong>Component:</strong> <code className="bg-muted px-1 rounded">BookingMessageThread</code> — Sheet-based chat UI with real-time updates</li>
+                      <li>• <strong>Access:</strong> "Message Owner" in MyBookings, "Message Renter" in OwnerBookings</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Saved Searches & Price Tracking */}
+            {(activeSection === "saved-searches-system" || isPrinting) && (
+              <section id="saved-searches-system" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Saved Searches & Price Tracking</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Persistent search criteria with automatic price drop detection.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Table:</strong> <code className="bg-muted px-1 rounded">saved_searches</code> (migration 038) — name, filters (JSONB), last_min_price, price_dropped_since_last_check</li>
+                      <li>• <strong>Components:</strong> SaveSearchButton (Rentals toolbar), SavedSearchesList (My Trips dashboard)</li>
+                      <li>• <strong>Price tracking:</strong> On each load, current lowest price is compared to stored <code className="bg-muted px-1 rounded">last_min_price</code>. If lower, "Price Drop" badge appears.</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Pre-Booking Inquiries */}
+            {(activeSection === "pre-booking-inquiries" || isPrinting) && (
+              <section id="pre-booking-inquiries" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Pre-Booking Inquiries</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Renters can message owners before committing to a booking.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Tables:</strong> <code className="bg-muted px-1 rounded">listing_inquiries</code> + <code className="bg-muted px-1 rounded">inquiry_messages</code> (migration 037)</li>
+                      <li>• <strong>Components:</strong> InquiryDialog ("Ask the Owner" button on PropertyDetail), InquiryThread (message thread UI)</li>
+                      <li>• <strong>Flow:</strong> Renter opens inquiry → sends message → owner receives notification → replies in thread → renter sees response</li>
+                      <li>• <strong>Scope:</strong> Inquiry is per-listing, not per-property. Multiple inquiries can exist for different listings.</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Idle Listing Alerts */}
+            {(activeSection === "idle-listing-alerts" || isPrinting) && (
+              <section id="idle-listing-alerts" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Idle Listing Alerts</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Automated email alerts for listings approaching check-in without bookings.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Edge function:</strong> <code className="bg-muted px-1 rounded">idle-listing-alerts</code> — runs on a cron schedule</li>
+                      <li>• <strong>Table:</strong> <code className="bg-muted px-1 rounded">idle_listing_alerts</code> (migration 039) — tracks which alerts have been sent per listing</li>
+                      <li>• <strong>Thresholds:</strong> 60-day warning + 30-day urgent alert</li>
+                      <li>• <strong>Idempotent:</strong> Each alert type sent only once per listing (deduped by listing_id + alert_type)</li>
+                      <li>• <strong>Email:</strong> Sent via Resend with direct link to edit the listing's pricing</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* OpenAPI / Swagger */}
+            {(activeSection === "openapi-swagger" || isPrinting) && (
+              <section id="openapi-swagger" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">OpenAPI / Swagger</h1>
+                  <p className="text-xl text-muted-foreground">
+                    API documentation via OpenAPI 3.0.3 specification.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Access</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Swagger UI:</strong> <code className="bg-muted px-1 rounded">/api-docs</code> — interactive API explorer (admin-gated)</li>
+                      <li>• <strong>Spec file:</strong> <code className="bg-muted px-1 rounded">docs/api/openapi.yaml</code> — OpenAPI 3.0.3 with all 26 edge function endpoints</li>
+                      <li>• <strong>Authentication:</strong> Bearer token (Supabase JWT) + Stripe webhook signature scheme</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Coverage</h3>
+                    <p className="text-sm text-muted-foreground">
+                      All 26 edge functions documented with operationId, security requirements, x-rate-limit annotations,
+                      request/response schemas, and error codes. Validated against OpenAPI 3.0.3 specification (0 errors, 0 warnings).
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* iCal Calendar Export */}
+            {(activeSection === "ical-export" || isPrinting) && (
+              <section id="ical-export" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">iCal Calendar Export</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Export bookings as RFC 5545 iCalendar files for external calendar apps.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Library:</strong> <code className="bg-muted px-1 rounded">src/lib/icalendar.ts</code> — pure TypeScript, zero dependencies, RFC 5545 compliant</li>
+                      <li>• <strong>Hook:</strong> <code className="bg-muted px-1 rounded">useOwnerCalendarExport</code> — fetches confirmed bookings and generates .ics download</li>
+                      <li>• <strong>UI:</strong> "Export Calendar" button in OwnerBookings toolbar</li>
+                      <li>• <strong>Format:</strong> VEVENT per booking with DTSTART/DTEND (DATE type), SUMMARY (resort name), DESCRIPTION (guest details)</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Compatibility</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Works with Google Calendar, Apple Calendar, Microsoft Outlook, Yahoo Calendar, and
+                      any app that supports .ics file import. Events appear as all-day events for check-in through check-out dates.
                     </p>
                   </div>
                 </div>
