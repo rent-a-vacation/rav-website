@@ -38,7 +38,7 @@ This document defines the testing strategy for Rent-A-Vacation, a vacation renta
   /-------------\   Example: pricing, sort, cancellation policy, iCal, timeline
 ```
 
-**Current Total:** 592 tests across 81 test files (all passing)
+**Current Total:** 627 tests across 86 test files (all passing)
 **P0 Critical Path:** 97 tests tagged `@p0` across 14 files — run with `npm run test:p0`
 
 ---
@@ -220,7 +220,7 @@ These are **non-negotiable** - if ANY of these break, users can't use the platfo
 ### Testing Stack
 | Tool | Purpose | Status |
 |------|---------|--------|
-| **Vitest** | Unit + Integration | ✅ Active — 592 tests |
+| **Vitest** | Unit + Integration | ✅ Active — 627 tests |
 | **Playwright** | E2E testing | ✅ Active — 3 smoke tests |
 | **Percy.io** | Visual regression | ⏸ Disabled (private repo requires paid plan) |
 | **GitHub Actions** | CI/CD | ✅ Active — lint → test → e2e → lighthouse |
@@ -305,7 +305,7 @@ describe('Authentication', () => {
 - P0 test case library with `@p0` tagging (97 tests)
 - CI test reporting via dorny/test-reporter (JUnit XML)
 - Lighthouse CI audit
-- **Final: 592 tests, 81 test files, all passing**
+- **Final: 627 tests, 86 test files, all passing**
 
 ---
 
@@ -313,7 +313,7 @@ describe('Authentication', () => {
 
 ### Quantitative (Actual as of March 2026)
 - **Test Execution Time:** ~64s locally, <3 min in CI
-- **Total Tests:** 592 (81 test files)
+- **Total Tests:** 627 (86 test files)
 - **P0 Tests:** 97 tagged `@p0` across 14 files
 - **E2E Tests:** 3 smoke tests (homepage, rentals, navigation)
 - **CI/CD Pass Rate:** >95%
