@@ -31,12 +31,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Calendar, MapPin, Search, Check, X, DollarSign, Loader2 } from "lucide-react";
+import { Calendar, MapPin, Search, Check, X, DollarSign, Loader2, Pencil } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import type { Listing, Property, Profile, ListingStatus } from "@/types/database";
 import { AdminEntityLink, type AdminNavigationProps } from "./AdminEntityLink";
 import { AgeBadge } from "./AgeBadge";
+import AdminListingEditDialog from "./AdminListingEditDialog";
 
 const REJECTION_TEMPLATES = [
   "Incomplete property details",
@@ -69,7 +70,7 @@ const STATUS_LABELS: Record<ListingStatus, string> = {
 };
 
 const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigationProps) => {
-  const { user } = useAuth();
+  const { user, isRavAdmin } = useAuth();
   const { toast } = useToast();
   const [listings, setListings] = useState<ListingWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -82,6 +83,8 @@ const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkRejecting, setIsBulkRejecting] = useState(false);
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
+  const [editListing, setEditListing] = useState<ListingWithDetails | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   useEffect(() => {
     if (initialSearch) setSearchQuery(initialSearch);
@@ -507,28 +510,42 @@ const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      {listing.status === "pending_approval" && (
-                        <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-2">
+                        {listing.status === "pending_approval" && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-green-600 hover:text-green-700"
+                              onClick={() => handleApprove(listing.id)}
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() => openRejectDialog(listing.id)}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Reject
+                            </Button>
+                          </>
+                        )}
+                        {isRavAdmin() && (
                           <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-green-600 hover:text-green-700"
-                            onClick={() => handleApprove(listing.id)}
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setEditListing(listing);
+                              setEditDialogOpen(true);
+                            }}
                           >
-                            <Check className="h-4 w-4 mr-1" />
-                            Approve
+                            <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700"
-                            onClick={() => openRejectDialog(listing.id)}
-                          >
-                            <X className="h-4 w-4 mr-1" />
-                            Reject
-                          </Button>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -630,6 +647,13 @@ const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AdminListingEditDialog
+        listing={editListing}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSaved={fetchListings}
+      />
     </div>
   );
 };
