@@ -507,6 +507,8 @@ const OwnerListings = () => {
                       currentRate={formData.nightly_rate}
                       brand={priceProp.brand}
                       location={priceProp.location}
+                      bedrooms={priceProp.bedrooms}
+                      checkInDate={formData.check_in_date}
                     />
                   ) : null;
                 })()}

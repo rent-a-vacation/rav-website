@@ -720,6 +720,8 @@ const ListProperty = () => {
                       currentRate={parseFloat(nightlyRate) || 0}
                       brand={selectedBrand || undefined}
                       location={location || undefined}
+                      bedrooms={parseInt(bedrooms) || undefined}
+                      checkInDate={checkInDate || undefined}
                     />
                   </div>
 

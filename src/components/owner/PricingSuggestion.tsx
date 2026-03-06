@@ -1,14 +1,31 @@
 import { usePricingSuggestion } from "@/hooks/usePricingSuggestion";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { useDynamicPricing } from "@/hooks/useDynamicPricing";
+import { TrendingUp, TrendingDown, Minus, Clock, Sun, Zap } from "lucide-react";
 
 interface PricingSuggestionProps {
   currentRate: number;
   brand: string | undefined;
   location: string | undefined;
+  bedrooms?: number;
+  checkInDate?: string;
 }
 
-export function PricingSuggestion({ currentRate, brand, location }: PricingSuggestionProps) {
+function FactorBadge({ icon: Icon, label, pct }: { icon: typeof Clock; label: string; pct: number }) {
+  if (pct === 0) return null;
+  const isPositive = pct > 0;
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+      isPositive ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+    }`}>
+      <Icon className="h-2.5 w-2.5" />
+      {label} {isPositive ? "+" : ""}{pct}%
+    </span>
+  );
+}
+
+export function PricingSuggestion({ currentRate, brand, location, bedrooms, checkInDate }: PricingSuggestionProps) {
   const suggestion = usePricingSuggestion(brand, location);
+  const { suggestion: dynamic } = useDynamicPricing(brand, location, bedrooms, checkInDate);
 
   if (!suggestion || currentRate <= 0 || !brand || !location) return null;
 
@@ -26,17 +43,14 @@ export function PricingSuggestion({ currentRate, brand, location }: PricingSugge
   let label: string;
 
   if (currentRate <= avgNightlyRate * 1.05) {
-    // At or below average (+5% tolerance) = green (competitive)
     colorClass = "text-emerald-600";
     Icon = TrendingDown;
     label = "Competitive price";
   } else if (currentRate <= avgNightlyRate * 1.3) {
-    // Up to 30% above average = yellow
     colorClass = "text-amber-600";
     Icon = Minus;
     label = "Above average";
   } else {
-    // More than 30% above average = red
     colorClass = "text-red-600";
     Icon = TrendingUp;
     label = "Well above market";
@@ -72,6 +86,32 @@ export function PricingSuggestion({ currentRate, brand, location }: PricingSugge
       <p className="text-xs text-muted-foreground">
         Your rate: <span className="font-medium text-foreground">${currentRate}/night</span>
       </p>
+
+      {/* Dynamic pricing suggestion */}
+      {dynamic && (
+        <div className="border-t pt-2 mt-1 space-y-1.5">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-muted-foreground">
+              Suggested rate
+            </p>
+            <span className="text-xs font-semibold text-foreground">
+              ${dynamic.suggestedRate}/night
+            </span>
+          </div>
+
+          {/* Factor badges */}
+          <div className="flex flex-wrap gap-1">
+            <FactorBadge icon={Clock} label="Urgency" pct={dynamic.factors.urgencyPct} />
+            <FactorBadge icon={Sun} label="Season" pct={dynamic.factors.seasonalPct} />
+            <FactorBadge icon={Zap} label="Demand" pct={dynamic.factors.demandPct} />
+          </div>
+
+          <p className="text-[10px] text-muted-foreground">
+            Based on booking history, seasonality & demand
+            {dynamic.confidence === "low" && " (limited data)"}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

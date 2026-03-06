@@ -30,6 +30,7 @@ import {
   X,
   Pencil,
   ChevronDown,
+  Share2,
 } from "lucide-react";
 import { usePublishDraft, loadDraft, clearDraft, type ListPropertyDraft } from "@/hooks/usePublishDraft";
 import { useToast } from "@/hooks/use-toast";
@@ -45,6 +46,7 @@ import { OwnerProposals } from "@/components/owner/OwnerProposals";
 import { OwnerVerification } from "@/components/owner/OwnerVerification";
 import { OwnerPayouts } from "@/components/owner/OwnerPayouts";
 import { MembershipPlans } from "@/components/MembershipPlans";
+import { ReferralDashboard } from "@/components/owner/ReferralDashboard";
 import { useOwnerCommission } from "@/hooks/useOwnerCommission";
 import { useOwnerDashboardStats } from "@/hooks/owner/useOwnerDashboardStats";
 import { useOwnerEarnings } from "@/hooks/owner/useOwnerEarnings";
@@ -637,6 +639,19 @@ const OwnerDashboard = () => {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <MembershipPlans category="owner" />
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Share2 className="h-5 w-5 text-primary" />
+                  Referral Program
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <ReferralDashboard />
               </CollapsibleContent>
             </Collapsible>
           </TabsContent>
