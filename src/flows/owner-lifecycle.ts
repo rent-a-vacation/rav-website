@@ -49,6 +49,15 @@ export const ownerLifecycle: FlowDefinition = {
       edgeFunctions: ['send-verification-notification'],
     },
     {
+      id: 'referral_program',
+      route: '/owner-dashboard',
+      label: 'Referral Program',
+      component: 'ReferralDashboard',
+      tab: 'account',
+      description: 'Owner generates a referral link, shares with other timeshare owners, and tracks signups + rewards',
+      tables: ['referral_codes', 'referrals'],
+    },
+    {
       id: 'fee_calculator',
       route: '/calculator',
       label: 'Maintenance Fee Calculator',

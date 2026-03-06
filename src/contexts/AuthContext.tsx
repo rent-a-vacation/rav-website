@@ -14,7 +14,7 @@ interface AuthContextType {
   isConfigured: boolean;
   isPasswordRecovery: boolean;
   // Auth methods
-  signUp: (email: string, password: string, fullName?: string, accountType?: string) => Promise<{ error: AuthError | null }>;
+  signUp: (email: string, password: string, fullName?: string, accountType?: string, referralCode?: string) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: AuthError | null }>;
@@ -147,20 +147,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [isConfigured]);
 
   // Auth methods
-  const signUp = async (email: string, password: string, fullName?: string, accountType?: string) => {
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email: string, password: string, fullName?: string, accountType?: string, referralCode?: string) => {
+    const metadata: Record<string, unknown> = {
+      full_name: fullName,
+      account_type: accountType || 'renter',
+      terms_accepted_at: new Date().toISOString(),
+      age_verified: true,
+    };
+    if (referralCode) {
+      metadata.referral_code = referralCode;
+    }
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: {
-          full_name: fullName,
-          account_type: accountType || 'renter',
-          terms_accepted_at: new Date().toISOString(),
-          age_verified: true,
-        },
+        data: metadata,
       },
     });
+    // Record referral if code provided and signup succeeded
+    if (!error && referralCode && data.user?.id) {
+      supabase.rpc("record_referral", {
+        p_referral_code: referralCode,
+        p_new_user_id: data.user.id,
+      }).catch(() => {}); // fire-and-forget
+    }
     return { error };
   };
 

@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, Lock, Eye, EyeOff, User, ArrowRight, Check, Loader2, Rocket } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, ArrowRight, Check, Loader2, Rocket, Gift } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { ActionSuccessCard } from "@/components/ActionSuccessCard";
 import { supabase } from "@/lib/supabase";
+import { extractReferralCode } from "@/lib/referral";
 
 const Signup = () => {
   usePageMeta('Sign Up', 'Create your free Rent-A-Vacation account to start booking or listing vacation properties.');
@@ -23,6 +24,8 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignupComplete, setIsSignupComplete] = useState(false);
   const [staffOnlyMode, setStaffOnlyMode] = useState(false);
+  const [searchParams] = useSearchParams();
+  const referralCode = extractReferralCode(searchParams);
 
   const { signUp, signInWithGoogle, isConfigured } = useAuth();
 
@@ -74,7 +77,7 @@ const Signup = () => {
     }
     
     setIsLoading(true);
-    const { error } = await signUp(formData.email, formData.password, formData.name, formData.accountType);
+    const { error } = await signUp(formData.email, formData.password, formData.name, formData.accountType, referralCode || undefined);
     setIsLoading(false);
     
     if (error) {
@@ -136,6 +139,16 @@ const Signup = () => {
                 />
               ) : (
               <>
+              {/* Referral Banner */}
+              {referralCode && (
+                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-4">
+                  <Gift className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <p className="text-sm text-emerald-700">
+                    You were referred! Sign up to unlock rewards for both you and your referrer.
+                  </p>
+                </div>
+              )}
+
               {/* Account Type Toggle */}
               <div className="flex bg-muted p-1 rounded-lg mb-6" role="group" aria-label="Account type">
                 <button
