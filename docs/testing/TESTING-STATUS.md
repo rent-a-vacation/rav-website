@@ -1,7 +1,7 @@
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** March 4, 2026 (Session 36)
+> **Last Updated:** March 5, 2026 (Session 37)
 
 ---
 
@@ -9,8 +9,8 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 627 |
-| **Test files** | 86 |
+| **Total tests** | 676 |
+| **Test files** | 90 |
 | **P0 critical-path tests** | 97 (tagged `@p0`) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~65s |
@@ -60,6 +60,7 @@ npm run test:e2e:headed   # Playwright with browser visible
 
 | Session | Tests | Files | Notes |
 |---------|-------|-------|-------|
+| 37 | 676 | 90 | Dynamic pricing, referral program |
 | 36 | 627 | 86 | Admin tools, disputes expansion |
 | 35 | 592 | 81 | OpenAPI, P0 library, iCal |
 | 34 | 574 | 78 | Realtime, destinations, saved searches |

@@ -42,7 +42,7 @@ e2e/
     └── pages.spec.ts               ← Percy snapshots (disabled)
 ```
 
-**Current total:** 627 tests across 86 test files (March 2026)
+**Current total:** 676 tests across 90 test files (March 2026)
 
 ## Test Types
 
