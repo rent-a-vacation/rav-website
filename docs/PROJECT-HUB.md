@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 4, 2026 (Session 36: #176-#180)
+> **Last Updated:** March 5, 2026 (Session 37: #99, #105)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -87,16 +87,23 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **627 automated tests** (86 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **676 automated tests** (90 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-041 (036-041 pending deploy to DEV/PROD)
+- **Migrations created:** 001-043 (all deployed to DEV and PROD)
 - **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync (PR #181 merged)
+- **dev and main:** in sync (PR #183, #184 merged)
 
-### Session Handoff (Sessions 25-36)
+### Session Handoff (Sessions 25-37)
+
+**Session 37 — Dynamic Pricing & Referral Program (Mar 5):**
+- Closed #99 (Dynamic Pricing): `src/lib/dynamicPricing.ts` — urgency discount (graduated 0-15%), seasonal factor (month-based historical data), demand adjustment (pending bids + saved searches). Migration 042: `get_dynamic_pricing_data` RPC. `useDynamicPricing` hook. Enhanced `PricingSuggestion` component with factor badges. 33 tests.
+- Closed #105 (Referral Program): Migration 043 — `referral_codes` + `referrals` tables, 3 RPCs (get_or_create_referral_code, record_referral, get_referral_stats). `src/lib/referral.ts` utilities. `useReferral` hooks. `ReferralDashboard` component in Owner Dashboard Account tab. Signup captures `?ref=` param. 16 tests.
+- Deployed migrations 036-043 to both DEV and PROD
+- Tests: 627→676 (+49 new, 90 test files)
+- PRs #183 and #184 merged to main
 
 **Session 36 — Admin Tools, Docs & Dispute Expansion (Mar 4):**
 - Closed #176 (UserGuide & Documentation): 13 new UserGuide sections (6 owner + 7 renter) + 12 new Documentation sections covering Sessions 27-35 features

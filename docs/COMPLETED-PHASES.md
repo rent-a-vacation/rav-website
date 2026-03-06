@@ -1,7 +1,45 @@
 # Completed Phases Archive
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
-> **Last Archived:** March 4, 2026
+> **Last Archived:** March 5, 2026
+
+---
+
+## Session 37: Dynamic Pricing & Referral Program
+
+**Completed:** March 5, 2026
+**PR:** #183, #184 → main
+**Issues Closed:** #99, #105
+
+### What Was Done
+
+#### Dynamic Pricing Suggestions (#99)
+`src/lib/dynamicPricing.ts` — pure utility functions: `calculateUrgencyDiscount()` (graduated 0-15% based on days-to-check-in), `calculateSeasonalFactor()` (weighted month-over-month historical pricing), `calculateDemandAdjustment()` (pending bids + saved searches → 0-8% premium), `suggestDynamicPrice()` (composite with confidence level). Migration 042: `get_dynamic_pricing_data` RPC queries historical booking prices by month, market averages from active listings, pending bid count, and saved search count. `useDynamicPricing` hook wraps the RPC with 5-min cache. Enhanced `PricingSuggestion.tsx` with suggested rate + factor badges (Urgency/Season/Demand) below the existing market range bar. Updated `OwnerListings.tsx` and `ListProperty.tsx` to pass `bedrooms` and `checkInDate` props. 33 tests (27 pure function + 6 hook).
+
+#### Referral Program (#105)
+Migration 043: `referral_codes` table (unique 8-char alphanumeric code per user) + `referrals` table (referrer→referred tracking with status/reward). 3 RPCs: `get_or_create_referral_code` (idempotent code generation), `record_referral` (called during signup, fire-and-forget), `get_referral_stats` (aggregated counts + total reward). RLS policies for user-own-data + admin read-all. `referral_program` system_settings entry (configurable reward type and amount). `src/lib/referral.ts` — `buildReferralLink()`, `extractReferralCode()`, `referralConversionRate()`, `formatRewardText()`. `src/hooks/useReferral.ts` — 4 hooks: `useReferralCode`, `useReferralStats`, `useReferralList`, `useRecordReferral`. `ReferralDashboard.tsx` — referral link card with copy-to-clipboard, 3 stat cards (total/conversion/earned), referral history list. Signup.tsx captures `?ref=CODE` from URL, shows green referral banner, passes code to `signUp()`. AuthContext.signUp extended with optional `referralCode` param. Owner Dashboard Account tab → new "Referral Program" collapsible section. Owner lifecycle flow manifest updated. 16 tests (12 pure function + 4 hook).
+
+### Migrations
+- **042_dynamic_pricing_data.sql:** `get_dynamic_pricing_data` RPC for historical pricing analytics
+- **043_referral_program.sql:** `referral_codes` + `referrals` tables, 3 RPCs, RLS, system_settings, triggers
+
+### Files Created (11)
+- `src/lib/dynamicPricing.ts`, `src/lib/dynamicPricing.test.ts`
+- `src/hooks/useDynamicPricing.ts`, `src/hooks/useDynamicPricing.test.ts`
+- `src/lib/referral.ts`, `src/lib/referral.test.ts`
+- `src/hooks/useReferral.ts`, `src/hooks/useReferral.test.ts`
+- `src/components/owner/ReferralDashboard.tsx`
+- `supabase/migrations/042_dynamic_pricing_data.sql`
+- `supabase/migrations/043_referral_program.sql`
+
+### Files Modified (7)
+- `src/components/owner/PricingSuggestion.tsx`, `src/components/owner/OwnerListings.tsx`
+- `src/pages/ListProperty.tsx`, `src/pages/OwnerDashboard.tsx`, `src/pages/Signup.tsx`
+- `src/contexts/AuthContext.tsx`
+- `src/flows/owner-lifecycle.ts`
+
+### Test Status
+676 tests passing, 90 test files, 0 TypeScript errors, 0 lint errors, build clean
 
 ---
 

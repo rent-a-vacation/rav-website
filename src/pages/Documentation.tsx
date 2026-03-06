@@ -45,7 +45,9 @@ import {
   Bookmark,
   CalendarCheck,
   FileCode,
-  CalendarDays
+  CalendarDays,
+  Share2,
+  Zap,
 } from "lucide-react";
 
 const Documentation = () => {
@@ -100,6 +102,8 @@ const Documentation = () => {
     { id: "idle-listing-alerts", label: "Idle Listing Alerts", icon: CalendarCheck },
     { id: "openapi-swagger", label: "OpenAPI / Swagger", icon: FileCode },
     { id: "ical-export", label: "iCal Calendar Export", icon: CalendarDays },
+    { id: "dynamic-pricing", label: "Dynamic Pricing", icon: Zap },
+    { id: "referral-program", label: "Referral Program", icon: Share2 },
   ];
 
   const currentDate = new Date().toLocaleDateString('en-US', { 
@@ -2702,6 +2706,115 @@ const Documentation = () => {
                       Works with Google Calendar, Apple Calendar, Microsoft Outlook, Yahoo Calendar, and
                       any app that supports .ics file import. Events appear as all-day events for check-in through check-out dates.
                     </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {(activeSection === "dynamic-pricing" || isPrinting) && (
+              <section id="dynamic-pricing" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Dynamic Pricing</h1>
+                  <p className="text-xl text-muted-foreground">
+                    AI-powered pricing suggestions based on urgency, seasonality, and demand signals.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>RPC:</strong> <code className="bg-muted px-1 rounded">get_dynamic_pricing_data(brand, location, bedrooms, check_in_date)</code> — queries historical booking prices, market averages, pending bids, saved searches</li>
+                      <li>• <strong>Library:</strong> <code className="bg-muted px-1 rounded">src/lib/dynamicPricing.ts</code> — pure functions for urgency, seasonal, and demand calculations</li>
+                      <li>• <strong>Hook:</strong> <code className="bg-muted px-1 rounded">useDynamicPricing</code> — wraps RPC + pure functions with 5-min cache</li>
+                      <li>• <strong>UI:</strong> Enhanced <code className="bg-muted px-1 rounded">PricingSuggestion</code> component with factor badges</li>
+                      <li>• <strong>Migration:</strong> 042 (RPC only, no new tables)</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Pricing Factors</h3>
+                    <ul className="space-y-3 text-sm text-muted-foreground">
+                      <li className="flex gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span><strong>Urgency Discount</strong> — Graduated: 0% at 60+ days, -5% at 30-59d, -10% at 14-29d, -12% at 7-13d, -15% at 0-6d</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span><strong>Seasonal Factor</strong> — Weighted average of historical booking prices by month. Compares target month to annual average.</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span><strong>Demand Adjustment</strong> — 0-8% premium based on pending bid count and saved search activity for comparable listings</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Confidence Levels</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>High:</strong> 10+ comparable listings and 4+ months of booking history</li>
+                      <li>• <strong>Medium:</strong> 3-9 comparable listings</li>
+                      <li>• <strong>Low:</strong> Fewer than 3 comparables — labeled "limited data"</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {(activeSection === "referral-program" || isPrinting) && (
+              <section id="referral-program" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Referral Program</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Owner-to-owner referral system with unique codes, tracking, and commission discount rewards.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Tables:</strong> <code className="bg-muted px-1 rounded">referral_codes</code> (unique 8-char code per user) + <code className="bg-muted px-1 rounded">referrals</code> (referrer→referred tracking)</li>
+                      <li>• <strong>RPCs:</strong> <code className="bg-muted px-1 rounded">get_or_create_referral_code</code>, <code className="bg-muted px-1 rounded">record_referral</code>, <code className="bg-muted px-1 rounded">get_referral_stats</code></li>
+                      <li>• <strong>Library:</strong> <code className="bg-muted px-1 rounded">src/lib/referral.ts</code> — link builder, code extractor, stats utilities</li>
+                      <li>• <strong>Hooks:</strong> <code className="bg-muted px-1 rounded">useReferralCode</code>, <code className="bg-muted px-1 rounded">useReferralStats</code>, <code className="bg-muted px-1 rounded">useReferralList</code>, <code className="bg-muted px-1 rounded">useRecordReferral</code></li>
+                      <li>• <strong>UI:</strong> <code className="bg-muted px-1 rounded">ReferralDashboard</code> in Owner Dashboard Account tab</li>
+                      <li>• <strong>Migration:</strong> 043</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Flow</h3>
+                    <ol className="space-y-3 text-sm text-muted-foreground">
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                        <span>Owner visits Referral Program section → unique code auto-generated</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                        <span>Referral link (<code className="bg-muted px-1 rounded">/signup?ref=CODE</code>) shared with another owner</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                        <span>New user signs up → referral banner shown, code captured in metadata, <code className="bg-muted px-1 rounded">record_referral</code> RPC called (fire-and-forget)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">4</span>
+                        <span>Referral status: pending → converted (when referred user completes first booking)</span>
+                      </li>
+                    </ol>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Configuration</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>System Setting:</strong> <code className="bg-muted px-1 rounded">referral_program</code> in <code className="bg-muted px-1 rounded">system_settings</code> table</li>
+                      <li>• <strong>Default Reward:</strong> 1% commission discount per converted referral</li>
+                      <li>• <strong>Self-Referral:</strong> Blocked in RPC</li>
+                      <li>• <strong>Duplicate Prevention:</strong> One referral per referred user (UNIQUE constraint)</li>
+                      <li>• <strong>RLS:</strong> Users see own referrals; RAV team sees all</li>
+                    </ul>
                   </div>
                 </div>
               </section>
