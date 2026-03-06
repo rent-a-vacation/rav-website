@@ -78,7 +78,7 @@ END $$;
 -- RAV team can read all referrals
 DO $$ BEGIN
   CREATE POLICY referrals_select_admin ON public.referrals
-    FOR SELECT USING (public.is_rav_team());
+    FOR SELECT USING (public.is_rav_team(auth.uid()));
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
