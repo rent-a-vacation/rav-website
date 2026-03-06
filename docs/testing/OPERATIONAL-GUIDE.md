@@ -151,11 +151,43 @@ The CI runs on every push to `main` and on all PRs:
 
 Test results are published as a GitHub Check on every CI run using `dorny/test-reporter` + Vitest JUnit XML output.
 
-- View test results: GitHub PR → Checks tab → "Unit & Integration Tests"
-- Failed tests are annotated inline on the PR diff with file and line number
-- Coverage HTML report is uploaded as a CI artifact (14-day retention)
-
 > **Qase removed (Mar 2026):** Replaced with free GitHub-native reporting. See issue #149 for future QA platform review.
+
+### Viewing Test Results on a Pull Request
+
+1. Open any PR on GitHub
+2. Go to the **Checks** tab (or scroll to the bottom where status checks appear)
+3. Look for the check named **"Unit & Integration Tests"**
+4. Click it to see:
+   - Pass/fail summary for all tests
+   - **Failed tests annotated inline** on the PR diff (with file and line number)
+
+### Viewing Test Results on Push to Main
+
+1. Go to the repo → **Actions** tab
+2. Click the latest CI workflow run
+3. The test-reporter step produces the same **"Unit & Integration Tests"** check
+4. Click it for the full test results breakdown
+
+### Viewing Coverage Reports
+
+The CI uploads a coverage HTML artifact (retained for 14 days):
+
+1. In the Actions workflow run, scroll to **Artifacts** at the bottom
+2. Download the coverage report ZIP
+3. Open `index.html` to browse per-file coverage
+
+### Quick Access via CLI
+
+```bash
+# List recent CI runs
+gh run list --repo rent-a-vacation/rav-website --limit 5
+
+# View a specific run
+gh run view <run-id> --repo rent-a-vacation/rav-website
+```
+
+Or visit: `https://github.com/rent-a-vacation/rav-website/actions`
 
 ## Pre-Commit Hook
 
