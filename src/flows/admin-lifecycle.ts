@@ -23,6 +23,7 @@ export const adminLifecycle: FlowDefinition = {
         { condition: 'Booking operations', targetStepId: 'booking_oversight', label: 'Bookings' },
         { condition: 'Support queue', targetStepId: 'issue_resolution', label: 'Issues' },
         { condition: 'Analytics & reports', targetStepId: 'financials', label: 'Reports' },
+        { condition: 'Launch preparation', targetStepId: 'launch_readiness', label: 'Launch' },
       ],
     },
 
@@ -160,7 +161,23 @@ export const adminLifecycle: FlowDefinition = {
       ],
     },
 
-    // ── Track 5: Analytics & Configuration ──
+    // ── Track 5: Launch Readiness ──
+    {
+      id: 'launch_readiness',
+      route: '/admin',
+      label: 'Launch Readiness',
+      component: 'LaunchReadinessChecklist',
+      tab: 'launch',
+      roles: ['rav_owner', 'rav_admin'],
+      description: 'Pre-flight checklist for going live: automated service checks, manual verification items, Go Live and Emergency Rollback controls',
+      tables: ['system_settings', 'profiles'],
+      branches: [
+        { condition: 'All checks pass', targetStepId: 'financials', label: 'Go Live' },
+        { condition: 'Issues found', targetStepId: 'dashboard', label: 'Fix issues', edgeStyle: 'dashed' },
+      ],
+    },
+
+    // ── Track 6: Analytics & Configuration ──
     {
       id: 'financials',
       route: '/admin',

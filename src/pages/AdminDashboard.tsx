@@ -33,6 +33,7 @@ import {
   Scale,
   Receipt,
   Database,
+  Rocket,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminProperties from "@/components/admin/AdminProperties";
@@ -53,6 +54,7 @@ import { VoiceControls } from "@/components/admin/VoiceControls";
 import AdminDisputes from "@/components/admin/AdminDisputes";
 import AdminTaxReporting from "@/components/admin/AdminTaxReporting";
 import AdminResortImport from "@/components/admin/AdminResortImport";
+import { LaunchReadinessChecklist } from "@/components/admin/LaunchReadinessChecklist";
 
 const IS_DEV = import.meta.env.VITE_SUPABASE_URL?.includes("oukbxqnlxnkainnligfz");
 
@@ -63,7 +65,7 @@ const AdminDashboard = () => {
   const [pendingCount, setPendingCount] = useState(0);
   const [roleRequestCount, setRoleRequestCount] = useState(0);
 
-  const ADMIN_ONLY_TABS = ['financials', 'tax', 'payouts', 'memberships', 'settings', 'voice', 'dev-tools'];
+  const ADMIN_ONLY_TABS = ['financials', 'tax', 'payouts', 'memberships', 'settings', 'launch', 'voice', 'dev-tools'];
 
   const requestedTab = searchParams.get("tab") || "overview";
   // Redirect staff away from admin-only tabs
@@ -252,6 +254,12 @@ const AdminDashboard = () => {
               </TabsTrigger>
             )}
             {isRavAdmin() && (
+              <TabsTrigger value="launch" className="gap-2">
+                <Rocket className="h-4 w-4" />
+                <span className="hidden sm:inline">Launch</span>
+              </TabsTrigger>
+            )}
+            {isRavAdmin() && (
               <TabsTrigger value="settings" className="gap-2">
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline">Settings</span>
@@ -360,6 +368,12 @@ const AdminDashboard = () => {
           {isRavAdmin() && (
             <TabsContent value="memberships">
               <AdminMemberships />
+            </TabsContent>
+          )}
+
+          {isRavAdmin() && (
+            <TabsContent value="launch">
+              <LaunchReadinessChecklist />
             </TabsContent>
           )}
 
