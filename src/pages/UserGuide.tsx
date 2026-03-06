@@ -42,6 +42,7 @@ import {
   Mail,
   GitCompare,
   Star,
+  Share2,
   Compass
 } from "lucide-react";
 
@@ -71,6 +72,7 @@ const UserGuide = () => {
     { id: "cancellations", label: "Cancellations", icon: Ban },
     { id: "portfolio", label: "Portfolio Overview", icon: BarChart3 },
     { id: "pricing-suggestions", label: "Pricing Suggestions", icon: TrendingUp },
+    { id: "referral-program", label: "Referral Program", icon: Share2 },
     { id: "ical-export", label: "Calendar Export (iCal)", icon: CalendarCheck },
     { id: "idle-alerts", label: "Idle Week Alerts", icon: AlertCircle },
     { id: "owner-profiles", label: "Owner Profiles", icon: UserCheck },
@@ -806,6 +808,28 @@ const UserGuide = () => {
                   </ul>
                 </div>
 
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">Dynamic Pricing Factors</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    When enough historical data is available, the platform also suggests an optimized nightly rate
+                    based on three factors:
+                  </p>
+                  <ul className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Urgency</strong> — Suggests discounts as your check-in date approaches (up to 15% off for last-minute availability)</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Seasonality</strong> — Adjusts based on what similar properties actually booked for in the same month historically</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Demand</strong> — Identifies when demand is high (many pending bids or saved searches) and suggests a premium</span>
+                    </li>
+                  </ul>
+                </div>
+
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
                   <h4 className="font-medium text-amber-800 mb-2 flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5" />
@@ -814,6 +838,67 @@ const UserGuide = () => {
                   <p className="text-sm text-amber-700">
                     Pricing suggestions appear in the List Property form (Step 2) and when editing listing rates in
                     your Owner Dashboard. If there aren't enough comparable listings, no suggestion is shown.
+                    Dynamic pricing factors require historical booking data and appear alongside the market range.
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {/* Referral Program */}
+            {activeRole === "owner" && (isPrinting || activeSection === "referral-program") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Referral Program</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Invite other timeshare owners and earn rewards when they join and book.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">How It Works</h3>
+                  <ol className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                      <span>Go to Owner Dashboard &rarr; Account tab &rarr; Referral Program section</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                      <span>Copy your unique referral link and share it with other timeshare owners</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                      <span>When someone signs up using your link, they appear in your referral list as "pending"</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">4</span>
+                      <span>Once they complete their first booking, the referral converts and you earn a reward</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4">Your Dashboard</h3>
+                  <ul className="space-y-3 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Referral Link</strong> — Your unique shareable link with one-click copy</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Stats Cards</strong> — Total referrals, conversion rate, and total rewards earned</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Referral History</strong> — List of all referred users with their status (pending or converted)</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                  <h4 className="font-medium text-blue-800 mb-2">Rewards</h4>
+                  <p className="text-sm text-blue-700">
+                    The default reward is a commission discount applied to your future bookings.
+                    Reward rates are configured by the platform and may change over time.
                   </p>
                 </div>
               </section>
