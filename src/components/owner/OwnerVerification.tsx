@@ -296,7 +296,7 @@ export const OwnerVerification = () => {
             <div className="flex items-center gap-3">
               {getTrustLevelIcon(verification?.trust_level || "new")}
               <div>
-                <CardTitle>Verification Status</CardTitle>
+                <CardTitle>TrustShield Status</CardTitle>
                 <CardDescription>
                   {TRUST_LEVEL_LABELS[verification?.trust_level || "new"]} Owner
                 </CardDescription>
@@ -381,7 +381,7 @@ export const OwnerVerification = () => {
       {verification?.verification_status === "approved" && (
         <Alert className="border-primary/50 bg-primary/10">
           <CheckCircle2 className="h-4 w-4 text-primary" />
-          <AlertTitle>Verified Owner</AlertTitle>
+          <AlertTitle>TrustShield Verified</AlertTitle>
           <AlertDescription>
             Congratulations! Your ownership has been verified. You can now list up to{" "}
             {verification.trust_level === "premium" ? 20 : 
@@ -536,9 +536,9 @@ export const OwnerVerification = () => {
       {/* Trust Level Benefits */}
       <Card>
         <CardHeader>
-          <CardTitle>Trust Level Benefits</CardTitle>
+          <CardTitle>TrustShield Levels</CardTitle>
           <CardDescription>
-            Increase your trust level to unlock more features
+            Build your TrustShield reputation to unlock more features
           </CardDescription>
         </CardHeader>
         <CardContent>

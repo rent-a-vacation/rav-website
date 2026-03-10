@@ -203,6 +203,17 @@ export const adminLifecycle: FlowDefinition = {
       branches: [],
     },
     {
+      id: 'api_keys',
+      route: '/admin',
+      label: 'API Key Management',
+      component: 'AdminApiKeys',
+      tab: 'api-keys',
+      roles: ['rav_admin'],
+      description: 'Create, revoke, and monitor public API keys for partners and integrations. Per-key usage analytics and rate limit management.',
+      tables: ['api_keys', 'api_request_log'],
+      branches: [],
+    },
+    {
       id: 'executive_dashboard',
       route: '/executive-dashboard',
       label: 'Executive Dashboard',

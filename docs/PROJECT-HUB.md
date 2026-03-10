@@ -3,7 +3,7 @@
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 5, 2026 (Session 37: #99, #105)
+> **Last Updated:** March 10, 2026 (Session 38: #173, #174)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -96,7 +96,15 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Supabase CLI:** currently linked to DEV
 - **dev and main:** in sync (PR #183, #184 merged)
 
-### Session Handoff (Sessions 25-37)
+### Session Handoff (Sessions 25-38)
+
+**Session 38 — Public API & Edge-Case Schema Fixes (Mar 10):**
+- Closed #173 (Schema Fixes): Added `x-sse-events`, `x-auth-note`, `x-internal` extensions to OpenAPI spec. Clarified dual-input (voice-search) and rate limit headers. Validated with Redocly (0 errors).
+- Closed #174 (Public API Layer): Migration 044 (api_keys + api_request_log tables, 4 RPCs). `api-gateway` edge function with 5 read-only endpoints (listings, listing by ID, search, destinations, resorts). Dual auth (API Key + JWT). Tiered rate limits (free/partner/premium). Admin "API Keys" tab. `/developers` public Swagger UI page.
+- Created follow-up issues: #188 (write endpoints), #189 (OAuth2), #190 (webhooks to partners), #191 (chat endpoint), #192 (SDK packages)
+- DEC-024: Public API Architecture decision logged
+- Deployed migration 044 + api-gateway edge function to DEV
+- Tests: 676→724 (+48 new, 94 test files)
 
 **Session 37 — Dynamic Pricing & Referral Program (Mar 5):**
 - Closed #99 (Dynamic Pricing): `src/lib/dynamicPricing.ts` — urgency discount (graduated 0-15%), seasonal factor (month-based historical data), demand adjustment (pending bids + saved searches). Migration 042: `get_dynamic_pricing_data` RPC. `useDynamicPricing` hook. Enhanced `PricingSuggestion` component with factor badges. 33 tests.
@@ -595,6 +603,47 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ---
 
+### DEC-024: Public API Architecture
+**Date:** March 10, 2026
+**Decision:** Single API gateway edge function with API key authentication and tiered rate limiting
+**Status:** Approved
+
+**Context:** RAV needs a public REST API for the upcoming mobile app (Capacitor), partner integrations (travel agents, aggregators), and developer experience.
+
+**Approach:**
+- Single `api-gateway` edge function handling all `/v1/*` routes (deployed with `--no-verify-jwt`)
+- Dual auth: API Key (`X-API-Key` header) for partners, JWT (`Authorization: Bearer`) for own apps
+- API keys: `rav_pk_<32 hex>` format, SHA-256 hashed at rest, shown once at creation
+- Three rate limit tiers: free (100/day), partner (10K/day), premium (100K/day)
+- Read-only endpoints only: listings, search, destinations, resorts (no write ops in v1)
+- URL-based versioning (`/v1/`), 6-month deprecation notice for breaking changes
+- Standard JSON envelope: `{ data, meta: { page, per_page, total_count }, api_version: "v1" }`
+
+**Deferred enhancements (tracked in GitHub Issues):**
+- #188 — Write endpoints (bookings, bids, travel requests via API)
+- #189 — OAuth2 authentication for partner integrations
+- #190 — Webhook delivery to partners (event notifications)
+- #191 — Chat endpoint (`/v1/chat`) via gateway
+- #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-025: RAV Tools Hub & Brand Naming
+**Date:** March 10, 2026
+**Decision:** Create `/tools` hub page for all free tools; rename "Fee Freedom Calculator" to "RAV SmartFee"
+**Status:** Approved
+
+**Context:** Brand names were surfaced across the UI (Phase 1). A central hub page groups all free tools for SEO and discoverability.
+
+**Approach:**
+- `/tools` route renders `RavTools.tsx` — card grid with 2 built tools + 4 coming-soon placeholders
+- "Fee Freedom Calculator" renamed to "RAV SmartFee" in Header, Footer, and brand docs
+- JSON-LD `ItemList` schema on `/tools`, `HowTo` on `/calculator`, `Organization` on `/`
+- `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard)
+- Future tools: Vacation Cost Comparator, Rental Yield Estimator, Resort Finder Quiz, Trip Budget Planner
+
+---
+
 ### DEC-011: Mobile App Strategy
 **Date:** February 15, 2026
 **Decision:** PWA first (Phase 11), then Capacitor native shells (Phase 12)
@@ -697,6 +746,6 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ---
 
-**Last updated:** March 4, 2026 (Session 36: Admin Tools, Docs & Disputes — #176-#180)
+**Last updated:** March 5, 2026 (Session 37: Dynamic Pricing & Referral Program — #99, #105)
 **Maintained by:** Sujit
 **Tracking:** [GitHub Issues](https://github.com/rent-a-vacation/rav-website/issues) · [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1) · [Milestones](https://github.com/rent-a-vacation/rav-website/milestones)

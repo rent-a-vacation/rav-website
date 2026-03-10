@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Search, LayoutDashboard, Gavel, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -73,6 +75,51 @@ const WelcomeBanner = () => {
 
 const Index = () => {
   const { user, isLoading } = useAuth();
+
+  usePageMeta(
+    'Luxury Vacation Rentals at 50–70% Off',
+    'Rent luxury timeshare vacation rentals at up to 70% off retail. Browse 117 resorts from Marriott, Hilton, Disney and more.'
+  );
+
+  // Inject Organization JSON-LD structured data
+  useEffect(() => {
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Rent-A-Vacation',
+      url: 'https://rent-a-vacation.com',
+      logo: 'https://rent-a-vacation.com/rav-logo.svg',
+      description:
+        'The open marketplace for vacation rentals. Rent directly from verified timeshare owners at 50-70% off retail prices.',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '+1-800-728-0800',
+        contactType: 'customer service',
+        email: 'support@rent-a-vacation.com',
+        areaServed: 'US',
+        availableLanguage: 'English',
+      },
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: '7874 Chase Meadows Dr W',
+        addressLocality: 'Jacksonville',
+        addressRegion: 'FL',
+        postalCode: '32256',
+        addressCountry: 'US',
+      },
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'org-schema';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+
+    return () => {
+      const existing = document.getElementById('org-schema');
+      if (existing) existing.remove();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen">

@@ -72,7 +72,7 @@ export function ResortSelector({
 
   return (
     <Command className="border rounded-md">
-      <CommandInput placeholder={`Search ${resorts.length} resorts...`} />
+      <CommandInput placeholder={`ResortIQ — search ${resorts.length} resorts...`} />
       <CommandList>
         <CommandEmpty>No resorts found.</CommandEmpty>
         <CommandGroup>

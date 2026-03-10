@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, ShieldCheck, Gavel, Store, BarChart3, Calculator, BookOpen, Settings, GitBranch, Plane } from "lucide-react";
+import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, ShieldCheck, Gavel, Store, BarChart3, Calculator, BookOpen, Settings, GitBranch, Plane, Wrench } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/bidding/NotificationBell";
@@ -106,7 +106,16 @@ const Header = () => {
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     <Calculator className="h-4 w-4" />
-                    Fee Calculator
+                    RAV SmartFee
+                  </Link>
+                  <Link
+                    to="/tools"
+                    role="menuitem"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted transition-colors"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    <Wrench className="h-4 w-4" />
+                    RAV Tools
                   </Link>
                 </div>
               )}
@@ -171,7 +180,7 @@ const Header = () => {
                       <DropdownMenuItem asChild>
                         <Link to="/executive-dashboard" className="flex items-center gap-2 cursor-pointer">
                           <BarChart3 className="h-4 w-4" />
-                          Executive Dashboard
+                          RAV Command
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -188,7 +197,7 @@ const Header = () => {
                       <DropdownMenuItem asChild>
                         <Link to="/owner-dashboard" className="flex items-center gap-2 cursor-pointer">
                           <LayoutDashboard className="h-4 w-4" />
-                          Owner Dashboard
+                          Owner's Edge
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -323,7 +332,15 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               <Calculator className="h-4 w-4" />
-              Fee Calculator
+              RAV SmartFee
+            </Link>
+            <Link
+              to="/tools"
+              className="text-foreground py-2 flex items-center gap-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Wrench className="h-4 w-4" />
+              RAV Tools
             </Link>
             <Link
               to="/faq"
@@ -361,7 +378,7 @@ const Header = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <BarChart3 className="h-4 w-4" />
-                      Executive Dashboard
+                      RAV Command
                     </Link>
                   )}
                   {isRavTeam() && (
@@ -381,7 +398,7 @@ const Header = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <LayoutDashboard className="h-4 w-4" />
-                      Owner Dashboard
+                      Owner's Edge
                     </Link>
                   )}
                   <Link

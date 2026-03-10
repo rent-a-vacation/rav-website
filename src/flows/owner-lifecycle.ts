@@ -58,9 +58,19 @@ export const ownerLifecycle: FlowDefinition = {
       tables: ['referral_codes', 'referrals'],
     },
     {
+      id: 'rav_tools',
+      route: '/tools',
+      label: 'RAV Tools Hub',
+      component: 'RavTools',
+      description: 'Central hub for all free tools: RAV SmartFee calculator, SmartPrice, and coming-soon tools',
+      branches: [
+        { condition: 'Opens calculator', targetStepId: 'fee_calculator', label: 'RAV SmartFee' },
+      ],
+    },
+    {
       id: 'fee_calculator',
       route: '/calculator',
-      label: 'Maintenance Fee Calculator',
+      label: 'RAV SmartFee Calculator',
       component: 'MaintenanceFeeCalculator',
       description: 'Calculate breakeven point and projected savings vs. maintenance fees',
       branches: [
