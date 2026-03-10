@@ -129,7 +129,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 
 ---
 
-### 4. Fee Freedom Calculator
+### 4. RAV SmartFee
 
 **What It Is:** Free public tool that shows owners how many weeks to rent to cover maintenance fees.
 
@@ -145,7 +145,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 > "Enter your brand, unit type, and annual fee. We show you the break-even math instantly."
 
 **Medium:**
-> "You're paying maintenance fees every year for weeks you don't use. The Fee Freedom Calculator shows you exactly how many weeks you need to list on Rent-A-Vacation to cover those fees — and start earning a profit. It's free, it takes 30 seconds, and you don't need an account. Over [X] owners have already calculated their path to Fee Freedom."
+> "You're paying maintenance fees every year for weeks you don't use. The RAV SmartFee shows you exactly how many weeks you need to list on Rent-A-Vacation to cover those fees — and start earning a profit. It's free, it takes 30 seconds, and you don't need an account. Over [X] owners have already calculated their path to Fee Freedom."
 
 **CTA Options:**
 - "Calculate Your Fee Freedom"
@@ -422,7 +422,7 @@ You approve guests and earn income.
 ━━━ The numbers ━━━
 ✓ Listing is FREE — no monthly fees
 ✓ 10-15% commission on successful bookings only
-✓ Fee Freedom Calculator shows your break-even
+✓ RAV SmartFee shows your break-even
 ✓ TrustShield builds your reputation
 ✓ Owner's Edge dashboard tracks everything
 
@@ -442,7 +442,7 @@ Stop Paying. Start Earning.
 - Vacation Wishes
 - Name Your Price
 - RAV SmartPrice
-- Fee Freedom Calculator
+- RAV SmartFee
 - TrustShield
 - PaySafe
 - ResortIQ
@@ -467,7 +467,7 @@ Stop Paying. Start Earning.
 
 | Month | Campaign | Primary Channel | Goal |
 |-------|----------|----------------|------|
-| **Apr** | "Fee Freedom Calculator" launch | SEO blog + social | Owner leads |
+| **Apr** | "RAV SmartFee" launch | SEO blog + social | Owner leads |
 | **May** | "Ask RAVIO" launch video | Social video + PR | Brand awareness |
 | **Jun** | Beta launch announcement | Email + community | Beta signups |
 | **Jul** | "Vacation Wishes" campaign | Social + email | Traveler acquisition |

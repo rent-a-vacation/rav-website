@@ -12,8 +12,11 @@ import { IntegrationSettings } from '@/components/executive/IntegrationSettings'
 import { SectionDivider } from '@/components/executive/SectionDivider';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const ExecutiveDashboard = () => {
+  usePageMeta('RAV Command', 'Executive dashboard for Rent-A-Vacation marketplace operations and business intelligence.');
+
   const { user, isRavTeam, isLoading } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -44,9 +47,9 @@ const ExecutiveDashboard = () => {
           {/* Page header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-white">Executive Dashboard</h1>
+              <h1 className="text-2xl font-bold text-white">RAV Command</h1>
               <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-                Real-time marketplace performance, proprietary metrics like Liquidity Score and Bid Spread Index,
+                Boardroom-grade intelligence. Real-time marketplace performance, proprietary metrics like Liquidity Score and Bid Spread Index,
                 competitive benchmarking, and industry intelligence — all in one boardroom-ready view.
               </p>
             </div>

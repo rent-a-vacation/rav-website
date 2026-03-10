@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useListing, useActiveListings } from "@/hooks/useListings";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { useFavoriteIds, useToggleFavorite } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -115,6 +116,20 @@ const PropertyDetail = () => {
   const resort = prop?.resort;
   const unitType = prop?.unit_type as unknown as Record<string, string> | undefined;
   const nights = listing ? calculateNights(listing.check_in_date, listing.check_out_date) : 0;
+
+  // Dynamic page meta
+  const resortName = (resort as Record<string, unknown> | undefined)?.resort_name as string || 'Resort';
+  const resortLoc = (resort as Record<string, unknown> | undefined)?.location as Record<string, string> | undefined;
+  const locationStr = resortLoc?.city && resortLoc?.state
+    ? `${resortLoc.city}, ${resortLoc.state}`
+    : prop?.location || '';
+  const unitTypeName = unitType?.name || (prop as Record<string, unknown>)?.unit_type_name as string || 'Unit';
+  usePageMeta(
+    listing ? `${resortName} — ${locationStr}` : 'Property Detail',
+    listing
+      ? `Book ${unitTypeName} at ${resortName}. Verified timeshare rental at up to 70% off retail.`
+      : 'View vacation rental property details.'
+  );
   const pricePerNight = listing?.nightly_rate || (nights > 0 && listing ? Math.round(listing.final_price / nights) : 0);
   const fees = listing ? computeFeeBreakdown(pricePerNight, nights, listing.cleaning_fee || 0) : null;
 

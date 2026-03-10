@@ -1,7 +1,59 @@
 # Completed Phases Archive
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
-> **Last Archived:** March 5, 2026
+> **Last Archived:** March 10, 2026
+
+---
+
+## Session 38: Public API & Edge-Case Schema Fixes
+
+**Completed:** March 10, 2026
+**Issues Closed:** #173, #174
+**Follow-up Issues Created:** #188, #189, #190, #191, #192
+
+### What Was Done
+
+#### Edge-Case Schema Fixes (#173)
+Documentation-only improvements to `docs/api/openapi.yaml`. Added `x-sse-events` extension to `/text-chat` documenting all 4 SSE event types (`search_results`, `token`, `done`, `error`). Added dual-input format documentation to `/voice-search` clarifying direct API vs VAPI webhook payload detection. Added `x-auth-note` to `/process-escrow-release` documenting JWT admin vs service role cron authentication paths. Clarified rate limit header behavior: `Retry-After` on 429 only, no `X-RateLimit-*` on success today. Marked 9 internal-only endpoints with `x-internal: true` (6 notification senders, `process-deadline-reminders`, `idle-listing-alerts`, `seed-manager`). Validated with Redocly CLI: 0 errors, 6 minor warnings. Synced to `public/api/openapi.yaml`.
+
+#### Public API Layer (#174)
+**API Key Infrastructure (B1):** Migration 044 — `api_keys` table (hashed key, owner, name, scopes[], tier, rate limits, usage counters, active/revoked status, expiry) + `api_request_log` table (per-request analytics: key_id, endpoint, method, status, response_time_ms, IP). 4 RPCs: `validate_api_key` (returns key record if valid+active+not expired), `increment_api_key_usage` (atomic daily counter with auto-reset), `list_api_keys` (admin-only with owner email join), `get_api_key_stats` (per-key endpoint breakdown). Key format: `rav_pk_<32 hex chars>`, SHA-256 hashed at rest. Shared modules: `_shared/api-auth.ts` (key validation, scope checking, rate limit enforcement, fire-and-forget logging), `_shared/api-response.ts` (JSON envelope, pagination parsing, CORS, rate limit headers). Admin UI: `AdminApiKeys.tsx` — create key (generate+show once+copy), revoke key (confirmation dialog), per-key usage stats table. New "API Keys" tab in AdminDashboard gated behind `isRavAdmin()`. `useApiKeys.ts` — 4 hooks (list, stats, create, revoke). Admin lifecycle flow manifest updated.
+
+**API Gateway (B2):** `supabase/functions/api-gateway/index.ts` — single edge function routing all `/v1/*` paths, deployed with `--no-verify-jwt`. 5 read-only endpoints: `GET /v1/listings` (filtered+paginated PostgREST query), `GET /v1/listings/:id` (single listing with property/resort/unit joins), `POST /v1/search` (reuses `searchProperties()` from `_shared/property-search.ts`), `GET /v1/destinations` (static data from `_shared/destinations.ts`), `GET /v1/resorts` (paginated resort directory). Dual auth: API Key (`X-API-Key` header) or JWT (`Authorization: Bearer`). Three rate limit tiers: free (100/day, 10/min), partner (10K/day, 100/min), premium (100K/day, 500/min). Standard JSON envelope: `{ data, meta: { page, per_page, total_count, total_pages }, api_version: "v1" }`. Rate limit headers on all API key responses. Per-request logging (fire-and-forget).
+
+**Public API Spec (B4):** `docs/api/public-api.yaml` — OpenAPI 3.0.3 spec documenting only the 5 public endpoints with partner-facing language, example requests/responses, rate limit tiers, pagination schema. Validated with Redocly (0 errors). `src/pages/Developers.tsx` — public Swagger UI page at `/developers` (no auth required), renders `public-api.yaml`.
+
+**Architectural Decision:** DEC-024 — Public API Architecture (single gateway, API key auth, tiered rate limiting, read-only v1, URL-based versioning).
+
+### Migrations
+- **044_api_keys.sql:** `api_keys` + `api_request_log` tables, 4 RPCs (`validate_api_key`, `increment_api_key_usage`, `list_api_keys`, `get_api_key_stats`), RLS (service role only), indexes, `updated_at` trigger
+
+### Deployment
+- Migration 044 deployed to **DEV** (`npx supabase db push --include-all`)
+- `api-gateway` edge function deployed to **DEV** (`npx supabase functions deploy api-gateway --no-verify-jwt`)
+
+### Files Created (14)
+- `supabase/migrations/044_api_keys.sql`
+- `supabase/functions/_shared/api-auth.ts`, `supabase/functions/_shared/api-response.ts`, `supabase/functions/_shared/destinations.ts`
+- `supabase/functions/api-gateway/index.ts`
+- `src/hooks/admin/useApiKeys.ts`
+- `src/components/admin/AdminApiKeys.tsx`
+- `src/pages/Developers.tsx`
+- `docs/api/public-api.yaml`
+- `src/lib/apiAuth.test.ts`
+- `src/hooks/admin/__tests__/useApiKeys.test.ts`
+- `src/components/admin/__tests__/AdminApiKeys.test.tsx`
+
+### Files Modified (7)
+- `docs/api/openapi.yaml`, `public/api/openapi.yaml`
+- `src/pages/AdminDashboard.tsx`
+- `src/flows/admin-lifecycle.ts`
+- `src/App.tsx`
+- `docs/PROJECT-HUB.md`
+- `src/pages/Documentation.tsx`
+
+### Test Status
+724 tests passing, 94 test files, 0 TypeScript errors, 0 lint errors, build clean
 
 ---
 

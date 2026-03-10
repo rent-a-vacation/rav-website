@@ -104,6 +104,7 @@ const Documentation = () => {
     { id: "ical-export", label: "iCal Calendar Export", icon: CalendarDays },
     { id: "dynamic-pricing", label: "Dynamic Pricing", icon: Zap },
     { id: "referral-program", label: "Referral Program", icon: Share2 },
+    { id: "public-api", label: "Public API & API Keys", icon: Link2 },
   ];
 
   const currentDate = new Date().toLocaleDateString('en-US', { 
@@ -2815,6 +2816,111 @@ const Documentation = () => {
                       <li>• <strong>Duplicate Prevention:</strong> One referral per referred user (UNIQUE constraint)</li>
                       <li>• <strong>RLS:</strong> Users see own referrals; RAV team sees all</li>
                     </ul>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {(activeSection === "public-api" || isPrinting) && (
+              <section id="public-api" className="space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Public API & API Keys</h1>
+                  <p className="text-xl text-muted-foreground">
+                    REST API for partners, mobile apps, and integrations. Managed via API keys with tiered rate limiting.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Architecture</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Gateway:</strong> <code className="bg-muted px-1 rounded">api-gateway</code> edge function — single entry point for all <code className="bg-muted px-1 rounded">/v1/*</code> routes</li>
+                      <li>• <strong>Auth:</strong> Dual — API Key (<code className="bg-muted px-1 rounded">X-API-Key</code> header) for partners, JWT (<code className="bg-muted px-1 rounded">Authorization: Bearer</code>) for own apps</li>
+                      <li>• <strong>Key Format:</strong> <code className="bg-muted px-1 rounded">rav_pk_&lt;32 hex chars&gt;</code> — SHA-256 hashed at rest, shown once at creation</li>
+                      <li>• <strong>Tables:</strong> <code className="bg-muted px-1 rounded">api_keys</code> (hashed keys, scopes, tiers) + <code className="bg-muted px-1 rounded">api_request_log</code> (per-request analytics)</li>
+                      <li>• <strong>RPCs:</strong> <code className="bg-muted px-1 rounded">validate_api_key</code>, <code className="bg-muted px-1 rounded">increment_api_key_usage</code>, <code className="bg-muted px-1 rounded">list_api_keys</code>, <code className="bg-muted px-1 rounded">get_api_key_stats</code></li>
+                      <li>• <strong>Shared Modules:</strong> <code className="bg-muted px-1 rounded">_shared/api-auth.ts</code>, <code className="bg-muted px-1 rounded">_shared/api-response.ts</code></li>
+                      <li>• <strong>Admin UI:</strong> "API Keys" tab in Admin Dashboard (rav_admin only)</li>
+                      <li>• <strong>Public Docs:</strong> <code className="bg-muted px-1 rounded">/developers</code> — Swagger UI (no auth required)</li>
+                      <li>• <strong>Migration:</strong> 044</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Public Endpoints (Read-Only)</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-2 font-medium">Method</th>
+                            <th className="text-left py-2 font-medium">Path</th>
+                            <th className="text-left py-2 font-medium">Scope</th>
+                            <th className="text-left py-2 font-medium">Description</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-muted-foreground">
+                          <tr className="border-b"><td className="py-2"><code className="bg-muted px-1 rounded">GET</code></td><td><code className="bg-muted px-1 rounded">/v1/listings</code></td><td>listings:read</td><td>Browse with filters + pagination</td></tr>
+                          <tr className="border-b"><td className="py-2"><code className="bg-muted px-1 rounded">GET</code></td><td><code className="bg-muted px-1 rounded">/v1/listings/:id</code></td><td>listings:read</td><td>Single listing with full details</td></tr>
+                          <tr className="border-b"><td className="py-2"><code className="bg-muted px-1 rounded">POST</code></td><td><code className="bg-muted px-1 rounded">/v1/search</code></td><td>search</td><td>AI-powered property search</td></tr>
+                          <tr className="border-b"><td className="py-2"><code className="bg-muted px-1 rounded">GET</code></td><td><code className="bg-muted px-1 rounded">/v1/destinations</code></td><td>listings:read</td><td>Destination directory (10/35)</td></tr>
+                          <tr><td className="py-2"><code className="bg-muted px-1 rounded">GET</code></td><td><code className="bg-muted px-1 rounded">/v1/resorts</code></td><td>listings:read</td><td>Resort directory with unit types</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Rate Limit Tiers</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-2 font-medium">Tier</th>
+                            <th className="text-left py-2 font-medium">Daily</th>
+                            <th className="text-left py-2 font-medium">Per-Minute</th>
+                            <th className="text-left py-2 font-medium">Use Case</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-muted-foreground">
+                          <tr className="border-b"><td className="py-2">Free</td><td>100</td><td>10</td><td>Developer testing</td></tr>
+                          <tr className="border-b"><td className="py-2">Partner</td><td>10,000</td><td>100</td><td>Travel agents</td></tr>
+                          <tr><td className="py-2">Premium</td><td>100,000</td><td>500</td><td>Large integrators</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Response Format</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• <strong>Success:</strong> <code className="bg-muted px-1 rounded">{"{ data, meta: { page, per_page, total_count, total_pages }, api_version: \"v1\" }"}</code></li>
+                      <li>• <strong>Error:</strong> <code className="bg-muted px-1 rounded">{"{ error: { code, message }, api_version: \"v1\" }"}</code></li>
+                      <li>• <strong>Rate Limit Headers:</strong> <code className="bg-muted px-1 rounded">X-RateLimit-Limit</code>, <code className="bg-muted px-1 rounded">X-RateLimit-Remaining</code>, <code className="bg-muted px-1 rounded">X-RateLimit-Reset</code></li>
+                      <li>• <strong>Pagination:</strong> <code className="bg-muted px-1 rounded">?page=1&per_page=20</code> (max 50 per page)</li>
+                      <li>• <strong>Versioning:</strong> URL-based (<code className="bg-muted px-1 rounded">/v1/</code>), 6-month deprecation notice via <code className="bg-muted px-1 rounded">Sunset</code> header</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-card rounded-xl p-6 border">
+                    <h3 className="font-semibold text-lg mb-4">Admin Key Management</h3>
+                    <ol className="space-y-3 text-sm text-muted-foreground">
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
+                        <span>Admin Dashboard → API Keys tab → Create Key</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
+                        <span>Choose name, tier, and scopes → key shown once (copy immediately)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
+                        <span>Key appears in list with prefix, usage counter, and last-used timestamp</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">4</span>
+                        <span>Revoke anytime — immediate, permanent, cannot be undone</span>
+                      </li>
+                    </ol>
                   </div>
                 </div>
               </section>

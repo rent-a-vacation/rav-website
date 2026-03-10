@@ -15,8 +15,12 @@ info:
     **Rate Limiting:** Many endpoints implement per-user or per-IP rate limiting.
     Exceeding limits returns HTTP 429 with a `Retry-After` header.
 
-    **Rate Limit Headers:** Rate-limited responses include:
+    **Rate Limit Headers:** Currently, rate-limited responses (HTTP 429) include:
     - `Retry-After` — seconds until the limit resets
+
+    Note: `X-RateLimit-Remaining`, `X-RateLimit-Limit`, and `X-RateLimit-Reset` headers
+    are NOT included on successful responses today. The future Public API (v1) will add
+    full rate limit headers on all responses.
   version: 1.0.0
   license:
     name: Proprietary
@@ -70,7 +74,13 @@ paths:
         Searches active listings with filtering by destination, price, dates, bedrooms,
         property type, amenities, and guest count.
 
-        Also accepts VAPI webhook format with `message.functionCall.parameters`.
+        **Dual input format:** Accepts two request shapes:
+        1. **Direct API call** — flat JSON with search parameters at the top level
+        2. **VAPI webhook** — nested payload where parameters are at `message.functionCall.parameters`
+
+        The endpoint auto-detects format: if `message.type === "function-call"` is present,
+        parameters are extracted from the VAPI webhook structure. Otherwise, the top-level
+        body is used directly as search parameters.
 
         **Rate limit:** 30 requests/minute per IP (in-memory sliding window).
       security: []
@@ -154,6 +164,21 @@ paths:
         unit: seconds
         scope: user
         storage: database
+      x-sse-events:
+        - event: search_results
+          data_type: array
+          data_schema: SearchResult[]
+          description: JSON array of matching listings (emitted when tool call triggers property search)
+        - event: token
+          data_type: string
+          description: Individual text token from the AI response stream
+        - event: done
+          data_type: string
+          data_value: "[DONE]"
+          description: Signals end of the SSE stream — client should close connection
+        - event: error
+          data_type: string
+          description: Error message if OpenRouter or tool call fails mid-stream
       requestBody:
         required: true
         content:
@@ -579,6 +604,14 @@ paths:
       security:
         - SupabaseJWT: []
         - {}
+      x-auth-note: |
+        Two authentication paths are supported:
+        1. **JWT (admin):** Standard Supabase JWT with `rav_admin` or `rav_staff` role.
+           Used when admin manually triggers escrow release from the dashboard.
+        2. **Service role key:** `Authorization: Bearer <service_role_key>` with no user context.
+           Used by scheduled cron jobs. The endpoint detects service role by checking
+           if the token's role claim is "service_role".
+        When neither auth method succeeds, returns 401 Unauthorized.
       requestBody:
         required: false
         content:
@@ -607,6 +640,7 @@ paths:
     post:
       operationId: sendEmail
       tags: [Notifications]
+      x-internal: true
       summary: Send a generic email via Resend
       description: |
         Generic email sender for arbitrary HTML content.
@@ -648,6 +682,7 @@ paths:
     post:
       operationId: sendContactForm
       tags: [Notifications]
+      x-internal: true
       summary: Submit a contact form message
       description: |
         Sends contact form submissions to the RAV support inbox
@@ -690,6 +725,7 @@ paths:
     post:
       operationId: sendApprovalEmail
       tags: [Notifications]
+      x-internal: true
       summary: Send user/role approval or rejection email
       description: |
         Transactional email for user account approvals and role upgrade decisions.
@@ -732,6 +768,7 @@ paths:
     post:
       operationId: sendBookingConfirmationReminder
       tags: [Notifications]
+      x-internal: true
       summary: Send booking/checkin confirmation reminder emails
       description: |
         Sends templated booking and checkin emails to owners and renters.
@@ -776,6 +813,7 @@ paths:
     post:
       operationId: sendCancellationEmail
       tags: [Notifications]
+      x-internal: true
       summary: Send cancellation confirmation email to renter
       description: |
         Sends a cancellation confirmation email with details about the
@@ -829,6 +867,7 @@ paths:
     post:
       operationId: sendVerificationNotification
       tags: [Notifications]
+      x-internal: true
       summary: Send owner verification approval/rejection email
       description: |
         Sends verification decision emails to property owners with trust level
@@ -1140,6 +1179,7 @@ paths:
     post:
       operationId: processDeadlineReminders
       tags: [Notifications]
+      x-internal: true
       summary: Process scheduled deadline reminders and timeouts
       description: |
         Scheduled task that sends multiple reminder types:
@@ -1169,6 +1209,7 @@ paths:
     post:
       operationId: idleListingAlerts
       tags: [Alerts]
+      x-internal: true
       summary: Send proactive email alerts for idle listings (cron)
       description: |
         Cron-triggered function that sends email alerts to owners whose active listings have:
@@ -1201,6 +1242,7 @@ paths:
     post:
       operationId: seedManager
       tags: [Admin]
+      x-internal: true
       summary: Manage seed data (DEV environment only)
       description: |
         Development-only utility for managing 3-layer test data.

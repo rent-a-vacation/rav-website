@@ -54,6 +54,54 @@ export default function MaintenanceFeeCalculator() {
     'Calculate how many weeks you need to rent your timeshare to cover annual maintenance fees. Free tool for Hilton, Marriott, Disney, Wyndham owners.'
   );
 
+  // Inject HowTo JSON-LD structured data
+  useEffect(() => {
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'Calculate Your Timeshare Break-Even',
+      description:
+        'Use the RAV SmartFee calculator to find out how many weeks you need to rent your timeshare to cover annual maintenance fees.',
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: 'Select your brand',
+          text: 'Choose your vacation club brand (Hilton, Marriott, Disney, Wyndham, etc.) from the dropdown.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: 'Enter your unit type',
+          text: 'Select your unit type (studio, 1-bedroom, 2-bedroom, etc.) to get accurate rental estimates.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 3,
+          name: 'Enter your maintenance fees',
+          text: 'Enter your annual maintenance fee amount in dollars.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 4,
+          name: 'View your results',
+          text: 'See your break-even analysis including weeks needed, potential earnings, and ROI percentage.',
+        },
+      ],
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'calculator-howto-schema';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+
+    return () => {
+      const existing = document.getElementById('calculator-howto-schema');
+      if (existing) existing.remove();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -64,7 +112,7 @@ export default function MaintenanceFeeCalculator() {
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
               <Calculator className="h-4 w-4" />
-              Free Calculator
+              RAV SmartFee
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
               Will renting your timeshare cover your maintenance fees?

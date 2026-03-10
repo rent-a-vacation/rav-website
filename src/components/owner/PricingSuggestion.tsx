@@ -60,7 +60,7 @@ export function PricingSuggestion({ currentRate, brand, location, bedrooms, chec
     <div className="bg-muted/50 rounded-lg p-3 space-y-2">
       <div className="flex items-center justify-between">
         <p className="text-xs font-medium text-muted-foreground">
-          Market range ({comparableCount} listings)
+          SmartPrice range ({comparableCount} listings)
         </p>
         <div className={`flex items-center gap-1 text-xs font-medium ${colorClass}`}>
           <Icon className="h-3 w-3" />
@@ -107,7 +107,7 @@ export function PricingSuggestion({ currentRate, brand, location, bedrooms, chec
           </div>
 
           <p className="text-[10px] text-muted-foreground">
-            Based on booking history, seasonality & demand
+            RAV SmartPrice — based on booking history, seasonality & demand
             {dynamic.confidence === "low" && " (limited data)"}
           </p>
         </div>

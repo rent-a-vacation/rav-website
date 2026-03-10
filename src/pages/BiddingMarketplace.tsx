@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTextChat } from '@/hooks/useTextChat';
 import { TextChatPanel } from '@/components/TextChatPanel';
@@ -33,6 +34,8 @@ import { format, formatDistanceToNow, differenceInDays } from 'date-fns';
 import type { ListingWithBidding } from '@/types/bidding';
 
 const BiddingMarketplace = () => {
+  usePageMeta('Name Your Price Marketplace', 'Bid on vacation rentals and negotiate directly with verified owners. Place offers at your price.');
+
   const { user, isRenter, isPropertyOwner } = useAuth();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
@@ -127,7 +130,7 @@ const BiddingMarketplace = () => {
               </TabsTrigger>
               <TabsTrigger value="requests" className="gap-2">
                 <Send className="h-4 w-4" />
-                Tell Us What You Want
+                Vacation Wishes
               </TabsTrigger>
             </TabsList>
 
@@ -190,7 +193,7 @@ const BiddingMarketplace = () => {
             <TabsContent value="requests" className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold">Open Travel Requests</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold">Open Vacation Wishes</h2>
                   <p className="text-muted-foreground">
                     Renters looking for vacation rentals - submit your proposal!
                   </p>
@@ -224,7 +227,7 @@ const BiddingMarketplace = () => {
                 <Card className="border-dashed">
                   <CardContent className="flex flex-col items-center justify-center py-16">
                     <Send className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No travel requests yet</h3>
+                    <h3 className="text-lg font-semibold mb-2">No vacation wishes yet</h3>
                     <p className="text-muted-foreground text-center mb-4">
                       Be the first to post your travel needs and get offers from owners!
                     </p>
@@ -300,7 +303,7 @@ const BiddingMarketplace = () => {
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">2</div>
                   <div>
-                    <p className="font-medium">Browse Travel Requests</p>
+                    <p className="font-medium">Browse Vacation Wishes</p>
                     <p className="text-sm text-muted-foreground">Find renters looking for properties like yours</p>
                   </div>
                 </div>

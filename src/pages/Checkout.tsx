@@ -27,8 +27,11 @@ import type { Resort, ResortUnitType } from "@/types/database";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const Checkout = () => {
+  usePageMeta('Secure Checkout', 'Complete your vacation rental booking securely with PaySafe escrow protection.');
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, isEmailVerified } = useAuth();
@@ -303,11 +306,11 @@ const Checkout = () => {
               <div className="flex items-center gap-6 p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Shield className="w-5 h-5 text-primary" />
-                  Secure payment via Stripe
+                  PaySafe — funds held in escrow until check-in
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Check className="w-5 h-5 text-primary" />
-                  Verified property
+                  TrustShield verified property
                 </div>
               </div>
             </div>

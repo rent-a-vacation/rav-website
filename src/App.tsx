@@ -16,6 +16,7 @@ import Index from "./pages/Index";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import Destinations from "./pages/Destinations";
 import FAQ from "./pages/FAQ";
+import RavTools from "./pages/RavTools";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -46,6 +47,7 @@ const UserJourneys = lazy(() => import("./pages/UserJourneys"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const ApiDocs = lazy(() => import("./pages/ApiDocs"));
+const Developers = lazy(() => import("./pages/Developers"));
 const DestinationDetail = lazy(() => import("./pages/DestinationDetail"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
@@ -172,6 +174,7 @@ const App = () => (
             <Route path="/user-journeys" element={<UserJourneys />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/calculator" element={<MaintenanceFeeCalculator />} />
+            <Route path="/tools" element={<RavTools />} />
 
             {/* Protected routes — require approved account */}
             <Route path="/rentals" element={<ProtectedRoute><Rentals /></ProtectedRoute>} />
@@ -188,7 +191,8 @@ const App = () => (
             <Route path="/account" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
             <Route path="/checkin" element={<ProtectedRoute><TravelerCheckin /></ProtectedRoute>} />
 
-            {/* Internal tools */}
+            {/* Developer & internal tools */}
+            <Route path="/developers" element={<Developers />} />
             <Route path="/api-docs" element={<ApiDocs />} />
 
             {/* Legacy routes - redirect to proper sections */}

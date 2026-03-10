@@ -59,6 +59,7 @@ import { BidActivityFeed } from "@/components/owner-dashboard/BidActivityFeed";
 import { PricingIntelligence } from "@/components/owner-dashboard/PricingIntelligence";
 import { MaintenanceFeeTracker } from "@/components/owner-dashboard/MaintenanceFeeTracker";
 import PortfolioOverview from "@/components/owner-dashboard/PortfolioOverview";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 // Backwards-compatible redirect map: old tab values → new ones
 const TAB_REDIRECTS: Record<string, string> = {
@@ -86,6 +87,8 @@ interface DashboardStats {
 }
 
 const OwnerDashboard = () => {
+  usePageMeta("Owner's Edge Dashboard", 'Manage your timeshare listings, bookings, earnings, and owner account.');
+
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, isPropertyOwner, isRavTeam, isLoading: authLoading } = useAuth();
@@ -303,9 +306,9 @@ const OwnerDashboard = () => {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold">Owner Dashboard</h1>
+                <h1 className="text-xl sm:text-2xl font-bold">Owner's Edge</h1>
                 <p className="text-sm text-muted-foreground">
-                  Manage your properties, listings, and bookings
+                  Your command center — manage listings, bookings, earnings, and more
                 </p>
               </div>
             </div>

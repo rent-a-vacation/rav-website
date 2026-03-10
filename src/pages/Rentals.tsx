@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -106,6 +107,8 @@ function getListingBrandLabel(listing: ActiveListing): string {
 }
 
 const Rentals = () => {
+  usePageMeta('Browse Vacation Rentals', 'Search and filter vacation rentals from verified timeshare owners. Compare prices and book at up to 70% off.');
+
   const [searchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);

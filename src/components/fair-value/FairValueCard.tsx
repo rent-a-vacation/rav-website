@@ -45,7 +45,7 @@ export function FairValueCard({ listingId, viewerRole }: FairValueCardProps) {
   return (
     <div className="bg-card rounded-xl border p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-foreground">Fair Value Score</span>
+        <span className="text-sm font-medium text-foreground">RAV SmartPrice</span>
         <Tooltip>
           <TooltipTrigger asChild>
             <button type="button" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="More info">

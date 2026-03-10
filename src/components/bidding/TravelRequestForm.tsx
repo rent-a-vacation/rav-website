@@ -125,17 +125,17 @@ export function TravelRequestForm({ onSuccess, defaultValues }: TravelRequestFor
       <DialogTrigger asChild>
         <Button size="lg" className="gap-2">
           <Sparkles className="h-4 w-4" />
-          Post Travel Request
+          Make a Vacation Wish
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-accent" />
-            Name Your Own Vacation
+            Vacation Wishes
           </DialogTitle>
           <DialogDescription>
-            Tell us what you're looking for and let property owners come to you with offers!
+            Tell us your dream trip — verified owners compete with personalized proposals!
           </DialogDescription>
         </DialogHeader>
 
