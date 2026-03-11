@@ -101,9 +101,9 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 **Session 38 — Public API, RAV Tools Hub & Brand Naming (Mar 10):**
 - Closed #173 (Schema Fixes): Added `x-sse-events`, `x-auth-note`, `x-internal` extensions to OpenAPI spec. Clarified dual-input (voice-search) and rate limit headers. Validated with Redocly (0 errors).
 - Closed #174 (Public API Layer): Migration 044 (api_keys + api_request_log tables, 4 RPCs). `api-gateway` edge function with 5 read-only endpoints (listings, listing by ID, search, destinations, resorts). Dual auth (API Key + JWT). Tiered rate limits (free/partner/premium). Admin "API Keys" tab. `/developers` public Swagger UI page.
-- DEC-025 (RAV Tools Hub): `/tools` hub page with 6 built tools. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, brand docs. `usePageMeta()` added to 7 pages. JSON-LD structured data (ItemList, Organization, HowTo).
-- 4 new tool implementations: Cost Comparator, Yield Estimator, Resort Quiz, Budget Planner — full logic modules with tests and PostHog tracking.
-- Header redesign: "Free Tools" promoted to top-level nav with Sparkles icon. Removed inconsistent icons. Active-state highlighting. Removed redundant SmartFee from Explore dropdown.
+- DEC-025 (RAV Tools Hub): `/tools` hub page with 5 built tools. "Fee Freedom Calculator" renamed to "RAV SmartEarn" (merged with Rental Yield Estimator) across Header, Footer, calculator page, brand docs. `usePageMeta()` added to 7 pages. JSON-LD structured data (ItemList, Organization, HowTo).
+- 4 new tool implementations: RAV SmartCompare, RAV SmartEarn (merged Yield Estimator), RAV SmartMatch, RAV SmartBudget — full logic modules with tests and PostHog tracking.
+- Header redesign: "Free Tools" promoted to top-level nav with Sparkles icon. Removed inconsistent icons. Active-state highlighting. Removed redundant SmartEarn from Explore dropdown.
 - Navigation fix: Added global Header to 7 pages that were missing it (Admin, Owner Dashboard, BookingSuccess, Documentation, UserGuide, TravelerCheckin, PendingApproval).
 - SEO: Sitemap updated from 10 → 17 URLs. `WebApplication` JSON-LD on all 4 tool pages.
 - IP Allowlisting (#201): Migration 045 — optional `allowed_ips text[]` on API keys with CIDR support. Admin UI create/edit. `checkIpAllowlist()` in api-gateway. 9 tests.
@@ -636,17 +636,19 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### DEC-025: RAV Tools Hub & Brand Naming
 **Date:** March 10, 2026
-**Decision:** Create `/tools` hub page for all free tools; rename "Fee Freedom Calculator" to "RAV SmartFee"
+**Decision:** Create `/tools` hub page for all free tools; rename "Fee Freedom Calculator" to "RAV SmartEarn" (merged with Rental Yield Estimator)
 **Status:** Approved
 
 **Context:** Brand names were surfaced across the UI (Phase 1). A central hub page groups all free tools for SEO and discoverability.
 
 **Approach:**
-- `/tools` route renders `RavTools.tsx` — card grid with 2 built tools + 4 coming-soon placeholders
-- "Fee Freedom Calculator" renamed to "RAV SmartFee" in Header, Footer, and brand docs
+- `/tools` route renders `RavTools.tsx` — card grid with 5 built tools
+- "Fee Freedom Calculator" renamed to "RAV SmartEarn" in Header, Footer, and brand docs; Rental Yield Estimator merged into RAV SmartEarn
+- "Vacation Cost Comparator" renamed to "RAV SmartCompare"
+- "Resort Finder Quiz" renamed to "RAV SmartMatch"
+- "Trip Budget Planner" renamed to "RAV SmartBudget"
 - JSON-LD `ItemList` schema on `/tools`, `HowTo` on `/calculator`, `Organization` on `/`
 - `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard)
-- Future tools: Vacation Cost Comparator, Rental Yield Estimator, Resort Finder Quiz, Trip Budget Planner
 
 ---
 

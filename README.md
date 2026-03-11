@@ -60,9 +60,9 @@ Travelers post their dream trip parameters. Verified owners compete with persona
 
 AI-powered fair value scoring that compares listings against similar properties by resort, unit type, and season. Every listing earns a Fair Value badge.
 
-### Fee Freedom Calculator
+### RAV SmartEarn
 
-Free public tool that shows timeshare owners exactly how many weeks they need to rent to cover their annual maintenance fees. No account required.
+Free public tool that shows timeshare owners exactly how many weeks they need to rent to cover their annual maintenance fees, plus projects annual rental income by brand, unit type, region, and occupancy. No account required.
 
 ### TrustShield & PaySafe
 

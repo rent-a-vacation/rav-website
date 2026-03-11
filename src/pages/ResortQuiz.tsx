@@ -26,7 +26,7 @@ const DEFAULT_ANSWERS: QuizAnswers = {
 
 export default function ResortQuiz() {
   usePageMeta(
-    'Resort Finder Quiz — RAV Tools',
+    'RAV SmartMatch — RAV Tools',
     'Answer 5 quick questions and get matched to the perfect vacation resort from our 117-resort database.',
   );
 
@@ -40,7 +40,7 @@ export default function ResortQuiz() {
     script.textContent = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Resort Finder Quiz',
+      name: 'RAV SmartMatch',
       url: 'https://rent-a-vacation.com/tools/resort-quiz',
       applicationCategory: 'TravelApplication',
       operatingSystem: 'Web',
@@ -106,13 +106,19 @@ export default function ResortQuiz() {
       <Header />
       <main className="flex-1 pt-16 md:pt-20">
         <div className="max-w-3xl mx-auto px-4 py-12">
+          {/* Breadcrumb */}
+          <Link to="/tools" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6">
+            <ArrowLeft className="h-3 w-3" />
+            Back to Free Tools
+          </Link>
+
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
               <Compass className="h-4 w-4" />
-              Resort Finder Quiz
+              RAV SmartMatch
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3">
               {results ? 'Your Perfect Destinations' : 'Find Your Perfect Resort'}
             </h1>
             <p className="text-muted-foreground text-lg">

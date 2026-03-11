@@ -1,5 +1,5 @@
 /**
- * Rental Yield Estimator — project annual rental income from a timeshare.
+ * Yield estimation logic — used by RAV SmartEarn (merged from standalone Yield Estimator).
  *
  * Reuses INCOME_ESTIMATES from calculatorLogic.ts and adds occupancy modeling.
  */

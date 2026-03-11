@@ -129,29 +129,29 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 
 ---
 
-### 4. RAV SmartFee
+### 4. RAV SmartEarn
 
-**What It Is:** Free public tool that shows owners how many weeks to rent to cover maintenance fees.
+**What It Is:** Free public tool that shows owners how many weeks to rent to cover maintenance fees AND projects annual rental income by brand, unit type, region, and occupancy. Merges the former "Fee Freedom Calculator" and "Rental Yield Estimator" into one comprehensive earnings tool.
 
 **Copy Blocks:**
 
 **Headline:**
-> "Will Renting Your Timeshare Cover Your Maintenance Fees?"
+> "Will Renting Your Timeshare Cover Your Maintenance Fees — and How Much Could You Earn?"
 
 **Subhead:**
 > "Find out in 30 seconds — free, no account needed."
 
 **Short:**
-> "Enter your brand, unit type, and annual fee. We show you the break-even math instantly."
+> "Enter your brand, unit type, and annual fee. We show you the break-even math and your earnings potential instantly."
 
 **Medium:**
-> "You're paying maintenance fees every year for weeks you don't use. The RAV SmartFee shows you exactly how many weeks you need to list on Rent-A-Vacation to cover those fees — and start earning a profit. It's free, it takes 30 seconds, and you don't need an account. Over [X] owners have already calculated their path to Fee Freedom."
+> "You're paying maintenance fees every year for weeks you don't use. RAV SmartEarn shows you exactly how many weeks you need to list on Rent-A-Vacation to cover those fees — and projects how much you could earn beyond break-even. It's free, it takes 30 seconds, and you don't need an account. Over [X] owners have already calculated their path to Fee Freedom."
 
 **CTA Options:**
 - "Calculate Your Fee Freedom"
-- "See Your Break-Even"
-- "How Many Weeks to Freedom?"
-- "Try the Calculator — Free"
+- "See Your Break-Even & Earnings"
+- "How Much Could You Earn?"
+- "Try SmartEarn — Free"
 
 ---
 
@@ -422,7 +422,7 @@ You approve guests and earn income.
 ━━━ The numbers ━━━
 ✓ Listing is FREE — no monthly fees
 ✓ 10-15% commission on successful bookings only
-✓ RAV SmartFee shows your break-even
+✓ RAV SmartEarn shows your break-even and earnings potential
 ✓ TrustShield builds your reputation
 ✓ Owner's Edge dashboard tracks everything
 
@@ -442,7 +442,10 @@ Stop Paying. Start Earning.
 - Vacation Wishes
 - Name Your Price
 - RAV SmartPrice
-- RAV SmartFee
+- RAV SmartEarn
+- RAV SmartCompare
+- RAV SmartMatch
+- RAV SmartBudget
 - TrustShield
 - PaySafe
 - ResortIQ
@@ -454,6 +457,10 @@ Stop Paying. Start Earning.
 - "Rent a Vacation" (missing hyphens)
 - "Ravio" (lowercase — always RAVIO)
 - "Smart Price" (two words — always SmartPrice)
+- "Smart Earn" (two words — always SmartEarn)
+- "Smart Compare" (two words — always SmartCompare)
+- "Smart Match" (two words — always SmartMatch)
+- "Smart Budget" (two words — always SmartBudget)
 - "Trust Shield" (two words — always TrustShield)
 - "Pay Safe" (two words — always PaySafe)
 
@@ -467,7 +474,7 @@ Stop Paying. Start Earning.
 
 | Month | Campaign | Primary Channel | Goal |
 |-------|----------|----------------|------|
-| **Apr** | "RAV SmartFee" launch | SEO blog + social | Owner leads |
+| **Apr** | "RAV SmartEarn" launch | SEO blog + social | Owner leads |
 | **May** | "Ask RAVIO" launch video | Social video + PR | Brand awareness |
 | **Jun** | Beta launch announcement | Email + community | Beta signups |
 | **Jul** | "Vacation Wishes" campaign | Social + email | Traveler acquisition |
