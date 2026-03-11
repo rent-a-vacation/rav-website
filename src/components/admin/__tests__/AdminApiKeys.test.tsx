@@ -20,6 +20,7 @@ const mockKeys = [
     expires_at: null,
     last_used_at: "2026-03-10T12:00:00Z",
     created_at: "2026-03-01T00:00:00Z",
+    allowed_ips: ["203.0.113.5"],
   },
   {
     id: "key-2",
@@ -37,6 +38,7 @@ const mockKeys = [
     expires_at: null,
     last_used_at: null,
     created_at: "2026-02-01T00:00:00Z",
+    allowed_ips: null,
   },
 ];
 
@@ -44,6 +46,7 @@ vi.mock("@/hooks/admin/useApiKeys", () => ({
   useApiKeys: () => ({ data: mockKeys, isLoading: false }),
   useCreateApiKey: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useRevokeApiKey: () => ({ mutateAsync: vi.fn() }),
+  useUpdateApiKeyIps: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useApiKeyStats: () => ({ data: [] }),
 }));
 
