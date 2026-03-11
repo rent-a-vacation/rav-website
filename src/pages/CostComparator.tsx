@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BarChart3, Users, Moon, MapPin } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -27,6 +27,28 @@ export default function CostComparator() {
     'Vacation Cost Comparator — RAV Tools',
     'Compare the total cost of a timeshare rental vs. hotel vs. Airbnb for your destination.',
   );
+
+  const schemaRef = useRef(false);
+  useEffect(() => {
+    if (schemaRef.current) return;
+    schemaRef.current = true;
+    const script = document.createElement('script');
+    script.id = 'cost-comparator-schema';
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Vacation Cost Comparator',
+      url: 'https://rent-a-vacation.com/tools/cost-comparator',
+      applicationCategory: 'TravelApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      description: 'Compare the total cost of a timeshare rental vs. hotel vs. Airbnb for your destination.',
+      provider: { '@type': 'Organization', name: 'Rent-A-Vacation', url: 'https://rent-a-vacation.com' },
+    });
+    document.head.appendChild(script);
+    return () => { document.getElementById('cost-comparator-schema')?.remove(); };
+  }, []);
 
   const [destination, setDestination] = useState('florida');
   const [nights, setNights] = useState(7);

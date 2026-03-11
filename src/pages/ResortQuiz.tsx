@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Compass, ArrowRight, ArrowLeft, RotateCcw, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -29,6 +29,28 @@ export default function ResortQuiz() {
     'Resort Finder Quiz — RAV Tools',
     'Answer 5 quick questions and get matched to the perfect vacation resort from our 117-resort database.',
   );
+
+  const schemaRef = useRef(false);
+  useEffect(() => {
+    if (schemaRef.current) return;
+    schemaRef.current = true;
+    const script = document.createElement('script');
+    script.id = 'resort-quiz-schema';
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Resort Finder Quiz',
+      url: 'https://rent-a-vacation.com/tools/resort-quiz',
+      applicationCategory: 'TravelApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      description: 'Answer 5 quick questions and get matched to the perfect vacation resort from our 117-resort database.',
+      provider: { '@type': 'Organization', name: 'Rent-A-Vacation', url: 'https://rent-a-vacation.com' },
+    });
+    document.head.appendChild(script);
+    return () => { document.getElementById('resort-quiz-schema')?.remove(); };
+  }, []);
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>({ ...DEFAULT_ANSWERS });
