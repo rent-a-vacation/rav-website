@@ -72,17 +72,21 @@ These functions have complex or unusual patterns where the auto-extracted spec m
 
 ## Recommended Next Steps
 
-### Phase A: Immediate improvements
-- [ ] Run spec through https://editor.swagger.io and fix any validation warnings
-- [ ] Add `x-rate-limit` extensions for rate limit documentation
-- [ ] Add webhook event type schemas for stripe-webhook
+### Phase A: Immediate improvements ✅ (Session 35, #172)
+- [x] Run spec through https://editor.swagger.io and fix any validation warnings
+- [x] Add `x-rate-limit` extensions for rate limit documentation
+- [x] Add webhook event type schemas for stripe-webhook
 
-### Phase B: Toward a public API
-- [ ] Design public API authentication (API keys vs OAuth)
-- [ ] Create versioned API paths (`/v1/search`, `/v1/listings`)
-- [ ] Add pagination schemas (`cursor`, `limit`, `offset`)
-- [ ] Define public-facing subset of endpoints (search, listings, availability)
-- [ ] Add request validation middleware
-- [ ] Set up API key management in admin dashboard
-- [ ] Rate limiting per API key (not just per user/IP)
-- [ ] Consider AsyncAPI spec for SSE/WebSocket endpoints
+> Completed in Session 35 (#172): Fixed 14 errors + 35 warnings, added `operationId`, `security`, `x-rate-limit` to all 26 endpoints, added `StripeSignature` security scheme, added `idle-listing-alerts` endpoint.
+
+### Phase B: Toward a public API ✅ (Session 38, #174)
+- [x] Design public API authentication (API keys vs OAuth)
+- [x] Create versioned API paths (`/v1/search`, `/v1/listings`)
+- [x] Add pagination schemas (`cursor`, `limit`, `offset`)
+- [x] Define public-facing subset of endpoints (search, listings, availability)
+- [x] Add request validation middleware
+- [x] Set up API key management in admin dashboard
+- [x] Rate limiting per API key (not just per user/IP)
+- [ ] Consider AsyncAPI spec for SSE/WebSocket endpoints _(deferred — low priority)_
+
+> Completed in Session 38 (#174): Migration 044 (api_keys + api_request_log), `api-gateway` edge function with 5 read-only endpoints, dual auth (API key + JWT), tiered rate limits, `AdminApiKeys.tsx` admin tab, `/developers` public Swagger UI. IP allowlisting added in #201 (Session 38, migration 045).

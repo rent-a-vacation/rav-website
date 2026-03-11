@@ -19,6 +19,122 @@ Internal OpenAPI 3.0.3 specification for all 25 Supabase Edge Functions powering
 | `scripts/generate-openapi.cjs` | Audit/bootstrap script |
 | `src/pages/ApiDocs.tsx` | Swagger UI page at `/api-docs` |
 
+## Quick Start
+
+### Base URLs
+
+| Environment | Base URL |
+|-------------|----------|
+| **DEV** | `https://oukbxqnlxnkainnligfz.supabase.co/functions/v1/api-gateway` |
+| **PROD** | `https://xzfllqndrlmhclqfybew.supabase.co/functions/v1/api-gateway` |
+
+### Authentication
+
+All requests require either an **API key** or a **JWT token**.
+
+**API Key** (recommended for integrations):
+```bash
+curl -H "X-API-Key: rav_pk_<your-key>" \
+  https://xzfllqndrlmhclqfybew.supabase.co/functions/v1/api-gateway/v1/listings
+```
+
+**JWT Token** (for logged-in users):
+```bash
+curl -H "Authorization: Bearer <your-jwt-token>" \
+  https://xzfllqndrlmhclqfybew.supabase.co/functions/v1/api-gateway/v1/listings
+```
+
+API keys are created in the Admin Dashboard → API Keys tab, or via the `generate_api_key` RPC.
+
+### Endpoints
+
+#### 1. List active listings
+
+```bash
+curl -H "X-API-Key: $API_KEY" \
+  "$BASE_URL/v1/listings?page=1&per_page=10&destination=Miami&min_price=100&max_price=500"
+```
+
+Query params: `page`, `per_page` (max 50), `destination`, `min_price`, `max_price`, `bedrooms`, `brand`, `check_in`, `check_out`
+
+#### 2. Get a single listing
+
+```bash
+curl -H "X-API-Key: $API_KEY" \
+  "$BASE_URL/v1/listings/<listing-uuid>"
+```
+
+#### 3. Search listings (POST)
+
+```bash
+curl -X POST -H "X-API-Key: $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"destination":"Hawaii","check_in_date":"2026-06-01","check_out_date":"2026-06-08","bedrooms":2}' \
+  "$BASE_URL/v1/search"
+```
+
+Body params: `destination`, `check_in_date`, `check_out_date`, `min_price`, `max_price`, `bedrooms`, `property_type`, `amenities` (array), `max_guests`, `flexible_dates`
+
+#### 4. List destinations
+
+```bash
+curl -H "X-API-Key: $API_KEY" "$BASE_URL/v1/destinations"
+```
+
+Returns all destination regions with their cities.
+
+#### 5. List resorts
+
+```bash
+curl -H "X-API-Key: $API_KEY" \
+  "$BASE_URL/v1/resorts?page=1&per_page=20"
+```
+
+Query params: `page`, `per_page` (max 50)
+
+### Response Format
+
+**Success (200):**
+```json
+{
+  "data": [...],
+  "meta": { "page": 1, "per_page": 20, "total_count": 150, "total_pages": 8 },
+  "api_version": "v1"
+}
+```
+
+**Error (4xx/5xx):**
+```json
+{
+  "error": { "code": "unauthorized", "message": "Missing or invalid API key" },
+  "api_version": "v1"
+}
+```
+
+### Rate Limits
+
+Rate limits are enforced per API key and returned in response headers:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Daily request quota |
+| `X-RateLimit-Remaining` | Requests remaining today |
+| `X-RateLimit-Reset` | Unix timestamp when limit resets |
+
+| Tier | Daily Limit | Per-Minute |
+|------|------------|------------|
+| `free` | 100 | 10 |
+| `partner` | 10,000 | 100 |
+| `premium` | 100,000 | 500 |
+
+When exceeded, you'll receive a `429` response with a `Retry-After` header.
+
+### IP Allowlisting
+
+API keys can optionally restrict access to specific IPs or CIDR ranges (e.g., `["203.0.113.5", "192.0.2.0/24"]`). Configure in Admin Dashboard → API Keys.
+
+---
+
 ## Accessing the Docs
 
 ### Local Development
