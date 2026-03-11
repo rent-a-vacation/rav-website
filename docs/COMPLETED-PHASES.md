@@ -28,15 +28,20 @@ Documentation-only improvements to `docs/api/openapi.yaml`. Added `x-sse-events`
 #### RAV Tools Hub & Brand Naming (DEC-025)
 `src/pages/RavTools.tsx` — new `/tools` hub page showcasing 6 tools: 2 built (RAV SmartFee, RAV SmartPrice) + 4 coming-soon placeholders (Vacation Cost Comparator, Rental Yield Estimator, Resort Finder Quiz, Trip Budget Planner). JSON-LD `ItemList` schema for SEO. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, and brand docs. `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard). Organization JSON-LD on Index page. HowTo schema on calculator. Follow-up issues created for 4 future tools (#194-#197) and PostHog events (#193, #198). 4 tests.
 
+#### IP Allowlisting (#201)
+Optional security enhancement for API keys. Migration 045 adds `allowed_ips text[]` column to `api_keys` (nullable, default null — backwards compatible). Updated `validate_api_key` and `list_api_keys` RPCs to return `allowed_ips`. `checkIpAllowlist()` in `_shared/api-auth.ts` supports exact IPv4 and CIDR notation (e.g., `203.0.113.0/24`). API gateway enforces IP check after key validation; skips if null. Admin UI updated: optional IP input on key creation + inline edit panel for existing keys. `useUpdateApiKeyIps` mutation hook added. 9 new IP allowlist tests.
+
 ### Migrations
 - **044_api_keys.sql:** `api_keys` + `api_request_log` tables, 4 RPCs (`validate_api_key`, `increment_api_key_usage`, `list_api_keys`, `get_api_key_stats`), RLS (service role only), indexes, `updated_at` trigger
+- **045_api_key_ip_allowlist.sql:** `allowed_ips text[]` column, updated `validate_api_key` and `list_api_keys` RPCs to include `allowed_ips`
 
 ### Deployment
 - Migration 044 deployed to **DEV** (`npx supabase db push --include-all`)
 - `api-gateway` edge function deployed to **DEV** (`npx supabase functions deploy api-gateway --no-verify-jwt`)
+- Migration 045 pending deploy to DEV
 
-### Files Created (16)
-- `supabase/migrations/044_api_keys.sql`
+### Files Created (17)
+- `supabase/migrations/044_api_keys.sql`, `supabase/migrations/045_api_key_ip_allowlist.sql`
 - `supabase/functions/_shared/api-auth.ts`, `supabase/functions/_shared/api-response.ts`, `supabase/functions/_shared/destinations.ts`
 - `supabase/functions/api-gateway/index.ts`
 - `src/hooks/admin/useApiKeys.ts`
@@ -63,7 +68,7 @@ Documentation-only improvements to `docs/api/openapi.yaml`. Added `x-sse-events`
 - `docs/PROJECT-HUB.md`
 
 ### Test Status
-724 tests passing, 95 test files, 0 TypeScript errors, 0 lint errors, build clean
+771 tests passing, 99 test files, 0 TypeScript errors, 0 lint errors, build clean
 
 ---
 

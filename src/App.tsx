@@ -49,6 +49,10 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 const Developers = lazy(() => import("./pages/Developers"));
 const DestinationDetail = lazy(() => import("./pages/DestinationDetail"));
+const CostComparator = lazy(() => import("./pages/CostComparator"));
+const YieldEstimator = lazy(() => import("./pages/YieldEstimator"));
+const ResortQuiz = lazy(() => import("./pages/ResortQuiz"));
+const BudgetPlanner = lazy(() => import("./pages/BudgetPlanner"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -175,6 +179,10 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/calculator" element={<MaintenanceFeeCalculator />} />
             <Route path="/tools" element={<RavTools />} />
+            <Route path="/tools/cost-comparator" element={<Suspense fallback={<PageLoadingFallback />}><CostComparator /></Suspense>} />
+            <Route path="/tools/yield-estimator" element={<Suspense fallback={<PageLoadingFallback />}><YieldEstimator /></Suspense>} />
+            <Route path="/tools/resort-quiz" element={<Suspense fallback={<PageLoadingFallback />}><ResortQuiz /></Suspense>} />
+            <Route path="/tools/budget-planner" element={<Suspense fallback={<PageLoadingFallback />}><BudgetPlanner /></Suspense>} />
 
             {/* Protected routes — require approved account */}
             <Route path="/rentals" element={<ProtectedRoute><Rentals /></ProtectedRoute>} />

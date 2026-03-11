@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import type { ChatMessage, ChatStatus, ChatContext } from "@/types/chat";
 import type { VoiceSearchResult } from "@/types/voice";
 import { supabase } from "@/lib/supabase";
+import { trackEvent } from "@/lib/posthog";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
@@ -180,6 +181,11 @@ export function useTextChat({ context }: UseTextChatOptions) {
         }
       }
 
+      trackEvent("text_chat_sent", {
+        context: contextRef.current,
+        message_length: trimmed.length,
+        has_search_results: !!searchResults,
+      });
       setStatus("idle");
     } catch (err) {
       // Don't treat abort as an error

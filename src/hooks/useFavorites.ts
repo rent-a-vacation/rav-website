@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
+import { trackEvent } from "@/lib/posthog";
 
 export function useFavoriteIds() {
   const { user } = useAuth();
@@ -67,6 +68,11 @@ export function useToggleFavorite() {
       // Rollback on error
       if (context?.previous) {
         queryClient.setQueryData(["favorites", user?.id], context.previous);
+      }
+    },
+    onSuccess: (result) => {
+      if (result.action === "added") {
+        trackEvent("listing_favorited", { property_id: result.propertyId });
       }
     },
     onSettled: () => {

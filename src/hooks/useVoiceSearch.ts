@@ -8,6 +8,7 @@ import type {
 import { supabase } from "@/lib/supabase";
 import { useVoiceQuota } from "./useVoiceQuota";
 import type { AssistantOverrides } from "@vapi-ai/web/dist/api";
+import { trackEvent } from "@/lib/posthog";
 
 const VAPI_PUBLIC_KEY = import.meta.env.VITE_VAPI_PUBLIC_KEY as string;
 const VAPI_ASSISTANT_ID = import.meta.env.VITE_VAPI_ASSISTANT_ID as string;
@@ -158,6 +159,11 @@ export function useVoiceSearch() {
           if (data.success) {
             setResults(data.results);
             setStatus("success");
+            trackEvent("voice_search_used", {
+              destination: params.destination,
+              results_count: data.results.length,
+              latency_ms: latencyMs,
+            });
 
             // Increment voice search counter
             const { data: { user } } = await supabase.auth.getUser();
