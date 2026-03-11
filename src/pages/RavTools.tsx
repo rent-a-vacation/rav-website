@@ -9,7 +9,6 @@ import {
   Calculator,
   TrendingUp,
   BarChart3,
-  DollarSign,
   Compass,
   Wallet,
   ArrowRight,
@@ -27,10 +26,10 @@ interface Tool {
 
 const TOOLS: Tool[] = [
   {
-    id: 'smartfee',
-    brandName: 'RAV SmartFee',
+    id: 'smartearn',
+    brandName: 'RAV SmartEarn',
     description:
-      'Calculate how many weeks you need to rent your timeshare to cover annual maintenance fees. Free, no account needed.',
+      'Calculate how many weeks you need to rent your timeshare to cover maintenance fees, plus estimate your annual rental yield. Free, no account needed.',
     status: 'built',
     route: '/calculator',
     icon: Calculator,
@@ -45,8 +44,8 @@ const TOOLS: Tool[] = [
     icon: TrendingUp,
   },
   {
-    id: 'cost-comparator',
-    brandName: 'Vacation Cost Comparator',
+    id: 'smartcompare',
+    brandName: 'RAV SmartCompare',
     description:
       'Compare the total cost of a timeshare rental vs. hotel vs. Airbnb for the same destination and dates.',
     status: 'built',
@@ -54,17 +53,8 @@ const TOOLS: Tool[] = [
     icon: BarChart3,
   },
   {
-    id: 'yield-estimator',
-    brandName: 'Rental Yield Estimator',
-    description:
-      'Project your annual rental income based on your resort, unit type, and local demand trends.',
-    status: 'built',
-    route: '/tools/yield-estimator',
-    icon: DollarSign,
-  },
-  {
-    id: 'resort-quiz',
-    brandName: 'Resort Finder Quiz',
+    id: 'smartmatch',
+    brandName: 'RAV SmartMatch',
     description:
       'Answer a few questions about your ideal vacation and get matched to the perfect resort from our 117-resort database.',
     status: 'built',
@@ -72,8 +62,8 @@ const TOOLS: Tool[] = [
     icon: Compass,
   },
   {
-    id: 'budget-planner',
-    brandName: 'Trip Budget Planner',
+    id: 'smartbudget',
+    brandName: 'RAV SmartBudget',
     description:
       'Plan your full trip budget including flights, car rental, dining, and activities alongside your accommodation.',
     status: 'built',

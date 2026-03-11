@@ -62,15 +62,15 @@ export const ownerLifecycle: FlowDefinition = {
       route: '/tools',
       label: 'RAV Tools Hub',
       component: 'RavTools',
-      description: 'Central hub for all free tools: RAV SmartFee calculator, SmartPrice, and coming-soon tools',
+      description: 'Central hub for all free tools: RAV SmartEarn calculator, SmartPrice, SmartCompare, SmartMatch, SmartBudget',
       branches: [
-        { condition: 'Opens calculator', targetStepId: 'fee_calculator', label: 'RAV SmartFee' },
+        { condition: 'Opens calculator', targetStepId: 'fee_calculator', label: 'RAV SmartEarn' },
       ],
     },
     {
       id: 'fee_calculator',
       route: '/calculator',
-      label: 'RAV SmartFee Calculator',
+      label: 'RAV SmartEarn Calculator',
       component: 'MaintenanceFeeCalculator',
       description: 'Calculate breakeven point and projected savings vs. maintenance fees',
       branches: [

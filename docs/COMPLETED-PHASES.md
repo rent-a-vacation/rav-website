@@ -26,19 +26,19 @@ Documentation-only improvements to `docs/api/openapi.yaml`. Added `x-sse-events`
 **Architectural Decision:** DEC-024 — Public API Architecture (single gateway, API key auth, tiered rate limiting, read-only v1, URL-based versioning).
 
 #### RAV Tools Hub & Brand Naming (DEC-025)
-`src/pages/RavTools.tsx` — new `/tools` hub page showcasing 6 tools (all built): RAV SmartFee, RAV SmartPrice, Vacation Cost Comparator, Rental Yield Estimator, Resort Finder Quiz, Trip Budget Planner. JSON-LD `ItemList` schema for SEO. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, and brand docs. `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard). Organization JSON-LD on Index page. HowTo schema on calculator. Follow-up issues created for PostHog events (#193, #198). 4 tests.
+`src/pages/RavTools.tsx` — new `/tools` hub page showcasing 5 tools (all built): RAV SmartEarn (merged fee calculator + yield estimator), RAV SmartPrice, RAV SmartCompare, RAV SmartMatch, RAV SmartBudget. JSON-LD `ItemList` schema for SEO. "Fee Freedom Calculator" renamed to "RAV SmartEarn" across Header, Footer, calculator page, and brand docs; Rental Yield Estimator merged into RAV SmartEarn. `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard). Organization JSON-LD on Index page. HowTo schema on calculator. Follow-up issues created for PostHog events (#193, #198). 4 tests.
 
 #### 4 New Tool Implementations
 Full implementations for the 4 tools with pure logic modules, test coverage, and PostHog tracking:
-- **Cost Comparator** (`/tools/cost-comparator`): `src/lib/costComparator.ts` — compare RAV timeshare vs hotel vs Airbnb by destination/nights/guests. 7 tests.
-- **Yield Estimator** (`/tools/yield-estimator`): `src/lib/yieldEstimator.ts` — project annual rental income by brand/unit/region/occupancy. 8 tests.
-- **Resort Quiz** (`/tools/resort-quiz`): `src/lib/resortQuiz.ts` — 5-question quiz matching users to destinations. Tracks completion via PostHog.
-- **Budget Planner** (`/tools/budget-planner`): `src/lib/budgetPlanner.ts` — total trip budget (flights, dining, activities, car rental) by destination and spending level.
+- **RAV SmartCompare** (`/tools/cost-comparator`): `src/lib/costComparator.ts` — compare RAV timeshare vs hotel vs Airbnb by destination/nights/guests. 7 tests.
+- **RAV SmartEarn** (`/tools/yield-estimator`): `src/lib/yieldEstimator.ts` — merged fee break-even calculator + annual rental income projections by brand/unit/region/occupancy. 8 tests.
+- **RAV SmartMatch** (`/tools/resort-quiz`): `src/lib/resortQuiz.ts` — 5-question quiz matching users to destinations. Tracks completion via PostHog.
+- **RAV SmartBudget** (`/tools/budget-planner`): `src/lib/budgetPlanner.ts` — total trip budget (flights, dining, activities, car rental) by destination and spending level.
 
 #### Header Redesign & Navigation Consistency
-- **Header redesign:** Removed inconsistent icons from top-level nav. All links use clean `text-sm font-medium` with pill-style active state highlighting. "Free Tools" promoted to top-level nav with `Sparkles` icon in primary color. Removed redundant RAV SmartFee from Explore dropdown (accessible via `/tools`). Explore chevron rotates on open.
+- **Header redesign:** Removed inconsistent icons from top-level nav. All links use clean `text-sm font-medium` with pill-style active state highlighting. "Free Tools" promoted to top-level nav with `Sparkles` icon in primary color. Removed redundant RAV SmartEarn from Explore dropdown (accessible via `/tools`). Explore chevron rotates on open.
 - **Missing Header fix:** Added global `<Header />` to 7 pages that lacked site navigation: AdminDashboard, OwnerDashboard, BookingSuccess, Documentation, UserGuide, TravelerCheckin, PendingApproval. Pages with sticky sub-headers (Documentation, UserGuide) use `top-16 md:top-20 z-40` to stack below global Header.
-- **Footer:** Consolidated SmartFee + RAV Tools into single "Free Tools" link.
+- **Footer:** Consolidated SmartEarn + RAV Tools into single "Free Tools" link.
 
 #### SEO Enhancements
 - **Sitemap:** Updated `public/sitemap.xml` from 10 → 17 URLs. Added `/rentals`, `/tools`, `/calculator`, and all 4 tool sub-pages (priority 0.8).

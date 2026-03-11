@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { BarChart3, Users, Moon, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BarChart3, Users, Moon, MapPin, ArrowLeft } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,7 @@ import {
 
 export default function CostComparator() {
   usePageMeta(
-    'Vacation Cost Comparator — RAV Tools',
+    'RAV SmartCompare — RAV Tools',
     'Compare the total cost of a timeshare rental vs. hotel vs. Airbnb for your destination.',
   );
 
@@ -38,7 +39,7 @@ export default function CostComparator() {
     script.textContent = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Vacation Cost Comparator',
+      name: 'RAV SmartCompare',
       url: 'https://rent-a-vacation.com/tools/cost-comparator',
       applicationCategory: 'TravelApplication',
       operatingSystem: 'Web',
@@ -83,13 +84,19 @@ export default function CostComparator() {
       <Header />
       <main className="flex-1 pt-16 md:pt-20">
         <div className="max-w-5xl mx-auto px-4 py-12">
+          {/* Breadcrumb */}
+          <Link to="/tools" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6">
+            <ArrowLeft className="h-3 w-3" />
+            Back to Free Tools
+          </Link>
+
           {/* Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
               <BarChart3 className="h-4 w-4" />
-              Vacation Cost Comparator
+              RAV SmartCompare
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3">
               How much can you save with a timeshare rental?
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">

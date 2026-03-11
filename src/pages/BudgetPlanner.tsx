@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Wallet, Plane, Car } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Wallet, Plane, Car, ArrowLeft } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
@@ -40,7 +41,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function BudgetPlanner() {
   usePageMeta(
-    'Trip Budget Planner — RAV Tools',
+    'RAV SmartBudget — RAV Tools',
     'Plan your total vacation budget including flights, dining, activities, and accommodation.',
   );
 
@@ -54,7 +55,7 @@ export default function BudgetPlanner() {
     script.textContent = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Trip Budget Planner',
+      name: 'RAV SmartBudget',
       url: 'https://rent-a-vacation.com/tools/budget-planner',
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
@@ -107,12 +108,18 @@ export default function BudgetPlanner() {
       <Header />
       <main className="flex-1 pt-16 md:pt-20">
         <div className="max-w-5xl mx-auto px-4 py-12">
+          {/* Breadcrumb */}
+          <Link to="/tools" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6">
+            <ArrowLeft className="h-3 w-3" />
+            Back to Free Tools
+          </Link>
+
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
               <Wallet className="h-4 w-4" />
-              Trip Budget Planner
+              RAV SmartBudget
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3">
               What will your whole trip cost?
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">

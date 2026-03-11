@@ -18,14 +18,13 @@ afterEach(() => {
 });
 
 describe('RavTools', () => {
-  it('renders all 6 tool cards', () => {
+  it('renders all 5 tool cards', () => {
     renderWithProviders(<RavTools />);
-    expect(screen.getByText('RAV SmartFee')).toBeInTheDocument();
+    expect(screen.getByText('RAV SmartEarn')).toBeInTheDocument();
     expect(screen.getByText('RAV SmartPrice')).toBeInTheDocument();
-    expect(screen.getByText('Vacation Cost Comparator')).toBeInTheDocument();
-    expect(screen.getByText('Rental Yield Estimator')).toBeInTheDocument();
-    expect(screen.getByText('Resort Finder Quiz')).toBeInTheDocument();
-    expect(screen.getByText('Trip Budget Planner')).toBeInTheDocument();
+    expect(screen.getByText('RAV SmartCompare')).toBeInTheDocument();
+    expect(screen.getByText('RAV SmartMatch')).toBeInTheDocument();
+    expect(screen.getByText('RAV SmartBudget')).toBeInTheDocument();
   });
 
   it('renders page heading', () => {
@@ -36,10 +35,10 @@ describe('RavTools', () => {
   it('all built tools have "Try it Free" buttons with links', () => {
     renderWithProviders(<RavTools />);
     const tryButtons = screen.getAllByText('Try it Free');
-    expect(tryButtons).toHaveLength(6);
-    // SmartFee links to /calculator
-    const smartFeeLink = tryButtons[0].closest('a');
-    expect(smartFeeLink).toHaveAttribute('href', '/calculator');
+    expect(tryButtons).toHaveLength(5);
+    // SmartEarn links to /calculator
+    const smartEarnLink = tryButtons[0].closest('a');
+    expect(smartEarnLink).toHaveAttribute('href', '/calculator');
     // SmartPrice links to /rentals
     const smartPriceLink = tryButtons[1].closest('a');
     expect(smartPriceLink).toHaveAttribute('href', '/rentals');
@@ -61,8 +60,8 @@ describe('RavTools', () => {
     expect(script).not.toBeNull();
     const data = JSON.parse(script!.textContent!);
     expect(data['@type']).toBe('ItemList');
-    expect(data.numberOfItems).toBe(6);
-    expect(data.itemListElement).toHaveLength(6);
+    expect(data.numberOfItems).toBe(5);
+    expect(data.itemListElement).toHaveLength(5);
   });
 
   it('sets page title correctly', () => {
