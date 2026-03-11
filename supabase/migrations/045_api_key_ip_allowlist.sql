@@ -3,7 +3,11 @@
 
 ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS allowed_ips text[];
 
--- Update validate_api_key to return allowed_ips
+-- Drop existing functions first (return type changed — cannot use CREATE OR REPLACE)
+DROP FUNCTION IF EXISTS validate_api_key(text);
+DROP FUNCTION IF EXISTS list_api_keys();
+
+-- Recreate validate_api_key with allowed_ips
 CREATE OR REPLACE FUNCTION validate_api_key(p_key_hash text)
 RETURNS TABLE (
   key_id uuid,
@@ -44,7 +48,7 @@ BEGIN
 END;
 $$;
 
--- Update list_api_keys to return allowed_ips
+-- Recreate list_api_keys with allowed_ips
 CREATE OR REPLACE FUNCTION list_api_keys()
 RETURNS TABLE (
   id uuid,
