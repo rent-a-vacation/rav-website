@@ -96,7 +96,15 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Supabase CLI:** currently linked to DEV
 - **dev and main:** in sync (PRs #199-#205 merged)
 
-### Session Handoff (Sessions 25-38)
+### Session Handoff (Sessions 25-39)
+
+**Session 39 — RAV Smart Suite Rebrand + SmartEarn Merge (Mar 10):**
+- Rebranded all 6 free tools to consistent "RAV Smart___" naming: SmartFee→SmartEarn, Vacation Cost Comparator→SmartCompare, Resort Finder Quiz→SmartMatch, Trip Budget Planner→SmartBudget.
+- Merged standalone Rental Yield Estimator into SmartEarn as a toggle section on `/calculator` with region selector + projected income card.
+- Deleted `src/pages/YieldEstimator.tsx`. `/tools/yield-estimator` now redirects to `/calculator`.
+- Added breadcrumb navigation ("Back to Free Tools") and `font-display` h1 to all tool pages.
+- Updated: RavTools hub (6→5 cards), App.tsx routes, flow manifest, sitemap, tests, all docs.
+- PR #207 merged to main. 771 tests passing, build clean.
 
 **Session 38 — Public API, RAV Tools Hub & Brand Naming (Mar 10):**
 - Closed #173 (Schema Fixes): Added `x-sse-events`, `x-auth-note`, `x-internal` extensions to OpenAPI spec. Clarified dual-input (voice-search) and rate limit headers. Validated with Redocly (0 errors).

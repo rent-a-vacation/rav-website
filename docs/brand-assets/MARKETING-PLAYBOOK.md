@@ -206,7 +206,7 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 | Travel Requests | **Vacation Wishes** | Post your dream trip; owners compete to fulfill it | BUILT |
 | Bidding System | **Name Your Price** | Bid on any open listing | BUILT |
 | Fair Value Score | **RAV SmartPrice** | AI-powered pricing recommendations for owners | BUILT |
-| Maintenance Calculator | **Fee Freedom Calculator** | Break-even tool — how many weeks to cover fees | BUILT |
+| Maintenance Calculator | **RAV SmartEarn** | Break-even tool — how many weeks to cover fees | BUILT |
 | Owner Verification | **TrustShield** | Multi-step identity and ownership verification | BUILT |
 | Escrow System | **PaySafe** | Funds held securely until confirmed check-in | BUILT |
 | Resort Master Data | **ResortIQ** | Professional resort profiles powering every listing | BUILT |
@@ -232,7 +232,7 @@ RENT-A-VACATION (Master Brand)
 ├── For Owners
 │   ├── Owner's Edge (dashboard & tools suite)
 │   ├── RAV SmartPrice (pricing AI)
-│   ├── Fee Freedom Calculator (maintenance fee tool)
+│   ├── RAV SmartEarn (maintenance fee tool)
 │   └── TrustShield (verification program)
 │
 └── For Business / Investors
@@ -276,7 +276,7 @@ RENT-A-VACATION (Master Brand)
 > "We don't dabble in timeshares — we're built for them. 117 resorts. 351 unit types. Professional data that auto-populates listing forms. Owner verification that builds real trust. Resort confirmation workflows that match how vacation clubs actually work."
 
 **Pillar 4: Owner Empowerment** *[BUILT]*
-> "Listing is designed to take minutes, not hours. RAV SmartPrice shows what to charge. The Fee Freedom Calculator shows exactly how many weeks cover your maintenance fees. You control pricing, you approve guests, you earn on your terms."
+> "Listing is designed to take minutes, not hours. RAV SmartPrice shows what to charge. The RAV SmartEarn shows exactly how many weeks cover your maintenance fees. You control pricing, you approve guests, you earn on your terms."
 
 **Pillar 5: Ironclad Trust** *[BUILT]*
 > "Every owner goes through TrustShield verification. Every payment is protected through PaySafe escrow. Every stay is backed by our satisfaction guarantee. We've removed the risk so you can focus on the vacation."
@@ -335,9 +335,9 @@ RENT-A-VACATION (Master Brand)
 - "What If Your Timeshare Made You Money?"
 
 **Supporting Copy:**
-> "You're paying $1,800 a year for weeks you don't use. List those weeks on Rent-A-Vacation and let them earn for you. Our Fee Freedom Calculator shows you exactly how many weeks you need to rent. Try it free — no account required."
+> "You're paying $1,800 a year for weeks you don't use. List those weeks on Rent-A-Vacation and let them earn for you. Our RAV SmartEarn shows you exactly how many weeks you need to rent. Try it free — no account required."
 
-**Lead Magnet:** Fee Freedom Calculator (live, no account required, instant results, CTA to list).
+**Lead Magnet:** RAV SmartEarn (live, no account required, instant results, CTA to list).
 
 ---
 
@@ -405,7 +405,7 @@ RENT-A-VACATION (Master Brand)
 **Owner Welcome (5 emails):**
 1. Welcome + verification steps (Day 0)
 2. "List in Minutes" — listing tutorial with ResortIQ (Day 1)
-3. "Use the Fee Freedom Calculator" — maintenance fee tool (Day 3)
+3. "Use the RAV SmartEarn" — maintenance fee tool (Day 3)
 4. "Meet RAV SmartPrice" — pricing help (Day 7)
 5. "What to Expect from Your First Booking" — workflow guide (Day 14)
 
@@ -475,7 +475,7 @@ RENT-A-VACATION (Master Brand)
 
 ### Phase 3: Public Launch (Target: Q3 2026)
 - "Ask RAVIO" campaign launch
-- Fee Freedom Calculator SEO push
+- RAV SmartEarn SEO push
 - PR outreach
 - Paid social (Facebook/Instagram targeted to timeshare owners + travelers)
 - Google Search (high-intent keywords)
@@ -548,7 +548,7 @@ RENT-A-VACATION (Master Brand)
 | **Vacation Wishes** | Feature | Post travel requests; owners compete | BUILT |
 | **Name Your Price** | Feature | Bid on open listings | BUILT |
 | **RAV SmartPrice** | Feature | AI-powered pricing recommendations | BUILT |
-| **Fee Freedom Calculator** | Tool | Maintenance fee break-even calculator | BUILT |
+| **RAV SmartEarn** | Tool | Maintenance fee break-even calculator | BUILT |
 | **TrustShield** | Program | Owner verification system | BUILT |
 | **PaySafe** | Program | Escrow payment protection | BUILT |
 | **ResortIQ** | Data Layer | 117-resort professional database | BUILT |

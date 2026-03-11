@@ -147,7 +147,7 @@ for vacation club owners and travelers.
 ✓ TrustShield — owner verification           [BUILT]
 ✓ PaySafe — escrow payment protection        [BUILT]
 ✓ RAV SmartPrice — AI pricing guidance       [BUILT]
-✓ Fee Freedom Calculator — public tool       [BUILT]
+✓ RAV SmartEarn — public tool       [BUILT]
 
 Everything listed above is deployed and demonstrable today.
 ```
@@ -330,7 +330,7 @@ PAYSAFE (Payment Protection):
 
 ---
 
-## SLIDE 12: Deep Dive — Owner's Edge (RAV SmartPrice + Fee Freedom Calculator)
+## SLIDE 12: Deep Dive — Owner's Edge (RAV SmartPrice + RAV SmartEarn)
 
 **Visual:** Split screen. Left: SmartPrice badge on a listing. Right: Calculator results showing break-even.
 
@@ -359,7 +359,7 @@ OWNER DASHBOARD:
 ```
 
 **Speaker Notes:**
-> "We don't just acquire owners — we empower them. RAV SmartPrice is our proprietary pricing AI that analyzes comparable properties and tells owners exactly what to charge. Fair Value badges appear on every listing, helping owners price competitively. The Fee Freedom Calculator is a free public tool — no account required — that shows any timeshare owner exactly how many weeks they need to rent to cover their annual maintenance fees. It's a lead generation engine that converts directly into owner signups. And the Owner Dashboard gives them a complete command center for their rental business — earnings, bookings, bids, and verification all in one place."
+> "We don't just acquire owners — we empower them. RAV SmartPrice is our proprietary pricing AI that analyzes comparable properties and tells owners exactly what to charge. Fair Value badges appear on every listing, helping owners price competitively. The RAV SmartEarn is a free public tool — no account required — that shows any timeshare owner exactly how many weeks they need to rent to cover their annual maintenance fees. It's a lead generation engine that converts directly into owner signups. And the Owner Dashboard gives them a complete command center for their rental business — earnings, bookings, bids, and verification all in one place."
 
 ---
 
@@ -474,7 +474,7 @@ Q2:   BETA LAUNCH
       Real-world validation + feedback loops
 
 Q3:   PUBLIC LAUNCH
-      "Ask RAVIO" campaign | Fee Freedom Calculator SEO
+      "Ask RAVIO" campaign | RAV SmartEarn SEO
       PR outreach | Paid social (targeted)
       Google Search (high-intent keywords)
 
@@ -485,7 +485,7 @@ Q4:   SCALE
 ```
 
 **Speaker Notes:**
-> "Here's our go-to-market plan. We're currently in pre-launch — the platform is fully built and we're using this time to prepare marketing assets, refine workflows with our team, and build our initial pipeline. In Q2, we open to a controlled beta — inviting owners from timeshare communities and travelers from our waitlist. Q3 is our public launch, led by the Ask RAVIO campaign and the Fee Freedom Calculator as our primary SEO and owner acquisition tools. By Q4, we're scaling with mobile apps, brand partnerships, and content marketing. The key point: we're not starting from scratch in Q2. The product is built. We're launching, not building."
+> "Here's our go-to-market plan. We're currently in pre-launch — the platform is fully built and we're using this time to prepare marketing assets, refine workflows with our team, and build our initial pipeline. In Q2, we open to a controlled beta — inviting owners from timeshare communities and travelers from our waitlist. Q3 is our public launch, led by the Ask RAVIO campaign and the RAV SmartEarn as our primary SEO and owner acquisition tools. By Q4, we're scaling with mobile apps, brand partnerships, and content marketing. The key point: we're not starting from scratch in Q2. The product is built. We're launching, not building."
 
 ---
 
