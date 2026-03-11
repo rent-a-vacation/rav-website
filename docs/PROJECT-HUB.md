@@ -94,19 +94,23 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync (PR #199, #200 merged)
+- **dev and main:** in sync (PRs #199-#205 merged)
 
 ### Session Handoff (Sessions 25-38)
 
 **Session 38 — Public API, RAV Tools Hub & Brand Naming (Mar 10):**
 - Closed #173 (Schema Fixes): Added `x-sse-events`, `x-auth-note`, `x-internal` extensions to OpenAPI spec. Clarified dual-input (voice-search) and rate limit headers. Validated with Redocly (0 errors).
 - Closed #174 (Public API Layer): Migration 044 (api_keys + api_request_log tables, 4 RPCs). `api-gateway` edge function with 5 read-only endpoints (listings, listing by ID, search, destinations, resorts). Dual auth (API Key + JWT). Tiered rate limits (free/partner/premium). Admin "API Keys" tab. `/developers` public Swagger UI page.
-- DEC-025 (RAV Tools Hub): `/tools` hub page with 2 built tools (RAV SmartFee, RAV SmartPrice) + 4 coming-soon. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, brand docs. `usePageMeta()` added to 7 pages. JSON-LD structured data (ItemList, Organization, HowTo).
-- Created follow-up issues: #188-#192 (API enhancements), #193-#198 (PostHog events, 4 future tools)
-- DEC-024: Public API Architecture, DEC-025: RAV Tools Hub & Brand Naming
-- Deployed migration 044 + api-gateway edge function to DEV
+- DEC-025 (RAV Tools Hub): `/tools` hub page with 6 built tools. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, brand docs. `usePageMeta()` added to 7 pages. JSON-LD structured data (ItemList, Organization, HowTo).
+- 4 new tool implementations: Cost Comparator, Yield Estimator, Resort Quiz, Budget Planner — full logic modules with tests and PostHog tracking.
+- Header redesign: "Free Tools" promoted to top-level nav with Sparkles icon. Removed inconsistent icons. Active-state highlighting. Removed redundant SmartFee from Explore dropdown.
+- Navigation fix: Added global Header to 7 pages that were missing it (Admin, Owner Dashboard, BookingSuccess, Documentation, UserGuide, TravelerCheckin, PendingApproval).
+- SEO: Sitemap updated from 10 → 17 URLs. `WebApplication` JSON-LD on all 4 tool pages.
 - IP Allowlisting (#201): Migration 045 — optional `allowed_ips text[]` on API keys with CIDR support. Admin UI create/edit. `checkIpAllowlist()` in api-gateway. 9 tests.
-- Tests: 676→771 (+95 new, 99 test files)
+- Created follow-up issues: #188-#192 (API enhancements), #193-#198 (PostHog events, future tools)
+- DEC-024: Public API Architecture, DEC-025: RAV Tools Hub & Brand Naming
+- Deployed migrations 044-045 to DEV and PROD. api-gateway edge function to DEV.
+- Tests: 676→771 (+95 new, 99 test files). PRs #199-#205 merged to main.
 
 **Session 37 — Dynamic Pricing & Referral Program (Mar 5):**
 - Closed #99 (Dynamic Pricing): `src/lib/dynamicPricing.ts` — urgency discount (graduated 0-15%), seasonal factor (month-based historical data), demand adjustment (pending bids + saved searches). Migration 042: `get_dynamic_pricing_data` RPC. `useDynamicPricing` hook. Enhanced `PricingSuggestion` component with factor badges. 33 tests.
