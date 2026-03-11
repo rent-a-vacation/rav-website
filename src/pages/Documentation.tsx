@@ -2842,7 +2842,8 @@ const Documentation = () => {
                       <li>• <strong>Shared Modules:</strong> <code className="bg-muted px-1 rounded">_shared/api-auth.ts</code>, <code className="bg-muted px-1 rounded">_shared/api-response.ts</code></li>
                       <li>• <strong>Admin UI:</strong> "API Keys" tab in Admin Dashboard (rav_admin only)</li>
                       <li>• <strong>Public Docs:</strong> <code className="bg-muted px-1 rounded">/developers</code> — Swagger UI (no auth required)</li>
-                      <li>• <strong>Migration:</strong> 044</li>
+                      <li>• <strong>IP Allowlisting:</strong> Optional per-key IP restriction with CIDR support (e.g., <code className="bg-muted px-1 rounded">203.0.113.0/24</code>) — requests from unlisted IPs get <code className="bg-muted px-1 rounded">403</code></li>
+                      <li>• <strong>Migrations:</strong> 044 (tables + RPCs), 045 (IP allowlist column)</li>
                     </ul>
                   </div>
 
@@ -2910,7 +2911,7 @@ const Documentation = () => {
                       </li>
                       <li className="flex gap-3">
                         <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>
-                        <span>Choose name, tier, and scopes → key shown once (copy immediately)</span>
+                        <span>Choose name, tier, scopes, and optional IP allowlist → key shown once (copy immediately)</span>
                       </li>
                       <li className="flex gap-3">
                         <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>
@@ -2919,6 +2920,10 @@ const Documentation = () => {
                       <li className="flex gap-3">
                         <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">4</span>
                         <span>Revoke anytime — immediate, permanent, cannot be undone</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">5</span>
+                        <span>Optional: configure IP allowlist (exact IPs or CIDR ranges) to restrict key usage by source</span>
                       </li>
                     </ol>
                   </div>

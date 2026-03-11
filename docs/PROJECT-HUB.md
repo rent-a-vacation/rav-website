@@ -87,14 +87,14 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **676 automated tests** (90 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **771 automated tests** (99 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-043 (all deployed to DEV and PROD)
+- **Migrations created:** 001-045 (001-044 deployed to DEV; 045 pending deploy)
 - **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync (PR #183, #184 merged)
+- **dev and main:** in sync (PR #199, #200 merged)
 
 ### Session Handoff (Sessions 25-38)
 
@@ -105,7 +105,8 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Created follow-up issues: #188-#192 (API enhancements), #193-#198 (PostHog events, 4 future tools)
 - DEC-024: Public API Architecture, DEC-025: RAV Tools Hub & Brand Naming
 - Deployed migration 044 + api-gateway edge function to DEV
-- Tests: 676→724 (+48 new, 95 test files)
+- IP Allowlisting (#201): Migration 045 — optional `allowed_ips text[]` on API keys with CIDR support. Admin UI create/edit. `checkIpAllowlist()` in api-gateway. 9 tests.
+- Tests: 676→771 (+95 new, 99 test files)
 
 **Session 37 — Dynamic Pricing & Referral Program (Mar 5):**
 - Closed #99 (Dynamic Pricing): `src/lib/dynamicPricing.ts` — urgency discount (graduated 0-15%), seasonal factor (month-based historical data), demand adjustment (pending bids + saved searches). Migration 042: `get_dynamic_pricing_data` RPC. `useDynamicPricing` hook. Enhanced `PricingSuggestion` component with factor badges. 33 tests.
