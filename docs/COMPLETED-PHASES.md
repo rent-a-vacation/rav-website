@@ -26,7 +26,23 @@ Documentation-only improvements to `docs/api/openapi.yaml`. Added `x-sse-events`
 **Architectural Decision:** DEC-024 — Public API Architecture (single gateway, API key auth, tiered rate limiting, read-only v1, URL-based versioning).
 
 #### RAV Tools Hub & Brand Naming (DEC-025)
-`src/pages/RavTools.tsx` — new `/tools` hub page showcasing 6 tools: 2 built (RAV SmartFee, RAV SmartPrice) + 4 coming-soon placeholders (Vacation Cost Comparator, Rental Yield Estimator, Resort Finder Quiz, Trip Budget Planner). JSON-LD `ItemList` schema for SEO. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, and brand docs. `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard). Organization JSON-LD on Index page. HowTo schema on calculator. Follow-up issues created for 4 future tools (#194-#197) and PostHog events (#193, #198). 4 tests.
+`src/pages/RavTools.tsx` — new `/tools` hub page showcasing 6 tools (all built): RAV SmartFee, RAV SmartPrice, Vacation Cost Comparator, Rental Yield Estimator, Resort Finder Quiz, Trip Budget Planner. JSON-LD `ItemList` schema for SEO. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, and brand docs. `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard). Organization JSON-LD on Index page. HowTo schema on calculator. Follow-up issues created for PostHog events (#193, #198). 4 tests.
+
+#### 4 New Tool Implementations
+Full implementations for the 4 tools with pure logic modules, test coverage, and PostHog tracking:
+- **Cost Comparator** (`/tools/cost-comparator`): `src/lib/costComparator.ts` — compare RAV timeshare vs hotel vs Airbnb by destination/nights/guests. 7 tests.
+- **Yield Estimator** (`/tools/yield-estimator`): `src/lib/yieldEstimator.ts` — project annual rental income by brand/unit/region/occupancy. 8 tests.
+- **Resort Quiz** (`/tools/resort-quiz`): `src/lib/resortQuiz.ts` — 5-question quiz matching users to destinations. Tracks completion via PostHog.
+- **Budget Planner** (`/tools/budget-planner`): `src/lib/budgetPlanner.ts` — total trip budget (flights, dining, activities, car rental) by destination and spending level.
+
+#### Header Redesign & Navigation Consistency
+- **Header redesign:** Removed inconsistent icons from top-level nav. All links use clean `text-sm font-medium` with pill-style active state highlighting. "Free Tools" promoted to top-level nav with `Sparkles` icon in primary color. Removed redundant RAV SmartFee from Explore dropdown (accessible via `/tools`). Explore chevron rotates on open.
+- **Missing Header fix:** Added global `<Header />` to 7 pages that lacked site navigation: AdminDashboard, OwnerDashboard, BookingSuccess, Documentation, UserGuide, TravelerCheckin, PendingApproval. Pages with sticky sub-headers (Documentation, UserGuide) use `top-16 md:top-20 z-40` to stack below global Header.
+- **Footer:** Consolidated SmartFee + RAV Tools into single "Free Tools" link.
+
+#### SEO Enhancements
+- **Sitemap:** Updated `public/sitemap.xml` from 10 → 17 URLs. Added `/rentals`, `/tools`, `/calculator`, and all 4 tool sub-pages (priority 0.8).
+- **JSON-LD:** Added `WebApplication` schema (with `price: "0"` for free tool rich snippets) to all 4 new tool pages. Combined with existing ItemList on `/tools`, HowTo on `/calculator`, Organization on `/` — full structured data coverage across all public pages.
 
 #### IP Allowlisting (#201)
 Optional security enhancement for API keys. Migration 045 adds `allowed_ips text[]` column to `api_keys` (nullable, default null — backwards compatible). Updated `validate_api_key` and `list_api_keys` RPCs to return `allowed_ips`. `checkIpAllowlist()` in `_shared/api-auth.ts` supports exact IPv4 and CIDR notation (e.g., `203.0.113.0/24`). API gateway enforces IP check after key validation; skips if null. Admin UI updated: optional IP input on key creation + inline edit panel for existing keys. `useUpdateApiKeyIps` mutation hook added. 9 new IP allowlist tests.
@@ -36,11 +52,12 @@ Optional security enhancement for API keys. Migration 045 adds `allowed_ips text
 - **045_api_key_ip_allowlist.sql:** `allowed_ips text[]` column, updated `validate_api_key` and `list_api_keys` RPCs to include `allowed_ips`
 
 ### Deployment
-- Migration 044 deployed to **DEV** (`npx supabase db push --include-all`)
+- Migration 044 deployed to **DEV** and **PROD**
+- Migration 045 deployed to **DEV** and **PROD**
 - `api-gateway` edge function deployed to **DEV** (`npx supabase functions deploy api-gateway --no-verify-jwt`)
-- Migration 045 pending deploy to DEV
+- PRs #199, #200, #202, #203, #204, #205 merged to main → Vercel auto-deployed to PROD
 
-### Files Created (17)
+### Files Created (29)
 - `supabase/migrations/044_api_keys.sql`, `supabase/migrations/045_api_key_ip_allowlist.sql`
 - `supabase/functions/_shared/api-auth.ts`, `supabase/functions/_shared/api-response.ts`, `supabase/functions/_shared/destinations.ts`
 - `supabase/functions/api-gateway/index.ts`
@@ -53,8 +70,14 @@ Optional security enhancement for API keys. Migration 045 adds `allowed_ips text
 - `src/hooks/admin/__tests__/useApiKeys.test.ts`
 - `src/components/admin/__tests__/AdminApiKeys.test.tsx`
 - `src/pages/__tests__/RavTools.test.tsx`
+- `src/lib/costComparator.ts`, `src/lib/costComparator.test.ts`
+- `src/lib/yieldEstimator.ts`, `src/lib/yieldEstimator.test.ts`
+- `src/lib/resortQuiz.ts`, `src/lib/resortQuiz.test.ts`
+- `src/lib/budgetPlanner.ts`, `src/lib/budgetPlanner.test.ts`
+- `src/pages/CostComparator.tsx`, `src/pages/YieldEstimator.tsx`
+- `src/pages/ResortQuiz.tsx`, `src/pages/BudgetPlanner.tsx`
 
-### Files Modified (18)
+### Files Modified (25)
 - `docs/api/openapi.yaml`, `public/api/openapi.yaml`, `public/api/public-api.yaml`
 - `src/pages/AdminDashboard.tsx`, `src/pages/Documentation.tsx`
 - `src/flows/admin-lifecycle.ts`, `src/flows/owner-lifecycle.ts`
@@ -65,7 +88,10 @@ Optional security enhancement for API keys. Migration 045 adds `allowed_ips text
 - `src/pages/BiddingMarketplace.tsx`, `src/pages/Checkout.tsx`
 - `src/pages/ExecutiveDashboard.tsx`, `src/pages/OwnerDashboard.tsx`
 - `docs/brand-assets/BRAND-CONCEPTS.md`
-- `docs/PROJECT-HUB.md`
+- `docs/PROJECT-HUB.md`, `docs/COMPLETED-PHASES.md`
+- `public/sitemap.xml`
+- `src/pages/BookingSuccess.tsx`, `src/pages/UserGuide.tsx`
+- `src/pages/TravelerCheckin.tsx`, `src/pages/PendingApproval.tsx`
 
 ### Test Status
 771 tests passing, 99 test files, 0 TypeScript errors, 0 lint errors, build clean
