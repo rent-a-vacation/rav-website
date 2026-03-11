@@ -28,6 +28,7 @@ import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { trackEvent } from "@/lib/posthog";
 
 const Checkout = () => {
   usePageMeta('Secure Checkout', 'Complete your vacation rental booking securely with PaySafe escrow protection.');
@@ -68,6 +69,13 @@ const Checkout = () => {
 
     setIsProcessing(true);
     setError(null);
+
+    trackEvent("checkout_started", {
+      listing_id: listing.id,
+      total_amount: fees?.subtotal,
+      nights,
+      guest_count: guests,
+    });
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke(

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -50,6 +50,7 @@ import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail"
 import { OwnerProfileCard } from "@/components/OwnerProfileCard";
 import { InquiryDialog } from "@/components/InquiryDialog";
 import { useInquiryCount } from "@/hooks/useListingInquiries";
+import { trackEvent } from "@/lib/posthog";
 
 const BRAND_LABELS: Record<string, string> = {
   hilton_grand_vacations: "Hilton Grand Vacations",
@@ -152,6 +153,23 @@ const PropertyDetail = () => {
   const isBiddable = listing?.open_for_bidding &&
     listing?.bidding_ends_at &&
     !isPast(new Date(listing.bidding_ends_at));
+
+  // Track listing view (fires once per listing load)
+  useEffect(() => {
+    if (listing && id) {
+      const loc = resort?.location
+        ? `${resort.location.city}, ${resort.location.state}`
+        : prop?.location || "";
+      trackEvent("listing_viewed", {
+        listing_id: id,
+        brand: listing.property?.brand,
+        location: loc,
+        nightly_rate: listing.nightly_rate,
+        nights: calculateNights(listing.check_in_date, listing.check_out_date),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listing?.id]);
 
   // Inquiry count for social proof
   const { data: inquiryCount = 0 } = useInquiryCount(listing?.id);

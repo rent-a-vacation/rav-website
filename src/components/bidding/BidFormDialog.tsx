@@ -22,6 +22,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import type { ListingWithBidding } from '@/types/bidding';
 import { calculateNights, computeListingPricing } from '@/lib/pricing';
+import { trackEvent } from '@/lib/posthog';
 
 type BidMode = 'bid' | 'date-proposal';
 
@@ -83,6 +84,12 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
 
       setSubmittedBidAmount(bidAmount);
       setBidSuccess(true);
+      trackEvent("bid_placed", {
+        listing_id: listing.id,
+        bid_amount: bidAmount,
+        mode,
+        guest_count: guestCount,
+      });
     } catch {
       // Error handled in hook
     }

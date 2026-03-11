@@ -28,6 +28,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { MapPin, Calendar, Users, DollarSign, Plus, Sparkles } from 'lucide-react';
 import { addDays, format } from 'date-fns';
 import type { BudgetPreference, VacationClubBrand } from '@/types/bidding';
+import { trackEvent } from '@/lib/posthog';
 
 const VACATION_BRANDS: { value: VacationClubBrand; label: string }[] = [
   { value: 'hilton_grand_vacations', label: 'Hilton Grand Vacations' },
@@ -112,6 +113,13 @@ export function TravelRequestForm({ onSuccess, defaultValues }: TravelRequestFor
         proposals_deadline: new Date(proposalsDeadline).toISOString(),
       });
       
+      trackEvent("travel_request_posted", {
+        destination: destinationLocation,
+        guest_count: guestCount,
+        bedrooms: bedroomsNeeded,
+        budget_preference: budgetPreference,
+        dates_flexible: datesFlexible,
+      });
       setOpen(false);
       resetForm();
       onSuccess?.();

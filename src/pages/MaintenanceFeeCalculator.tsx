@@ -13,6 +13,7 @@ import {
   type CalculatorResult,
 } from '@/lib/calculatorLogic';
 import { supabase } from '@/lib/supabase';
+import { trackEvent } from '@/lib/posthog';
 
 export default function MaintenanceFeeCalculator() {
   const [inputs, setInputs] = useState<CalculatorInputs>({
@@ -32,6 +33,18 @@ export default function MaintenanceFeeCalculator() {
   }, [inputs]);
 
   const isFormComplete = !!(inputs.brand && inputs.unitType && inputs.annualMaintenanceFees > 0);
+
+  // Track calculator completion
+  useEffect(() => {
+    if (isFormComplete && result) {
+      trackEvent("calculator_completed", {
+        brand: inputs.brand,
+        unit_type: inputs.unitType,
+        maintenance_fees: inputs.annualMaintenanceFees,
+        weeks_to_breakeven: result.weeksToBreakeven,
+      });
+    }
+  }, [isFormComplete, result?.weeksToBreakeven]);
 
   const scrollToResults = () => {
     resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });

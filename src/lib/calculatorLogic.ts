@@ -19,7 +19,7 @@ export const UNIT_TYPES = [
 
 // Weekly income estimates (gross, before RAV fee)
 // Based on comparable RAV listings and published market research
-const INCOME_ESTIMATES: Record<string, Record<string, number>> = {
+export const INCOME_ESTIMATES: Record<string, Record<string, number>> = {
   hilton_grand_vacations: { studio: 1200, '1br': 1850, '2br': 2800, '3br': 4200 },
   marriott_vacation_club: { studio: 1100, '1br': 1700, '2br': 2600, '3br': 3900 },
   disney_vacation_club:   { studio: 1400, '1br': 2100, '2br': 3200, '3br': 4800 },

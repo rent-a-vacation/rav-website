@@ -49,7 +49,8 @@ const TOOLS: Tool[] = [
     brandName: 'Vacation Cost Comparator',
     description:
       'Compare the total cost of a timeshare rental vs. hotel vs. Airbnb for the same destination and dates.',
-    status: 'coming-soon',
+    status: 'built',
+    route: '/tools/cost-comparator',
     icon: BarChart3,
   },
   {
@@ -57,7 +58,8 @@ const TOOLS: Tool[] = [
     brandName: 'Rental Yield Estimator',
     description:
       'Project your annual rental income based on your resort, unit type, and local demand trends.',
-    status: 'coming-soon',
+    status: 'built',
+    route: '/tools/yield-estimator',
     icon: DollarSign,
   },
   {
@@ -65,7 +67,8 @@ const TOOLS: Tool[] = [
     brandName: 'Resort Finder Quiz',
     description:
       'Answer a few questions about your ideal vacation and get matched to the perfect resort from our 117-resort database.',
-    status: 'coming-soon',
+    status: 'built',
+    route: '/tools/resort-quiz',
     icon: Compass,
   },
   {
@@ -73,7 +76,8 @@ const TOOLS: Tool[] = [
     brandName: 'Trip Budget Planner',
     description:
       'Plan your full trip budget including flights, car rental, dining, and activities alongside your accommodation.',
-    status: 'coming-soon',
+    status: 'built',
+    route: '/tools/budget-planner',
     icon: Wallet,
   },
 ];

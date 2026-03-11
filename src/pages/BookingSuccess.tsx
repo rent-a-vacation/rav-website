@@ -10,6 +10,7 @@ import type { Booking, Listing, Property } from "@/types/database";
 import CancelBookingDialog from "@/components/booking/CancelBookingDialog";
 import { computeBookingTimeline } from "@/lib/bookingTimeline";
 import { BookingTimeline } from "@/components/booking/BookingTimeline";
+import { trackEvent } from "@/lib/posthog";
 
 interface BookingWithDetails extends Booking {
   listing: Listing & { property: Property };
@@ -77,6 +78,12 @@ const BookingSuccess = () => {
           setError("Could not load booking details");
         } else {
           setBooking(data as BookingWithDetails);
+          trackEvent("booking_completed", {
+            booking_id: bookingId,
+            total_amount: data.total_amount,
+            guest_count: data.guest_count,
+            property_location: data.listing?.property?.location,
+          });
         }
       } catch (err) {
         console.error("Error:", err);
