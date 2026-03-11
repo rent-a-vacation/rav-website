@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Header from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -126,7 +127,9 @@ const BookingSuccess = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12 px-4">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="pt-16 md:pt-20 py-12 px-4">
       <div className="container max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -251,6 +254,7 @@ const BookingSuccess = () => {
             onCancelled={() => navigate("/")}
           />
         )}
+      </div>
       </div>
     </div>
   );

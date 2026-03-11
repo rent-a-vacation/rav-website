@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Card,
@@ -39,7 +40,9 @@ export default function PendingApproval() {
   }, [user, profile, isRavTeam, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/50 px-4">
+    <div className="min-h-screen flex flex-col bg-muted/50">
+      <Header />
+      <div className="flex-1 flex items-center justify-center px-4 pt-16 md:pt-20">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className={`mx-auto w-12 h-12 ${isRejected ? "bg-destructive/10" : "bg-primary/10"} rounded-full flex items-center justify-center mb-4`}>
@@ -157,6 +160,7 @@ export default function PendingApproval() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
