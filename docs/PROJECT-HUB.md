@@ -98,13 +98,14 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-38)
 
-**Session 38 — Public API & Edge-Case Schema Fixes (Mar 10):**
+**Session 38 — Public API, RAV Tools Hub & Brand Naming (Mar 10):**
 - Closed #173 (Schema Fixes): Added `x-sse-events`, `x-auth-note`, `x-internal` extensions to OpenAPI spec. Clarified dual-input (voice-search) and rate limit headers. Validated with Redocly (0 errors).
 - Closed #174 (Public API Layer): Migration 044 (api_keys + api_request_log tables, 4 RPCs). `api-gateway` edge function with 5 read-only endpoints (listings, listing by ID, search, destinations, resorts). Dual auth (API Key + JWT). Tiered rate limits (free/partner/premium). Admin "API Keys" tab. `/developers` public Swagger UI page.
-- Created follow-up issues: #188 (write endpoints), #189 (OAuth2), #190 (webhooks to partners), #191 (chat endpoint), #192 (SDK packages)
-- DEC-024: Public API Architecture decision logged
+- DEC-025 (RAV Tools Hub): `/tools` hub page with 2 built tools (RAV SmartFee, RAV SmartPrice) + 4 coming-soon. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, brand docs. `usePageMeta()` added to 7 pages. JSON-LD structured data (ItemList, Organization, HowTo).
+- Created follow-up issues: #188-#192 (API enhancements), #193-#198 (PostHog events, 4 future tools)
+- DEC-024: Public API Architecture, DEC-025: RAV Tools Hub & Brand Naming
 - Deployed migration 044 + api-gateway edge function to DEV
-- Tests: 676→724 (+48 new, 94 test files)
+- Tests: 676→724 (+48 new, 95 test files)
 
 **Session 37 — Dynamic Pricing & Referral Program (Mar 5):**
 - Closed #99 (Dynamic Pricing): `src/lib/dynamicPricing.ts` — urgency discount (graduated 0-15%), seasonal factor (month-based historical data), demand adjustment (pending bids + saved searches). Migration 042: `get_dynamic_pricing_data` RPC. `useDynamicPricing` hook. Enhanced `PricingSuggestion` component with factor badges. 33 tests.
