@@ -20,6 +20,7 @@ export interface ApiKeyRow {
   expires_at: string | null;
   last_used_at: string | null;
   created_at: string;
+  allowed_ips: string[] | null;
 }
 
 export interface ApiKeyStats {
@@ -74,6 +75,7 @@ export function useCreateApiKey() {
       scopes: string[];
       tier: keyof typeof API_KEY_TIERS;
       ownerId: string;
+      allowedIps?: string[];
     }) => {
       // Generate key client-side (shown to user once)
       const bytes = new Uint8Array(16);
@@ -105,10 +107,32 @@ export function useCreateApiKey() {
         tier: params.tier,
         daily_limit: tierLimits.daily,
         per_minute_limit: tierLimits.perMinute,
+        ...(params.allowedIps && params.allowedIps.length > 0
+          ? { allowed_ips: params.allowedIps }
+          : {}),
       });
 
       if (error) throw error;
       return fullKey; // Return the full key — shown to user once
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+    },
+  });
+}
+
+/** Update allowed IPs for an API key */
+export function useUpdateApiKeyIps() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: { keyId: string; allowedIps: string[] | null }) => {
+      const { error } = await supabase
+        .from("api_keys")
+        .update({ allowed_ips: params.allowedIps })
+        .eq("id", params.keyId);
+
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });

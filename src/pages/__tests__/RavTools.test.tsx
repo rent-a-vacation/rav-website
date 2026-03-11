@@ -33,29 +33,25 @@ describe('RavTools', () => {
     expect(screen.getByText('Free Tools for Smarter Vacations')).toBeInTheDocument();
   });
 
-  it('built tools have "Try it Free" buttons with links', () => {
+  it('all built tools have "Try it Free" buttons with links', () => {
     renderWithProviders(<RavTools />);
     const tryButtons = screen.getAllByText('Try it Free');
-    expect(tryButtons).toHaveLength(2);
+    expect(tryButtons).toHaveLength(6);
+    // SmartFee links to /calculator
     const smartFeeLink = tryButtons[0].closest('a');
     expect(smartFeeLink).toHaveAttribute('href', '/calculator');
+    // SmartPrice links to /rentals
     const smartPriceLink = tryButtons[1].closest('a');
     expect(smartPriceLink).toHaveAttribute('href', '/rentals');
   });
 
-  it('coming soon tools show "Coming Soon" badges', () => {
+  it('all tools have active links', () => {
     renderWithProviders(<RavTools />);
-    const badges = screen.getAllByText('Coming Soon');
-    // 4 badge elements + 4 disabled buttons = 8 total
-    expect(badges.length).toBeGreaterThanOrEqual(4);
-  });
-
-  it('coming soon tools have disabled buttons', () => {
-    renderWithProviders(<RavTools />);
-    const comingSoonButtons = screen.getAllByRole('button', { name: 'Coming Soon' });
-    expect(comingSoonButtons).toHaveLength(4);
-    comingSoonButtons.forEach((btn) => {
-      expect(btn).toBeDisabled();
+    const tryButtons = screen.getAllByText('Try it Free');
+    tryButtons.forEach((btn) => {
+      const link = btn.closest('a');
+      expect(link).not.toBeNull();
+      expect(link!.getAttribute('href')).toBeTruthy();
     });
   });
 

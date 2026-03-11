@@ -4,6 +4,7 @@ import {
   useApiKeys,
   useCreateApiKey,
   useRevokeApiKey,
+  useUpdateApiKeyIps,
   useApiKeyStats,
 } from "@/hooks/admin/useApiKeys";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Key, Plus, Copy, Ban, BarChart3 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Key, Plus, Copy, Ban, BarChart3, Shield } from "lucide-react";
 
 const SCOPE_OPTIONS = [
   { value: "listings:read", label: "Listings (Read)" },
@@ -66,19 +68,28 @@ export default function AdminApiKeys() {
   const { data: keys = [], isLoading } = useApiKeys();
   const createKey = useCreateApiKey();
   const revokeKey = useRevokeApiKey();
+  const updateIps = useUpdateApiKeyIps();
 
   const [createOpen, setCreateOpen] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
   const [newKeyTier, setNewKeyTier] = useState<"free" | "partner" | "premium">("free");
   const [selectedScopes, setSelectedScopes] = useState<string[]>(["listings:read"]);
+  const [newKeyAllowedIps, setNewKeyAllowedIps] = useState("");
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
 
   const [revokeTarget, setRevokeTarget] = useState<string | null>(null);
   const [statsKeyId, setStatsKeyId] = useState<string | null>(null);
+  const [editIpsKeyId, setEditIpsKeyId] = useState<string | null>(null);
+  const [editIpsValue, setEditIpsValue] = useState("");
   const { data: stats = [] } = useApiKeyStats(statsKeyId);
 
   const handleCreate = async () => {
     if (!newKeyName.trim() || !user?.id) return;
+
+    const parsedIps = newKeyAllowedIps
+      .split(",")
+      .map((ip) => ip.trim())
+      .filter(Boolean);
 
     try {
       const fullKey = await createKey.mutateAsync({
@@ -86,6 +97,7 @@ export default function AdminApiKeys() {
         scopes: selectedScopes,
         tier: newKeyTier,
         ownerId: user.id,
+        ...(parsedIps.length > 0 ? { allowedIps: parsedIps } : {}),
       });
       setGeneratedKey(fullKey);
       toast({ title: "API key created", description: "Copy the key now — it won't be shown again." });
@@ -114,8 +126,28 @@ export default function AdminApiKeys() {
     setNewKeyName("");
     setNewKeyTier("free");
     setSelectedScopes(["listings:read"]);
+    setNewKeyAllowedIps("");
     setGeneratedKey(null);
     setCreateOpen(false);
+  };
+
+  const handleSaveIps = async () => {
+    if (!editIpsKeyId) return;
+    const parsedIps = editIpsValue
+      .split(",")
+      .map((ip) => ip.trim())
+      .filter(Boolean);
+
+    try {
+      await updateIps.mutateAsync({
+        keyId: editIpsKeyId,
+        allowedIps: parsedIps.length > 0 ? parsedIps : null,
+      });
+      toast({ title: "IP allowlist updated" });
+    } catch {
+      toast({ title: "Error", description: "Failed to update IP allowlist", variant: "destructive" });
+    }
+    setEditIpsKeyId(null);
   };
 
   if (isLoading) {
@@ -217,6 +249,19 @@ export default function AdminApiKeys() {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="allowed-ips">Allowed IPs (optional)</Label>
+                  <Input
+                    id="allowed-ips"
+                    placeholder="e.g., 203.0.113.5, 198.51.100.0/24"
+                    value={newKeyAllowedIps}
+                    onChange={(e) => setNewKeyAllowedIps(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Comma-separated. Leave empty to allow all IPs. Supports CIDR notation.
+                  </p>
+                </div>
+
                 <DialogFooter>
                   <Button variant="outline" onClick={resetCreateDialog}>Cancel</Button>
                   <Button onClick={handleCreate} disabled={!newKeyName.trim() || createKey.isPending}>
@@ -253,6 +298,7 @@ export default function AdminApiKeys() {
                   <TableHead>Prefix</TableHead>
                   <TableHead>Tier</TableHead>
                   <TableHead>Scopes</TableHead>
+                  <TableHead>IP Allowlist</TableHead>
                   <TableHead>Usage (Today)</TableHead>
                   <TableHead>Last Used</TableHead>
                   <TableHead>Status</TableHead>
@@ -281,6 +327,16 @@ export default function AdminApiKeys() {
                       </div>
                     </TableCell>
                     <TableCell>
+                      {key.allowed_ips && key.allowed_ips.length > 0 ? (
+                        <div className="flex items-center gap-1">
+                          <Shield className="h-3 w-3 text-green-600" />
+                          <span className="text-xs">{key.allowed_ips.length} IP{key.allowed_ips.length > 1 ? "s" : ""}</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Any</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       {key.daily_usage} / {key.daily_limit}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
@@ -305,6 +361,19 @@ export default function AdminApiKeys() {
                         >
                           <BarChart3 className="h-4 w-4" />
                         </Button>
+                        {key.is_active && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => {
+                              setEditIpsKeyId(editIpsKeyId === key.id ? null : key.id);
+                              setEditIpsValue(key.allowed_ips?.join(", ") || "");
+                            }}
+                            title="Edit IP allowlist"
+                          >
+                            <Shield className="h-4 w-4" />
+                          </Button>
+                        )}
                         {key.is_active && (
                           <Button
                             size="icon"
@@ -360,6 +429,40 @@ export default function AdminApiKeys() {
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* IP Allowlist Editor */}
+      {editIpsKeyId && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Edit IP Allowlist
+            </CardTitle>
+            <CardDescription>
+              Restrict this API key to specific IP addresses. Leave empty to allow all IPs.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Textarea
+              placeholder="203.0.113.5, 198.51.100.0/24"
+              value={editIpsValue}
+              onChange={(e) => setEditIpsValue(e.target.value)}
+              rows={2}
+            />
+            <p className="text-xs text-muted-foreground">
+              Comma-separated IPv4 addresses or CIDR ranges. Clear all to allow any IP.
+            </p>
+            <div className="flex gap-2">
+              <Button onClick={handleSaveIps} disabled={updateIps.isPending}>
+                {updateIps.isPending ? "Saving..." : "Save"}
+              </Button>
+              <Button variant="outline" onClick={() => setEditIpsKeyId(null)}>
+                Cancel
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}

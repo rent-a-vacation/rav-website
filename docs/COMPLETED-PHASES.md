@@ -5,11 +5,11 @@
 
 ---
 
-## Session 38: Public API & Edge-Case Schema Fixes
+## Session 38: Public API, RAV Tools Hub & Brand Naming
 
 **Completed:** March 10, 2026
 **Issues Closed:** #173, #174
-**Follow-up Issues Created:** #188, #189, #190, #191, #192
+**Follow-up Issues Created:** #188, #189, #190, #191, #192, #193, #194, #195, #196, #197, #198
 
 ### What Was Done
 
@@ -25,6 +25,9 @@ Documentation-only improvements to `docs/api/openapi.yaml`. Added `x-sse-events`
 
 **Architectural Decision:** DEC-024 — Public API Architecture (single gateway, API key auth, tiered rate limiting, read-only v1, URL-based versioning).
 
+#### RAV Tools Hub & Brand Naming (DEC-025)
+`src/pages/RavTools.tsx` — new `/tools` hub page showcasing 6 tools: 2 built (RAV SmartFee, RAV SmartPrice) + 4 coming-soon placeholders (Vacation Cost Comparator, Rental Yield Estimator, Resort Finder Quiz, Trip Budget Planner). JSON-LD `ItemList` schema for SEO. "Fee Freedom Calculator" renamed to "RAV SmartFee" across Header, Footer, calculator page, and brand docs. `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard). Organization JSON-LD on Index page. HowTo schema on calculator. Follow-up issues created for 4 future tools (#194-#197) and PostHog events (#193, #198). 4 tests.
+
 ### Migrations
 - **044_api_keys.sql:** `api_keys` + `api_request_log` tables, 4 RPCs (`validate_api_key`, `increment_api_key_usage`, `list_api_keys`, `get_api_key_stats`), RLS (service role only), indexes, `updated_at` trigger
 
@@ -32,28 +35,35 @@ Documentation-only improvements to `docs/api/openapi.yaml`. Added `x-sse-events`
 - Migration 044 deployed to **DEV** (`npx supabase db push --include-all`)
 - `api-gateway` edge function deployed to **DEV** (`npx supabase functions deploy api-gateway --no-verify-jwt`)
 
-### Files Created (14)
+### Files Created (16)
 - `supabase/migrations/044_api_keys.sql`
 - `supabase/functions/_shared/api-auth.ts`, `supabase/functions/_shared/api-response.ts`, `supabase/functions/_shared/destinations.ts`
 - `supabase/functions/api-gateway/index.ts`
 - `src/hooks/admin/useApiKeys.ts`
 - `src/components/admin/AdminApiKeys.tsx`
 - `src/pages/Developers.tsx`
+- `src/pages/RavTools.tsx`
 - `docs/api/public-api.yaml`
 - `src/lib/apiAuth.test.ts`
 - `src/hooks/admin/__tests__/useApiKeys.test.ts`
 - `src/components/admin/__tests__/AdminApiKeys.test.tsx`
+- `src/pages/__tests__/RavTools.test.tsx`
 
-### Files Modified (7)
-- `docs/api/openapi.yaml`, `public/api/openapi.yaml`
-- `src/pages/AdminDashboard.tsx`
-- `src/flows/admin-lifecycle.ts`
+### Files Modified (18)
+- `docs/api/openapi.yaml`, `public/api/openapi.yaml`, `public/api/public-api.yaml`
+- `src/pages/AdminDashboard.tsx`, `src/pages/Documentation.tsx`
+- `src/flows/admin-lifecycle.ts`, `src/flows/owner-lifecycle.ts`
 - `src/App.tsx`
+- `src/components/Header.tsx`, `src/components/Footer.tsx`
+- `src/pages/MaintenanceFeeCalculator.tsx`
+- `src/pages/Index.tsx`, `src/pages/Rentals.tsx`, `src/pages/PropertyDetail.tsx`
+- `src/pages/BiddingMarketplace.tsx`, `src/pages/Checkout.tsx`
+- `src/pages/ExecutiveDashboard.tsx`, `src/pages/OwnerDashboard.tsx`
+- `docs/brand-assets/BRAND-CONCEPTS.md`
 - `docs/PROJECT-HUB.md`
-- `src/pages/Documentation.tsx`
 
 ### Test Status
-724 tests passing, 94 test files, 0 TypeScript errors, 0 lint errors, build clean
+724 tests passing, 95 test files, 0 TypeScript errors, 0 lint errors, build clean
 
 ---
 

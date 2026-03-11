@@ -21,6 +21,7 @@ export interface ApiKeyRecord {
   per_minute_limit: number;
   daily_usage: number;
   daily_usage_reset_at: string;
+  allowed_ips: string[] | null;
 }
 
 /**
@@ -143,6 +144,66 @@ export function generateApiKey(): string {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
   return `rav_pk_${hex}`;
+}
+
+/**
+ * Check if a request IP is in the API key's allowed IP list.
+ * Returns true if no allowlist is set (null/empty) or if the IP matches.
+ */
+export function checkIpAllowlist(
+  allowedIps: string[] | null,
+  requestIp: string | null
+): boolean {
+  // No allowlist configured — allow all IPs
+  if (!allowedIps || allowedIps.length === 0) return true;
+
+  // No IP available from request — deny if allowlist is set
+  if (!requestIp) return false;
+
+  const normalizedIp = requestIp.trim();
+
+  for (const entry of allowedIps) {
+    const trimmed = entry.trim();
+
+    // CIDR match (e.g., 203.0.113.0/24)
+    if (trimmed.includes("/")) {
+      if (ipMatchesCidr(normalizedIp, trimmed)) return true;
+    } else {
+      // Exact match
+      if (normalizedIp === trimmed) return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check if an IPv4 address matches a CIDR block (e.g., 203.0.113.5 in 203.0.113.0/24).
+ */
+function ipMatchesCidr(ip: string, cidr: string): boolean {
+  const [cidrIp, prefixStr] = cidr.split("/");
+  const prefix = parseInt(prefixStr, 10);
+  if (isNaN(prefix) || prefix < 0 || prefix > 32) return false;
+
+  const ipNum = ipToNumber(ip);
+  const cidrNum = ipToNumber(cidrIp);
+  if (ipNum === null || cidrNum === null) return false;
+
+  // Create mask from prefix length
+  const mask = prefix === 0 ? 0 : (~0 << (32 - prefix)) >>> 0;
+  return (ipNum & mask) === (cidrNum & mask);
+}
+
+function ipToNumber(ip: string): number | null {
+  const parts = ip.split(".");
+  if (parts.length !== 4) return null;
+  let num = 0;
+  for (const part of parts) {
+    const octet = parseInt(part, 10);
+    if (isNaN(octet) || octet < 0 || octet > 255) return null;
+    num = (num << 8) | octet;
+  }
+  return num >>> 0; // Convert to unsigned 32-bit
 }
 
 /** Rate limit tiers with default limits */

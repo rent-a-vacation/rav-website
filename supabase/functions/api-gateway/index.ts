@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { validateApiKey, hasScope, checkApiKeyRateLimit, logApiRequest } from "../_shared/api-auth.ts";
+import { validateApiKey, hasScope, checkApiKeyRateLimit, logApiRequest, checkIpAllowlist } from "../_shared/api-auth.ts";
 import { apiSuccess, apiError, corsResponse, parsePagination, withRateLimitHeaders } from "../_shared/api-response.ts";
 import { searchProperties } from "../_shared/property-search.ts";
 import { DESTINATIONS } from "../_shared/destinations.ts";
@@ -91,6 +91,18 @@ Deno.serve(async (req: Request) => {
 
   if (!apiKeyRecord && !authedViaJwt) {
     return apiError("unauthorized", "Missing or invalid authentication. Provide X-API-Key header or Authorization: Bearer <jwt>.", 401);
+  }
+
+  // ── IP allowlist check (API key only) ───────────────────────────────────
+
+  if (apiKeyRecord && apiKeyRecord.allowed_ips) {
+    const requestIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      || req.headers.get("cf-connecting-ip")
+      || null;
+    if (!checkIpAllowlist(apiKeyRecord.allowed_ips, requestIp)) {
+      logRequest(serviceClient, apiKeyRecord.key_id, "/ip-blocked", req, 403, startTime);
+      return apiError("forbidden", "Request IP not in allowlist", 403);
+    }
   }
 
   // ── Route matching ────────────────────────────────────────────────────────

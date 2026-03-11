@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { hasScope } from "../../supabase/functions/_shared/api-auth";
+import { hasScope, checkIpAllowlist } from "../../supabase/functions/_shared/api-auth";
 
 // We test the pure functions that can be imported without Deno runtime.
 // The hashApiKey/generateApiKey use Web Crypto which is available in Vitest.
@@ -99,6 +99,48 @@ describe("API key generation", () => {
       keys.add(`rav_pk_${hex}`);
     }
     expect(keys.size).toBe(100);
+  });
+});
+
+describe("checkIpAllowlist", () => {
+  it("allows any IP when allowlist is null", () => {
+    expect(checkIpAllowlist(null, "203.0.113.5")).toBe(true);
+  });
+
+  it("allows any IP when allowlist is empty array", () => {
+    expect(checkIpAllowlist([], "203.0.113.5")).toBe(true);
+  });
+
+  it("allows exact IP match", () => {
+    expect(checkIpAllowlist(["203.0.113.5"], "203.0.113.5")).toBe(true);
+  });
+
+  it("rejects non-matching IP", () => {
+    expect(checkIpAllowlist(["203.0.113.5"], "198.51.100.1")).toBe(false);
+  });
+
+  it("allows IP within CIDR range", () => {
+    expect(checkIpAllowlist(["203.0.113.0/24"], "203.0.113.42")).toBe(true);
+    expect(checkIpAllowlist(["10.0.0.0/8"], "10.255.255.255")).toBe(true);
+  });
+
+  it("rejects IP outside CIDR range", () => {
+    expect(checkIpAllowlist(["203.0.113.0/24"], "203.0.114.1")).toBe(false);
+  });
+
+  it("supports multiple entries (exact + CIDR)", () => {
+    const allowlist = ["192.168.1.1", "10.0.0.0/16"];
+    expect(checkIpAllowlist(allowlist, "192.168.1.1")).toBe(true);
+    expect(checkIpAllowlist(allowlist, "10.0.5.3")).toBe(true);
+    expect(checkIpAllowlist(allowlist, "172.16.0.1")).toBe(false);
+  });
+
+  it("denies when allowlist is set but request IP is null", () => {
+    expect(checkIpAllowlist(["203.0.113.5"], null)).toBe(false);
+  });
+
+  it("trims whitespace in entries and request IP", () => {
+    expect(checkIpAllowlist(["  203.0.113.5  "], "203.0.113.5")).toBe(true);
   });
 });
 
