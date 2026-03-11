@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { DollarSign, TrendingUp, BarChart3 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -28,6 +28,28 @@ export default function YieldEstimator() {
     'Rental Yield Estimator — RAV Tools',
     'Project your annual timeshare rental income based on your resort, unit type, and local demand.',
   );
+
+  const schemaRef = useRef(false);
+  useEffect(() => {
+    if (schemaRef.current) return;
+    schemaRef.current = true;
+    const script = document.createElement('script');
+    script.id = 'yield-estimator-schema';
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Rental Yield Estimator',
+      url: 'https://rent-a-vacation.com/tools/yield-estimator',
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      description: 'Project your annual timeshare rental income based on your resort, unit type, and local demand.',
+      provider: { '@type': 'Organization', name: 'Rent-A-Vacation', url: 'https://rent-a-vacation.com' },
+    });
+    document.head.appendChild(script);
+    return () => { document.getElementById('yield-estimator-schema')?.remove(); };
+  }, []);
 
   const [brand, setBrand] = useState('');
   const [unitType, setUnitType] = useState('');

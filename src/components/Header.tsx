@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, ShieldCheck, Gavel, Store, BarChart3, Calculator, BookOpen, Settings, GitBranch, Plane, Wrench } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, ShieldCheck, BarChart3, Settings, GitBranch, Plane, Sparkles } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/bidding/NotificationBell";
 import { RoleBadge, getDisplayRole } from "@/components/RoleBadge";
@@ -17,9 +17,12 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, profile, roles, isPropertyOwner, isRavTeam, signOut, isLoading } = useAuth();
   const displayRole = getDisplayRole(roles);
   const firstName = profile?.full_name?.split(" ")[0];
+
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
 
   const handleSignOut = async () => {
     await signOut();
@@ -49,14 +52,18 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-1">
             <div
               className="relative pb-2 -mb-2"
               onMouseEnter={() => setIsDropdownOpen(true)}
               onMouseLeave={() => setIsDropdownOpen(false)}
             >
               <button
-                className="flex items-center gap-1 cursor-pointer group py-2"
+                className={`flex items-center gap-1 cursor-pointer group px-3 py-2 rounded-lg transition-colors ${
+                  isActive("/rentals") || isActive("/destinations")
+                    ? "text-foreground bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                }`}
                 aria-haspopup="true"
                 aria-expanded={isDropdownOpen}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -64,12 +71,12 @@ const Header = () => {
                   if (e.key === 'Escape') setIsDropdownOpen(false);
                 }}
               >
-                <span className="text-muted-foreground group-hover:text-foreground transition-colors">Explore</span>
-                <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <span className="text-sm font-medium">Explore</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
               </button>
               {isDropdownOpen && (
                 <div
-                  className="absolute top-full left-0 w-56 bg-card rounded-xl shadow-card-hover border border-border p-2 animate-fade-in z-50"
+                  className="absolute top-full left-0 w-52 bg-card rounded-xl shadow-lg border border-border/60 p-1.5 animate-fade-in z-50"
                   role="menu"
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') setIsDropdownOpen(false);
@@ -78,7 +85,7 @@ const Header = () => {
                   <Link
                     to="/rentals"
                     role="menuitem"
-                    className="block px-4 py-2 rounded-lg hover:bg-muted transition-colors"
+                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     All Rentals
@@ -86,7 +93,7 @@ const Header = () => {
                   <Link
                     to="/destinations"
                     role="menuitem"
-                    className="block px-4 py-2 rounded-lg hover:bg-muted transition-colors"
+                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     By Destination
@@ -94,44 +101,57 @@ const Header = () => {
                   <Link
                     to="/rentals?filter=deals"
                     role="menuitem"
-                    className="block px-4 py-2 rounded-lg hover:bg-muted transition-colors"
+                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     Last Minute Deals
                   </Link>
-                  <Link
-                    to="/calculator"
-                    role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted transition-colors"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <Calculator className="h-4 w-4" />
-                    RAV SmartFee
-                  </Link>
-                  <Link
-                    to="/tools"
-                    role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted transition-colors"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <Wrench className="h-4 w-4" />
-                    RAV Tools
-                  </Link>
                 </div>
               )}
             </div>
-            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              to="/how-it-works"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isActive("/how-it-works")
+                  ? "text-foreground bg-muted/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+              }`}
+            >
               How It Works
             </Link>
-            <Link to="/bidding" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-              <Store className="h-4 w-4" />
+            <Link
+              to="/bidding"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isActive("/bidding")
+                  ? "text-foreground bg-muted/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+              }`}
+            >
               Name Your Price
             </Link>
             {(isPropertyOwner() || isRavTeam() || !user) && (
-              <Link to="/list-property" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/list-property"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/list-property")
+                    ? "text-foreground bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                }`}
+              >
                 List Your Property
               </Link>
             )}
+            <Link
+              to="/tools"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                isActive("/tools") || isActive("/calculator")
+                  ? "text-primary bg-primary/5"
+                  : "text-primary/80 hover:text-primary hover:bg-primary/5"
+              }`}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              Free Tools
+            </Link>
           </nav>
 
           {/* Desktop CTA */}
@@ -290,61 +310,52 @@ const Header = () => {
 
             <Link
               to="/rentals"
-              className="text-foreground py-2"
+              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rentals") ? "text-foreground" : "text-muted-foreground"}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Browse Rentals
             </Link>
-            <Link 
-              to="/destinations" 
-              className="text-foreground py-2"
+            <Link
+              to="/destinations"
+              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/destinations") ? "text-foreground" : "text-muted-foreground"}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Destinations
             </Link>
-            <Link 
-              to="/how-it-works" 
-              className="text-foreground py-2"
+            <Link
+              to="/how-it-works"
+              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/how-it-works") ? "text-foreground" : "text-muted-foreground"}`}
               onClick={() => setIsMenuOpen(false)}
             >
               How It Works
             </Link>
+            <Link
+              to="/bidding"
+              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") ? "text-foreground" : "text-muted-foreground"}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Name Your Price
+            </Link>
             {(isPropertyOwner() || isRavTeam() || !user) && (
               <Link
                 to="/list-property"
-                className="text-foreground py-2"
+                className={`py-2.5 text-sm font-medium transition-colors ${isActive("/list-property") ? "text-foreground" : "text-muted-foreground"}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 List Your Property
               </Link>
             )}
             <Link
-              to="/bidding"
-              className="text-foreground py-2 flex items-center gap-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Store className="h-4 w-4" />
-              Name Your Price
-            </Link>
-            <Link
-              to="/calculator"
-              className="text-foreground py-2 flex items-center gap-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Calculator className="h-4 w-4" />
-              RAV SmartFee
-            </Link>
-            <Link
               to="/tools"
-              className="text-foreground py-2 flex items-center gap-2"
+              className="py-2.5 text-sm font-medium text-primary flex items-center gap-1.5"
               onClick={() => setIsMenuOpen(false)}
             >
-              <Wrench className="h-4 w-4" />
-              RAV Tools
+              <Sparkles className="h-3.5 w-3.5" />
+              Free Tools
             </Link>
             <Link
               to="/faq"
-              className="text-foreground py-2"
+              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/faq") ? "text-foreground" : "text-muted-foreground"}`}
               onClick={() => setIsMenuOpen(false)}
             >
               FAQs

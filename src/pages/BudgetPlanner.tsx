@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Wallet, Plane, Car } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -43,6 +43,28 @@ export default function BudgetPlanner() {
     'Trip Budget Planner — RAV Tools',
     'Plan your total vacation budget including flights, dining, activities, and accommodation.',
   );
+
+  const schemaRef = useRef(false);
+  useEffect(() => {
+    if (schemaRef.current) return;
+    schemaRef.current = true;
+    const script = document.createElement('script');
+    script.id = 'budget-planner-schema';
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Trip Budget Planner',
+      url: 'https://rent-a-vacation.com/tools/budget-planner',
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      description: 'Plan your total vacation budget including flights, dining, activities, and accommodation.',
+      provider: { '@type': 'Organization', name: 'Rent-A-Vacation', url: 'https://rent-a-vacation.com' },
+    });
+    document.head.appendChild(script);
+    return () => { document.getElementById('budget-planner-schema')?.remove(); };
+  }, []);
 
   const [destination, setDestination] = useState('florida');
   const [nights, setNights] = useState(7);
