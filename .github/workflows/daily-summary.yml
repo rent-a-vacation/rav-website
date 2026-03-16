@@ -68,6 +68,20 @@ jobs:
           EST_TOTAL=$((CLOSED_TOTAL * AVG_HRS))
           EST_TODAY=$((CLOSED_COUNT * AVG_HRS))
 
+          # Developers active today (from commit authors, deduplicated)
+          DEVS=""
+          if [ -n "$COMMITS" ]; then
+            DEVS=$(gh api "repos/${REPO}/commits?sha=dev&since=${SINCE}&per_page=50" \
+              --jq '[.[].commit.author.name] | unique | join(", ")' 2>/dev/null || echo "")
+          fi
+
+          # Key deliverables summary (from commit messages — extract feat/fix lines, max 5)
+          DELIVERABLES=""
+          if [ -n "$COMMITS" ]; then
+            DELIVERABLES=$(gh api "repos/${REPO}/commits?sha=dev&since=${SINCE}&per_page=50" \
+              --jq '[.[].commit.message | split("\n")[0] | select(test("^(feat|fix|refactor)"; "i"))] | unique | .[0:5] | .[] | sub("^[a-z]+\\([^)]*\\): "; "")' 2>/dev/null || echo "")
+          fi
+
           # Blocker states
           S127=$(gh api "repos/${REPO}/issues/127" --jq '.state' 2>/dev/null || echo "open")
           S80=$(gh api "repos/${REPO}/issues/80" --jq '.state' 2>/dev/null || echo "open")
@@ -149,6 +163,18 @@ jobs:
           <h2 style="font-size:16px;color:#1a3038;margin:0 0 12px;">&#9989; Completed Today (${CLOSED_COUNT} issues)</h2>
           <ul style="padding-left:20px;font-size:13px;line-height:1.8;margin:0;">
           ${CLOSED_HTML}
+          </ul></div>
+          HTMLEOF
+          fi
+
+          # Key deliverables (max 5 one-liners from commit messages)
+          if [ -n "$DELIVERABLES" ]; then
+            DELIV_HTML=$(echo "$DELIVERABLES" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/^/<li>/;s/$/<\/li>/' | head -5)
+            cat >> /tmp/report.html << HTMLEOF
+          <div style="padding:16px 24px;border-bottom:1px solid #e5e7eb;background:#f0fdf4;">
+          <h2 style="font-size:14px;color:#0d6b5c;margin:0 0 8px;">&#127942; Key Deliverables</h2>
+          <ul style="padding-left:20px;font-size:13px;line-height:1.8;margin:0;color:#1a3038;">
+          ${DELIV_HTML}
           </ul></div>
           HTMLEOF
           fi
@@ -248,9 +274,16 @@ jobs:
             echo '</div>' >> /tmp/report.html
           fi
 
-          # Footer
+          # Footer with developer attribution
+          cat >> /tmp/report.html << HTMLEOF
+          <div style="padding:16px 24px;border-top:1px solid #e5e7eb;text-align:center;">
+          HTMLEOF
+
+          if [ -n "$DEVS" ]; then
+            echo "<p style='font-size:12px;color:#6b7280;margin:0 0 8px;'>Developed by: <strong>${DEVS}</strong></p>" >> /tmp/report.html
+          fi
+
           cat >> /tmp/report.html << 'HTMLEOF'
-          <div style="padding:16px 24px;text-align:center;">
           <p style="font-size:12px;color:#9ca3af;margin:0;">
           <a href="https://github.com/rent-a-vacation/rav-website" style="color:#0d6b5c;">Repository</a>
           &nbsp;&middot;&nbsp;
