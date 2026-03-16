@@ -154,6 +154,27 @@ export const travelerLifecycle: FlowDefinition = {
       ],
     },
     {
+      id: 'notifications_page',
+      route: '/notifications',
+      label: 'Notifications',
+      component: 'Notifications',
+      description: 'Full notification feed with category/status filters and date grouping. All authenticated users.',
+      tables: ['notifications'],
+      branches: [
+        { condition: 'Manage preferences', targetStepId: 'notification_preferences', label: 'Preferences' },
+      ],
+    },
+    {
+      id: 'notification_preferences',
+      route: '/settings/notifications',
+      label: 'Notification Preferences',
+      component: 'NotificationPreferences',
+      roles: ['property_owner'],
+      description: 'Owner notification preferences with TCPA-compliant SMS opt-in and per-type per-channel controls.',
+      tables: ['notification_catalog', 'user_notification_preferences', 'profiles'],
+      branches: [],
+    },
+    {
       id: 'account_settings',
       route: '/account',
       label: 'Account Settings',

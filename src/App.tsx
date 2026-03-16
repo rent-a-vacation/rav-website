@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { PageLoadingFallback } from "@/components/PageLoadingFallback";
-import { trackPageView } from "@/lib/posthog";
+import { initPostHog, trackPageView } from "@/lib/posthog";
 import { initGA4, trackGA4PageView } from "@/lib/analytics";
 import { getCookieConsent } from "@/hooks/useCookieConsent";
 
@@ -53,6 +53,8 @@ const CostComparator = lazy(() => import("./pages/CostComparator"));
 
 const ResortQuiz = lazy(() => import("./pages/ResortQuiz"));
 const BudgetPlanner = lazy(() => import("./pages/BudgetPlanner"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const NotificationPreferences = lazy(() => import("./pages/settings/NotificationPreferences"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -67,11 +69,12 @@ const isDevEnvironment = import.meta.env.VITE_SUPABASE_URL?.includes('oukbxqnlxn
 function PageViewTracker() {
   const location = useLocation();
 
-  // Initialize GA4 once when analytics consent exists
+  // Initialize analytics only when cookie consent allows it
   useEffect(() => {
     const consent = getCookieConsent();
     if (consent?.analytics) {
       initGA4();
+      initPostHog();
     }
   }, []);
 
@@ -197,6 +200,8 @@ const App = () => (
             <Route path="/my-bids" element={<Navigate to="/my-trips?tab=offers" replace />} />
             <Route path="/my-bookings" element={<Navigate to="/my-trips?tab=bookings" replace />} />
             <Route path="/account" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
+            <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+            <Route path="/settings/notifications" element={<ProtectedRoute><NotificationPreferences /></ProtectedRoute>} />
             <Route path="/checkin" element={<ProtectedRoute><TravelerCheckin /></ProtectedRoute>} />
 
             {/* Developer & internal tools */}
