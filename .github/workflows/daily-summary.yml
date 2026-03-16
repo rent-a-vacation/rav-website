@@ -15,7 +15,7 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_GITHUB_NOTIFICATIONS_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -euo pipefail
+          set -eo pipefail
           REPO="rent-a-vacation/rav-website"
           SINCE=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
           REPORT_DATE=$(date -u -d '5 hours ago' '+%B %d, %Y')
@@ -91,7 +91,7 @@ jobs:
 
           OPENED_HTML=""
           if [ "$OPENED_COUNT" != "0" ]; then
-            OPENED_HTML=$(echo "$OPENED_TODAY" | jq -r '.[] | "<li>#\(.number) \(.title) <span style=\"color:#9ca3af;\">[\(.labels | map(.name) | join(\", \"))]</span></li>"')
+            OPENED_HTML=$(echo "$OPENED_TODAY" | jq -r '.[] | "<li>#\(.number) \(.title) [\(.labels | map(.name) | join(", "))]</li>"')
           fi
 
           # ── BUILD COMMITS HTML ─────────────────────────
