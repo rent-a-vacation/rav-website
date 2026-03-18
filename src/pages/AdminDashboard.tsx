@@ -36,6 +36,7 @@ import {
   Database,
   Rocket,
   Key,
+  Bell,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminProperties from "@/components/admin/AdminProperties";
@@ -58,6 +59,7 @@ import AdminTaxReporting from "@/components/admin/AdminTaxReporting";
 import AdminResortImport from "@/components/admin/AdminResortImport";
 import { LaunchReadinessChecklist } from "@/components/admin/LaunchReadinessChecklist";
 import AdminApiKeys from "@/components/admin/AdminApiKeys";
+import AdminNotificationCenter from "@/components/admin/AdminNotificationCenter";
 
 const IS_DEV = import.meta.env.VITE_SUPABASE_URL?.includes("oukbxqnlxnkainnligfz");
 
@@ -282,6 +284,12 @@ const AdminDashboard = () => {
               </TabsTrigger>
             )}
             {isRavAdmin() && (
+              <TabsTrigger value="notifications" className="gap-2">
+                <Bell className="h-4 w-4" />
+                <span className="hidden sm:inline">Notifications</span>
+              </TabsTrigger>
+            )}
+            {isRavAdmin() && (
               <TabsTrigger value="api-keys" className="gap-2">
                 <Key className="h-4 w-4" />
                 <span className="hidden sm:inline">API Keys</span>
@@ -402,6 +410,12 @@ const AdminDashboard = () => {
           {isRavAdmin() && (
             <TabsContent value="resorts">
               <AdminResortImport />
+            </TabsContent>
+          )}
+
+          {isRavAdmin() && (
+            <TabsContent value="notifications">
+              <AdminNotificationCenter />
             </TabsContent>
           )}
 

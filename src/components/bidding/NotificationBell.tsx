@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useNotifications, useUnreadNotificationCount, useMarkNotificationRead, useMarkAllNotificationsRead } from '@/hooks/useBidding';
 import { useRealtimeSubscription } from '@/hooks/useRealtimeSubscription';
+import { getNotificationLink } from '@/hooks/useNotifications';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +26,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import type { NotificationType } from '@/types/bidding';
 
 const NOTIFICATION_ICONS: Record<NotificationType, React.ReactNode> = {
@@ -47,6 +49,7 @@ const NOTIFICATION_ICONS: Record<NotificationType, React.ReactNode> = {
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: notifications, isLoading } = useNotifications(10);
   const { data: unreadCount } = useUnreadNotificationCount();
   const markRead = useMarkNotificationRead();
@@ -61,11 +64,15 @@ export function NotificationBell() {
     enabled: !!user,
   });
 
-  const handleNotificationClick = (notificationId: string, isRead: boolean) => {
-    if (!isRead) {
-      markRead.mutate(notificationId);
+  const handleNotificationClick = (notification: { id: string; read_at: string | null; type: string; listing_id?: string | null; bid_id?: string | null; booking_id?: string | null; proposal_id?: string | null; request_id?: string | null }) => {
+    if (!notification.read_at) {
+      markRead.mutate(notification.id);
     }
-    // TODO: Navigate to relevant page based on notification type
+    const link = getNotificationLink(notification);
+    if (link) {
+      setOpen(false);
+      navigate(link);
+    }
   };
 
   return (
@@ -109,7 +116,7 @@ export function NotificationBell() {
               {notifications.map((notification) => (
                 <button
                   key={notification.id}
-                  onClick={() => handleNotificationClick(notification.id, !!notification.read_at)}
+                  onClick={() => handleNotificationClick(notification)}
                   className={`w-full text-left p-3 hover:bg-muted/50 transition-colors ${
                     !notification.read_at ? 'bg-primary/5' : ''
                   }`}
@@ -148,8 +155,16 @@ export function NotificationBell() {
 
         {notifications && notifications.length > 0 && (
           <div className="p-2 border-t">
-            <Button variant="ghost" size="sm" className="w-full">
-              View all notifications
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full"
+              onClick={() => {
+                setOpen(false);
+                navigate('/notifications');
+              }}
+            >
+              View all notifications &rarr;
             </Button>
           </div>
         )}

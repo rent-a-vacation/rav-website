@@ -203,6 +203,18 @@ export const adminLifecycle: FlowDefinition = {
       branches: [],
     },
     {
+      id: 'notification_center',
+      route: '/admin',
+      label: 'Notification Center',
+      component: 'AdminNotificationCenter',
+      tab: 'notifications',
+      roles: ['rav_admin'],
+      description: 'Admin notification management: overview stats, notification type catalog, seasonal event calendar with manual send, and delivery log with CSV export.',
+      tables: ['notification_catalog', 'notification_delivery_log', 'seasonal_events', 'event_instances', 'sms_suppression_log'],
+      edgeFunctions: ['notification-dispatcher', 'sms-scheduler', 'twilio-webhook'],
+      branches: [],
+    },
+    {
       id: 'api_keys',
       route: '/admin',
       label: 'API Key Management',

@@ -1,129 +1,328 @@
-name: Daily Summary Report
+name: Daily Status Report
 
 on:
   schedule:
-    # 9 PM EST = 02:00 UTC next day (EST is UTC-5)
-    # Adjust if team is in a different timezone
+    # 9 PM EST = 02:00 UTC next day
     - cron: '0 2 * * *'
-  workflow_dispatch: # Allow manual trigger for testing
+  workflow_dispatch: # Manual trigger for testing
 
 jobs:
-  daily-summary:
+  daily-status:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate and send daily summary
+      - name: Generate and send status report
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_GITHUB_NOTIFICATIONS_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -eo pipefail
           REPO="rent-a-vacation/rav-website"
-          # 24-hour window: from 9 PM yesterday to 9 PM today (in UTC: 02:00 yesterday to 02:00 today)
           SINCE=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
-          TODAY=$(date -u '+%Y-%m-%d')
-          REPORT_DATE=$(date -u -d '5 hours ago' '+%B %d, %Y')  # Display date in EST
+          REPORT_DATE=$(date -u -d '5 hours ago' '+%B %d, %Y')
+          AVG_HRS=4
 
-          echo "Gathering activity since ${SINCE}..."
+          echo "=== RAV Status Report — ${REPORT_DATE} ==="
 
-          # --- Commits on dev branch (last 24h) ---
+          # ── DATA COLLECTION ────────────────────────────
+
+          # Total + closed issues (exclude PRs)
+          TOTAL_ISSUES=$(gh issue list -R "$REPO" --state all --limit 1 --json number --jq 'length' 2>/dev/null || echo "0")
+          # Use search for accurate counts
+          TOTAL_ISSUES=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
+          CLOSED_TOTAL=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue+is:closed&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
+          OPEN_TOTAL=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue+is:open&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
+
+          # Issues closed today
+          CLOSED_TODAY=$(gh api "repos/${REPO}/issues?state=closed&since=${SINCE}&per_page=50&sort=updated&direction=desc" \
+            --jq '[.[] | select(.pull_request == null and (.closed_at >= "'"${SINCE}"'"))]' 2>/dev/null || echo "[]")
+          CLOSED_COUNT=$(echo "$CLOSED_TODAY" | jq 'length')
+
+          # Issues opened today
+          OPENED_TODAY=$(gh api "repos/${REPO}/issues?state=all&since=${SINCE}&per_page=50&sort=created&direction=desc" \
+            --jq '[.[] | select(.pull_request == null and (.created_at >= "'"${SINCE}"'"))]' 2>/dev/null || echo "[]")
+          OPENED_COUNT=$(echo "$OPENED_TODAY" | jq 'length')
+
+          # Open by label
+          OPEN_PRELAUNCH=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue+is:open+label:pre-launch&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
+          OPEN_POSTLAUNCH=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue+is:open+label:post-launch&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
+          OPEN_BLOCKED=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue+is:open+label:blocked&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
+          OPEN_IDEAS=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue+is:open+label:idea+label:future&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
+
+          # Commits on dev
           COMMITS=$(gh api "repos/${REPO}/commits?sha=dev&since=${SINCE}&per_page=50" \
-            --jq '.[] | "• [\(.sha[0:7])] \(.commit.message | split("\n")[0]) — \(.commit.author.name)"' 2>/dev/null || echo "")
-          COMMIT_COUNT=$(echo "$COMMITS" | grep -c '•' 2>/dev/null || echo "0")
-
-          # --- Issues opened (last 24h) ---
-          OPENED=$(gh api "repos/${REPO}/issues?state=all&since=${SINCE}&per_page=50&sort=created&direction=desc" \
-            --jq '[.[] | select(.pull_request == null and (.created_at >= "'"${SINCE}"'"))] | .[] | "• #\(.number) \(.title) [\(.labels | map(.name) | join(", "))]"' 2>/dev/null || echo "")
-          OPENED_COUNT=$(echo "$OPENED" | grep -c '•' 2>/dev/null || echo "0")
-
-          # --- Issues closed (last 24h) ---
-          CLOSED=$(gh api "repos/${REPO}/issues?state=closed&since=${SINCE}&per_page=50&sort=updated&direction=desc" \
-            --jq '[.[] | select(.pull_request == null and (.closed_at >= "'"${SINCE}"'"))] | .[] | "• #\(.number) \(.title)"' 2>/dev/null || echo "")
-          CLOSED_COUNT=$(echo "$CLOSED" | grep -c '•' 2>/dev/null || echo "0")
-
-          # --- PRs merged (last 24h) ---
-          MERGED=$(gh api "repos/${REPO}/pulls?state=closed&sort=updated&direction=desc&per_page=20" \
-            --jq '[.[] | select(.merged_at != null and (.merged_at >= "'"${SINCE}"'"))] | .[] | "• PR #\(.number) \(.title) → \(.base.ref)"' 2>/dev/null || echo "")
-          MERGED_COUNT=$(echo "$MERGED" | grep -c '•' 2>/dev/null || echo "0")
-
-          # --- Open issue counts by milestone ---
-          OPEN_PRELAUNCH=$(gh api "repos/${REPO}/issues?state=open&labels=pre-launch&per_page=1" --jq 'length' 2>/dev/null || echo "?")
-          OPEN_TOTAL=$(gh api "repos/${REPO}/issues?state=open&per_page=1" -i 2>/dev/null | grep -i 'link:' | grep -oP 'page=\K[0-9]+(?=>; rel="last")' || echo "?")
-
-          # --- Build plain text ---
-          TEXT="RAV Daily Summary — ${REPORT_DATE}\n\n"
-          TEXT+="COMMITS (${COMMIT_COUNT}):\n${COMMITS:-  None}\n\n"
-          TEXT+="ISSUES OPENED (${OPENED_COUNT}):\n${OPENED:-  None}\n\n"
-          TEXT+="ISSUES CLOSED (${CLOSED_COUNT}):\n${CLOSED:-  None}\n\n"
-          TEXT+="PRs MERGED (${MERGED_COUNT}):\n${MERGED:-  None}\n\n"
-          TEXT+="OPEN ISSUES: ~${OPEN_TOTAL} total, ${OPEN_PRELAUNCH} pre-launch"
-
-          # --- Build HTML ---
-          # Helper: convert newline-separated bullet items to HTML list
-          to_html_list() {
-            if [ -z "$1" ]; then
-              echo "<li style='color:#6b7280;'>None</li>"
-            else
-              echo "$1" | sed 's/^• /<li>/;s/$/<\/li>/'
-            fi
-          }
-
-          COMMITS_HTML=$(to_html_list "$COMMITS")
-          OPENED_HTML=$(to_html_list "$OPENED")
-          CLOSED_HTML=$(to_html_list "$CLOSED")
-          MERGED_HTML=$(to_html_list "$MERGED")
-
-          BODY_HTML="<div style='font-family:system-ui,-apple-system,sans-serif;max-width:640px;margin:0 auto;'>"
-          BODY_HTML+="<div style='background:#0d7377;color:white;padding:20px 24px;border-radius:8px 8px 0 0;'>"
-          BODY_HTML+="<h1 style='margin:0;font-size:20px;'>RAV Daily Summary</h1>"
-          BODY_HTML+="<p style='margin:4px 0 0;opacity:0.9;font-size:14px;'>${REPORT_DATE}</p>"
-          BODY_HTML+="</div>"
-          BODY_HTML+="<div style='border:1px solid #e5e7eb;border-top:none;padding:24px;border-radius:0 0 8px 8px;'>"
-
-          # Commits section
-          BODY_HTML+="<h2 style='font-size:16px;color:#1a3038;border-bottom:1px solid #e5e7eb;padding-bottom:8px;'>"
-          BODY_HTML+="Commits (${COMMIT_COUNT})</h2>"
-          BODY_HTML+="<ul style='padding-left:20px;font-size:14px;line-height:1.6;'>${COMMITS_HTML}</ul>"
-
-          # Issues opened
-          BODY_HTML+="<h2 style='font-size:16px;color:#1a3038;border-bottom:1px solid #e5e7eb;padding-bottom:8px;'>"
-          BODY_HTML+="Issues Opened (${OPENED_COUNT})</h2>"
-          BODY_HTML+="<ul style='padding-left:20px;font-size:14px;line-height:1.6;'>${OPENED_HTML}</ul>"
-
-          # Issues closed
-          BODY_HTML+="<h2 style='font-size:16px;color:#1a3038;border-bottom:1px solid #e5e7eb;padding-bottom:8px;'>"
-          BODY_HTML+="Issues Closed (${CLOSED_COUNT})</h2>"
-          BODY_HTML+="<ul style='padding-left:20px;font-size:14px;line-height:1.6;'>${CLOSED_HTML}</ul>"
+            --jq '.[] | "[\(.sha[0:7])] \(.commit.message | split("\n")[0])"' 2>/dev/null || echo "")
+          COMMIT_COUNT=0
+          if [ -n "$COMMITS" ]; then
+            COMMIT_COUNT=$(echo "$COMMITS" | wc -l)
+          fi
 
           # PRs merged
-          BODY_HTML+="<h2 style='font-size:16px;color:#1a3038;border-bottom:1px solid #e5e7eb;padding-bottom:8px;'>"
-          BODY_HTML+="PRs Merged (${MERGED_COUNT})</h2>"
-          BODY_HTML+="<ul style='padding-left:20px;font-size:14px;line-height:1.6;'>${MERGED_HTML}</ul>"
+          MERGED=$(gh api "repos/${REPO}/pulls?state=closed&sort=updated&direction=desc&per_page=20" \
+            --jq '[.[] | select(.merged_at != null and (.merged_at >= "'"${SINCE}"'"))] | .[] | "PR #\(.number) \(.title) → \(.base.ref)"' 2>/dev/null || echo "")
+          MERGED_COUNT=0
+          if [ -n "$MERGED" ]; then
+            MERGED_COUNT=$(echo "$MERGED" | wc -l)
+          fi
 
-          # Summary footer
-          BODY_HTML+="<div style='margin-top:20px;padding:12px 16px;background:#f0fafa;border-radius:6px;font-size:14px;'>"
-          BODY_HTML+="<strong>Open Issues:</strong> ~${OPEN_TOTAL} total &middot; ${OPEN_PRELAUNCH} pre-launch"
-          BODY_HTML+="</div>"
+          # Hours estimate
+          EST_TOTAL=$((CLOSED_TOTAL * AVG_HRS))
+          EST_TODAY=$((CLOSED_COUNT * AVG_HRS))
 
-          BODY_HTML+="<p style='margin-top:16px;font-size:12px;color:#9ca3af;text-align:center;'>"
-          BODY_HTML+="<a href='https://github.com/rent-a-vacation/rav-website' style='color:#0d7377;'>View Repository</a>"
-          BODY_HTML+=" &middot; <a href='https://github.com/orgs/rent-a-vacation/projects/1' style='color:#0d7377;'>Project Board</a>"
-          BODY_HTML+="</p>"
+          # Developers active today (from commit authors, deduplicated)
+          DEVS=""
+          if [ -n "$COMMITS" ]; then
+            DEVS=$(gh api "repos/${REPO}/commits?sha=dev&since=${SINCE}&per_page=50" \
+              --jq '[.[].commit.author.name] | unique | join(", ")' 2>/dev/null || echo "")
+          fi
 
-          BODY_HTML+="</div></div>"
+          # Key deliverables from .github/daily-highlights.md
+          # Looks for today's date heading (## YYYY-MM-DD) and extracts bullet lines
+          TODAY_ISO=$(date -u -d '5 hours ago' '+%Y-%m-%d')  # EST date
+          HIGHLIGHTS=""
+          HIGHLIGHTS_RAW=$(gh api "repos/${REPO}/contents/.github/daily-highlights.md?ref=dev" --jq '.content' 2>/dev/null || echo "")
+          if [ -n "$HIGHLIGHTS_RAW" ]; then
+            HIGHLIGHTS_DECODED=$(echo "$HIGHLIGHTS_RAW" | base64 -d 2>/dev/null || echo "")
+            if [ -n "$HIGHLIGHTS_DECODED" ]; then
+              # Extract lines between "## YYYY-MM-DD" and the next "##" or end
+              HIGHLIGHTS=$(echo "$HIGHLIGHTS_DECODED" | sed -n "/^## ${TODAY_ISO}/,/^## /p" | grep '^- ' | head -5 | sed 's/^- //')
+            fi
+          fi
 
-          # --- Skip if nothing happened ---
+          # Blocker states
+          S127=$(gh api "repos/${REPO}/issues/127" --jq '.state' 2>/dev/null || echo "open")
+          S80=$(gh api "repos/${REPO}/issues/80" --jq '.state' 2>/dev/null || echo "open")
+          S187=$(gh api "repos/${REPO}/issues/187" --jq '.state' 2>/dev/null || echo "open")
+
+          echo "Stats: total=${TOTAL_ISSUES} closed=${CLOSED_TOTAL} open=${OPEN_TOTAL} today=${CLOSED_COUNT}"
+
+          # ── SKIP IF NO ACTIVITY ────────────────────────
+
           if [ "$COMMIT_COUNT" = "0" ] && [ "$OPENED_COUNT" = "0" ] && [ "$CLOSED_COUNT" = "0" ] && [ "$MERGED_COUNT" = "0" ]; then
-            echo "No activity in the last 24 hours. Skipping email."
+            echo "No activity. Skipping."
             exit 0
           fi
 
-          # --- Send email via Resend ---
-          SUBJECT="RAV Daily Summary — ${REPORT_DATE}"
+          # ── BUILD CLOSED TODAY LIST ────────────────────
 
-          # Escape for JSON
-          TEXT_ESCAPED=$(echo -e "$TEXT" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')
-          HTML_ESCAPED=$(echo "$BODY_HTML" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')
+          CLOSED_HTML=""
+          if [ "$CLOSED_COUNT" != "0" ]; then
+            CLOSED_HTML=$(echo "$CLOSED_TODAY" | jq -r '.[] | "<li>#\(.number) \(.title)</li>"')
+          fi
 
-          curl -s -X POST https://api.resend.com/emails \
+          OPENED_HTML=""
+          if [ "$OPENED_COUNT" != "0" ]; then
+            OPENED_HTML=$(echo "$OPENED_TODAY" | jq -r '.[] | "<li>#\(.number) \(.title) [\(.labels | map(.name) | join(", "))]</li>"')
+          fi
+
+          # ── BUILD COMMITS HTML ─────────────────────────
+
+          COMMITS_HTML=""
+          if [ -n "$COMMITS" ]; then
+            COMMITS_HTML=$(echo "$COMMITS" | head -20 | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/^/<li>/;s/$/<\/li>/')
+            if [ "$COMMIT_COUNT" -gt 20 ] 2>/dev/null; then
+              COMMITS_HTML+="<li style='color:#9ca3af;'>...and $((COMMIT_COUNT - 20)) more</li>"
+            fi
+          fi
+
+          MERGED_HTML=""
+          if [ -n "$MERGED" ]; then
+            MERGED_HTML=$(echo "$MERGED" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/^/<li>/;s/$/<\/li>/')
+          fi
+
+          # ── ASSEMBLE HTML ──────────────────────────────
+
+          cat > /tmp/report.html << 'HTMLEOF'
+          <div style="font-family:system-ui,-apple-system,sans-serif;max-width:640px;margin:0 auto;">
+          HTMLEOF
+
+          # Header
+          cat >> /tmp/report.html << HTMLEOF
+          <div style="background:#0d6b5c;color:white;padding:24px;border-radius:8px 8px 0 0;">
+          <h1 style="margin:0;font-size:22px;font-weight:700;">RAV Status Report</h1>
+          <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${REPORT_DATE}</p>
+          </div>
+          <div style="border:1px solid #e5e7eb;border-top:none;padding:0;border-radius:0 0 8px 8px;">
+          HTMLEOF
+
+          # Scoreboard
+          cat >> /tmp/report.html << HTMLEOF
+          <div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+          <table style="width:100%;border-collapse:collapse;text-align:center;"><tr>
+          <td style="padding:8px;"><div style="font-size:28px;font-weight:700;color:#0d6b5c;">${TOTAL_ISSUES}</div><div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Total Issues</div></td>
+          <td style="padding:8px;"><div style="font-size:28px;font-weight:700;color:#0d6b5c;">${CLOSED_TOTAL}</div><div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Closed To Date</div></td>
+          <td style="padding:8px;"><div style="font-size:28px;font-weight:700;color:#e86a4a;">${CLOSED_COUNT}</div><div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Closed Today</div></td>
+          <td style="padding:8px;"><div style="font-size:28px;font-weight:700;color:#374151;">${OPEN_TOTAL}</div><div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Open</div></td>
+          </tr></table>
+          <div style="text-align:center;margin-top:12px;padding:8px;background:#f0fdf4;border-radius:6px;">
+          <span style="font-size:13px;color:#374151;">Estimated effort completed: <strong>~${EST_TOTAL} hours</strong> (${CLOSED_TOTAL} issues x ${AVG_HRS} hrs avg)</span>
+          HTMLEOF
+
+          if [ "$CLOSED_COUNT" != "0" ]; then
+            echo "<br/><span style='font-size:13px;color:#0d6b5c;'>Today: <strong>~${EST_TODAY} hours</strong></span>" >> /tmp/report.html
+          fi
+          echo "</div></div>" >> /tmp/report.html
+
+          # Key deliverables (right below scoreboard)
+          if [ -n "$HIGHLIGHTS" ]; then
+            HIGHLIGHTS_HTML=$(echo "$HIGHLIGHTS" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/^/<li>/;s/$/<\/li>/')
+            cat >> /tmp/report.html << HTMLEOF
+          <div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;background:#f0fdf4;">
+          <h2 style="font-size:15px;color:#0d6b5c;margin:0 0 10px;">&#127942; Key Deliverables</h2>
+          <ul style="padding-left:20px;font-size:13px;line-height:2;margin:0;color:#1a3038;">
+          ${HIGHLIGHTS_HTML}
+          </ul></div>
+          HTMLEOF
+          fi
+
+          # Completed today
+          if [ "$CLOSED_COUNT" != "0" ]; then
+            cat >> /tmp/report.html << HTMLEOF
+          <div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+          <h2 style="font-size:16px;color:#1a3038;margin:0 0 12px;">&#9989; Completed Today (${CLOSED_COUNT} issues)</h2>
+          <ul style="padding-left:20px;font-size:13px;line-height:1.8;margin:0;">
+          ${CLOSED_HTML}
+          </ul></div>
+          HTMLEOF
+          fi
+
+          # New issues
+          if [ "$OPENED_COUNT" != "0" ]; then
+            cat >> /tmp/report.html << HTMLEOF
+          <div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+          <h2 style="font-size:16px;color:#1a3038;margin:0 0 12px;">&#128308; New Issues (${OPENED_COUNT})</h2>
+          <ul style="padding-left:20px;font-size:13px;line-height:1.8;margin:0;">
+          ${OPENED_HTML}
+          </ul></div>
+          HTMLEOF
+          fi
+
+          # Pre-launch blockers (red section)
+          HAVE_BLOCKERS=false
+          if [ "$S127" = "open" ] || [ "$S80" = "open" ] || [ "$S187" = "open" ]; then
+            HAVE_BLOCKERS=true
+          fi
+
+          if [ "$HAVE_BLOCKERS" = "true" ]; then
+            cat >> /tmp/report.html << 'HTMLEOF'
+          <div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;background:#fef2f2;">
+          <h2 style="font-size:16px;color:#dc2626;margin:0 0 12px;">&#128680; Pre-Launch Blockers</h2>
+          <p style="font-size:13px;color:#991b1b;margin:0 0 16px;background:#fee2e2;padding:10px 14px;border-radius:6px;border-left:4px solid #dc2626;">
+          <strong>Key dependency:</strong> Business formation (LLC or C-Corp + EIN) is the single biggest blocker. Once registered, Stripe Tax, SMS, accounting, and banking can all proceed.
+          </p>
+          HTMLEOF
+
+            if [ "$S127" = "open" ]; then
+              cat >> /tmp/report.html << 'HTMLEOF'
+          <div style="margin-bottom:16px;">
+          <strong style="font-size:15px;">#127 — Business Formation (LLC/EIN)</strong>
+          <span style="display:inline-block;background:#dc2626;color:white;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:8px;">BLOCKED</span>
+          <p style="margin:6px 0 4px;color:#4b5563;font-size:13px;">The company must be legally registered before these can proceed:</p>
+          <ul style="margin:4px 0;padding-left:20px;font-size:13px;color:#4b5563;">
+          <li><strong>Stripe Tax</strong> — code ready, cannot activate without business entity</li>
+          <li><strong>SMS Go-Live</strong> — A2P 10DLC requires EIN (currently test mode only)</li>
+          <li><strong>Accounting (Puzzle.io)</strong> — onboarding paused, waiting on EIN</li>
+          <li><strong>Bank Account</strong> — Mercury requires LLC/EIN</li>
+          </ul></div>
+          HTMLEOF
+            fi
+
+            if [ "$S80" = "open" ]; then
+              cat >> /tmp/report.html << 'HTMLEOF'
+          <div style="margin-bottom:12px;">
+          <strong style="font-size:14px;">#80 — Legal: Terms of Service &amp; Privacy Policy</strong>
+          <span style="display:inline-block;background:#f59e0b;color:white;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:8px;">NEEDS REVIEW</span>
+          <p style="margin:4px 0;color:#4b5563;font-size:13px;">Requires legal counsel review before public launch.</p>
+          </div>
+          HTMLEOF
+            fi
+
+            if [ "$S187" = "open" ]; then
+              cat >> /tmp/report.html << 'HTMLEOF'
+          <div style="margin-bottom:12px;">
+          <strong style="font-size:14px;">#187 — Pre-launch Manual Verification</strong>
+          <span style="display:inline-block;background:#f59e0b;color:white;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:8px;">IN PROGRESS</span>
+          <p style="margin:4px 0;color:#4b5563;font-size:13px;">Remaining checklist items for go-live readiness.</p>
+          </div>
+          HTMLEOF
+            fi
+
+            echo "</div>" >> /tmp/report.html
+          fi
+
+          # Open issues breakdown
+          cat >> /tmp/report.html << HTMLEOF
+          <div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+          <h2 style="font-size:16px;color:#1a3038;margin:0 0 12px;">&#128203; Open Issues Breakdown</h2>
+          <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <tr><td style="padding:6px 0;color:#4b5563;">Pre-launch</td><td style="padding:6px 0;text-align:right;font-weight:600;">${OPEN_PRELAUNCH}</td></tr>
+          <tr><td style="padding:6px 0;color:#4b5563;">Post-launch</td><td style="padding:6px 0;text-align:right;font-weight:600;">${OPEN_POSTLAUNCH}</td></tr>
+          <tr><td style="padding:6px 0;color:#4b5563;">Blocked</td><td style="padding:6px 0;text-align:right;font-weight:600;color:#dc2626;">${OPEN_BLOCKED}</td></tr>
+          <tr><td style="padding:6px 0;color:#4b5563;">Ideas / Future</td><td style="padding:6px 0;text-align:right;font-weight:600;">${OPEN_IDEAS}</td></tr>
+          <tr style="border-top:1px solid #e5e7eb;"><td style="padding:8px 0;font-weight:700;">Total Open</td><td style="padding:8px 0;text-align:right;font-weight:700;">${OPEN_TOTAL}</td></tr>
+          </table></div>
+          HTMLEOF
+
+          # Code activity
+          if [ "$COMMIT_COUNT" != "0" ] || [ "$MERGED_COUNT" != "0" ]; then
+            echo '<div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">' >> /tmp/report.html
+            echo '<h2 style="font-size:16px;color:#1a3038;margin:0 0 12px;">&#128296; Code Activity</h2>' >> /tmp/report.html
+
+            if [ -n "$MERGED_HTML" ]; then
+              echo "<p style='font-size:13px;margin:0 0 8px;'><strong>PRs Merged (${MERGED_COUNT}):</strong></p>" >> /tmp/report.html
+              echo "<ul style='padding-left:20px;font-size:12px;line-height:1.8;margin:0 0 12px;color:#4b5563;'>${MERGED_HTML}</ul>" >> /tmp/report.html
+            fi
+
+            if [ -n "$COMMITS_HTML" ]; then
+              echo "<p style='font-size:13px;margin:0 0 8px;'><strong>Commits (${COMMIT_COUNT}):</strong></p>" >> /tmp/report.html
+              echo "<ul style='padding-left:20px;font-size:12px;line-height:1.8;margin:0;font-family:monospace;color:#4b5563;'>${COMMITS_HTML}</ul>" >> /tmp/report.html
+            fi
+
+            echo '</div>' >> /tmp/report.html
+          fi
+
+          # Footer with developer attribution
+          cat >> /tmp/report.html << HTMLEOF
+          <div style="padding:16px 24px;border-top:1px solid #e5e7eb;text-align:center;">
+          HTMLEOF
+
+          if [ -n "$DEVS" ]; then
+            echo "<p style='font-size:12px;color:#6b7280;margin:0 0 8px;'>Developed by: <strong>${DEVS}</strong></p>" >> /tmp/report.html
+          fi
+
+          cat >> /tmp/report.html << 'HTMLEOF'
+          <p style="font-size:12px;color:#9ca3af;margin:0;">
+          <a href="https://github.com/rent-a-vacation/rav-website" style="color:#0d6b5c;">Repository</a>
+          &nbsp;&middot;&nbsp;
+          <a href="https://github.com/rent-a-vacation/rav-website/issues" style="color:#0d6b5c;">Issues</a>
+          &nbsp;&middot;&nbsp;
+          <a href="https://rentavacation.vercel.app" style="color:#0d6b5c;">Preview</a>
+          </p></div>
+          </div></div>
+          HTMLEOF
+
+          # ── SEND EMAIL ─────────────────────────────────
+
+          SUBJECT="RAV Status Report — ${REPORT_DATE}"
+          HTML_BODY=$(cat /tmp/report.html)
+
+          TEXT_BODY="RAV Status Report — ${REPORT_DATE}
+
+          SCOREBOARD: Total ${TOTAL_ISSUES} | Closed ${CLOSED_TOTAL} | Today ${CLOSED_COUNT} | Open ${OPEN_TOTAL}
+          Estimated effort: ~${EST_TOTAL} hrs total, ~${EST_TODAY} hrs today
+
+          PRE-LAUNCH BLOCKERS:
+          #127 Business Formation (LLC/EIN) — BLOCKED → Stripe Tax, SMS, Accounting, Bank
+          #80 Legal: Terms of Service — NEEDS REVIEW
+          #187 Pre-launch verification — IN PROGRESS
+
+          OPEN: Pre-launch ${OPEN_PRELAUNCH}, Post-launch ${OPEN_POSTLAUNCH}, Blocked ${OPEN_BLOCKED}
+          COMMITS: ${COMMIT_COUNT}, PRs MERGED: ${MERGED_COUNT}"
+
+          # Escape for JSON using jq
+          TEXT_JSON=$(echo "$TEXT_BODY" | jq -Rs '.')
+          HTML_JSON=$(echo "$HTML_BODY" | jq -Rs '.')
+
+          RESULT=$(curl -s -X POST https://api.resend.com/emails \
             -H "Authorization: Bearer ${RESEND_API_KEY}" \
             -H "Content-Type: application/json" \
             -d "{
@@ -135,9 +334,9 @@ jobs:
                 \"sandhya@rent-a-vacation.com\"
               ],
               \"subject\": \"${SUBJECT}\",
-              \"text\": ${TEXT_ESCAPED},
-              \"html\": ${HTML_ESCAPED}
-            }"
+              \"text\": ${TEXT_JSON},
+              \"html\": ${HTML_JSON}
+            }")
 
-          echo ""
-          echo "Daily summary sent for ${REPORT_DATE}"
+          echo "Status report sent for ${REPORT_DATE}"
+          echo "Resend response: ${RESULT}"

@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-16T16:04:25"
+change_ref: "32ec398"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # PROJECT HUB - Rent-A-Vacation
 
 > **Architectural decisions, session context, and agent instructions**
@@ -96,7 +102,21 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Supabase CLI:** currently linked to DEV
 - **dev and main:** in sync (PRs #199-#205 merged)
 
-### Session Handoff (Sessions 25-39)
+### Session Handoff (Sessions 25-40)
+
+**Session 40 — Notification Center: Full Platform Build (Mar 16):**
+- Built unified Notification Center: catalog-driven preferences, seasonal event calendar, SMS infrastructure, delivery logging.
+- **Migration 046:** 6 new tables (`notification_catalog`, `user_notification_preferences`, `seasonal_events`, `event_instances`, `notification_delivery_log`, `sms_suppression_log`), 3 enums, 3 RPCs, RLS policies.
+- **18 notification_catalog entries** (15 existing types + 3 seasonal SMS). **48 event instances** across 8 destinations for 2026.
+- **3 new edge functions:** `notification-dispatcher` (multi-channel routing), `sms-scheduler` (daily cron), `twilio-webhook` (delivery status + STOP opt-out).
+- **Frontend:** `/notifications` page (filters, date grouping), `/settings/notifications` (TCPA-compliant SMS opt-in), Admin "Notifications" tab (4 sub-tabs).
+- **NotificationBell** enhanced with click navigation and "View all" link.
+- **SMS_TEST_MODE=true** — zero code changes needed to go live (env var flip after A2P 10DLC registration).
+- **Issues:** #215-#223 closed, #224 (future one-time events) open. #102 (SMS notifications) superseded and closed.
+- **Deployed to DEV:** Migration 046 applied, all 3 edge functions deployed, Twilio secrets configured, `SMS_TEST_MODE=true`.
+- **Twilio account:** Regular account created, phone number purchased. A2P 10DLC registration pending (blocked on #127 LLC/EIN).
+- **Tests:** 806 passing (101 files, +35 new). 0 type errors, build clean.
+- **Flow manifests:** Updated for `/notifications`, `/settings/notifications`, admin `notification_center` tab.
 
 **Session 39 — RAV Smart Suite Rebrand + SmartEarn Merge (Mar 10):**
 - Rebranded all 6 free tools to consistent "RAV Smart___" naming: SmartFee→SmartEarn, Vacation Cost Comparator→SmartCompare, Resort Finder Quiz→SmartMatch, Trip Budget Planner→SmartBudget.
