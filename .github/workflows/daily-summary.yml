@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate and send status report
+        shell: bash {0}
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_GITHUB_NOTIFICATIONS_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
