@@ -2,8 +2,8 @@ name: Daily Status Report
 
 on:
   schedule:
-    # 9 PM EST = 02:00 UTC next day
-    - cron: '0 2 * * *'
+    # 11:30 PM EST = 04:30 UTC next day
+    - cron: '30 4 * * *'
   workflow_dispatch: # Manual trigger for testing
 
 jobs:
