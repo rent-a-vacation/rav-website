@@ -1,15 +1,25 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # PostHog Analytics — Project Brief
 
 **Feature Name:** PostHog Analytics Integration
 **Phase:** 20
-**Status:** 🟡 Planning
+**Status:** ⏸️ Deferred — GA4 (G-G2YCVHNS25) selected as analytics platform instead. PostHog may be revisited post-launch.
 **Created:** February 21, 2026
 **Migration:** None — frontend only
 **Docs:** `docs/features/posthog-analytics/`
 
 ---
 
-## Overview
+## Current Status
+
+**GA4 (Measurement ID: G-G2YCVHNS25) was integrated in Session 26** as the production analytics platform, gated behind cookie consent. PostHog was considered during planning but GA4 was selected instead. This feature brief is preserved for reference if PostHog is reconsidered post-launch (e.g., for session recordings or feature flags that GA4 doesn't provide). See GitHub issue #193 for future consideration.
+
+## Original Overview
 
 Integrate PostHog for product analytics, session recording, feature flags, and user behavior tracking. PostHog is open-source, offers a generous free tier (1M events/month), and provides:
 

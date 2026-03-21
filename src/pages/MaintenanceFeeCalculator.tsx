@@ -16,6 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbSchema';
 import { OwnershipForm } from '@/components/calculator/OwnershipForm';
 import { BreakevenResults } from '@/components/calculator/BreakevenResults';
 import { CalculatorCTA } from '@/components/calculator/CalculatorCTA';
@@ -106,10 +108,16 @@ export default function MaintenanceFeeCalculator() {
       });
   }, []);
 
-  usePageMeta(
-    'RAV SmartEarn — Break-Even & Yield Calculator',
-    'Calculate how many weeks you need to rent your timeshare to cover maintenance fees, plus estimate your annual rental yield. Free tool for Hilton, Marriott, Disney, Wyndham owners.'
-  );
+  usePageMeta({
+    title: 'RAV SmartEarn — Break-Even & Yield Calculator',
+    description: 'Calculate how many weeks you need to rent your timeshare to cover maintenance fees, plus estimate your annual rental yield. Free tool for Hilton, Marriott, Disney, Wyndham owners.',
+    canonicalPath: '/calculator',
+  });
+  useJsonLd('breadcrumb-schema', buildBreadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'RAV Tools', path: '/tools' },
+    { name: 'SmartEarn', path: '/calculator' },
+  ]));
 
   // Inject HowTo JSON-LD structured data
   useEffect(() => {

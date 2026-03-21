@@ -16,6 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbSchema';
 import { trackEvent } from '@/lib/posthog';
 import {
   compareAccommodationCosts,
@@ -24,10 +26,16 @@ import {
 } from '@/lib/costComparator';
 
 export default function CostComparator() {
-  usePageMeta(
-    'RAV SmartCompare — RAV Tools',
-    'Compare the total cost of a timeshare rental vs. hotel vs. Airbnb for your destination.',
-  );
+  usePageMeta({
+    title: 'RAV SmartCompare — RAV Tools',
+    description: 'Compare the total cost of a timeshare rental vs. hotel vs. Airbnb for your destination.',
+    canonicalPath: '/tools/cost-comparator',
+  });
+  useJsonLd('breadcrumb-schema', buildBreadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'RAV Tools', path: '/tools' },
+    { name: 'SmartCompare', path: '/tools/cost-comparator' },
+  ]));
 
   const schemaRef = useRef(false);
   useEffect(() => {

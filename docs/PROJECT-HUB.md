@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-16T16:04:25"
-change_ref: "32ec398"
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -102,7 +102,20 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Supabase CLI:** currently linked to DEV
 - **dev and main:** in sync (PRs #199-#205 merged)
 
-### Session Handoff (Sessions 25-40)
+### Session Handoff (Sessions 25-41)
+
+**Session 41 — Technical SEO Gaps (#229) (Mar 20):**
+- Extended `usePageMeta` hook to accept options object: `canonicalPath`, `ogImage`, `ogType`, `noindex`. Updates canonical, OG, Twitter, and robots meta tags per page. Backward-compatible string signature preserved.
+- Created `useJsonLd` hook — generic JSON-LD `<script>` tag injection/cleanup. Extracts duplicated pattern from FAQ, Index, MaintenanceFeeCalculator, etc.
+- Created `buildBreadcrumbJsonLd()` utility in `src/lib/breadcrumbSchema.ts` for BreadcrumbList JSON-LD.
+- **PropertyDetail.tsx:** Canonical URL, dynamic OG image (first listing photo), Product JSON-LD schema, Breadcrumb JSON-LD.
+- **DestinationDetail.tsx:** Dynamic canonical URL (destination/city slug), Breadcrumb JSON-LD.
+- **15 public pages:** Added `canonicalPath` to all `usePageMeta` calls (Index, Rentals, FAQ, HowItWorks, Contact, Terms, Privacy, UserGuide, RavTools, Calculator, CostComparator, ResortQuiz, BudgetPlanner, BiddingMarketplace, Destinations).
+- **4 tool pages:** Added Breadcrumb JSON-LD (`Home → RAV Tools → ToolName`).
+- **Bug fixes:** Notifications.tsx had duplicate "| Rent-A-Vacation" in title (object form wasn't supported). NotificationPreferences.tsx same fix. NotFound.tsx now has `usePageMeta` with `noindex: true`. Developers.tsx now has `usePageMeta` with canonical.
+- **`index.html`:** Removed static `<link rel="canonical">` (hook manages it per page).
+- **Build-time sitemap:** `scripts/generate-sitemap.ts` runs as `postbuild`, generates `dist/sitemap.xml` with static routes + destination slugs + active listing IDs from Supabase. Deleted static `public/sitemap.xml`.
+- **Tests:** 825 passing (104 files, +19 new: usePageMeta 10, useJsonLd 5, breadcrumbSchema 4). 0 type errors, build clean.
 
 **Session 40 — Notification Center: Full Platform Build (Mar 16):**
 - Built unified Notification Center: catalog-driven preferences, seasonal event calendar, SMS infrastructure, delivery logging.
@@ -659,6 +672,43 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-027: SEO & Digital Marketing Roadmap
+**Date:** March 20, 2026
+**Decision:** Systematic approach to technical SEO completion and multi-platform digital marketing presence, with assignable stories per platform
+**Status:** Planned
+
+**Context:** SEO foundation built in Session 17 (~80% complete). Social media presence is zero. Both are critical for discoverability before and after launch.
+
+**Technical SEO (#229):** Fix per-page canonical URLs, dynamic OG images, BreadcrumbList JSON-LD, dynamic sitemap for listings. Developer task — 1 session.
+
+**Digital Marketing (platform stories under #213):**
+- #230 — Facebook Business Page (P0, pre-launch)
+- #231 — Instagram Business Account (P0, pre-launch)
+- #232 — LinkedIn Company Page (P1, pre-launch)
+- #233 — X/Twitter (P2, post-launch)
+- #234 — Google Business Profile (P0, pre-launch)
+- #107 — Blog / content marketing (post-launch, depends on DEC-004 CMS decision)
+
+**Reasoning:** (1) Each platform story is self-contained and assignable to an individual founder. (2) Google Business Profile is highest ROI for brand searches — 30 minutes to set up. (3) Facebook + Instagram are P0 because timeshare owner demographic (45-65) is heavily concentrated there. (4) Technical SEO should be done before marketing drives traffic to ensure pages are indexed correctly.
+
+---
+
+### DEC-026: Sentry Observability Roadmap
+**Date:** March 20, 2026
+**Decision:** Expand Sentry from frontend-only error capture to full-stack observability with alerting and GitHub integration
+**Status:** Planned
+
+**Context:** Sentry is deployed with frontend error capture, 5% tracing, and error-only session replay (Session 29). However, no alerting is configured (errors only visible by manually checking dashboard), edge functions have no error tracking, and GitHub integration is not connected.
+
+**Approach (3 issues):**
+- **#226 — Alerts:** Configure new-issue, spike, and regression alerts. Route to email (and Slack once #225 is set up). Tune thresholds to avoid noise.
+- **#227 — Edge Functions:** Add Sentry to critical edge functions (`stripe-webhook`, `process-cancellation`, `notification-dispatcher`, `api-gateway`) via shared helper in `supabase/functions/_shared/sentry.ts`. Evaluate `@sentry/deno` compatibility.
+- **#228 — GitHub Integration:** Connect `rent-a-vacation/rav-website` repo. Enables suspect commits, release-to-commit linking, and code owner auto-assignment.
+
+**Reasoning:** (1) Alerting is table-stakes for production — can't rely on manually checking dashboards. (2) Edge functions handle payments, refunds, and notifications — failures there are invisible today. (3) GitHub integration closes the loop between "error occurred" and "which commit caused it." All three are post-launch but should be done before scaling.
 
 ---
 

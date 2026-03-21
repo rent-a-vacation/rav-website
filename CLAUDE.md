@@ -328,6 +328,63 @@ Key active decisions agents must respect:
 
 ---
 
+## Documentation Audit Convention (MANDATORY)
+
+### Frontmatter requirement
+
+Every `docs/**/*.md` file MUST have YAML frontmatter at the top:
+
+```yaml
+---
+last_updated: "2026-03-13T14:30:00"
+change_ref: "abc1234"
+change_type: "session-40"
+status: "active"
+---
+```
+
+| Field | Description | Auto? |
+|-------|-------------|-------|
+| `last_updated` | ISO 8601 datetime | Yes — pre-commit hook |
+| `change_ref` | Short commit SHA | Yes — pre-commit hook |
+| `change_type` | Context: session number, PR#, or description | Manual — defaults to `"manual-edit"` |
+| `status` | `active` / `archived` / `draft` | Manual — set once |
+
+### When modifying docs
+
+1. **Set `change_type`** to something meaningful (e.g., `"session-40"`, `"PR #215"`)
+2. The pre-commit hook auto-stamps `last_updated` and `change_ref` — do NOT set these manually
+3. New docs get frontmatter auto-injected by the pre-commit hook
+4. `archived` docs skip staleness checks in CI
+
+### Source-to-doc mapping
+
+`scripts/source-doc-map.json` maps source code paths to their related docs. When source changes, CI warns if mapped docs weren't updated. Add new mappings when creating feature docs.
+
+### Running the audit
+
+```bash
+npm run docs:audit      # Local audit report
+npm run docs:audit:ci   # CI mode (exits 1 on errors)
+```
+
+---
+
+## Email Template Convention (MANDATORY)
+
+All emails sent by Rent-A-Vacation MUST use the shared branded template:
+
+- **Edge functions:** Import `buildEmailHtml()`, `detailRow()`, `infoBox()` from `../_shared/email-template.ts`
+- **Frontend:** Use `wrapEmail()` from `src/lib/email.ts` (mirrored copy — keep in sync with shared template)
+
+### What NOT to do with emails
+
+- ❌ Do NOT write inline HTML email templates in edge functions
+- ❌ Do NOT create local `buildEmailHtml` functions — use the shared one
+- ❌ Do NOT use non-brand colors (blue `#3b82f6`, purple `#6366f1`) — use teal `#0d6b5c` and coral `#e86a4a`
+
+---
+
 ## What NOT to Do
 
 - ❌ Never push directly to `main`

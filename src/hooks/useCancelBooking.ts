@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { trackEvent } from '@/lib/posthog';
 
 interface CancelBookingParams {
   bookingId: string;
@@ -29,7 +30,11 @@ export function useCancelBooking() {
       if (data?.error) throw new Error(data.error);
       return data as CancelBookingResult;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      trackEvent('cancellation_requested', {
+        cancelled_by: variables.cancelledBy,
+        booking_id: variables.bookingId,
+      });
       queryClient.invalidateQueries({ queryKey: ['payouts'] });
     },
   });

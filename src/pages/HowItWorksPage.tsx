@@ -161,7 +161,11 @@ const faqs = [
 ];
 
 const HowItWorksPage = () => {
-  usePageMeta('How It Works', 'Learn how to rent vacation properties at up to 70% off through Rent-A-Vacation marketplace.');
+  usePageMeta({
+    title: 'How It Works',
+    description: 'Learn how to rent vacation properties at up to 70% off through Rent-A-Vacation marketplace.',
+    canonicalPath: '/how-it-works',
+  });
   const location = useLocation();
   const { user } = useAuth();
   const isAuthenticated = !!user;

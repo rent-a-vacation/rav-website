@@ -3,7 +3,11 @@ import Footer from "@/components/Footer";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
 const Terms = () => {
-  usePageMeta('Terms of Service', 'Terms and conditions for using Rent-A-Vacation marketplace.');
+  usePageMeta({
+    title: 'Terms of Service',
+    description: 'Terms and conditions for using Rent-A-Vacation marketplace.',
+    canonicalPath: '/terms',
+  });
 
   return (
     <div className="min-h-screen bg-background">

@@ -73,10 +73,11 @@ const TOOLS: Tool[] = [
 ];
 
 const RavTools = () => {
-  usePageMeta(
-    'RAV Tools — Free Vacation Planning Tools',
-    'Free tools for timeshare owners and travelers: maintenance fee calculator, smart pricing, cost comparisons, and more.'
-  );
+  usePageMeta({
+    title: 'RAV Tools — Free Vacation Planning Tools',
+    description: 'Free tools for timeshare owners and travelers: maintenance fee calculator, smart pricing, cost comparisons, and more.',
+    canonicalPath: '/tools',
+  });
 
   // Inject ItemList JSON-LD structured data
   useEffect(() => {

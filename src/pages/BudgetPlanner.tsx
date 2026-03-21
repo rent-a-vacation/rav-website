@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbSchema';
 import { trackEvent } from '@/lib/posthog';
 import {
   calculateTripBudget,
@@ -40,10 +42,16 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function BudgetPlanner() {
-  usePageMeta(
-    'RAV SmartBudget — RAV Tools',
-    'Plan your total vacation budget including flights, dining, activities, and accommodation.',
-  );
+  usePageMeta({
+    title: 'RAV SmartBudget — RAV Tools',
+    description: 'Plan your total vacation budget including flights, dining, activities, and accommodation.',
+    canonicalPath: '/tools/budget-planner',
+  });
+  useJsonLd('breadcrumb-schema', buildBreadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'RAV Tools', path: '/tools' },
+    { name: 'SmartBudget', path: '/tools/budget-planner' },
+  ]));
 
   const schemaRef = useRef(false);
   useEffect(() => {

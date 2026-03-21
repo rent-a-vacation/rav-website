@@ -26,7 +26,11 @@ const DEST_IMAGES: Record<string, string> = {
 };
 
 const Destinations = () => {
-  usePageMeta('Top Destinations', 'Explore top vacation destinations with luxury resort stays at up to 70% off retail prices.');
+  usePageMeta({
+    title: 'Top Destinations',
+    description: 'Explore top vacation destinations with luxury resort stays at up to 70% off retail prices.',
+    canonicalPath: '/destinations',
+  });
 
   const { data: allListings } = useActiveListings();
 

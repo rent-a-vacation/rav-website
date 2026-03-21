@@ -3,7 +3,11 @@ import Footer from "@/components/Footer";
 import { usePageMeta } from "@/hooks/usePageMeta";
 
 const Privacy = () => {
-  usePageMeta('Privacy Policy', 'How Rent-A-Vacation protects your personal data and privacy.');
+  usePageMeta({
+    title: 'Privacy Policy',
+    description: 'How Rent-A-Vacation protects your personal data and privacy.',
+    canonicalPath: '/privacy',
+  });
 
   return (
     <div className="min-h-screen bg-background">

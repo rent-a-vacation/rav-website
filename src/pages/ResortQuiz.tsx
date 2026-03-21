@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbSchema';
 import { trackEvent } from '@/lib/posthog';
 import {
   QUIZ_QUESTIONS,
@@ -25,10 +27,16 @@ const DEFAULT_ANSWERS: QuizAnswers = {
 };
 
 export default function ResortQuiz() {
-  usePageMeta(
-    'RAV SmartMatch — RAV Tools',
-    'Answer 5 quick questions and get matched to the perfect vacation resort from our 117-resort database.',
-  );
+  usePageMeta({
+    title: 'RAV SmartMatch — RAV Tools',
+    description: 'Answer 5 quick questions and get matched to the perfect vacation resort from our 117-resort database.',
+    canonicalPath: '/tools/resort-quiz',
+  });
+  useJsonLd('breadcrumb-schema', buildBreadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'RAV Tools', path: '/tools' },
+    { name: 'SmartMatch', path: '/tools/resort-quiz' },
+  ]));
 
   const schemaRef = useRef(false);
   useEffect(() => {

@@ -1,7 +1,13 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Rent-A-Vacation Marketing Playbook
 
 > **Classification:** Internal Strategy Document
-> **Version:** 1.1 | February 21, 2026
+> **Version:** 1.2 | March 13, 2026
 > **Prepared for:** Go-to-Market Launch & Investor Presentations
 > **Brand:** Rent-A-Vacation (RAV) | rent-a-vacation.com
 > **Demo Environment:** dev.rent-a-vacation.com (seed data for demonstration)
@@ -42,7 +48,7 @@ We've built the first platform purpose-built for this market, with three structu
 2. **A professional resort data layer** *[BUILT]* — 117 resorts, 351 unit types, auto-populated listing forms designed to cut owner onboarding time dramatically
 3. **A two-sided bidding engine** *[BUILT]* — travelers bid on listings AND post Vacation Wishes for owners to compete over, creating true price discovery
 
-The platform is fully built, end-to-end tested with 182 automated tests, and operating at 99.97% uptime in our staging environment. We take 10-15% commission on every booking. The technology is ready — we're now preparing for our public launch.
+The platform is fully built, end-to-end tested with 771 automated tests across 99 test files, and operating at 99.97% uptime in our staging environment. Owners list for free — no upfront fees. We take a configurable 15% default commission on successful bookings only (Pro −2%, Business −5%). The technology is ready — we're now preparing for our public launch.
 
 ---
 
@@ -74,21 +80,40 @@ This is the heart of our story. Every item below is **BUILT**, deployed, and dem
 | **Seed Data System** | BUILT | One-click realistic test data for demos and testing |
 | **Role-Based Access Control** | BUILT | 5 roles, RLS-enforced, self-service upgrade workflow |
 | **Email Notifications** | BUILT | Transactional emails for all key workflows (Resend API) |
+| **Realtime Subscriptions** | BUILT | Live updates for notifications, messages, and unread counts — no polling |
+| **Dynamic Pricing** | BUILT | Urgency discounts, seasonal factors, demand-based adjustments |
+| **Referral Program** | BUILT | Unique referral codes, tracking dashboard, signup attribution |
+| **Public API & Developer Portal** | BUILT | OpenAPI 3.0 spec, `/developers` Swagger UI, API key management, tiered rate limits |
+| **RAV Smart Suite (5 Tools)** | BUILT | SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget at `/tools` |
+| **Cancellation Policy UI** | BUILT | Color-coded refund timeline for 4 policy tiers on listing & checkout |
+| **Booking Timeline** | BUILT | Visual step-by-step progress tracker for bookings |
+| **Compare Properties** | BUILT | Side-by-side comparison of up to 3 listings with best-value badges |
+| **Saved Searches & Price Drop Alerts** | BUILT | Save search criteria, get notified when prices drop |
+| **Pre-Booking Messaging** | BUILT | Inquiry threads between travelers and owners before booking |
+| **iCal Export** | BUILT | RFC 5545 calendar export for owner bookings |
+| **Destinations Explorer** | BUILT | 10 destinations, 35 cities — curated resort discovery pages |
+| **Admin Property/Listing Editing** | BUILT | Admin can edit properties and listings with audit trail |
+| **Resort Data Import** | BUILT | CSV import with validation, duplicate detection, 3-step UI |
+| **Dispute Evidence Upload** | BUILT | File upload for dispute evidence with role-aware reporting |
+| **Owner Profile Cards** | BUILT | Public owner profile summaries with stats |
+| **Renter Dashboard (/my-trips)** | BUILT | 4-tab dashboard: Overview, Bookings, Offers, Favorites |
+| **Role Upgrade Notifications** | BUILT | Email + in-app notification on role approval with realtime detection |
+| **IP Allowlisting for API Keys** | BUILT | Optional CIDR-based IP restriction for API keys |
 
 ### Engineering Quality (These are real, verified numbers)
 
 | Metric | Value | Verification |
 |--------|-------|-------------|
-| Automated tests | 182 passing | `npm test` — run anytime |
+| Automated tests | 771 passing (99 test files) | `npm test` — run anytime |
 | TypeScript errors | 0 | `npx tsc --noEmit` — strict mode |
 | Lint errors | 0 | `npm run lint` — ESLint |
 | Build status | Clean | `npm run build` — production-ready |
-| Database migrations | 18 deployed | Supabase CLI tracked |
-| Edge functions | 10+ deployed | Serverless, auto-scaling |
+| Database migrations | 45 deployed | Supabase CLI tracked |
+| Edge functions | 27 deployed | Serverless, auto-scaling |
 | CI/CD pipeline | 5-job GitHub Actions | Lint, typecheck, unit, E2E, visual regression |
 | Platform uptime (staging) | 99.97% | Supabase + Vercel infrastructure |
 | Resort database | 117 resorts, 351 unit types | Queryable, auto-populated |
-| Phases shipped | 18+ in 18 months | Documented in PROJECT-HUB.md |
+| Phases shipped | 39+ in 18 months | Documented in PROJECT-HUB.md |
 
 ### Demo Environment (dev.rent-a-vacation.com)
 
@@ -187,10 +212,10 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 
 **Key Messages (all accurately labeled):**
 - "The $10.5B vacation ownership market has no tech-first leader" *[Industry data]*
-- "We've built a complete, production-ready platform with 182 automated tests" *[BUILT]*
+- "We've built a complete, production-ready platform with 771 automated tests across 99 test files" *[BUILT]*
 - "AI voice search is an industry first — no competitor offers this" *[BUILT]*
 - "117-resort proprietary data layer creates compounding network effects" *[BUILT]*
-- "18 phases shipped in 18 months — execution velocity is our proof" *[BUILT]*
+- "39 phases shipped in 18 months — execution velocity is our proof" *[BUILT]*
 - "Unit economics model targets 12:1 LTV:CAC ratio and 85%+ contribution margin" *[PROJECTED]*
 
 ---
@@ -213,6 +238,12 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 | Executive Dashboard | **RAV Command** | Real-time business intelligence for leadership | BUILT |
 | Liquidity Score | **Liquidity Score** | Proprietary marketplace health metric | BUILT |
 | Bid Spread Index | **Bid Spread Index** | Proprietary price discovery efficiency metric | BUILT |
+| Cost Comparator | **RAV SmartCompare** | Side-by-side cost comparison across platforms | BUILT |
+| Resort Quiz | **RAV SmartMatch** | Find your ideal vacation club brand | BUILT |
+| Budget Planner | **RAV SmartBudget** | Vacation budget planning tool | BUILT |
+| Dynamic Pricing | **Dynamic Pricing** | Urgency, seasonal, and demand-based price adjustments | BUILT |
+| Referral System | **Referral Program** | Unique codes, tracking dashboard, signup attribution | BUILT |
+| Public API | **Developer Portal** | RESTful API at `/developers` with Swagger UI | BUILT |
 | Owner Tools Suite | **Owner's Edge** | Dashboard, earnings, analytics, pricing tools | BUILT |
 
 ### Brand Hierarchy
@@ -231,8 +262,12 @@ RENT-A-VACATION (Master Brand)
 │
 ├── For Owners
 │   ├── Owner's Edge (dashboard & tools suite)
-│   ├── RAV SmartPrice (pricing AI)
-│   ├── RAV SmartEarn (maintenance fee tool)
+│   ├── RAV Smart Suite (5-tool hub at /tools)
+│   │   ├── RAV SmartEarn (maintenance fee + yield estimator)
+│   │   ├── RAV SmartPrice (pricing AI)
+│   │   ├── RAV SmartCompare (cost comparator)
+│   │   ├── RAV SmartMatch (resort quiz)
+│   │   └── RAV SmartBudget (budget planner)
 │   └── TrustShield (verification program)
 │
 └── For Business / Investors
@@ -495,17 +530,17 @@ RENT-A-VACATION (Master Brand)
 
 | Metric | Value | How to Verify |
 |--------|-------|---------------|
-| Automated tests passing | 182 | Run `npm test` |
+| Automated tests passing | 771 (99 test files) | Run `npm test` |
 | TypeScript errors | 0 | Run `npx tsc --noEmit` |
 | Lint errors | 0 | Run `npm run lint` |
 | Production build | Clean | Run `npm run build` |
-| Database migrations deployed | 18 | Supabase dashboard |
-| Edge functions deployed | 10+ | Supabase dashboard |
+| Database migrations deployed | 45 | Supabase dashboard |
+| Edge functions deployed | 27 | Supabase dashboard |
 | CI/CD pipeline jobs | 5 (all green) | GitHub Actions |
 | Resorts in database | 117 | Query `resorts` table |
 | Unit types in database | 351 | Query `resort_unit_types` table |
 | Countries covered | 10+ | Query resort locations |
-| Phases shipped | 18+ | PROJECT-HUB.md |
+| Phases shipped | 39+ | PROJECT-HUB.md |
 | Development timeline | 18 months | Git history |
 
 ### Projected Business Metrics (Post-Launch Targets)
@@ -520,7 +555,7 @@ RENT-A-VACATION (Master Brand)
 | Owner Signups | 50/mo | 200/mo | Organic + community outreach |
 | Traveler Signups | 500/mo | 2,000/mo | SEO + paid + referral |
 | Booking Conversion | 3-5% | 5-8% | Marketplace benchmark |
-| Platform Commission | 10-15% | 10-15% | Tier-based model |
+| Platform Commission | 15% (default; Pro −2%, Business −5%) | 15% (default; Pro −2%, Business −5%) | Tier-based model |
 | LTV:CAC Ratio (target) | 5:1 | 10:1 | Industry best practice |
 
 ### Industry Reference Points (External Data)
@@ -556,12 +591,28 @@ RENT-A-VACATION (Master Brand)
 | **Liquidity Score** | Metric | Proprietary marketplace health index | BUILT |
 | **Bid Spread Index** | Metric | Proprietary price discovery efficiency | BUILT |
 | **Owner's Edge** | Suite | Owner dashboard and business tools | BUILT |
+| **RAV SmartCompare** | Tool | Side-by-side cost comparison across platforms | BUILT |
+| **RAV SmartMatch** | Tool | Resort quiz — find your ideal vacation club | BUILT |
+| **RAV SmartBudget** | Tool | Budget planner for vacation planning | BUILT |
+| **Dynamic Pricing** | Feature | Urgency, seasonal, and demand-based price adjustments | BUILT |
+| **Referral Program** | Feature | Referral codes with tracking dashboard | BUILT |
+| **Public API** | Platform | RESTful API with developer portal at `/developers` | BUILT |
+| **Realtime Subscriptions** | Feature | Live WebSocket updates for notifications and messages | BUILT |
+| **Saved Searches** | Feature | Save search criteria with price drop alerts | BUILT |
+| **Pre-Booking Messaging** | Feature | Inquiry threads between travelers and owners | BUILT |
+| **Destinations Explorer** | Feature | Curated destination pages (10 destinations, 35 cities) | BUILT |
+| **Booking Timeline** | Feature | Visual step-by-step booking progress tracker | BUILT |
+| **iCal Export** | Feature | RFC 5545 calendar export for owner bookings | BUILT |
+| **Compare Properties** | Feature | Side-by-side comparison of up to 3 listings | BUILT |
+| **Renter Dashboard** | Feature | `/my-trips` — 4-tab traveler dashboard | BUILT |
+| **Owner Profile Cards** | Feature | Public owner profile summaries with stats | BUILT |
+| **IP Allowlisting** | Feature | CIDR-based IP restriction for API keys | BUILT |
 
 ### Quick-Reference Numbers
 
 | Category | Metric | Value | Type |
 |----------|--------|-------|------|
-| **Technology** | Automated tests | 182 | BUILT |
+| **Technology** | Automated tests | 771 (99 test files) | BUILT |
 | **Technology** | Type errors | 0 | BUILT |
 | **Technology** | Platform uptime (staging) | 99.97% | BUILT |
 | **Technology** | CI/CD pipeline | 5 jobs, all green | BUILT |
@@ -572,9 +623,9 @@ RENT-A-VACATION (Master Brand)
 | **Market** | U.S. timeshare households | 9.9M | INDUSTRY DATA |
 | **Market** | Industry size | $10.5B | INDUSTRY DATA |
 | **Market** | Avg maintenance fee | $1,120/yr | INDUSTRY DATA |
-| **Business** | Commission model | 10-15% | BUILT (configurable) |
+| **Business** | Commission model | 15% (default; Pro −2%, Business −5%) | BUILT (configurable) |
 | **Business** | Membership tiers | 6 (3+3) | BUILT |
-| **Business** | Phases shipped | 18+ | BUILT |
+| **Business** | Phases shipped | 39+ | BUILT |
 
 ---
 

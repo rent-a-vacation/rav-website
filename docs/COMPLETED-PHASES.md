@@ -1,7 +1,67 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Completed Phases Archive
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
 > **Last Archived:** March 10, 2026
+
+---
+
+## Session 41: Technical SEO Gaps (#229)
+
+**Completed:** March 20, 2026
+**Issues Closed:** #229
+**Follow-up Issues:** Server-side OG tags via Vercel Middleware, destination hero images, migrate existing JSON-LD to useJsonLd hook
+
+### What Was Done
+
+#### Extended `usePageMeta` Hook
+Overhauled `src/hooks/usePageMeta.ts` to accept an options object (`PageMetaOptions`) in addition to the original string signature. New capabilities: `canonicalPath` (auto-prepends base URL), `ogImage` (per-page Open Graph image), `ogType` (default "website"), `noindex` (adds robots noindex,nofollow). Updates `<link rel="canonical">`, all OG tags (`og:title`, `og:description`, `og:url`, `og:image`, `og:type`), all Twitter tags (`twitter:title`, `twitter:description`, `twitter:image`), and `<meta name="robots">`. Resets all to defaults on unmount.
+
+#### `useJsonLd` Hook (New)
+`src/hooks/useJsonLd.ts` — generic hook that injects/removes a JSON-LD `<script>` tag by ID. Extracted the duplicated manual `createElement`/`appendChild`/cleanup pattern from FAQ.tsx, Index.tsx, MaintenanceFeeCalculator.tsx, etc. into a reusable hook.
+
+#### `breadcrumbSchema` Utility (New)
+`src/lib/breadcrumbSchema.ts` — `buildBreadcrumbJsonLd()` builds a `BreadcrumbList` JSON-LD object from an array of `{ name, path }` items with correct positioning and full URLs.
+
+#### PropertyDetail.tsx — Highest-Value SEO Page
+Canonical URL (`/property/{id}`), dynamic OG image (first listing photo), `og:type: "product"`, Breadcrumb JSON-LD (`Home → Rentals → ResortName`), Product JSON-LD schema (name, image, brand, offers with nightly rate). Reorganized variable declarations to avoid forward references.
+
+#### DestinationDetail.tsx — Dynamic Canonicals + Breadcrumbs
+Dynamic canonical path based on destination/city slug. Breadcrumb JSON-LD: `Home → Destinations → DestinationName → CityName` (4-level when city selected).
+
+#### Canonical URLs on 15 Public Pages
+Converted all `usePageMeta(title, desc)` calls to `usePageMeta({ title, description, canonicalPath })`: Index (`/`), Rentals (`/rentals`), FAQ (`/faq`), HowItWorks (`/how-it-works`), Contact (`/contact`), Terms (`/terms`), Privacy (`/privacy`), UserGuide (`/user-guide`), RavTools (`/tools`), MaintenanceFeeCalculator (`/calculator`), CostComparator (`/tools/cost-comparator`), ResortQuiz (`/tools/resort-quiz`), BudgetPlanner (`/tools/budget-planner`), BiddingMarketplace (`/bidding`), Destinations (`/destinations`).
+
+#### Breadcrumb JSON-LD on 4 Tool Pages
+SmartEarn (`Home → RAV Tools → SmartEarn`), SmartCompare, SmartMatch, SmartBudget — all with `useJsonLd` + `buildBreadcrumbJsonLd`.
+
+#### Bug Fixes
+- **Notifications.tsx:** Title was `"Notifications | Rent-A-Vacation"` passed as object property — hook then appended `" — Rent-A-Vacation"` again. Fixed to just `"Notifications"`.
+- **NotificationPreferences.tsx:** Same duplicate suffix bug. Fixed to `"Notification Preferences"`.
+- **NotFound.tsx:** Had no `usePageMeta` at all — now has `{ title: "Page Not Found", noindex: true }`.
+- **Developers.tsx:** Had no `usePageMeta` — now has canonical `/developers` and API-focused description.
+
+#### Build-Time Dynamic Sitemap
+`scripts/generate-sitemap.ts` — runs as `postbuild` script after `vite build`. Combines 16 static routes + destination slugs (from `src/lib/destinations.ts`, 46 URLs) + active listing IDs (from Supabase REST API, requires `VITE_SUPABASE_ANON_KEY`). Writes `dist/sitemap.xml`. Deleted static `public/sitemap.xml`. Added `changefreq` per route category.
+
+#### index.html Cleanup
+Removed static `<link rel="canonical" href="https://rent-a-vacation.com/">` — the `usePageMeta` hook now manages the canonical tag per page.
+
+### New Files
+- `src/hooks/usePageMeta.test.ts` (10 tests)
+- `src/hooks/useJsonLd.ts`
+- `src/hooks/useJsonLd.test.ts` (5 tests)
+- `src/lib/breadcrumbSchema.ts`
+- `src/lib/breadcrumbSchema.test.ts` (4 tests)
+- `scripts/generate-sitemap.ts`
+
+### Test Results
+825 tests passing (104 files, +19 new). 0 type errors, build clean. Sitemap generates 62+ URLs at build time.
 
 ---
 

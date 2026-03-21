@@ -85,8 +85,9 @@ const DATE_GROUP_ORDER = ["Today", "Yesterday", "This Week", "Older"];
 
 const Notifications = () => {
   usePageMeta({
-    title: "Notifications | Rent-A-Vacation",
+    title: "Notifications",
     description: "View and manage your notifications",
+    canonicalPath: "/notifications",
   });
 
   const navigate = useNavigate();

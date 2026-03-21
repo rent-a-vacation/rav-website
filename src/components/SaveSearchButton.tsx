@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Bookmark, Loader2, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { trackEvent } from '@/lib/posthog';
 
 interface SaveSearchButtonProps {
   criteria: SearchCriteria;
@@ -38,6 +39,7 @@ export function SaveSearchButton({ criteria }: SaveSearchButtonProps) {
         criteria,
       });
       setSaved(true);
+      trackEvent('search_saved', { has_custom_name: !!name.trim() });
       toast.success('Search saved!');
     } catch {
       toast.error('Failed to save search. Please try again.');

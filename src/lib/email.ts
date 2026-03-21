@@ -15,7 +15,9 @@ interface EmailResponse {
   error?: string;
 }
 
-// ── Shared email layout constants ──────────────────────────────────────────
+// ── Shared email layout ──────────────────────────────────────────
+// IMPORTANT: Keep in sync with supabase/functions/_shared/email-template.ts
+// Frontend can't import Deno modules, so this is a mirrored copy.
 const BRAND_COLOR = "#0d6b5c";
 const ACCENT_COLOR = "#e86a4a";
 const TEXT_COLOR = "#2d3748";
@@ -48,7 +50,16 @@ function wrapEmail(opts: { recipientName?: string; heading: string; body: string
   </td></tr>
   <tr><td style="background:#ffffff;padding:24px 40px 32px;border-top:1px solid #e2e8f0;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;border-radius:0 0 8px 8px;text-align:center;">
     <img src="${LOGO_URL}" alt="Rent-A-Vacation" width="140" style="display:inline-block;margin-bottom:12px;" />
-    <p style="font-size:12px;color:${MUTED_COLOR};margin:0 0 8px 0;">${opts.footerNote || "Name Your Price. Book Your Paradise."}</p>
+    <p style="font-size:12px;color:${MUTED_COLOR};margin:0 0 12px 0;">${opts.footerNote || "Name Your Price. Book Your Paradise."}</p>
+    <p style="margin:0 0 12px 0;">
+      <a href="https://facebook.com/rentavacation" style="color:${MUTED_COLOR};text-decoration:none;margin:0 8px;">Facebook</a>
+      <span style="color:#e2e8f0;">|</span>
+      <a href="https://instagram.com/rentavacation" style="color:${MUTED_COLOR};text-decoration:none;margin:0 8px;">Instagram</a>
+      <span style="color:#e2e8f0;">|</span>
+      <a href="https://linkedin.com/company/rent-a-vacation" style="color:${MUTED_COLOR};text-decoration:none;margin:0 8px;">LinkedIn</a>
+      <span style="color:#e2e8f0;">|</span>
+      <a href="https://x.com/rentavacation" style="color:${MUTED_COLOR};text-decoration:none;margin:0 8px;">X</a>
+    </p>
     <p style="font-size:12px;color:${MUTED_COLOR};margin:0;"><a href="${SITE_URL}" style="color:${MUTED_COLOR};text-decoration:underline;">rentavacation.com</a></p>
   </td></tr>
 </table></td></tr></table></body></html>`;

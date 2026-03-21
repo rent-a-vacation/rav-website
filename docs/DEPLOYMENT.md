@@ -1,23 +1,27 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Rent-A-Vacation Deployment Guide
 
 ## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                         DEVELOPMENT FLOW                                 │
+│                         DEPLOYMENT FLOW                                 │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
-│   Lovable Editor ──push──> GitHub (main branch) ──deploy──> Vercel PROD │
-│        │                         │                              │        │
-│        │                         │                              ▼        │
-│        ▼                   (feature branches)          Supabase PROD     │
-│   Lovable Preview                │                  (xzfllqndrlmhclqfybew)│
-│        │                         ▼                                       │
-│        │                    Vercel Preview                               │
-│        │                         │                                       │
-│        ▼                         ▼                                       │
-│   Supabase DEV ◄────────────────────────────────────────────────────────┤
-│   (oukbxqnlxnkainnligfz)                                                │
+│   feature/*  ──PR──>  dev  ──PR──>  main  ──auto-deploy──> Vercel PROD │
+│                        │              │                        │        │
+│                        │              │                        ▼        │
+│                        ▼              │                 Supabase PROD   │
+│                  Vercel Preview       │              (xzfllqndrlmhclqfybew)│
+│                        │              │                                 │
+│                        ▼              │                                 │
+│                  Supabase DEV ◄───────┘                                │
+│                  (oukbxqnlxnkainnligfz)                                │
 │                                                                          │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
@@ -26,9 +30,9 @@
 
 | Environment | Frontend Host | Database | Usage |
 |-------------|---------------|----------|-------|
-| **Development** | Lovable Preview | Supabase DEV (`oukbxqnlxnkainnligfz`) | Active development & testing |
+| **Development** | Vercel Preview (from `dev` branch) | Supabase DEV (`oukbxqnlxnkainnligfz`) | Active development & testing |
 | **Preview** | Vercel Preview (PR/branch deploys) | Supabase DEV | PR reviews, feature testing |
-| **Production** | Vercel (`rentavacation.lovable.app`) | Supabase PROD (`xzfllqndrlmhclqfybew`) | Live users |
+| **Production** | `rent-a-vacation.com` (`rentavacation.vercel.app`) | Supabase PROD (`xzfllqndrlmhclqfybew`) | Live users |
 
 ---
 
@@ -36,27 +40,41 @@
 
 **GitHub:** https://github.com/rent-a-vacation/rav-website.git
 
+### Branch Strategy: `dev` → `main`
+
+```
+feature/* (optional)
+    ↓ PR
+  dev   →  Vercel Preview Deploy  →  Supabase DEV
+    ↓ PR (release)
+  main  →  Vercel Production      →  Supabase PROD
+```
+
+**Rules:**
+- **`dev`** is the working branch. All new code goes here first.
+- **`main`** is the production branch. Protected — requires PR + CI passing.
+- **Never push directly to `main`**. Always create a PR from `dev` (or a feature branch).
+- Feature branches are optional for small changes but recommended for larger work.
+
 ---
 
 ## Deployment Workflows
 
-### 1. Development (Lovable → Preview)
+### 1. Development (dev branch → Vercel Preview)
 
-All code changes in Lovable are automatically:
-1. Synced to GitHub `main` branch in real-time
-2. Previewed instantly in Lovable's preview iframe
-3. Connected to **Supabase DEV** project
+All code pushed to `dev`:
+1. Vercel creates a preview deployment automatically
+2. Preview connects to **Supabase DEV** project
+3. Test against DEV data before promoting to production
 
-**No manual steps required** - changes are immediately visible.
+### 2. Production (main branch → Vercel Production)
 
-### 2. Production (GitHub → Vercel)
-
-When code is pushed/synced to `main` branch:
+When a PR from `dev` is merged to `main`:
 1. Vercel automatically deploys to production
-2. Live at: `https://rentavacation.lovable.app`
+2. Live at: `https://rent-a-vacation.com` (alias: `https://rentavacation.vercel.app`)
 3. Uses **Supabase PROD** environment variables
 
-### 3. Edge Function Deployment
+### 3. Edge Function Deployment (27 functions)
 
 Edge Functions must be deployed **manually via Supabase CLI** from your local machine.
 
@@ -70,38 +88,40 @@ npm install -g supabase
 
 # Deploy to DEV
 supabase link --project-ref oukbxqnlxnkainnligfz
-supabase functions deploy send-email
-supabase functions deploy send-verification-notification
-supabase functions deploy send-booking-confirmation-reminder
-supabase functions deploy process-deadline-reminders
+supabase functions deploy api-gateway
 supabase functions deploy create-booking-checkout
-supabase functions deploy verify-booking-payment
-supabase functions deploy stripe-webhook
 supabase functions deploy create-connect-account
 supabase functions deploy create-stripe-payout
-supabase functions deploy process-cancellation
+supabase functions deploy delete-user-account
+supabase functions deploy export-user-data
+supabase functions deploy fetch-airdna-data
 supabase functions deploy fetch-industry-news
 supabase functions deploy fetch-macro-indicators
-supabase functions deploy fetch-airdna-data
 supabase functions deploy fetch-str-data
+supabase functions deploy idle-listing-alerts
+supabase functions deploy match-travel-requests
+supabase functions deploy process-cancellation
+supabase functions deploy process-deadline-reminders
+supabase functions deploy process-dispute-refund
+supabase functions deploy process-escrow-release
+supabase functions deploy seed-manager
+supabase functions deploy send-approval-email
+supabase functions deploy send-booking-confirmation-reminder
+supabase functions deploy send-cancellation-email
+supabase functions deploy send-contact-form
+supabase functions deploy send-email
+supabase functions deploy send-verification-notification
+supabase functions deploy stripe-webhook
+supabase functions deploy text-chat
+supabase functions deploy verify-booking-payment
+supabase functions deploy voice-search
 
 # Deploy to PROD (switch project)
 supabase link --project-ref xzfllqndrlmhclqfybew
-supabase functions deploy send-email
-supabase functions deploy send-verification-notification
-supabase functions deploy send-booking-confirmation-reminder
-supabase functions deploy process-deadline-reminders
-supabase functions deploy create-booking-checkout
-supabase functions deploy verify-booking-payment
-supabase functions deploy stripe-webhook
-supabase functions deploy create-connect-account
-supabase functions deploy create-stripe-payout
-supabase functions deploy process-cancellation
-supabase functions deploy fetch-industry-news
-supabase functions deploy fetch-macro-indicators
-supabase functions deploy fetch-airdna-data
-supabase functions deploy fetch-str-data
+# Run the same deploy commands as above for PROD
 ```
+
+> **Note:** `seed-manager` is DEV-only and should NOT be deployed to PROD.
 
 ---
 
@@ -130,6 +150,9 @@ Set these in **both DEV and PROD** Supabase projects:
 supabase secrets set RESEND_API_KEY=re_your_key --project-ref <PROJECT_REF>
 supabase secrets set STRIPE_SECRET_KEY=sk_test_xxx --project-ref <PROJECT_REF>
 supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_xxx --project-ref <PROJECT_REF>
+supabase secrets set OPENROUTER_API_KEY=sk-or-xxx --project-ref <PROJECT_REF>
+supabase secrets set NEWSAPI_KEY=xxx --project-ref <PROJECT_REF>
+supabase secrets set IS_DEV_ENVIRONMENT=true --project-ref <PROJECT_REF>
 
 # Or via Supabase Dashboard:
 # Project Settings → Edge Functions → Secrets
@@ -142,11 +165,17 @@ supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_xxx --project-ref <PROJECT_REF>
 | `STRIPE_SECRET_KEY` | Stripe payment processing |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signature verification (`whsec_...`) |
 | `NEWSAPI_KEY` | Industry news feed for Executive Dashboard |
+| `OPENROUTER_API_KEY` | OpenRouter API for RAVIO text chat agent |
+| `IS_DEV_ENVIRONMENT` | Set to `true` for DEV, `false` (or omit) for PROD — guards seed data and dev-only features |
 
 **Required Secrets (GitHub Repository):**
 | Secret | Description |
 |--------|-------------|
 | `RESEND_GITHUB_NOTIFICATIONS_KEY` | Resend API key for GitHub Actions issue notification emails |
+| `PERCY_TOKEN` | Percy visual regression testing (currently disabled for private repo) |
+| `QASE_API_TOKEN` | Qase test management integration |
+| `SUPABASE_URL` | Supabase URL for CI tests |
+| `SUPABASE_ANON_KEY` | Supabase anon key for CI tests |
 
 ### GitHub Actions
 
@@ -155,6 +184,7 @@ supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_xxx --project-ref <PROJECT_REF>
 - Sends email via Resend API to RAV team (sujit, ajumon, celin, sandhya @rent-a-vacation.com)
 - FROM: `RAV Updates <notifications@updates.rent-a-vacation.com>`
 - Uses separate Resend API key (`RESEND_GITHUB_NOTIFICATIONS_KEY`) from edge functions
+- **Currently disabled** to conserve Resend quota
 
 ---
 
@@ -169,14 +199,45 @@ Enable these in **both DEV and PROD** via Supabase Dashboard → Database → Ex
 
 ### Schema Migrations
 
-Run migrations in order via Supabase SQL Editor:
+Migrations are located in `supabase/migrations/` (migrations 001–045). Run via Supabase CLI:
 
-1. `docs/supabase-migrations/001_initial_schema.sql`
-2. `docs/supabase-migrations/002_seed_data.sql` (optional - sample data)
-3. `docs/supabase-migrations/003_bidding_system.sql`
-4. `docs/supabase-migrations/004_payout_tracking.sql`
-5. `docs/supabase-migrations/005_cancellation_policies.sql`
-6. `docs/supabase-migrations/006_owner_verification.sql`
+```bash
+# Push all migrations to linked project
+supabase db push
+
+# Or run individual migrations via Supabase Dashboard → SQL Editor
+```
+
+---
+
+## Monitoring & Analytics
+
+### Sentry (Error Tracking)
+
+- **Organization:** `rent-a-vacation-org`
+- **Project:** `rav-website`
+- **Source maps:** Uploading enabled (Vite plugin)
+- **Browser tracing:** 5% sample rate
+- **Session replay:** Error-only (captures replays when errors occur)
+- **Dashboard:** https://rent-a-vacation-org.sentry.io
+
+#### Current scope
+- **Frontend only** — `@sentry/react` in `src/lib/sentry.ts`, initialized in `src/main.tsx`
+- **User context** — user ID + role set on login via `setSentryUser()` in AuthContext (no PII)
+- **ErrorBoundary** — React crashes captured with component stack in `src/components/ErrorBoundary.tsx`
+- **Noise filtering** — browser extensions, network errors, ResizeObserver loops ignored
+- **Free tier budget** — 10K transactions/month (tracing), 50 session replays/month
+
+#### Planned enhancements
+- **#226** — Configure alert rules (new issues, error spikes, regressions)
+- **#227** — Instrument Supabase edge functions (server-side error tracking)
+- **#228** — GitHub integration (suspect commits, release association)
+
+### Google Analytics 4
+
+- **Measurement ID:** `G-G2YCVHNS25`
+- **Cookie consent:** GA4 is gated behind cookie consent — tracking only activates after user accepts cookies
+- **Dashboard:** https://analytics.google.com (property: G-G2YCVHNS25)
 
 ---
 
@@ -298,6 +359,22 @@ Configure webhook endpoints in **both** Stripe test and live dashboards:
 
 ---
 
+## Testing
+
+- **771 automated tests** across 99 test files (Vitest)
+- **97 P0 critical-path tests** — `npm run test:p0`
+- **E2E:** Playwright smoke tests in `e2e/smoke/`
+- **Visual regression:** Percy (currently disabled for private repo)
+
+```bash
+npm run test              # Unit + integration (watch mode)
+npm run test:p0           # P0 critical-path tests (~2s)
+npm run test:coverage     # With coverage report
+npm run test:e2e          # Playwright E2E
+```
+
+---
+
 ## Troubleshooting
 
 ### Edge Functions Not Working
@@ -328,14 +405,16 @@ Configure webhook endpoints in **both** Stripe test and live dashboards:
 | Set Secrets | `supabase secrets set KEY=value --project-ref <ref>` |
 | View Function Logs | `supabase functions logs <name> --project-ref <ref>` |
 | Enable Extensions | Supabase Dashboard → Database → Extensions |
-| Run Migrations | Supabase Dashboard → SQL Editor |
+| Push Migrations | `supabase db push` |
 | View CRON Jobs | `select * from cron.job;` |
 | Vercel Settings | https://vercel.com/dashboard |
+| Sentry Dashboard | https://rent-a-vacation-org.sentry.io |
+| GA4 Dashboard | https://analytics.google.com |
 
 ---
 
 ## Contact
 
-- **Domain:** rentavacation.com
+- **Domain:** rent-a-vacation.com
 - **Phone:** 1-800-RAV-0800
 - **Location:** Jacksonville, FL

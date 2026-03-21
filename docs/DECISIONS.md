@@ -1,7 +1,13 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Archived Decisions Log
 
 > Finalized decisions moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
-> **Last Archived:** February 20, 2026
+> **Last Archived:** March 13, 2026
 
 ---
 
@@ -167,3 +173,158 @@
 - Revisit when monthly voice spend consistently exceeds $3,000/month
 
 **Owner:** Sujit
+
+---
+
+## DEC-014: Separate Route for Executive Dashboard
+**Date:** February 20, 2026
+**Decision:** `/executive-dashboard` as standalone page, not a tab in admin dashboard
+**Status:** Final
+
+**Reasoning:** Different design language, different audience, different purpose. Admin = utilitarian ops tool. Executive = boardroom strategy view. Mixing them dilutes both.
+
+---
+
+## DEC-015: Demo Mode / Connected Pattern for BYOK
+**Date:** February 20, 2026
+**Decision:** Default to "Demo Mode" with sample data, toggle to "Connected" with user-supplied API key
+**Status:** Final
+
+**Reasoning:** Honest to VCs (not faking data), shows product capability, real feature for future enterprise customers, avoids paying $200-500/mo for APIs before product-market fit.
+
+---
+
+## DEC-016: NewsAPI for Industry Feed
+**Date:** February 20, 2026
+**Decision:** Use NewsAPI free tier (100 req/day) via Edge Function with 60-min cache
+**Status:** Final
+
+**Reasoning:** Free, reliable, sufficient volume for demo + early production use. Cache in Edge Function memory to stay within limits.
+
+---
+
+## DEC-017: Dark Theme Approach
+**Date:** February 20, 2026
+**Decision:** Build dark-first (not using Tailwind dark: variants), wrap page root in bg-slate-900
+**Status:** Final
+
+**Reasoning:** Cleaner implementation, avoids fighting with app's light theme, more reliable visual consistency for demo.
+
+---
+
+## DEC-018: Pre-Launch Platform Lock Strategy
+**Date:** February 20, 2026
+**Decision:** System-settings-based "Staff Only Mode" toggle (not per-user blocking)
+**Status:** Final
+
+**Context:** Need to prevent external users from creating test data on PROD before launch, while still deploying all code to PROD.
+
+**Reasoning:** A global toggle in `system_settings` is simpler than per-user blocking. Leverages existing `can_access_platform()` RLS function. Toggle is in Admin > System Settings — flip it off when ready to go live. Default: enabled (locked). Enforced at 3 layers: database RLS, Login.tsx, Signup.tsx.
+
+---
+
+## DEC-019: Seed Data Management Approach
+**Date:** February 21, 2026
+**Decision:** 3-layer edge-function-based seed system with foundation user protection
+**Status:** Final
+
+**Context:** DEV environment needs realistic test data for functional testing and executive demos. PROD is locked via Staff Only Mode.
+
+**Reasoning:** Edge function approach (vs raw SQL) allows: (1) idempotent auth.admin.createUser for proper trigger-based user setup, (2) production guard via env variable, (3) admin UI integration for one-click reset, (4) protected set pattern to never wipe RAV team or foundation accounts. Foundation users survive reseeds; everything else is disposable.
+
+---
+
+## DEC-020: Text Chat Agent — Two-Tier Conversational Model
+**Date:** February 21, 2026
+**Decision:** Add OpenRouter-powered text chat alongside existing VAPI voice, as completely separate systems
+**Status:** Final
+
+**Context:** Voice search (VAPI) is expensive, tier-gated, and not always practical. Users need a conversational alternative that's universally available.
+
+**Reasoning:** (1) OpenRouter is 10-100x cheaper than VAPI per interaction — no quota needed. (2) Text chat works in all environments (noisy, mobile, accessibility). (3) Shared `_shared/property-search.ts` module avoids code duplication while keeping systems independent. (4) VAPI remains untouched — zero regression risk. (5) Context-based system prompts (rentals/property-detail/bidding/general) provide relevant help across pages. (6) SSE streaming gives natural token-by-token display. (7) Session-only persistence avoids migration — can add localStorage/DB persistence later.
+
+---
+
+## DEC-021: Search Bar & Filter Strategy
+**Date:** February 21, 2026
+**Decision:** Make Rentals page search bar, calendar picker, and filter panel fully functional with state management and query integration
+**Status:** Approved
+
+**Context:** Comprehensive audit revealed the Rentals page search bar is mostly placeholder UI. Calendar picker is a static `<Input>`, Search button has no handler, and filter panel inputs (price/guests/bedrooms/brand) have no state bindings. Only the location text input works.
+
+**Approach:** Wire all controls to React state, integrate with listing query filters. Calendar uses existing shadcn/ui `Calendar` component + `Popover`. Dates filter listings at application level (matching `_shared/property-search.ts` approach). PropertyDetail/Checkout dates remain read-only (timeshare model = owner sets fixed availability windows).
+
+---
+
+## DEC-022: Pricing, Tax & Accounting Framework
+**Date:** February 21, 2026
+**Date Updated:** February 28, 2026
+**Decision:** Per-night pricing + separated fee line items + Stripe Tax before launch + Puzzle.io post-launch (pluggable)
+**Status:** Approved (Updated — Puzzle.io replaces QuickBooks)
+**Docs:** `docs/RAV-PRICING-TAXES-ACCOUNTING.md`
+
+**Context:** Platform uses per-night pricing with itemized fee breakdown. As a marketplace facilitator in 43+ US states, RAV must collect and remit occupancy/sales taxes before going live. Accounting tool re-evaluated Feb 28 — Puzzle.io selected over QuickBooks for native Stripe integration, free tier, and automated revenue recognition (ASC 606).
+
+**Key decisions:**
+- Per-night rate (`nightly_rate`) is the atomic pricing unit across the platform
+- Fee breakdown: separate `service_fee`, `cleaning_fee`, `tax_amount` line items on every booking
+- Stripe Tax for automated tax calculation at checkout (code ready, pending #127)
+- **Puzzle.io** as general ledger (replaces QuickBooks) — native Stripe sync, free <$20K/mo, automated revenue recognition
+- **Pluggable accounting architecture** — provider-agnostic adapter pattern; can swap to QuickBooks/Xero/Zoho via config
+- 1099-K handled natively by **Stripe Connect** ($2.99/form) — no Gusto needed
+- Resort fees are owner-disclosed, not RAV-collected (paid at resort check-in)
+- Stripe processing fees (~2.9%) absorbed by RAV, baked into 15% service fee margin
+
+---
+
+## DEC-023: Flexible Date Booking Strategy
+**Date:** February 21, 2026
+**Decision:** Three-phase approach — Option A (bid with dates) → Option B (inspired-by request) → Option C (partial-week splits)
+**Status:** Approved
+
+**Context:** Current model requires travelers to book the full date block set by the owner. This limits conversion when a traveler wants 6 of an 8-day listing.
+
+**Approach:** Start with lightweight "Propose Different Dates" button (reuses existing bidding infrastructure, adds date fields to bids). Follow up with "Inspired By" travel requests (pre-filled from a listing, targeted to that owner). Defer full partial-week splitting until demand validates the pattern.
+
+---
+
+## DEC-024: Public API Architecture
+**Date:** March 10, 2026
+**Decision:** Single API gateway edge function with API key authentication and tiered rate limiting
+**Status:** Approved
+
+**Context:** RAV needs a public REST API for the upcoming mobile app (Capacitor), partner integrations (travel agents, aggregators), and developer experience.
+
+**Approach:**
+- Single `api-gateway` edge function handling all `/v1/*` routes (deployed with `--no-verify-jwt`)
+- Dual auth: API Key (`X-API-Key` header) for partners, JWT (`Authorization: Bearer`) for own apps
+- API keys: `rav_pk_<32 hex>` format, SHA-256 hashed at rest, shown once at creation
+- Three rate limit tiers: free (100/day), partner (10K/day), premium (100K/day)
+- Read-only endpoints only: listings, search, destinations, resorts (no write ops in v1)
+- URL-based versioning (`/v1/`), 6-month deprecation notice for breaking changes
+- Standard JSON envelope: `{ data, meta: { page, per_page, total_count }, api_version: "v1" }`
+
+**Deferred enhancements (tracked in GitHub Issues):**
+- #188 — Write endpoints (bookings, bids, travel requests via API)
+- #189 — OAuth2 authentication for partner integrations
+- #190 — Webhook delivery to partners (event notifications)
+- #191 — Chat endpoint (`/v1/chat`) via gateway
+- #192 — SDK packages for partners (npm, Python)
+
+---
+
+## DEC-025: RAV Tools Hub & Brand Naming
+**Date:** March 10, 2026
+**Decision:** Create `/tools` hub page for all free tools; rename "Fee Freedom Calculator" to "RAV SmartEarn" (merged with Rental Yield Estimator)
+**Status:** Approved
+
+**Context:** Brand names were surfaced across the UI (Phase 1). A central hub page groups all free tools for SEO and discoverability.
+
+**Approach:**
+- `/tools` route renders `RavTools.tsx` — card grid with 5 built tools
+- "Fee Freedom Calculator" renamed to "RAV SmartEarn" in Header, Footer, and brand docs; Rental Yield Estimator merged into RAV SmartEarn
+- "Vacation Cost Comparator" renamed to "RAV SmartCompare"
+- "Resort Finder Quiz" renamed to "RAV SmartMatch"
+- "Trip Budget Planner" renamed to "RAV SmartBudget"
+- JSON-LD `ItemList` schema on `/tools`, `HowTo` on `/calculator`, `Organization` on `/`
+- `usePageMeta()` added to 7 pages missing it (Index, Rentals, PropertyDetail, BiddingMarketplace, Checkout, ExecutiveDashboard, OwnerDashboard)

@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Starting a New Chat - Rent-A-Vacation
 
 > **Copy-paste this template into ANY new Claude chat to resume work**  
@@ -57,7 +63,7 @@ Implement voice authentication gating - require login for voice search
 ```
 
 **TOOLS:**
-- Using Antigravity (PowerShell + Claude-max)
+- Using Claude Code
 
 Ready to start!
 
@@ -112,7 +118,7 @@ Working on: Voice authentication gating
 Add authentication check to voice search button. Show "Sign in to use voice search" for non-authenticated users. Implement graceful fallback.
 
 **TOOLS:**
-Using Antigravity (PowerShell + Claude-max)
+Using Claude Code
 
 Ready to start!
 ```
@@ -157,7 +163,7 @@ Working on: [Current work track]
 
 Update TOOLS:
 ```
-Using: Cursor Pro / Claude Code / VS Code with Copilot
+Using: Claude Code / Cursor Pro / VS Code with Copilot
 ```
 
 ---
@@ -202,5 +208,5 @@ Using: Cursor Pro / Claude Code / VS Code with Copilot
 
 ---
 
-**Last Updated:** February 13, 2026  
+**Last Updated:** March 13, 2026
 **Maintained by:** Sujit

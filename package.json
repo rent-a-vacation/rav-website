@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "npx tsx scripts/generate-sitemap.ts",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -17,7 +18,11 @@
     "test:e2e:ui": "playwright test --ui",
     "test:visual": "percy exec -- playwright test e2e/visual/",
     "test:lighthouse": "lhci autorun",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docs:audit": "npx tsx scripts/docs-audit.ts",
+    "docs:audit:ci": "npx tsx scripts/docs-audit.ts --ci",
+    "docs:stamp": "bash scripts/docs-stamp.sh",
+    "docs:migrate": "npx tsx scripts/docs-migrate-frontmatter.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -101,6 +106,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
+    "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
     "jsdom": "^20.0.3",
     "lint-staged": "^16.2.7",

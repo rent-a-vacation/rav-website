@@ -33,6 +33,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useListing, useActiveListings } from "@/hooks/useListings";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useJsonLd } from "@/hooks/useJsonLd";
+import { buildBreadcrumbJsonLd } from "@/lib/breadcrumbSchema";
 import { useFavoriteIds, useToggleFavorite } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -125,12 +127,6 @@ const PropertyDetail = () => {
     ? `${resortLoc.city}, ${resortLoc.state}`
     : prop?.location || '';
   const unitTypeName = unitType?.name || (prop as Record<string, unknown>)?.unit_type_name as string || 'Unit';
-  usePageMeta(
-    listing ? `${resortName} — ${locationStr}` : 'Property Detail',
-    listing
-      ? `Book ${unitTypeName} at ${resortName}. Verified timeshare rental at up to 70% off retail.`
-      : 'View vacation rental property details.'
-  );
   const pricePerNight = listing?.nightly_rate || (nights > 0 && listing ? Math.round(listing.final_price / nights) : 0);
   const fees = listing ? computeFeeBreakdown(pricePerNight, nights, listing.cleaning_fee || 0) : null;
 
@@ -149,6 +145,52 @@ const PropertyDetail = () => {
     : prop?.location || "";
 
   const brandLabel = prop ? (BRAND_LABELS[prop.brand] || prop.brand) : "";
+
+  // SEO: page meta, canonical, OG tags
+  const pageTitle = listing ? `${resortName} — ${locationStr}` : 'Property Detail';
+  const pageDescription = listing
+    ? `Book ${unitTypeName} at ${resortName}. Verified timeshare rental at up to 70% off retail.`
+    : 'View vacation rental property details.';
+  usePageMeta({
+    title: pageTitle,
+    description: pageDescription,
+    canonicalPath: id ? `/property/${id}` : undefined,
+    ogImage: images[0] || undefined,
+    ogType: 'product',
+  });
+
+  // Breadcrumb JSON-LD
+  useJsonLd(
+    'breadcrumb-schema',
+    listing
+      ? buildBreadcrumbJsonLd([
+          { name: 'Home', path: '/' },
+          { name: 'Rentals', path: '/rentals' },
+          { name: resortName, path: `/property/${id}` },
+        ])
+      : null,
+  );
+
+  // Product JSON-LD
+  useJsonLd(
+    'product-schema',
+    listing
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: resortName,
+          image: images[0] || undefined,
+          description: pageDescription,
+          brand: { '@type': 'Brand', name: brandLabel || undefined },
+          offers: {
+            '@type': 'Offer',
+            price: listing.nightly_rate || pricePerNight,
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+          },
+        }
+      : null,
+  );
   const isOwnListing = user && listing && listing.owner_id === user.id;
   const isBiddable = listing?.open_for_bidding &&
     listing?.bidding_ends_at &&

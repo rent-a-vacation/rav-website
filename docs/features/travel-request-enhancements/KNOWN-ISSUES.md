@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Travel Request Enhancements — Known Issues & Constraints
 
 **Status:** Pre-implementation — issues are anticipated, not yet confirmed  

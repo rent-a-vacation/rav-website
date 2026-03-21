@@ -76,8 +76,9 @@ function normalizePhone(phone: string): string | null {
 
 const NotificationPreferences = () => {
   usePageMeta({
-    title: "Notification Preferences | Rent-A-Vacation",
+    title: "Notification Preferences",
     description: "Manage your notification preferences and SMS settings",
+    canonicalPath: "/settings/notifications",
   });
 
   const { user, profile } = useAuth();

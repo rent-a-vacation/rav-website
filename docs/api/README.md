@@ -1,10 +1,16 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # RAV API Documentation
 
-Internal OpenAPI 3.0.3 specification for all 25 Supabase Edge Functions powering the Rent-A-Vacation platform.
+Internal OpenAPI 3.0.3 specification for all 27 Supabase Edge Functions powering the Rent-A-Vacation platform.
 
 ## What This Covers
 
-- **25 edge functions** organized by domain: AI, Payments, Payouts, Cancellations, Disputes, Escrow, Notifications, Marketplace, GDPR, Data, Admin
+- **27 edge functions** organized by domain: AI, Payments, Payouts, Cancellations, Disputes, Escrow, Notifications, Marketplace, GDPR, Data, Admin, API
 - Request/response schemas derived from actual TypeScript source code
 - Authentication requirements (JWT, Stripe signature, service role)
 - Rate limiting details per endpoint
@@ -17,7 +23,8 @@ Internal OpenAPI 3.0.3 specification for all 25 Supabase Edge Functions powering
 | `docs/api/openapi.yaml` | Authoritative OpenAPI spec (edit this) |
 | `public/api/openapi.yaml` | Static copy served by Vite (auto-copied) |
 | `scripts/generate-openapi.cjs` | Audit/bootstrap script |
-| `src/pages/ApiDocs.tsx` | Swagger UI page at `/api-docs` |
+| `src/pages/ApiDocs.tsx` | Swagger UI page at `/api-docs` (admin) |
+| `src/pages/Developers.tsx` | Public Swagger UI page at `/developers` |
 
 ## Quick Start
 
@@ -162,7 +169,7 @@ Accessible only to authenticated RAV team members.
 node scripts/generate-openapi.cjs --audit
 ```
 
-This checks that all 25 edge functions have corresponding entries in the spec.
+This checks that all 27 edge functions have corresponding entries in the spec.
 
 ### Full metadata extraction
 

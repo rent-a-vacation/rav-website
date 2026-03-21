@@ -76,10 +76,11 @@ const WelcomeBanner = () => {
 const Index = () => {
   const { user, isLoading } = useAuth();
 
-  usePageMeta(
-    'Luxury Vacation Rentals at 50–70% Off',
-    'Rent luxury timeshare vacation rentals at up to 70% off retail. Browse 117 resorts from Marriott, Hilton, Disney and more.'
-  );
+  usePageMeta({
+    title: 'Luxury Vacation Rentals at 50–70% Off',
+    description: 'Rent luxury timeshare vacation rentals at up to 70% off retail. Browse 117 resorts from Marriott, Hilton, Disney and more.',
+    canonicalPath: '/',
+  });
 
   // Inject Organization JSON-LD structured data
   useEffect(() => {

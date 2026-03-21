@@ -1,10 +1,17 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Maintenance Fee Calculator
 
 **Phase:** 16  
-**Status:** 🟡 Ready to Build — Docs complete, awaiting implementation  
-**Route:** `/calculator` (public — no auth required)  
-**Migration:** None — frontend only  
-**Estimated Time:** 1 session (~2 hours)
+**Status:** ✅ Completed (Session 16), rebranded RAV SmartEarn (Session 39)
+**Route:** `/tools/smart-earn` (redirected from `/calculator`)
+**Migration:** None — frontend only
+**Key artifacts:** `calculatorLogic.ts`, 9 brands, OwnershipForm / BreakevenResults / BreakevenBar / CalculatorCTA components
+**Note:** Yield Estimator merged into SmartEarn as a toggle (Session 39). `YieldEstimator.tsx` deleted; `/tools/yield-estimator` redirects to `/calculator`.
 
 ---
 
