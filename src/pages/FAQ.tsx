@@ -141,7 +141,11 @@ const faqCategories = [
 ];
 
 const FAQ = () => {
-  usePageMeta('FAQ', 'Frequently asked questions about renting and listing vacation properties on Rent-A-Vacation.');
+  usePageMeta({
+    title: 'FAQ',
+    description: 'Frequently asked questions about renting and listing vacation properties on Rent-A-Vacation.',
+    canonicalPath: '/faq',
+  });
 
   const [openItems, setOpenItems] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");

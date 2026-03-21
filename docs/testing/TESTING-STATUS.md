@@ -1,7 +1,13 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** March 5, 2026 (Session 37)
+> **Last Updated:** March 13, 2026 (Session 39)
 
 ---
 
@@ -9,8 +15,8 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 676 |
-| **Test files** | 90 |
+| **Total tests** | 771 |
+| **Test files** | 99 |
 | **P0 critical-path tests** | 97 (tagged `@p0`) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~65s |
@@ -42,9 +48,9 @@ npm run test:e2e:headed   # Playwright with browser visible
 
 | Category | Files | Approx Tests |
 |----------|-------|-------------|
-| `src/lib/*.test.ts` | ~20 | ~180 |
-| `src/hooks/*.test.ts` | ~35 | ~280 |
-| `src/components/**/*.test.tsx` | ~25 | ~140 |
+| `src/lib/*.test.ts` | ~22 | ~210 |
+| `src/hooks/*.test.ts` | ~38 | ~320 |
+| `src/components/**/*.test.tsx` | ~29 | ~165 |
 | `src/contexts/*.test.tsx` | ~4 | ~20 |
 | `e2e/smoke/` | 2 | 3 |
 
@@ -60,6 +66,8 @@ npm run test:e2e:headed   # Playwright with browser visible
 
 | Session | Tests | Files | Notes |
 |---------|-------|-------|-------|
+| 39 | 771 | 99 | Brand rebrand (SmartFee→SmartEarn, etc.), no new test files |
+| 38 | 771 | 99 | Public API, RAV Smart Suite, IP Allowlisting, OpenAPI validation |
 | 37 | 676 | 90 | Dynamic pricing, referral program |
 | 36 | 627 | 86 | Admin tools, disputes expansion |
 | 35 | 592 | 81 | OpenAPI, P0 library, iCal |

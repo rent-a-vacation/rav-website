@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Rent-A-Vacation Brand Concepts & Creative Assets
 
 > **Purpose:** Named features, campaign concepts, taglines, elevator pitches, and reusable copy blocks for all marketing outputs
@@ -249,7 +255,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 > "You're paying maintenance fees on weeks you don't use. Rent-A-Vacation lets you list those weeks in minutes, our AI tells you what to charge, and travelers bid on your property. You approve guests, set prices, and earn income that offsets your fees."
 
 ### For an Investor (30 seconds)
-> "Rent-A-Vacation is the first AI-powered marketplace for the $10.5 billion vacation ownership industry. We've built voice and text AI search, a two-sided bidding engine, a 117-resort data layer, and proprietary pricing intelligence — all fully deployed and tested. The platform is pre-launch, disciplined, and ready to scale. We're targeting 10-15% commission on every booking with projected 85%+ contribution margins."
+> "Rent-A-Vacation is the first AI-powered marketplace for the $10.5 billion vacation ownership industry. We've built voice and text AI search, a two-sided bidding engine, a 117-resort data layer, and proprietary pricing intelligence — all fully deployed and tested. The platform is pre-launch, disciplined, and ready to scale. We charge a 15% default commission on successful bookings only — no upfront fees to list — with tier-based discounts for subscribed owners. Projected 85%+ contribution margins."
 
 ### For a Journalist (30 seconds)
 > "There are 10 million American families paying over a thousand dollars a year in timeshare maintenance fees for weeks they never use — and travelers paying inflated prices for those same rooms through other platforms. We built the first AI-powered marketplace to connect them directly. Our AI concierge, RAVIO, lets travelers search by voice — an industry first. Travelers can also bid on listings or post 'Vacation Wishes' for owners to compete over. The platform is fully built, pre-launch, and demonstrable today."
@@ -421,7 +427,7 @@ You approve guests and earn income.
 
 ━━━ The numbers ━━━
 ✓ Listing is FREE — no monthly fees
-✓ 10-15% commission on successful bookings only
+✓ 15% default commission on successful bookings only (Pro −2%, Business −5%)
 ✓ RAV SmartEarn shows your break-even and earnings potential
 ✓ TrustShield builds your reputation
 ✓ Owner's Edge dashboard tracks everything

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { setSentryUser } from '@/lib/sentry';
-import { identifyUser as identifyPostHogUser, resetUser as resetPostHogUser } from '@/lib/posthog';
+import { identifyUser as identifyPostHogUser, resetUser as resetPostHogUser, trackEvent } from '@/lib/posthog';
 import type { AppRole, Profile } from '@/types/database';
 
 interface AuthContextType {
@@ -109,7 +109,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setProfile(userProfile);
             setRoles(userRoles);
             setSentryUser(currentSession.user.id, userRoles[0]);
-            identifyPostHogUser(currentSession.user.id, { role: userRoles[0] || 'none' });
+            identifyPostHogUser(currentSession.user.id, {
+              role: userRoles[0] || 'none',
+              membership_tier: userProfile?.membership_tier || 'free',
+              account_type: userProfile?.account_type || 'unknown',
+            });
           }, 0);
         } else {
           setProfile(null);
@@ -165,6 +169,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         data: metadata,
       },
     });
+    // Track signup event
+    if (!error && data.user?.id) {
+      trackEvent('signup_completed', {
+        account_type: accountType || 'renter',
+        has_referral_code: !!referralCode,
+      });
+    }
     // Record referral if code provided and signup succeeded
     if (!error && referralCode && data.user?.id) {
       supabase.rpc("record_referral", {

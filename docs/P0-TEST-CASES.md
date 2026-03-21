@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # P0 Test Cases — Critical Path Library
 
 > These are the 20 scenarios that, if broken, mean the platform cannot operate.

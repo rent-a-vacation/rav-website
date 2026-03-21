@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Rent-A-Vacation Platform Demo Walkthrough
 
 > **Purpose:** A structured script for presenting the Rent-A-Vacation platform to investors, partners, team members, or stakeholders. Follow each section in order for a complete 45-60 minute walkthrough, or pick individual sections for targeted demos.
@@ -9,7 +15,7 @@
 > - Renter test account (for renter journey demos)
 > - Desktop browser (Chrome recommended) with microphone permissions enabled
 >
-> **Last Updated:** February 28, 2026
+> **Last Updated:** March 13, 2026
 
 ---
 
@@ -135,12 +141,12 @@ Between each section, use these transition phrases to maintain narrative continu
 ### Backend Infrastructure
 
 > **Talking point:**
-> "The backend runs entirely on Supabase, which gives us PostgreSQL, authentication, real-time subscriptions, row-level security, and edge functions -- all in one platform. We have 29 database migrations tracking our schema evolution and 25 edge functions handling everything from payment processing to AI-powered chat."
+> "The backend runs entirely on Supabase, which gives us PostgreSQL, authentication, real-time subscriptions, row-level security, and edge functions -- all in one platform. We have 45 database migrations tracking our schema evolution and 27 edge functions handling everything from payment processing to AI-powered chat."
 
 **Key details to mention:**
 - Supabase PostgreSQL with Row-Level Security on every table
-- 25 edge functions (Deno runtime) for server-side logic
-- 29 database migrations tracking schema evolution
+- 27 edge functions (Deno runtime) for server-side logic
+- 45 database migrations tracking schema evolution
 - Supabase Auth with email/password and Google OAuth
 - Separate DEV and PROD Supabase projects for safe development
 
@@ -184,17 +190,17 @@ Between each section, use these transition phrases to maintain narrative continu
 ### Development Workflow
 
 > **Talking point:**
-> "Our development workflow follows a strict branching strategy. All new code goes into the `dev` branch, which auto-deploys to a Vercel preview environment pointing at our Supabase DEV project. When features are ready, we create a pull request from `dev` to `main`. The PR triggers our CI pipeline: linting, 415 automated tests, and visual regression testing with Percy. The `main` branch requires review and passing CI before merge, and auto-deploys to production."
+> "Our development workflow follows a strict branching strategy. All new code goes into the `dev` branch, which auto-deploys to a Vercel preview environment pointing at our Supabase DEV project. When features are ready, we create a pull request from `dev` to `main`. The PR triggers our CI pipeline: linting, 771 automated tests, and visual regression testing with Percy. The `main` branch requires review and passing CI before merge, and auto-deploys to production."
 
 ### Testing
 
 > **Talking point:**
-> "We have 415 automated tests across 58 test files, all passing. That includes unit tests for business logic like pricing calculations, integration tests for React hooks and contexts, and end-to-end tests with Playwright. We enforce minimum coverage thresholds in CI: 25% statements, 25% branches, 30% functions. Visual regression testing with Percy catches unintended UI changes. Every new feature ships with tests -- that is a non-negotiable policy."
+> "We have 771 automated tests across 99 test files, all passing. That includes unit tests for business logic like pricing calculations, integration tests for React hooks and contexts, and end-to-end tests with Playwright. We enforce minimum coverage thresholds in CI: 25% statements, 25% branches, 30% functions. Visual regression testing with Percy catches unintended UI changes. Every new feature ships with tests -- that is a non-negotiable policy."
 
 ### Edge Functions Overview
 
 > **Talking point (for technical audiences):**
-> "We have 25 edge functions running on Deno, each handling a specific piece of server-side logic. They are organized by domain:"
+> "We have 27 edge functions running on Deno, each handling a specific piece of server-side logic. They are organized by domain:"
 
 **Mention these function groups:**
 
@@ -208,6 +214,8 @@ Between each section, use these transition phrases to maintain narrative continu
 | AI | `voice-search`, `text-chat` | VAPI voice pipeline, OpenRouter chat |
 | Data | `fetch-industry-news`, `fetch-airdna-data`, `fetch-str-data`, `fetch-macro-indicators` | Executive dashboard data feeds |
 | Marketplace | `match-travel-requests` | Travel request to owner matching |
+| Alerts | `idle-listing-alerts` | Cron-driven idle week notifications (30d/60d) |
+| API | `api-gateway` | Public REST API with key auth and rate limiting |
 | GDPR | `export-user-data`, `delete-user-account` | Data export (14 tables), account deletion with anonymization |
 | Admin | `seed-manager` | DEV-only seed data management |
 
@@ -229,7 +237,7 @@ Between each section, use these transition phrases to maintain narrative continu
 | "Why Supabase instead of a custom backend?" | "Supabase gives us PostgreSQL, auth, real-time, storage, and edge functions in one platform. It reduces operational overhead significantly and lets a small team move fast. Row-Level Security means authorization is enforced at the database level, not just in application code." |
 | "How do you handle scaling?" | "Supabase handles database scaling. Vercel handles frontend CDN and serverless scaling. Edge functions run on Deno Deploy, which scales to zero when not in use. The architecture is designed to handle significant growth without re-architecture." |
 | "What about mobile?" | "The web app is fully responsive and works on mobile browsers. We have PWA support with install prompts and offline banners. A native mobile app via Capacitor is planned after the PWA validates demand (architectural decision DEC-011)." |
-| "How many developers built this?" | "This was built by a small team using AI-assisted development. The codebase has 415 tests, 29 migrations, 25 edge functions, and comprehensive documentation -- all maintained with rigorous quality standards." |
+| "How many developers built this?" | "This was built by a small team using AI-assisted development. The codebase has 771 tests, 45 migrations, 27 edge functions, and comprehensive documentation -- all maintained with rigorous quality standards." |
 
 ---
 
@@ -378,6 +386,48 @@ If asked about cancellation policies during the owner section, here is the refer
 >
 > The commission savings at higher tiers quickly pay for themselves. An owner doing $10,000 in annual bookings saves $200 on Pro and $500 on Business compared to the Free tier."
 
+### Step 11: iCal Export
+
+**What to show:**
+1. Navigate to the "Bookings" tab in the Owner Dashboard
+2. Click the "Export Calendar" button
+3. Show the downloaded `.ics` file
+
+> **Talking point:**
+> "Owners can export their booking calendar as an iCal file. This is RFC 5545 compliant with zero external dependencies -- it works with Google Calendar, Apple Calendar, Outlook, and any other calendar app. Each booking becomes a calendar event with the resort name, guest details, and check-in/check-out times. This helps owners keep their personal calendar in sync with their RAV bookings."
+
+### Step 12: Dynamic Pricing Intelligence
+
+**What to show:**
+1. Navigate to the "Listings" tab and open the pricing dialog for a listing
+2. Point out the pricing suggestion component showing market range
+3. Show the dynamic pricing factors: urgency discount, seasonal adjustment, demand signal
+
+> **Talking point:**
+> "We have built a dynamic pricing engine that helps owners price their listings competitively. Three factors drive the suggestions: urgency discounts that graduate from 0 to 15% as the check-in date approaches, seasonal factors based on historical demand patterns by month, and a demand adjustment based on the number of active bids and searches for that destination. The owner sees a visual breakdown of each factor with badges explaining why a certain price is recommended."
+
+### Step 13: Referral Program
+
+**What to show:**
+1. Navigate to the "Account" tab in the Owner Dashboard
+2. Scroll to the Referral Dashboard section
+3. Show the shareable referral code and copy-to-clipboard button
+4. Show the referral stats: total referrals, successful conversions, earnings
+
+> **Talking point:**
+> "Every owner gets a unique referral code they can share. When a new user signs up with their code, both parties benefit. The Referral Dashboard tracks all referral activity -- who signed up, whether they completed a booking, and the referral bonus earned. Referral codes are automatically captured from the signup URL query parameter, so owners can simply share a link like rent-a-vacation.com/signup?ref=THEIR_CODE."
+
+### Step 14: Pre-Booking Messaging
+
+**What to show:**
+1. Navigate to a Property Detail page
+2. Click the "Ask the Owner" button
+3. Show the inquiry dialog where the renter can send a message
+4. Switch to the Owner Dashboard to show the inquiry thread and response
+
+> **Talking point:**
+> "Before committing to a booking, renters can message the owner directly through our pre-booking inquiry system. They click 'Ask the Owner' on any listing, type their question, and the owner receives a notification. The entire conversation thread is tracked and visible to both parties. This builds trust and reduces cancellations -- renters can confirm details, ask about local attractions, or negotiate before spending a dollar."
+
 ### Common Questions
 
 | Question | Answer |
@@ -414,6 +464,28 @@ If asked about cancellation policies during the owner section, here is the refer
 - Nightly rate and total price
 - Fair Value badge (if applicable)
 - Favorites heart icon
+
+### Step 1b: Compare Properties
+
+**What to show:**
+1. On the Rentals page, click the "Compare" toggle to enter compare mode
+2. Select 2-3 listing cards (checkboxes appear on each card)
+3. A floating selection bar appears at the bottom showing selected listings
+4. Click "Compare" to open the side-by-side comparison dialog
+
+> **Talking point:**
+> "When renters are torn between a few options, they can use our Compare feature. Toggle compare mode, select up to 3 listings, and get a side-by-side breakdown of every attribute: price, location, bedrooms, amenities, fair value score, and cancellation policy. The system automatically highlights 'Best' badges on the winning attribute in each row -- for example, the listing with the lowest nightly rate or the most bedrooms. This makes the decision process fast and data-driven."
+
+### Step 1c: Saved Searches with Price Drop Alerts
+
+**What to show:**
+1. On the Rentals page, perform a search with filters (e.g., Orlando, 2 bedrooms, under $1500)
+2. Click the "Save Search" button
+3. Navigate to the Renter Dashboard at `/my-trips` and show the saved searches list
+4. Point out the price drop badge on any saved search that has new lower-priced matches
+
+> **Talking point:**
+> "Renters can save any search configuration and we will track it for them. When new listings match their criteria at a lower price than when they saved it, they see a price drop badge. This is a passive discovery mechanism -- renters do not need to keep checking the site. The system watches the market for them and highlights when a better deal appears."
 
 ### Step 2: Voice Search
 
@@ -455,6 +527,16 @@ If asked about cancellation policies during the owner section, here is the refer
 
 > **Talking point:**
 > "The property detail page gives the renter everything they need to make a decision. The Fair Value badge is powered by our proprietary scoring algorithm that compares the listing price against comparable properties in the same resort, location, and unit type. A 'Great Value' badge means this listing is priced below the market average. The cancellation policy is clearly displayed so there are no surprises."
+
+### Step 4b: Cancellation Policy Display
+
+**What to show:**
+1. On the Property Detail page, scroll to the cancellation policy section
+2. Point out the color-coded refund timeline badges (green for full refund, yellow for partial, red for non-refundable)
+3. Show how each deadline is displayed relative to the check-in date
+
+> **Talking point:**
+> "We have made cancellation policies visual and easy to understand. Instead of burying the terms in fine print, we show a color-coded refund timeline right on the listing. Green means full refund, yellow means partial, and red means non-refundable. Each tier shows the exact deadline -- for example, 'Full refund if cancelled by March 15' -- so the renter knows exactly what they are agreeing to before they book. This same display appears on the checkout page as well."
 
 ### Step 5: Book, Make an Offer, or Propose Dates
 
@@ -509,6 +591,17 @@ If asked about cancellation policies during the owner section, here is the refer
 > **Talking point:**
 > "After booking, the renter can manage everything from the My Bookings page. They see all their reservations organized by upcoming and past. Each booking shows the status -- confirmed, checked in, completed, or cancelled. They can cancel a booking, but the refund amount depends on the cancellation policy the owner set: flexible gives a full refund up to 24 hours before check-in, moderate gives 50% up to 5 days before, strict gives 50% up to 14 days before, and super strict is non-refundable after booking."
 
+### Step 7b: Booking Timeline
+
+**What to show:**
+1. Click on a booking in My Bookings or navigate to the BookingSuccess page after completing a checkout
+2. Show the 5-step vertical timeline: Booked, Confirmed, Check-In, Stay, Completed
+3. Point out the active step indicator and completed steps with checkmarks
+4. On mobile, show the compact horizontal timeline variant
+
+> **Talking point:**
+> "Every booking has a visual timeline showing exactly where the renter is in the process. The five steps -- Booked, Confirmed, Check-In, Stay, and Completed -- each show their status with clear indicators: green checkmarks for completed steps, a pulsing dot for the current step, and greyed-out steps for what is coming next. This reduces support inquiries because the renter always knows what is happening and what to expect next."
+
 ### Step 8: Travel Requests
 
 **What to show:**
@@ -519,6 +612,19 @@ If asked about cancellation policies during the owner section, here is the refer
 
 > **Talking point:**
 > "If a renter cannot find exactly what they want in the current listings, they can post a travel request. This flips the marketplace -- instead of browsing, the renter says 'I want to go to Maui in June for under $2000' and owners with matching inventory can submit proposals. Our matching engine connects requests with relevant property owners automatically."
+
+### Step 8b: Destinations Explorer
+
+**Navigate to:** `/destinations`
+
+**What to show:**
+1. The destinations grid showing 10 featured destinations
+2. Click on a destination to see its detail page with 35 cities across all destinations
+3. Show resort listings filtered by that destination
+4. Point out the curated destination imagery and descriptions
+
+> **Talking point:**
+> "The Destinations page is a discovery tool for renters who know where they want to go but have not decided on a specific property. We feature 10 popular destinations with 35 cities across them. Each destination page shows available resorts and listings in that area, so the renter can explore by geography rather than by specific property. This is especially effective for first-time users who are browsing rather than searching with a specific resort in mind."
 
 ### Step 9: Name Your Price
 
@@ -547,6 +653,22 @@ If asked about cancellation policies during the owner section, here is the refer
 > **Talking point:**
 > "Account Settings gives users full control over their profile and data. They can update their contact information, change their password, and manage notification preferences granularly -- choose which types of emails they want to receive. The Data & Privacy section is GDPR-compliant: users can export all their data across 14 database tables as a JSON download, or request account deletion. Deletion has a 14-day grace period where they can change their mind. After 14 days, their data is anonymized and personal information is permanently removed."
 
+### Step 11: RAV Smart Suite
+
+**Navigate to:** `/tools`
+
+**What to show:**
+1. The RAV Smart Suite landing page with all 5 tools listed
+2. Click through each tool briefly:
+   - **RAV SmartEarn** (`/calculator`) -- Breakeven calculator with yield estimator toggle
+   - **RAV SmartPrice** (`/tools/pricing-intelligence`) -- Market pricing intelligence and comparisons
+   - **RAV SmartCompare** (`/tools/cost-comparator`) -- Side-by-side cost comparison across booking channels
+   - **RAV SmartMatch** (`/tools/resort-quiz`) -- Interactive quiz matching users to their ideal resort
+   - **RAV SmartBudget** (`/tools/budget-planner`) -- Vacation budget planning with itemized breakdowns
+
+> **Talking point:**
+> "The RAV Smart Suite is a collection of five free tools designed to attract and convert users. SmartEarn helps owners calculate their breakeven and projected rental yield. SmartPrice shows market pricing data so owners can price competitively. SmartCompare lets renters compare the cost of booking through RAV versus retail channels. SmartMatch is a fun, interactive quiz that matches users to their ideal resort brand. And SmartBudget helps renters plan their entire vacation budget. Each tool has SEO-optimized structured data and serves as a top-of-funnel acquisition channel."
+
 ### Common Questions
 
 | Question | Answer |
@@ -569,12 +691,12 @@ If asked about cancellation policies during the owner section, here is the refer
 
 **What to show:**
 1. The admin header with the shield icon and "RAV Admin Dashboard" title
-2. The full tab bar showing all 18 tabs (scroll horizontally on smaller screens):
-   - Overview, Properties, Listings, Bookings, Escrow, Issues, Disputes, Verifications, Financials, Tax & 1099, Payouts, Users, Approvals, Memberships, Settings, Voice, Dev Tools (DEV only)
+2. The full tab bar showing all 20 tabs (scroll horizontally on smaller screens):
+   - Overview, Properties, Listings, Bookings, Escrow, Issues, Disputes, Verifications, Financials, Tax & 1099, Payouts, Users, Approvals, Memberships, Settings, Voice, Resorts, API Keys, Dev Tools (DEV only)
 3. The Overview tab with platform-wide statistics
 
 > **Talking point:**
-> "The Admin Dashboard is the command center for the entire platform. It has 17 operational tabs covering every aspect of marketplace management. The Overview tab gives you real-time stats: total users, properties, active listings, bookings, revenue, and pending approvals. Notice the notification badge on the Approvals tab -- that shows how many users and listings are waiting for review."
+> "The Admin Dashboard is the command center for the entire platform. It has 19 operational tabs covering every aspect of marketplace management. The Overview tab gives you real-time stats: total users, properties, active listings, bookings, revenue, and pending approvals. Notice the notification badge on the Approvals tab -- that shows how many users and listings are waiting for review."
 
 ### Step 2: Listing Management
 
@@ -703,7 +825,48 @@ If asked about cancellation policies during the owner section, here is the refer
 > **Talking point:**
 > "In our development environment, we have a Dev Tools tab that includes a seed data manager. This lets us populate the platform with realistic test data -- resorts, properties, listings, users, and bookings. It is production-guarded; the seed manager checks the environment variable and refuses to run against the production database. This is an architectural decision (DEC-015) to prevent accidental data corruption."
 
-### Step 13: User Journeys & Documentation
+### Step 13: Admin Property & Listing Editing
+
+**What to show:**
+1. Click the "Properties" tab and select a property
+2. Click "Edit" to open the AdminPropertyEditDialog
+3. Show editable fields: brand, resort, location, bedrooms, bathrooms, sleeps, description, amenities
+4. Point out the audit trail showing who last edited and when
+5. Click the "Listings" tab and select a listing
+6. Click "Edit" to open the AdminListingEditDialog
+7. Show the live price calculator (editing nightly rate recalculates total in real time)
+8. Note that editing is disabled for booked or completed listings
+
+> **Talking point:**
+> "Admins can directly edit properties and listings when corrections are needed -- for example, if an owner entered the wrong unit type or needs a price adjustment. Every edit is tracked with an audit trail showing who made the change and when. For listings, the edit dialog includes a live price calculator so the admin sees exactly how a rate change affects the total. Importantly, listings that are already booked or completed are locked from editing to protect transaction integrity."
+
+### Step 14: Resort Data Import
+
+**What to show:**
+1. Click the "Resorts" tab in the Admin Dashboard
+2. Click "Import Resorts" to show the 3-step import UI
+3. Show the template download (CSV format)
+4. Explain the validation step: format checking, duplicate detection, required field verification
+5. Show how the preview step lets the admin review before committing
+
+> **Talking point:**
+> "When we onboard a new vacation club brand, the Resorts tab lets admins bulk-import resort data from a CSV file. The import process has three steps: upload, validate, and commit. The validation step checks for duplicates, missing fields, and format errors -- so nothing gets into the database without passing quality checks. This is how we went from zero to 117 resorts efficiently."
+
+### Step 15: Developer Portal & Public API
+
+**Navigate to:** `/developers`
+
+**What to show:**
+1. The public Swagger UI showing available API endpoints
+2. Show the 5 read-only endpoints: listings, properties, resorts, destinations, availability
+3. Explain API key authentication (header-based)
+4. Show tiered rate limits for different API key types
+5. Navigate to Admin Dashboard > "API Keys" tab to show key management with optional IP allowlisting
+
+> **Talking point:**
+> "We have built a public REST API for third-party integrations. The Developer Portal at /developers shows interactive API documentation using Swagger UI. Developers can explore 5 read-only endpoints covering listings, properties, resorts, destinations, and availability. Authentication uses API keys managed through the admin dashboard, with tiered rate limits. For security-conscious integrators, we support optional IP allowlisting with CIDR notation -- so an API key can be locked to specific IP ranges. This opens the door for channel partnerships, data syndication, and third-party apps built on our inventory."
+
+### Step 16: User Journeys & Documentation
 
 **Navigate to:** `/user-journeys`
 
@@ -743,6 +906,8 @@ For quick navigation during the demo, here is what each admin tab contains:
 | Memberships | Tier management | View subscription status |
 | Settings | Platform configuration | Commission rate, Staff Only Mode |
 | Voice | Voice search operations | Quotas, overrides, analytics, logs |
+| Resorts | Resort data management | Import CSV, view/edit resort records |
+| API Keys | Public API key management | Create/revoke keys, IP allowlisting |
 | Dev Tools | Seed data (DEV only) | Populate test data |
 
 ### Common Questions
@@ -752,7 +917,7 @@ For quick navigation during the demo, here is what each admin tab contains:
 | "How many admin staff are needed to operate?" | "Currently the platform is designed for a small team of 2-3 admins. The approval workflows, SLA tracking, and notification system are designed to keep response times fast without a large team." |
 | "Can we white-label this for other timeshare companies?" | "The architecture is modular enough to support white-labeling, but that is not on the current roadmap. The brand, commission rates, and resort data are configurable through the admin settings." |
 | "What reporting integrations are available?" | "The Executive Dashboard pulls data from internal analytics and external sources (AirDNA, STR data, macro indicators, industry news). We also have GA4 and PostHog for deeper analytics drilling." |
-| "Is there an API for third-party integrations?" | "The Supabase backend exposes a RESTful API through PostgREST, and the edge functions provide custom API endpoints. A formal public API is planned for a future phase." |
+| "Is there an API for third-party integrations?" | "Yes. We have a public REST API with 5 read-only endpoints, interactive documentation at /developers, API key authentication with tiered rate limits, and optional IP allowlisting. Developers can access listings, properties, resorts, destinations, and availability data." |
 | "How do you handle tax reporting?" | "We track all owner earnings and flag owners approaching the $600 IRS threshold for 1099-K reporting. W-9 collection status is tracked per owner. Stripe Tax integration is code-ready but awaiting business formation for activation." |
 
 ---
@@ -808,6 +973,10 @@ Use any future expiration date, any 3-digit CVC, and any ZIP code.
 | My Offers | `/my-bids` | Authenticated |
 | Account Settings | `/account` | Authenticated |
 | Name Your Price | `/bidding` | Authenticated |
+| RAV Smart Suite | `/tools` | Public |
+| SmartEarn Calculator | `/calculator` | Public |
+| Developer Portal | `/developers` | Public |
+| My Trips (Renter) | `/my-trips` | Authenticated |
 | User Guide | `/user-guide` | Public |
 | Contact | `/contact` | Public |
 
@@ -826,9 +995,9 @@ Keep these numbers handy for when stakeholders ask during the demo.
 | Base commission rate | 15% | pricing.ts `RAV_MARKUP_RATE` |
 | Pro commission | 13% | Membership tier config |
 | Business commission | 10% | Membership tier config |
-| Database migrations | 29 | `supabase/migrations/` |
-| Edge functions | 25 | `supabase/functions/` |
-| Automated tests | 415 | Vitest (58 test files) |
+| Database migrations | 45 | `supabase/migrations/` |
+| Edge functions | 27 | `supabase/functions/` |
+| Automated tests | 771 | Vitest (99 test files) |
 | Coverage thresholds | 25% stmt / 25% branch / 30% func | CI enforced |
 | App version | v0.9.0 | Footer |
 | Voice quotas (Free) | 5/day | System settings |
@@ -885,7 +1054,7 @@ Keep these numbers handy for when stakeholders ask during the demo.
 ### Closing Statement
 
 > **Talking point:**
-> "To summarize: Rent-A-Vacation is a purpose-built marketplace for timeshare vacation rentals. We have 117 partner resorts across 9 brands, a fully functional two-sided marketplace with payments, escrow, and dispute resolution, AI-powered search with both voice and text, comprehensive admin tooling, and enterprise-grade security. The platform is at v0.9.0 -- feature-complete for launch. We are in the final pre-launch phase, completing business formation, activating Stripe Tax, and onboarding our initial inventory of property owners."
+> "To summarize: Rent-A-Vacation is a purpose-built marketplace for timeshare vacation rentals. We have 117 partner resorts across 9 brands, a fully functional two-sided marketplace with payments, escrow, and dispute resolution, AI-powered search with both voice and text, a public REST API for third-party integrations, the RAV Smart Suite of 5 free tools, dynamic pricing intelligence, comprehensive admin tooling, and enterprise-grade security. The platform is at v0.9.0 with 771 automated tests across 99 test files -- feature-complete for launch. We are in the final pre-launch phase, completing business formation, activating Stripe Tax, and onboarding our initial inventory of property owners."
 
 ### Call to Action (Customize per Audience)
 
@@ -907,4 +1076,4 @@ Keep these numbers handy for when stakeholders ask during the demo.
 
 ---
 
-*This document is a living script. Update it as new features are added to the platform. Last verified against codebase: February 28, 2026.*
+*This document is a living script. Update it as new features are added to the platform. Last verified against codebase: March 13, 2026.*

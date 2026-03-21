@@ -57,6 +57,7 @@ import { PostRequestCTA } from "@/components/bidding/PostRequestCTA";
 import { calculateNights } from "@/lib/pricing";
 import { sortListings, SORT_LABELS, type SortOption } from "@/lib/listingSort";
 import { CompareListingsDialog } from "@/components/CompareListingsDialog";
+import { trackEvent } from "@/lib/posthog";
 import { SaveSearchButton } from "@/components/SaveSearchButton";
 import { Checkbox } from "@/components/ui/checkbox";
 const ITEMS_PER_PAGE = 6;
@@ -107,7 +108,11 @@ function getListingBrandLabel(listing: ActiveListing): string {
 }
 
 const Rentals = () => {
-  usePageMeta('Browse Vacation Rentals', 'Search and filter vacation rentals from verified timeshare owners. Compare prices and book at up to 70% off.');
+  usePageMeta({
+    title: 'Browse Vacation Rentals',
+    description: 'Search and filter vacation rentals from verified timeshare owners. Compare prices and book at up to 70% off.',
+    canonicalPath: '/rentals',
+  });
 
   const [searchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -917,7 +922,7 @@ const Rentals = () => {
       {compareMode && compareIds.size >= 2 && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-card border shadow-lg rounded-full px-6 py-3 flex items-center gap-4">
           <span className="text-sm font-medium">{compareIds.size} selected</span>
-          <Button size="sm" onClick={() => setCompareDialogOpen(true)}>
+          <Button size="sm" onClick={() => { trackEvent('comparison_opened', { listing_count: compareIds.size }); setCompareDialogOpen(true); }}>
             Compare Now
           </Button>
           <Button

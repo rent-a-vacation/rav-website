@@ -34,7 +34,11 @@ import { format, formatDistanceToNow, differenceInDays } from 'date-fns';
 import type { ListingWithBidding } from '@/types/bidding';
 
 const BiddingMarketplace = () => {
-  usePageMeta('Name Your Price Marketplace', 'Bid on vacation rentals and negotiate directly with verified owners. Place offers at your price.');
+  usePageMeta({
+    title: 'Name Your Price Marketplace',
+    description: 'Bid on vacation rentals and negotiate directly with verified owners. Place offers at your price.',
+    canonicalPath: '/bidding',
+  });
 
   const { user, isRenter, isPropertyOwner } = useAuth();
   const { toast } = useToast();

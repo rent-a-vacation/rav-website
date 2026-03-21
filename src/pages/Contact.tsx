@@ -19,7 +19,11 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Contact = () => {
-  usePageMeta('Contact Us', 'Get in touch with the Rent-A-Vacation team for support, questions, or partnership inquiries.');
+  usePageMeta({
+    title: 'Contact Us',
+    description: 'Get in touch with the Rent-A-Vacation team for support, questions, or partnership inquiries.',
+    canonicalPath: '/contact',
+  });
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",

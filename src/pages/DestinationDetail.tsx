@@ -2,6 +2,8 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useJsonLd } from '@/hooks/useJsonLd';
+import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbSchema';
 import { useActiveListings } from '@/hooks/useListings';
 import { getDestinationBySlug, getCityBySlug, getLocationFilterValue } from '@/lib/destinations';
 import { MapPin, ChevronRight, Home, ArrowRight } from 'lucide-react';
@@ -50,10 +52,25 @@ const DestinationDetail = () => {
   const pageName = city ? `${city.name}, ${destination?.name}` : destination?.name || 'Destination';
   const pageDesc = city?.description || destination?.description || '';
 
-  usePageMeta(
-    `${pageName} Vacation Rentals`,
-    `${pageDesc} Browse timeshare rentals in ${pageName} at up to 70% off retail.`,
-  );
+  const canonicalPath = citySlug
+    ? `/destinations/${destinationSlug}/${citySlug}`
+    : `/destinations/${destinationSlug}`;
+  usePageMeta({
+    title: `${pageName} Vacation Rentals`,
+    description: `${pageDesc} Browse timeshare rentals in ${pageName} at up to 70% off retail.`,
+    canonicalPath,
+  });
+
+  // Breadcrumb JSON-LD
+  const breadcrumbs = [
+    { name: 'Home', path: '/' },
+    { name: 'Destinations', path: '/destinations' },
+    { name: destination?.name || '', path: `/destinations/${destinationSlug}` },
+  ];
+  if (city) {
+    breadcrumbs.push({ name: city.name, path: canonicalPath });
+  }
+  useJsonLd('breadcrumb-schema', buildBreadcrumbJsonLd(breadcrumbs));
 
   if (!destination) {
     return <Navigate to="/destinations" replace />;

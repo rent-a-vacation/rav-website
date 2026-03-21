@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
+import { buildEmailHtml, infoBox } from "../_shared/email-template.ts";
 
 /**
  * Idle Listing Alerts — Cron-triggered edge function
@@ -112,28 +113,24 @@ const handler = async (req: Request): Promise<Response> => {
         ? "https://rentavacation.vercel.app"
         : "https://rent-a-vacation.com";
 
-      const html = `
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
-  <h2 style="color: #1a1a2e;">Your listing needs attention</h2>
-  <p>Hi ${owner.full_name?.split(" ")[0] || "there"},</p>
-  <p>Your listing <strong>${resortName}</strong> has no bookings yet, and check-in is only <strong>${daysLabel} away</strong>.</p>
-
-  <h3 style="color: #1a1a2e;">Suggested actions:</h3>
-  <ul>
-    <li><strong>Lower your price</strong> — Currently $${listing.nightly_rate}/night.</li>
-    <li><strong>Enable bidding</strong> — Let travelers make offers.</li>
-    <li><strong>Share your listing</strong> — Increase visibility.</li>
-  </ul>
-
-  <div style="margin: 24px 0;">
-    <a href="${baseUrl}/property/${listing.id}" style="background: #6366f1; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Your Listing</a>
-  </div>
-
-  <p style="color: #666; font-size: 12px;">
-    You're receiving this because you have an active listing on Rent-A-Vacation.
-    <a href="${baseUrl}/owner-dashboard?tab=my-listings">Manage alert preferences</a>
-  </p>
-</div>`;
+      const html = buildEmailHtml({
+        recipientName: owner.full_name?.split(" ")[0] || undefined,
+        heading: "Your Listing Needs Attention",
+        body: `
+          <p>Your listing <strong>${resortName}</strong> has no bookings yet, and check-in is only <strong>${daysLabel} away</strong>.</p>
+          ${isUrgent ? infoBox("This is urgent — your check-in date is approaching quickly. Consider taking action soon.", "warning") : ""}
+          <p><strong>Suggested actions:</strong></p>
+          <ul style="line-height: 1.8; padding-left: 20px;">
+            <li><strong>Lower your price</strong> — Currently $${listing.nightly_rate}/night.</li>
+            <li><strong>Enable bidding</strong> — Let travelers make offers.</li>
+            <li><strong>Share your listing</strong> — Increase visibility.</li>
+          </ul>
+          <p style="font-size: 12px; color: #718096; margin-top: 20px;">
+            You're receiving this because you have an active listing on Rent-A-Vacation.
+            <a href="${baseUrl}/owner-dashboard?tab=my-listings" style="color: #0d6b5c;">Manage alert preferences</a>
+          </p>`,
+        cta: { label: "View Your Listing", url: `${baseUrl}/property/${listing.id}` },
+      });
 
       // Send email
       if (resend) {

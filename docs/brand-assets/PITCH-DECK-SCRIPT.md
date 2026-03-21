@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Rent-A-Vacation Pitch Deck Script
 
 > **Purpose:** Slide-by-slide guide for building a presentation in Canva, PowerPoint, or Keynote
@@ -146,8 +152,11 @@ for vacation club owners and travelers.
 ✓ ResortIQ — 117 resorts, 351 unit types     [BUILT]
 ✓ TrustShield — owner verification           [BUILT]
 ✓ PaySafe — escrow payment protection        [BUILT]
-✓ RAV SmartPrice — AI pricing guidance       [BUILT]
-✓ RAV SmartEarn — public tool       [BUILT]
+✓ RAV Smart Suite — 5 tools                  [BUILT]
+  (SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget)
+✓ Dynamic Pricing — urgency, seasonal, demand [BUILT]
+✓ Public API & Developer Portal              [BUILT]
+✓ Referral Program — owner growth engine      [BUILT]
 
 Everything listed above is deployed and demonstrable today.
 ```
@@ -330,7 +339,7 @@ PAYSAFE (Payment Protection):
 
 ---
 
-## SLIDE 12: Deep Dive — Owner's Edge (RAV SmartPrice + RAV SmartEarn)
+## SLIDE 12: Deep Dive — Owner's Edge (RAV Smart Suite + Dynamic Pricing)
 
 **Visual:** Split screen. Left: SmartPrice badge on a listing. Right: Calculator results showing break-even.
 
@@ -344,22 +353,29 @@ RAV SMARTPRICE:
 • "Fair Value" / "Overpriced" / "Underpriced" badges
 • Helps owners price competitively → faster bookings
 
-FEE FREEDOM CALCULATOR:
-• Public tool — no account required
-• Input: brand, unit type, annual maintenance fee
-• Output: break-even analysis, ROI projection
-• CTA: "Create Free Owner Account"
+RAV SMART SUITE (5 tools at /tools):
+• SmartEarn — break-even calculator + yield estimator
+• SmartPrice — AI pricing recommendations
+• SmartCompare — side-by-side property comparison
+• SmartMatch — resort quiz / personality match
+• SmartBudget — vacation budget planner
+• All public — no account required (lead generation)
+
+DYNAMIC PRICING ENGINE:
+• Urgency discounts (graduated 0-15%)
+• Seasonal adjustment factors
+• Demand-based pricing (bids + search volume)
 
 OWNER DASHBOARD:
 • Earnings tracking (lifetime, YTD, monthly)
 • Booking management with confirmation workflow
 • Bid activity feed (real-time)
 • Maintenance fee coverage percentage bar
-• 6 tabs: Overview, Properties, Listings, Bookings, Earnings, Verification
+• 4 tabs: Dashboard, My Listings, Bookings & Earnings, Account
 ```
 
 **Speaker Notes:**
-> "We don't just acquire owners — we empower them. RAV SmartPrice is our proprietary pricing AI that analyzes comparable properties and tells owners exactly what to charge. Fair Value badges appear on every listing, helping owners price competitively. The RAV SmartEarn is a free public tool — no account required — that shows any timeshare owner exactly how many weeks they need to rent to cover their annual maintenance fees. It's a lead generation engine that converts directly into owner signups. And the Owner Dashboard gives them a complete command center for their rental business — earnings, bookings, bids, and verification all in one place."
+> "We don't just acquire owners — we empower them. The RAV Smart Suite is a collection of five free public tools — SmartEarn for break-even and yield analysis, SmartPrice for AI pricing guidance, SmartCompare for side-by-side property comparison, SmartMatch as a resort quiz, and SmartBudget for vacation planning. All five are live, no account required, and serve as our primary lead generation engine. On top of that, our Dynamic Pricing engine automatically adjusts recommendations based on urgency, seasonality, and demand signals. And the Owner Dashboard gives them a complete command center — earnings, bookings, bids, and verification all consolidated into four streamlined tabs."
 
 ---
 
@@ -371,13 +387,13 @@ OWNER DASHBOARD:
 ```
 ENGINEERING EXCELLENCE                                  [ALL BUILT & VERIFIABLE]
 
-182 automated tests — all passing
+771 automated tests (99 test files) — all passing
   0 TypeScript errors — strict mode
   0 lint errors — ESLint enforced
   5-job CI/CD pipeline — GitHub Actions
- 18+ database migrations — deployed
- 10+ edge functions — serverless, auto-scaling
- 18 phases shipped in 18 months
+ 45 database migrations — deployed
+ 27 edge functions — serverless, auto-scaling
+ 39 sessions shipped
 
 Tech Stack:
 React 18 + TypeScript + Vite | Tailwind CSS + shadcn/ui
@@ -390,7 +406,7 @@ Vitest + Playwright + Percy (Testing)
 ```
 
 **Speaker Notes:**
-> "A few words about our engineering foundation, because execution matters. We have 182 automated tests — all passing. Zero type errors, zero lint errors, a 5-job CI/CD pipeline that runs on every commit. 18 database migrations, 10+ serverless edge functions, row-level security on every table. We shipped 18 phases in 18 months. Every number on this slide is real and verifiable right now. This isn't a prototype — it's a production-grade platform."
+> "A few words about our engineering foundation, because execution matters. We have 771 automated tests across 99 test files — all passing. Zero type errors, zero lint errors, a 5-job CI/CD pipeline that runs on every commit. 45 database migrations, 27 serverless edge functions, row-level security on every table. We shipped 39 development sessions. Every number on this slide is real and verifiable right now. This isn't a prototype — it's a production-grade platform."
 
 ---
 
@@ -402,7 +418,7 @@ Vitest + Playwright + Percy (Testing)
 ```
 BUSINESS MODEL                                          [BUILT — configurable in platform]
 
-REVENUE: 10-15% commission on every booking
+REVENUE: No upfront fees to list. 15% default commission on successful bookings only (configurable; Pro −2%, Business −5%)
 
 COMMISSION TIERS:
 Free Owner:     15% commission  |  1 listing    |  $0/mo
@@ -414,17 +430,18 @@ Free:     Basic search, 10 voice searches/day     |  $0/mo
 Plus:     Enhanced filters, 50 voice/day           |  $9.99/mo
 Premium:  Unlimited voice, early access            |  $19.99/mo
 
-ADDITIONAL REVENUE STREAMS (Future):
-• Featured listing placements
-• Premium analytics for owners
-• Resort partnership referral fees
-• API licensing (ResortIQ data)
+ADDITIONAL REVENUE STREAMS:
+• Public API with tiered rate limits         [BUILT]
+• Referral program (owner acquisition)       [BUILT]
+• Featured listing placements                [Future]
+• Premium analytics for owners               [Future]
+• Resort partnership referral fees            [Future]
 ```
 
 **Labels:** Commission model and tiers are [BUILT]. Revenue streams marked "Future" are [PROJECTED].
 
 **Speaker Notes:**
-> "Our revenue model is straightforward. We take 10-15% commission on every booking, tiered by the owner's membership level. Free owners pay 15%; Pro owners get a 2% discount for $30 a month; Business owners get a 5% discount for $100 a month. On the traveler side, we offer free access with limited voice search, and paid tiers with expanded quotas and features. The entire tier system, commission calculation, and payment flow is built and operational. Future revenue streams include featured placements, premium analytics, and data licensing — but those are clearly future additions."
+> "Our revenue model is straightforward. We take a 15% default commission on every booking, tiered by the owner's membership level. Free owners pay 15%; Pro owners get a 2% discount for $30 a month; Business owners get a 5% discount for $100 a month. On the traveler side, we offer free access with limited voice search, and paid tiers with expanded quotas and features. The entire tier system, commission calculation, and payment flow is built and operational. Future revenue streams include featured placements, premium analytics, and data licensing — but those are clearly future additions."
 
 ---
 
@@ -508,15 +525,17 @@ Resort Master Data       ✓       —       —       —        —
 Owner Verification       ✓       ~       ~       ~        —
 Escrow Protection        ✓       ✓       ✓       —        —
 Fair Value AI            ✓       —       —       —        —
-Fee Calculator           ✓       —       —       —        —
+Smart Suite (5 tools)    ✓       —       —       —        —
+Dynamic Pricing          ✓       ~       ~       —        —
+Public API / Dev Portal  ✓       —       —       —        —
 Owner Dashboard          ✓       ✓       ✓       —        —
 Executive BI             ✓       —       —       —        —
 
-6 capabilities that no competitor offers today.
+9 capabilities that no competitor offers today.
 ```
 
 **Speaker Notes:**
-> "This is our competitive position. Six of our core capabilities are industry firsts — AI voice search, AI text chat, bidding marketplace, reverse auction, resort master data, and fair value scoring. VRBO and Airbnb are horizontal platforms with hundreds of millions in engineering resources, but they're not purpose-built for vacation clubs. They don't understand resort confirmation workflows, maintenance fee economics, or owner verification needs. RedWeek and TUG are community sites, not technology platforms. Our moat is the combination of AI, data, and vacation-club-specific workflows — and it compounds over time."
+> "This is our competitive position. Nine of our core capabilities are industry firsts — AI voice search, AI text chat, bidding marketplace, reverse auction, resort master data, fair value scoring, a five-tool Smart Suite, dynamic pricing, and a public developer API. VRBO and Airbnb are horizontal platforms with hundreds of millions in engineering resources, but they're not purpose-built for vacation clubs. They don't understand resort confirmation workflows, maintenance fee economics, or owner verification needs. RedWeek and TUG are community sites, not technology platforms. Our moat is the combination of AI, data, and vacation-club-specific workflows — and it compounds over time."
 
 ---
 
@@ -540,14 +559,13 @@ MID TERM (Q3-Q4 2026):
 • Content marketing engine
 
 LONG TERM (2027):
-• AI-powered dynamic pricing
 • Calendar sync (Google, Outlook)
 • International expansion beyond U.S.
 • Enterprise tools for multi-property owners
 ```
 
 **Speaker Notes:**
-> "Near term, we're adding voice admin controls — so our team can manage voice search settings without code deploys — and preparing for our beta launch. Mid-term, we're extending RAVIO to assist with the full workflow — not just search, but listing creation, booking, and bidding, all by voice. We're also building native mobile apps and beginning partnership outreach to the major vacation club brands. Long-term, we see AI-powered dynamic pricing, calendar integration, international expansion, and enterprise tools for property management companies. But every future item is built on the foundation we've already shipped."
+> "Near term, we're adding voice admin controls — so our team can manage voice search settings without code deploys — and preparing for our beta launch. Mid-term, we're extending RAVIO to assist with the full workflow — not just search, but listing creation, booking, and bidding, all by voice. We're also building native mobile apps and beginning partnership outreach to the major vacation club brands. Long-term, we see calendar integration, international expansion, and enterprise tools for property management companies. Dynamic pricing is already built — urgency discounts, seasonal factors, and demand-based adjustments are all live. But every future item is built on the foundation we've already shipped."
 
 ---
 
@@ -575,7 +593,7 @@ Name Your Price. Book Your Paradise.
 **Speaker Notes (adjust based on audience):**
 
 *For investors:*
-> "We've built a complete, production-grade marketplace for a $10.5 billion industry with no tech-first leader. 18 phases shipped, 182 automated tests, industry-first AI capabilities. We're looking for [investment amount] to fund our public launch, initial marketing, and first 12 months of operation. I'd love to walk you through the live demo and discuss how we can work together."
+> "We've built a complete, production-grade marketplace for a $10.5 billion industry with no tech-first leader. 39 sessions shipped, 771 automated tests, industry-first AI capabilities. We're looking for [investment amount] to fund our public launch, initial marketing, and first 12 months of operation. I'd love to walk you through the live demo and discuss how we can work together."
 
 *For partners:*
 > "We've built a platform that serves your owners better than anything on the market today. I'd love to discuss a pilot program where we can demonstrate value to your owner community — reduced churn, increased satisfaction, and a new revenue channel. Let's set up a demo with your team."
@@ -658,6 +676,10 @@ CI/CD:     GitHub Actions (5-job pipeline)
 Hosting:   Vercel (frontend) + Supabase (backend)
 Mobile:    PWA today, Capacitor native planned
 
+API:      Public REST API + Developer Portal + API key auth
+Tools:    RAV Smart Suite (5 tools) at /tools
+Pricing:  Dynamic pricing engine (urgency, seasonal, demand)
+
 Security: Row-Level Security on all tables
           JWT-based auth with role enforcement
           Security definer functions prevent RLS recursion
@@ -670,7 +692,7 @@ Security: Row-Level Security on all tables
 ### Do's
 - **Lead with the demo.** The product speaks louder than slides. Switch to dev.rent-a-vacation.com and show voice search, bidding, owner dashboard live.
 - **Be honest about stage.** "We're pre-launch with a fully built platform" is more impressive than vague claims of traction.
-- **Emphasize execution velocity.** 18 phases in 18 months. 182 tests. This team ships.
+- **Emphasize execution velocity.** 39 sessions. 771 tests. This team ships.
 - **Let the AI speak.** When demoing RAVIO, let the audience hear the voice response. It's magical.
 - **Know your audience.** Investors want unit economics and market size. Partners want integration capability. Users want to see it work.
 

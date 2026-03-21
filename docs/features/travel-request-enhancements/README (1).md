@@ -1,10 +1,24 @@
+---
+last_updated: "2026-02-21T19:58:23"
+change_ref: "dc07c27"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Travel Request Enhancements
 
-**Phase:** 18  
-**Status:** 🟡 Ready to Build — Docs complete, awaiting implementation  
-**Routes:** Enhances existing `/bidding` · `/rentals` · `/list-property`  
-**Migration:** 016 (minor — 2 enum values only)  
-**Estimated Time:** 1 session (~3 hours)
+**Phase:** 18–19
+**Status:** ✅ Completed (Sessions 18–19)
+**Routes:** Enhances existing `/bidding` · `/rentals` · `/list-property`
+**Migration:** 016 (enum values) + 020 (flexible dates & nightly pricing)
+**Implemented:** Sessions 18–19 (Feb 2026)
+
+### What Was Built
+
+- **Migration 020** (`020_flexible_dates_nightly_pricing.sql`): `nightly_rate` on listings (backfilled), `requested_check_in/out` on `listing_bids`, `source_listing_id` + `target_owner_only` on `travel_requests`
+- **InspiredTravelRequestDialog** (`src/components/bidding/InspiredTravelRequestDialog.tsx`): Pre-fills TravelRequestForm from a listing, includes "Send to this owner first" toggle (`target_owner_only`)
+- **Dual-mode BidFormDialog** (`src/components/bidding/BidFormDialog.tsx`): Supports `'bid' | 'date-proposal'` modes — date pickers + auto-computed bid in date-proposal mode
+- **Shared pricing utility** (`src/lib/pricing.ts`): `calculateNights()` + `computeListingPricing()` (15% RAV markup) — replaced 4 duplicated pricing functions
+- **Tests:** `pricing.test.ts` (11 tests), `BidFormDialog.test.tsx` (5 tests)
 
 ---
 
@@ -85,20 +99,20 @@ docs/features/travel-request-enhancements/
 | New page | None | Enhances `/bidding`, `/rentals`, `/list-property` |
 | Matching trigger | On listing status → 'active' | Real-time match at the moment of supply |
 | Budget undisclosed | Honor existing enum | Don't expose budget in notification when `budget_preference = 'undisclosed'` |
-| Migration # | 016 | 2 new notification_type enum values only |
+| Migration # | 016 + 020 | 016: enum values; 020: flexible dates, nightly pricing, `source_listing_id`, `target_owner_only` |
 
 ---
 
 ## Success Criteria
 
-- [ ] Traveler with matching open request receives notification when listing activates
-- [ ] Budget not revealed in notification when `budget_preference = 'undisclosed'`
-- [ ] Demand signal shows on `/list-property` after destination + dates entered
-- [ ] "Post a Request" CTA shows on `/rentals` when search returns 0 results
-- [ ] Expiry warning email sends 48h before `proposals_deadline`
-- [ ] No regressions in existing bidding system tests
-- [ ] `npm run build` passes
+- [x] Traveler with matching open request receives notification when listing activates
+- [x] Budget not revealed in notification when `budget_preference = 'undisclosed'`
+- [x] Demand signal shows on `/list-property` after destination + dates entered
+- [x] "Post a Request" CTA shows on `/rentals` when search returns 0 results
+- [x] Expiry warning email sends 48h before `proposals_deadline`
+- [x] No regressions in existing bidding system tests
+- [x] `npm run build` passes
 
 ---
 
-**Last Updated:** February 21, 2026
+**Last Updated:** March 13, 2026

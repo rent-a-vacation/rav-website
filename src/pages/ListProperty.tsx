@@ -33,6 +33,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { RoleUpgradeDialog } from "@/components/RoleUpgradeDialog";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
+import { trackEvent } from "@/lib/posthog";
 
 const benefits = [
   {
@@ -320,6 +321,14 @@ const ListProperty = () => {
         .insert(listingData as never);
 
       if (listError) throw new Error(listError.message);
+
+      // Track listing creation
+      trackEvent('listing_created', {
+        brand: selectedBrand || 'other',
+        location: location || undefined,
+        unit_type: selectedUnitType?.unit_type_name || 'manual',
+        nightly_rate: rate,
+      });
 
       // 3. Clear draft + navigate
       clearDraft();

@@ -1,8 +1,16 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # SEO Optimization — Project Brief
 
 **Feature Name:** SEO Optimization (react-helmet-async + Sitemap + JSON-LD)
 **Phase:** 19
-**Status:** 🟡 Planning
+**Status:** 🟢 ~95% Complete (Sessions 17 + 41)
+**Done:** `usePageMeta` hook (extended with canonical/OG/noindex), `useJsonLd` hook, `breadcrumbSchema` utility, JSON-LD structured data (Organization, HowTo, ItemList, FAQPage, BreadcrumbList, Product), dynamic `sitemap.xml` (build-time), `robots.txt`, per-page canonical URLs, per-page OG tags
+**Remaining:** Server-side OG tags for social crawlers (Vercel Middleware), destination hero images, migrate legacy JSON-LD pages to useJsonLd hook
 **Created:** February 21, 2026
 **Migration:** None — frontend only
 **Docs:** `docs/features/seo-optimization/`

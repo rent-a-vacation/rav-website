@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getSwaggerUI = (): any => (window as Record<string, unknown>).SwaggerUIBundle;
@@ -12,6 +13,12 @@ const getSwaggerUI = (): any => (window as Record<string, unknown>).SwaggerUIBun
  * Route: /developers
  */
 export default function Developers() {
+  usePageMeta({
+    title: "API Documentation",
+    description: "REST API documentation for accessing Rent-A-Vacation marketplace data. Browse listings, search properties, and explore destinations programmatically.",
+    canonicalPath: "/developers",
+  });
+
   const containerRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
 

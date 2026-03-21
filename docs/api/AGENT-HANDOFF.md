@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # API Documentation — Agent Handoff
 
 **Generated:** March 3, 2026 (Session 33)
@@ -7,7 +13,7 @@
 
 | File | Lines | Purpose |
 |------|-------|---------|
-| `docs/api/openapi.yaml` | ~900 | OpenAPI 3.0.3 spec — all 25 edge functions |
+| `docs/api/openapi.yaml` | ~900 | OpenAPI 3.0.3 spec — all 27 edge functions |
 | `docs/api/README.md` | ~70 | Usage guide and regeneration instructions |
 | `docs/api/AGENT-HANDOFF.md` | This file | Agent handoff notes |
 | `public/api/openapi.yaml` | ~900 | Static copy served by Vite |
@@ -22,7 +28,7 @@
 
 ## Function Coverage
 
-All 25 edge functions are documented:
+All 27 edge functions are documented:
 
 | Tag | Functions |
 |-----|-----------|
@@ -37,6 +43,8 @@ All 25 edge functions are documented:
 | GDPR | export-user-data, delete-user-account |
 | Data | fetch-industry-news, fetch-macro-indicators, fetch-airdna-data, fetch-str-data |
 | Admin | seed-manager |
+| Alerts | idle-listing-alerts |
+| API | api-gateway |
 
 ## Functions Needing Manual Review
 

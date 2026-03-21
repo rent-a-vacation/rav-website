@@ -7,6 +7,7 @@ import { Copy, Check, Users, TrendingUp, Gift, Share2 } from "lucide-react";
 import { useReferralCode, useReferralStats, useReferralList } from "@/hooks/useReferral";
 import { buildReferralLink, referralConversionRate, formatRewardText } from "@/lib/referral";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/posthog";
 import { formatDistanceToNow } from "date-fns";
 
 export function ReferralDashboard() {
@@ -22,6 +23,7 @@ export function ReferralDashboard() {
     try {
       await navigator.clipboard.writeText(referralLink);
       setCopied(true);
+      trackEvent('referral_link_copied', { referral_code: code || '' });
       toast.success("Referral link copied!");
       setTimeout(() => setCopied(false), 2000);
     } catch {

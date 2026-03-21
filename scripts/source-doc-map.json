@@ -1,0 +1,56 @@
+{
+  "mappings": [
+    {
+      "source": ["src/lib/pricing.ts", "src/lib/dynamicPricing.ts"],
+      "docs": ["docs/RAV-PRICING-TAXES-ACCOUNTING.md", "docs/ARCHITECTURE.md"]
+    },
+    {
+      "source": ["src/hooks/owner/**", "src/components/owner-dashboard/**"],
+      "docs": ["docs/features/owner-dashboard/README.md"]
+    },
+    {
+      "source": ["supabase/functions/api-gateway/**"],
+      "docs": ["docs/api/README.md"]
+    },
+    {
+      "source": ["supabase/functions/stripe-webhook/**"],
+      "docs": ["docs/testing/STRIPE-TEST-CARDS-RAV.md"]
+    },
+    {
+      "source": ["supabase/migrations/**"],
+      "docs": ["docs/ARCHITECTURE.md", "docs/COMPLETED-PHASES.md"]
+    },
+    {
+      "source": [".github/workflows/**"],
+      "docs": ["docs/DEPLOYMENT.md"]
+    },
+    {
+      "source": ["src/flows/**"],
+      "docs": ["docs/ARCHITECTURE.md"]
+    },
+    {
+      "source": ["src/hooks/useVoiceSearch.ts", "src/components/voice/**"],
+      "docs": ["docs/features/voice-search/KNOWN-ISSUES.md"]
+    },
+    {
+      "source": ["src/components/text-chat/**", "supabase/functions/text-chat-agent/**"],
+      "docs": ["docs/features/text-chat/README.md"]
+    },
+    {
+      "source": ["src/lib/calculatorLogic.ts", "src/components/calculator/**"],
+      "docs": ["docs/features/maintenance-fee-calculator/README.md"]
+    },
+    {
+      "source": ["src/pages/UserGuide.tsx"],
+      "docs": ["docs/guides/COMPLETE-USER-JOURNEY-MAP.md"]
+    },
+    {
+      "source": ["src/pages/ApiDocs.tsx", "src/pages/Developers.tsx"],
+      "docs": ["docs/api/README.md"]
+    },
+    {
+      "source": ["scripts/docs-audit.ts", "scripts/docs-stamp.sh", "scripts/source-doc-map.json"],
+      "docs": ["docs/features/docs-audit/README.md"]
+    }
+  ]
+}

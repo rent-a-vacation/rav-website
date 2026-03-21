@@ -152,7 +152,7 @@ describe("AuthContext @p0", () => {
   });
 
   it("signUp passes account type in metadata", async () => {
-    mockSignUp.mockResolvedValue({ error: null });
+    mockSignUp.mockResolvedValue({ data: { user: { id: "new-user-123" } }, error: null });
 
     const { result } = renderHook(() => useAuth(), {
       wrapper: createWrapper(),

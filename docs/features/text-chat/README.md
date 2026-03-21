@@ -1,3 +1,9 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Text Chat Agent
 
 Conversational text assistant powered by OpenRouter, available to all logged-in users with no quota restrictions.
@@ -10,7 +16,7 @@ Conversational text assistant powered by OpenRouter, available to all logged-in 
 | **Access** | All logged-in users, no quota |
 | **Edge Function** | `supabase/functions/text-chat/index.ts` |
 | **Secret** | `OPENROUTER_API_KEY` |
-| **Model** | `anthropic/claude-sonnet-4-20250514` (via OpenRouter) |
+| **Model** | `google/gemini-3-flash-preview` (via OpenRouter) |
 | **Pages** | Rentals, PropertyDetail, BiddingMarketplace, HowItWorksPage |
 
 ## Architecture

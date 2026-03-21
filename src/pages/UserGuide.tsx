@@ -48,7 +48,11 @@ import {
 } from "lucide-react";
 
 const UserGuide = () => {
-  usePageMeta('User Guide', 'Step-by-step guide to using Rent-A-Vacation for renting and listing vacation properties.');
+  usePageMeta({
+    title: 'User Guide',
+    description: 'Step-by-step guide to using Rent-A-Vacation for renting and listing vacation properties.',
+    canonicalPath: '/user-guide',
+  });
   const [activeSection, setActiveSection] = useState("getting-started");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isPrinting, setIsPrinting] = useState(false);

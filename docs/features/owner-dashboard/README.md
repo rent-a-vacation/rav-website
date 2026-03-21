@@ -1,10 +1,16 @@
+---
+last_updated: "2026-03-21T02:05:09"
+change_ref: "94959eb"
+change_type: "session-39-docs-update"
+status: "active"
+---
 # Owner Dashboard
 
 **Phase:** 17  
-**Status:** 🟡 Ready to Build — Docs complete, awaiting implementation  
-**Route:** `/owner-dashboard` (property_owner role only)  
-**Migration:** 015  
-**Estimated Time:** 2 sessions (~6 hours total)
+**Status:** ✅ Completed (Session 17), consolidated 11 tabs → 4 tabs (Session 33)
+**Route:** `/owner-dashboard` (property_owner role only)
+**Migration:** 017 — 2 RPCs, 4 hooks in `src/hooks/owner/`, 6 components in `src/components/owner-dashboard/`
+**Note:** 4 tabs are: `dashboard`, `my-listings`, `bookings-earnings`, `account`. Sub-sections use shadcn Collapsible. `TAB_REDIRECTS` map for backwards-compatible old URLs.
 
 ---
 
