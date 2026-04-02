@@ -21,10 +21,15 @@
 3. Confirm with the user which issue to work on before starting any code
 
 ### At the END of every session
-1. Close completed issues with a summary comment:
+1. Close completed issues with a summary comment (this feeds the daily status email):
    ```bash
-   gh issue close <number> --repo rent-a-vacation/rav-website --comment "Completed: [brief summary of what was built]"
+   gh issue close <number> --repo rent-a-vacation/rav-website --comment "Completed: [Business-language summary — what the user/owner/renter gains]
+
+   Technical: [migration details, test counts, deployment notes]"
    ```
+   > **Important:** The daily status report auto-extracts the `Completed:` line for the Key Deliverables section.
+   > Write it in plain business language (what users gain), not technical language (no migration names, no jargon).
+   > The `Technical:` line is optional and only preserved in the GitHub issue comment.
 2. Create new issues for anything discovered during the session (bugs, ideas, follow-up work)
 3. Update `docs/PROJECT-HUB.md` with any architectural decisions made
 4. Do NOT update PROJECT-HUB.md priority queue — GitHub Issues is now the source for priorities

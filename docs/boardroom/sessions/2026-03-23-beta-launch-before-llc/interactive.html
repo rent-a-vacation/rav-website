@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAV Boardroom — Beta Launch Before LLC</title>
+<style>
+  :root {
+    --teal: #1C7268;
+    --coral: #E8703A;
+    --cream: #F8F6F3;
+    --navy: #1D2E38;
+    --teal-light: #e6f2f0;
+    --coral-light: #fdf0e8;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--cream); color: var(--gray-800); line-height: 1.6; }
+
+  .header { background: linear-gradient(135deg, var(--teal), var(--navy)); color: white; padding: 3rem 2rem; text-align: center; }
+  .header h1 { font-size: 1.5rem; font-weight: 400; opacity: 0.9; margin-bottom: 0.5rem; }
+  .header h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 1.5rem; max-width: 700px; margin-left: auto; margin-right: auto; }
+  .verdict-badge { display: inline-block; background: var(--coral); color: white; padding: 0.6rem 1.5rem; border-radius: 2rem; font-size: 1.1rem; font-weight: 600; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .section-title { font-size: 1.4rem; font-weight: 700; color: var(--navy); margin: 2.5rem 0 1.2rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--teal); }
+
+  .advisor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.2rem; }
+  .advisor-card { background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid var(--gray-200); transition: box-shadow 0.2s; position: relative; }
+  .advisor-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .advisor-name { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+  .advisor-domain { font-size: 0.85rem; color: var(--gray-600); margin-bottom: 0.8rem; }
+  .vote-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; }
+  .vote-pill { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600; }
+  .vote-yes { background: #d1fae5; color: #065f46; }
+  .vote-no { background: #fee2e2; color: #991b1b; }
+  .vote-conditional { background: #fef3c7; color: #92400e; }
+  .changed-badge { background: var(--coral); color: white; padding: 0.15rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; }
+  .advisor-quote { font-style: italic; color: var(--gray-600); font-size: 0.9rem; border-left: 3px solid var(--teal); padding-left: 0.8rem; margin-top: 0.5rem; }
+
+  .tensions { background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid var(--gray-200); }
+  .tension-item { padding: 1rem 0; border-bottom: 1px solid var(--gray-100); }
+  .tension-item:last-child { border-bottom: none; }
+  .tension-label { font-weight: 700; color: var(--coral); font-size: 0.9rem; }
+  .tension-desc { color: var(--gray-600); font-size: 0.95rem; margin-top: 0.3rem; }
+
+  .sliders-section { background: white; border-radius: 12px; padding: 2rem; border: 1px solid var(--gray-200); margin-top: 1.5rem; }
+  .slider-group { margin-bottom: 1.5rem; }
+  .slider-group:last-of-type { margin-bottom: 1rem; }
+  .slider-label { font-weight: 600; color: var(--navy); margin-bottom: 0.3rem; }
+  .slider-range { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--gray-600); }
+  input[type="range"] { width: 100%; margin: 0.5rem 0; accent-color: var(--teal); }
+  .slider-value { text-align: center; font-weight: 700; color: var(--teal); font-size: 1.1rem; }
+  .impact-box { background: var(--teal-light); border-radius: 8px; padding: 1.2rem; margin-top: 1rem; }
+  .impact-title { font-weight: 700; color: var(--teal); margin-bottom: 0.5rem; }
+  .impact-text { color: var(--gray-800); font-size: 0.95rem; }
+
+  .briefing { background: var(--navy); color: white; padding: 3rem 2rem; margin-top: 3rem; }
+  .briefing-inner { max-width: 800px; margin: 0 auto; }
+  .briefing h2 { font-size: 1.6rem; margin-bottom: 1.5rem; color: var(--coral); }
+  .briefing-item { margin-bottom: 1.2rem; }
+  .briefing-item strong { color: var(--coral); }
+  .briefing-item p { margin-top: 0.3rem; opacity: 0.9; }
+
+  .timeline { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+  .timeline-step { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0.6rem 1rem; flex: 1; min-width: 140px; }
+  .timeline-step .day { font-size: 0.8rem; color: var(--coral); font-weight: 600; }
+  .timeline-step .action { font-size: 0.85rem; opacity: 0.9; }
+
+  .footer { text-align: center; padding: 2rem; color: var(--gray-600); font-size: 0.85rem; }
+
+  @media (max-width: 600px) {
+    .header h2 { font-size: 1.6rem; }
+    .advisor-grid { grid-template-columns: 1fr; }
+    .timeline { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>RAV-TECHNICAL Boardroom &mdash; March 23, 2026</h1>
+  <h2>&ldquo;Should we open beta before the LLC is formed?&rdquo;</h2>
+  <div class="verdict-badge">CONDITIONAL &mdash; 6 to 1 (Unanimous YES with conditions)</div>
+</div>
+
+<div class="container">
+
+  <h3 class="section-title">Advisor Positions</h3>
+  <div class="advisor-grid">
+
+    <div class="advisor-card">
+      <div class="advisor-name">Howard Nusbaum</div>
+      <div class="advisor-domain">Timeshare Industry Insider &bull; Former ARDA President</div>
+      <div class="vote-row">
+        <span class="vote-pill vote-no">R1: NO</span>
+        <span class="vote-pill vote-conditional">Final: CONDITIONAL</span>
+        <span class="changed-badge">Changed</span>
+      </div>
+      <div class="advisor-quote">&ldquo;The brands will categorize RAV based on their first impression, and 'unregistered marketplace' is a category that's very hard to escape from.&rdquo;</div>
+    </div>
+
+    <div class="advisor-card">
+      <div class="advisor-name">Leah Busque Solivan</div>
+      <div class="advisor-domain">Marketplace Architect &bull; TaskRabbit Founder</div>
+      <div class="vote-row">
+        <span class="vote-pill vote-conditional">R1: CONDITIONAL</span>
+        <span class="vote-pill vote-conditional">Final: CONDITIONAL</span>
+      </div>
+      <div class="advisor-quote">&ldquo;Every day in Staff Only Mode is a day the marketplace learns nothing. Marketplaces die not because they launched too early, but because they launched too late.&rdquo;</div>
+    </div>
+
+    <div class="advisor-card">
+      <div class="advisor-name">Bret Taylor</div>
+      <div class="advisor-domain">AI &amp; Platform Vision &bull; Former Salesforce Co-CEO</div>
+      <div class="vote-row">
+        <span class="vote-pill vote-yes">R1: YES</span>
+        <span class="vote-pill vote-yes">Final: YES</span>
+      </div>
+      <div class="advisor-quote">&ldquo;Every feature is a hypothesis. None of these hypotheses have been tested with a single real user. The cost of waiting is measured in learning velocity.&rdquo;</div>
+    </div>
+
+    <div class="advisor-card">
+      <div class="advisor-name">Patrick McKenzie</div>
+      <div class="advisor-domain">Payments &amp; Fraud &bull; Stripe Staff Engineer</div>
+      <div class="vote-row">
+        <span class="vote-pill vote-no">R1: NO</span>
+        <span class="vote-pill vote-conditional">Final: CONDITIONAL</span>
+        <span class="changed-badge">Changed</span>
+      </div>
+      <div class="advisor-quote">&ldquo;The question should not be 'should we launch without an LLC' but rather 'why haven't we formed the LLC with the founders who are already clear?'&rdquo;</div>
+    </div>
+
+    <div class="advisor-card">
+      <div class="advisor-name">Simon Lehmann</div>
+      <div class="advisor-domain">M&amp;A Strategy &bull; Travel-Tech Advisor</div>
+      <div class="vote-row">
+        <span class="vote-pill vote-conditional">R1: CONDITIONAL</span>
+        <span class="vote-pill vote-conditional">Final: CONDITIONAL</span>
+      </div>
+      <div class="advisor-quote">&ldquo;Acquirers don't buy platforms with zero users. But they also won't buy a platform whose first data was generated before the company legally existed.&rdquo;</div>
+    </div>
+
+    <div class="advisor-card">
+      <div class="advisor-name">Jason Gamel</div>
+      <div class="advisor-domain">Regulatory Compliance &bull; ARDA President &amp; CEO</div>
+      <div class="vote-row">
+        <span class="vote-pill vote-no">R1: NO</span>
+        <span class="vote-pill vote-conditional">Final: CONDITIONAL</span>
+        <span class="changed-badge">Changed</span>
+      </div>
+      <div class="advisor-quote">&ldquo;Florida's definition of 'timeshare resale service provider' includes 'referral services' — even a non-payment beta has regulatory exposure.&rdquo;</div>
+    </div>
+
+    <div class="advisor-card">
+      <div class="advisor-name">Casey Winters</div>
+      <div class="advisor-domain">Growth &amp; Liquidity &bull; Former Eventbrite CPO</div>
+      <div class="vote-row">
+        <span class="vote-pill vote-conditional">R1: CONDITIONAL</span>
+        <span class="vote-pill vote-conditional">Final: CONDITIONAL</span>
+      </div>
+      <div class="advisor-quote">&ldquo;A marketplace with no data is already dying. You can't see it because there are no users to churn. But the competitive window is closing.&rdquo;</div>
+    </div>
+
+  </div>
+
+  <h3 class="section-title">Key Tensions</h3>
+  <div class="tensions">
+    <div class="tension-item">
+      <div class="tension-label">1. Pre-Payment Data vs. Payment-Committed Data</div>
+      <div class="tension-desc"><strong>Leah &amp; Bret</strong> argue that TrustShield completion rates, search patterns, and bid behavior are valuable marketplace signals even without payments. <strong>Patrick &amp; Simon</strong> counter that bids without payment commitment are "phantom metrics" — a traveler bidding $800 with no money on the line is expressing a preference, not demand.</div>
+    </div>
+    <div class="tension-item">
+      <div class="tension-label">2. Regulatory Probability vs. Regulatory Severity</div>
+      <div class="tension-desc"><strong>Bret</strong> argues enforcement probability is low for a 50-user beta. <strong>Jason</strong> counters that enforcement is complaint-driven, not monitoring-driven — a single brand-protection attorney complaint triggers mandatory DBPR investigation regardless of platform size.</div>
+    </div>
+    <div class="tension-item">
+      <div class="tension-label">3. Speed vs. Clean Foundation</div>
+      <div class="tension-desc"><strong>Casey &amp; Leah</strong> push for maximum learning velocity — every day without users is a day the marketplace dies invisibly. <strong>Howard &amp; Simon</strong> warn that messy early data and pre-entity operations create permanent acquisition narrative damage.</div>
+    </div>
+  </div>
+
+  <h3 class="section-title">Explore the Assumptions</h3>
+  <div class="sliders-section">
+    <div class="slider-group">
+      <div class="slider-label">LLC Formation Speed</div>
+      <div class="slider-range"><span>1 day</span><span>30 days</span><span>90 days</span></div>
+      <input type="range" id="llcSpeed" min="1" max="90" value="3">
+      <div class="slider-value" id="llcSpeedVal">3 days</div>
+    </div>
+    <div class="slider-group">
+      <div class="slider-label">Owner Supply Density (listings per market at beta launch)</div>
+      <div class="slider-range"><span>1</span><span>5 (minimum)</span><span>20</span></div>
+      <input type="range" id="supplyDensity" min="1" max="20" value="5">
+      <div class="slider-value" id="supplyDensityVal">5 listings</div>
+    </div>
+    <div class="slider-group">
+      <div class="slider-label">Competitive Urgency (months before a funded competitor launches)</div>
+      <div class="slider-range"><span>3 months</span><span>12 months</span><span>24 months</span></div>
+      <input type="range" id="compUrgency" min="3" max="24" value="12">
+      <div class="slider-value" id="compUrgencyVal">12 months</div>
+    </div>
+    <div class="impact-box">
+      <div class="impact-title">Impact Assessment</div>
+      <div class="impact-text" id="impactText">With a 3-day LLC formation and 5 listings per market, you can launch a credible beta within 3 weeks. At 12 months of competitive runway, you have time to be methodical but not leisurely. Focus on Orlando first, prove density, then expand.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="briefing">
+  <div class="briefing-inner">
+    <h2>Founder Briefing</h2>
+
+    <div class="briefing-item">
+      <strong>The Decision</strong>
+      <p>Whether to lift Staff Only Mode and open RAV to real users before the LLC is formed &mdash; given that LLC formation is blocked by OBA disclosures for two co-founders.</p>
+    </div>
+
+    <div class="briefing-item">
+      <strong>The Verdict</strong>
+      <p>Unanimous YES with conditions. Form the LLC with Sujit and Sandhya immediately &mdash; don't wait for all OBAs. The board dissolved the question by revealing the LLC is a 48-hour task, not a multi-month blocker.</p>
+    </div>
+
+    <div class="briefing-item">
+      <strong>The Core Tension</strong>
+      <p>This was never about "beta vs. no beta." It was about whether you've been treating an administrative task as a strategic blocker. Patrick McKenzie's reframing &mdash; "why haven't we formed the LLC with the founders who are already clear?" &mdash; exposed execution inertia as the real obstacle.</p>
+    </div>
+
+    <div class="briefing-item">
+      <strong>Recommended Action</strong>
+      <div class="timeline">
+        <div class="timeline-step"><div class="day">Day 1</div><div class="action">File Delaware LLC + EIN</div></div>
+        <div class="timeline-step"><div class="day">Days 1-10</div><div class="action">Owner outreach &amp; onboarding in Orlando</div></div>
+        <div class="timeline-step"><div class="day">Day 7</div><div class="action">Transfer Stripe to LLC</div></div>
+        <div class="timeline-step"><div class="day">Day 10</div><div class="action">Florida foreign entity registration</div></div>
+        <div class="timeline-step"><div class="day">Days 14-21</div><div class="action">Invite travelers, open full beta</div></div>
+        <div class="timeline-step"><div class="day">Day 81</div><div class="action">Strategic review with 60 days of data</div></div>
+      </div>
+    </div>
+
+    <div class="briefing-item">
+      <strong>The Dissent Worth Heeding</strong>
+      <p>Jason Gamel: File Florida foreign entity registration ($125, online) within 10 days. RAV references Hilton, Marriott, and Disney by name &mdash; any brand-protection complaint triggers a mandatory DBPR investigation. Be a registered entity in Florida before that happens.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  RAV-TECHNICAL Boardroom &bull; Rent-A-Vacation &bull; March 23, 2026
+</div>
+
+<script>
+  const llcSlider = document.getElementById('llcSpeed');
+  const supplySlider = document.getElementById('supplyDensity');
+  const compSlider = document.getElementById('compUrgency');
+  const llcVal = document.getElementById('llcSpeedVal');
+  const supplyVal = document.getElementById('supplyDensityVal');
+  const compVal = document.getElementById('compUrgencyVal');
+  const impactText = document.getElementById('impactText');
+
+  function updateImpact() {
+    const llc = parseInt(llcSlider.value);
+    const supply = parseInt(supplySlider.value);
+    const comp = parseInt(compSlider.value);
+
+    llcVal.textContent = llc === 1 ? '1 day' : llc + ' days';
+    supplyVal.textContent = supply + (supply === 1 ? ' listing' : ' listings');
+    compVal.textContent = comp + ' months';
+
+    const betaReadyDays = llc + 14 + Math.max(0, (5 - supply) * 3);
+    const dataReadyDays = betaReadyDays + 60;
+    const monthsOfData = Math.max(0, comp - Math.ceil(dataReadyDays / 30));
+
+    let urgencyLevel, supplyLevel, llcLevel, advice;
+
+    if (llc <= 7) {
+      llcLevel = 'fast';
+    } else if (llc <= 30) {
+      llcLevel = 'moderate';
+    } else {
+      llcLevel = 'slow';
+    }
+
+    if (supply >= 5) {
+      supplyLevel = 'sufficient';
+    } else if (supply >= 3) {
+      supplyLevel = 'marginal';
+    } else {
+      supplyLevel = 'insufficient';
+    }
+
+    if (comp <= 6) {
+      urgencyLevel = 'critical';
+    } else if (comp <= 12) {
+      urgencyLevel = 'moderate';
+    } else {
+      urgencyLevel = 'comfortable';
+    }
+
+    if (llcLevel === 'slow') {
+      advice = 'At ' + llc + ' days for LLC formation, the administrative delay is the primary risk. This confirms the board\'s core insight: unblock the LLC immediately. Every day of LLC delay is a day of marketplace learning lost. Consider using an expedited filing service ($100-200 extra) to compress the timeline.';
+    } else if (supplyLevel === 'insufficient') {
+      advice = 'With only ' + supply + ' listing(s) per market, the bidding mechanic won\'t produce real price discovery. Casey Winters\' threshold of 5+ listings is a hard minimum. Spend the first ' + Math.ceil((5 - supply) * 3) + ' days on intensive owner recruitment before inviting any travelers. A sparse marketplace teaches users your platform has nothing to offer.';
+    } else if (urgencyLevel === 'critical') {
+      advice = 'With only ' + comp + ' months of competitive runway, you\'ll have roughly ' + monthsOfData + ' months of transaction data before a competitor potentially launches. This is tight. Compress every timeline. Form the LLC today, not this week. Skip the 3-market approach \u2014 prove Orlando in 30 days, then expand aggressively.';
+    } else if (urgencyLevel === 'comfortable' && supplyLevel === 'sufficient') {
+      advice = 'With ' + comp + ' months of competitive runway and ' + supply + ' listings per market, you\'re in a strong position. You can afford to be methodical: form LLC in ' + llc + ' days, onboard owners for 2 weeks, then open to travelers. Beta launches around Day ' + betaReadyDays + ', giving you ' + monthsOfData + ' months of data before competitive pressure peaks. Focus on data quality over speed.';
+    } else {
+      advice = 'With a ' + llc + '-day LLC formation, ' + supply + ' listings per market, and ' + comp + ' months of competitive runway, beta could be ready by Day ' + betaReadyDays + '. You\'d have approximately ' + monthsOfData + ' months of transaction data before the competitive window narrows. ' + (supply < 5 ? 'Prioritize owner recruitment to hit the 5-listing minimum. ' : '') + 'The board\'s consensus holds: form the LLC now, build supply density in Orlando, then launch.';
+    }
+
+    impactText.textContent = advice;
+  }
+
+  llcSlider.addEventListener('input', updateImpact);
+  supplySlider.addEventListener('input', updateImpact);
+  compSlider.addEventListener('input', updateImpact);
+</script>
+
+</body>
+</html>
