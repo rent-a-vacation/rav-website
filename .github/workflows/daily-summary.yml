@@ -76,16 +76,51 @@ jobs:
               --jq '[.[].commit.author.name] | unique | join(", ")' 2>/dev/null || echo "")
           fi
 
-          # Key deliverables from .github/daily-highlights.md
-          # Looks for today's date heading (## YYYY-MM-DD) and extracts bullet lines
-          TODAY_ISO=$(date -u -d '5 hours ago' '+%Y-%m-%d')  # EST date
+          # Key deliverables — auto-generated from issue close comments
+          # Extracts "Completed:" lines from the last comment on each closed issue
           HIGHLIGHTS=""
-          HIGHLIGHTS_RAW=$(gh api "repos/${REPO}/contents/.github/daily-highlights.md?ref=dev" --jq '.content' 2>/dev/null || echo "")
-          if [ -n "$HIGHLIGHTS_RAW" ]; then
-            HIGHLIGHTS_DECODED=$(echo "$HIGHLIGHTS_RAW" | base64 -d 2>/dev/null || echo "")
-            if [ -n "$HIGHLIGHTS_DECODED" ]; then
-              # Extract lines between "## YYYY-MM-DD" and the next "##" or end
-              HIGHLIGHTS=$(echo "$HIGHLIGHTS_DECODED" | sed -n "/^## ${TODAY_ISO}/,/^## /p" | grep '^- ' | head -5 | sed 's/^- //')
+          if [ "$CLOSED_COUNT" != "0" ]; then
+            # Get top 5 issues sorted by label priority: pre-launch > enhancement > bug > refactor > docs > other
+            ISSUE_DATA=$(echo "$CLOSED_TODAY" | jq -r '
+              [.[] | {
+                number: .number,
+                title: .title,
+                priority: (
+                  if (.labels | map(.name) | index("pre-launch")) then 1
+                  elif (.labels | map(.name) | index("enhancement")) then 2
+                  elif (.labels | map(.name) | index("bug")) then 3
+                  elif (.labels | map(.name) | index("refactor")) then 4
+                  elif (.labels | map(.name) | index("docs")) then 5
+                  else 6
+                  end
+                )
+              }] | sort_by(.priority) | .[0:5] | .[] | "\(.number)|\(.title)"
+            ' 2>/dev/null || echo "")
+
+            if [ -n "$ISSUE_DATA" ]; then
+              while IFS='|' read -r ISSUE_NUM ISSUE_TITLE; do
+                [ -z "$ISSUE_NUM" ] && continue
+                # Fetch comments, find last one starting with "Completed:"
+                COMPLETED_BODY=$(gh api "repos/${REPO}/issues/${ISSUE_NUM}/comments?per_page=30" \
+                  --jq '[.[] | select(.body | test("^Completed:"; "m"))] | last.body // ""' 2>/dev/null || echo "")
+
+                if [ -n "$COMPLETED_BODY" ]; then
+                  # Extract text after "Completed:" up to newline, strip "Technical:" if present
+                  DELIVERABLE=$(echo "$COMPLETED_BODY" | grep -m1 '^Completed:' | sed 's/^Completed:[[:space:]]*//' | sed 's/[[:space:]]*Technical:.*//')
+                fi
+
+                # Fallback to issue title if no Completed: comment or empty extraction
+                if [ -z "$DELIVERABLE" ]; then
+                  DELIVERABLE="$ISSUE_TITLE"
+                fi
+
+                if [ -n "$HIGHLIGHTS" ]; then
+                  HIGHLIGHTS=$(printf '%s\n%s' "$HIGHLIGHTS" "$DELIVERABLE")
+                else
+                  HIGHLIGHTS="$DELIVERABLE"
+                fi
+                DELIVERABLE=""
+              done <<< "$ISSUE_DATA"
             fi
           fi
 
