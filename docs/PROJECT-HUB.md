@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-02T00:23:22"
+change_ref: "58d4eff"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -93,16 +93,27 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **771 automated tests** (99 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **825 automated tests** (104 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-045 (001-044 deployed to DEV; 045 pending deploy)
-- **Edge functions:** 26 (25 deployed + `idle-listing-alerts` pending deploy)
+- **Migrations created:** 001-046 (all deployed to both DEV and PROD)
+- **Edge functions:** 30 total (27 deployed to PROD + 3 SMS functions pending LLC/EIN: `notification-dispatcher`, `sms-scheduler`, `twilio-webhook`)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync (PRs #199-#205 merged)
+- **dev and main:** in sync (PR #239 merged Apr 1, 2026)
 
-### Session Handoff (Sessions 25-41)
+### Session Handoff (Sessions 25-42)
+
+**Session 42 — Operational Housekeeping & Mobile App Stories (Apr 1):**
+- Merged dev → main: PR #239 (22 commits — Sessions 38-41 work: Notifications, SEO, CI, boardroom docs).
+- Verified and closed #229 (SEO technical gaps — all acceptance criteria met).
+- Deployed migrations 044-046 to PROD (API keys, IP allowlisting, notification center).
+- Deployed `api-gateway` and `idle-listing-alerts` edge functions to PROD.
+- Documented SMS edge function blockers: `notification-dispatcher`, `sms-scheduler`, `twilio-webhook` blocked on LLC/EIN → A2P 10DLC registration (#127).
+- Created Mobile App Epic #240 with 8 sub-stories (#241-#248): Capacitor shell, UX polish, biometric auth, push notifications, camera, deep linking, offline support, App Store submission. Total estimated effort: 53-74 hours.
+- Reviewed social media issues #230-234 — mostly non-code work (account creation, content), with small shared code tasks (footer links, OG verification, JSON-LD sameAs).
+- Daily status workflow now auto-extracts "Completed:" lines from closed issue comments (no more manual highlights file).
+- Tests: 825 passing (104 files). Build clean.
 
 **Session 41 — Technical SEO Gaps (#229) (Mar 20):**
 - Extended `usePageMeta` hook to accept options object: `canonicalPath`, `ogImage`, `ogType`, `noindex`. Updates canonical, OG, Twitter, and robots meta tags per page. Backward-compatible string signature preserved.
