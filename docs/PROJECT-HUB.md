@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-02T00:23:22"
-change_ref: "58d4eff"
+last_updated: "2026-04-02T02:34:44"
+change_ref: "eebad91"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -104,14 +104,16 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-42)
 
-**Session 42 — Operational Housekeeping & Mobile App Stories (Apr 1):**
+**Session 42 — Operational Housekeeping, Mobile App & Marketing Strategy (Apr 1):**
 - Merged dev → main: PR #239 (22 commits — Sessions 38-41 work: Notifications, SEO, CI, boardroom docs).
 - Verified and closed #229 (SEO technical gaps — all acceptance criteria met).
-- Deployed migrations 044-046 to PROD (API keys, IP allowlisting, notification center).
-- Deployed `api-gateway` and `idle-listing-alerts` edge functions to PROD.
+- Deployed migrations 044-046 to PROD (API keys, IP allowlisting, notification center). All 46 migrations now in both DEV and PROD.
+- Deployed `api-gateway` and `idle-listing-alerts` edge functions to PROD. PROD now has 27 edge functions.
 - Documented SMS edge function blockers: `notification-dispatcher`, `sms-scheduler`, `twilio-webhook` blocked on LLC/EIN → A2P 10DLC registration (#127).
 - Created Mobile App Epic #240 with 8 sub-stories (#241-#248): Capacitor shell, UX polish, biometric auth, push notifications, camera, deep linking, offline support, App Store submission. Total estimated effort: 53-74 hours.
-- Reviewed social media issues #230-234 — mostly non-code work (account creation, content), with small shared code tasks (footer links, OG verification, JSON-LD sameAs).
+- Created Market Research Epic #250 with 7 sub-stories (#251-#257): feature comparison matrix, mystery shopping, review mining, Google Trends, ARDA data, pitch deck, scraped data audit.
+- Created `docs/marketing/` folder with social media strategy + ready-to-paste content for all 5 platforms (Google Business Profile, LinkedIn, Facebook, Instagram, X/Twitter). Content calendar, automation plan, and metrics targets included.
+- Created #259 (Testimonials system — automated collection, approval workflow, homepage display). Phased approach: alternative social proof pre-launch, automated collection post-first-bookings.
 - Daily status workflow now auto-extracts "Completed:" lines from closed issue comments (no more manual highlights file).
 - Tests: 825 passing (104 files). Build clean.
 

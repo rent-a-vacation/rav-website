@@ -146,7 +146,7 @@ const faqs = [
   {
     question: "How much can I save compared to booking directly?",
     answer:
-      "On average, our renters save 50-70% compared to booking the same room directly through the resort.",
+      "Renters typically save 20-40% compared to booking the same room directly through the resort.",
   },
   {
     question: "What if something goes wrong with my booking?",
@@ -163,7 +163,7 @@ const faqs = [
 const HowItWorksPage = () => {
   usePageMeta({
     title: 'How It Works',
-    description: 'Learn how to rent vacation properties at up to 70% off through Rent-A-Vacation marketplace.',
+    description: 'Learn how to rent vacation properties at 20-40% off through Rent-A-Vacation marketplace.',
     canonicalPath: '/how-it-works',
   });
   const location = useLocation();
@@ -227,7 +227,7 @@ const HowItWorksPage = () => {
               Book Your Dream Vacation
             </h2>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Save up to 70% on luxury resort stays by renting directly from timeshare owners
+              Save 20-40% on luxury resort stays by renting directly from timeshare owners
             </p>
           </div>
 

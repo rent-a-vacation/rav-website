@@ -106,7 +106,7 @@ export const sendWelcomeEmail = async (to: string, userName: string): Promise<Em
         <p>Welcome! We're excited to have you join our community of travelers and timeshare owners.</p>
         <p>With Rent-A-Vacation, you can:</p>
         <ul style="line-height: 1.8; padding-left: 20px;">
-          <li>Save up to 70% on luxury resort stays</li>
+          <li>Save 20-40% on luxury resort stays</li>
           <li>Access exclusive members-only vacation clubs</li>
           <li>List your timeshare and earn extra income</li>
         </ul>

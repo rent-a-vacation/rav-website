@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -44,9 +44,9 @@ The vacation ownership industry is a $10.5 billion market *[PROJECTED — ARDA i
 
 We've built the first platform purpose-built for this market, with three structural advantages no competitor can replicate quickly:
 
-1. **AI-powered discovery** *[BUILT]* — voice and text search that understands "Find me a 2-bedroom in Maui under $2,000 next March" and returns results in seconds
-2. **A professional resort data layer** *[BUILT]* — 117 resorts, 351 unit types, auto-populated listing forms designed to cut owner onboarding time dramatically
-3. **A two-sided bidding engine** *[BUILT]* — travelers bid on listings AND post Vacation Wishes for owners to compete over, creating true price discovery
+1. **A two-sided bidding engine** *[BUILT]* — travelers bid on listings AND post Vacation Wishes for owners to compete over, creating true price discovery
+2. **A curated resort data layer** *[BUILT]* — 117 resorts, 351 unit types, auto-populated listing forms designed to cut owner onboarding time dramatically
+3. **AI-powered discovery** *[BUILT]* — voice and text search that understands "Find me a 2-bedroom in Maui under $2,000 next March" and returns results in seconds
 
 The platform is fully built, end-to-end tested with 771 automated tests across 99 test files, and operating at 99.97% uptime in our staging environment. Owners list for free — no upfront fees. We take a configurable 15% default commission on successful bookings only (Pro −2%, Business −5%). The technology is ready — we're now preparing for our public launch.
 
@@ -64,14 +64,14 @@ This is the heart of our story. Every item below is **BUILT**, deployed, and dem
 | **AI Text Chat (Chat with RAVIO)** | BUILT | Type conversational queries, get streaming AI responses with property cards |
 | **Two-Sided Bidding** | BUILT | Traveler bids on listings; owner accepts/counters. Full negotiation workflow |
 | **Vacation Wishes (Travel Requests)** | BUILT | Traveler posts wish; owners send proposals; traveler picks best offer |
-| **Resort Master Data (ResortIQ)** | BUILT | 117 resorts, 351 unit types — auto-populates listing forms |
+| **Resort Directory (ResortIQ)** | BUILT | 117 resorts, 351 unit types — curated data that auto-populates listing forms |
 | **Owner Verification (TrustShield)** | BUILT | Multi-step identity + ownership verification workflow |
 | **Escrow Payments (PaySafe)** | BUILT | Stripe-powered, funds held until check-in confirmed |
 | **Fair Value Score (RAV SmartPrice)** | BUILT | AI-powered pricing recommendations on every listing |
 | **Maintenance Fee Calculator** | BUILT | Public tool — shows break-even for any vacation club brand |
 | **Owner Dashboard** | BUILT | Earnings, listings, bookings, verification, membership management |
 | **Admin Dashboard** | BUILT | User management, listing approval, escrow, payouts, system settings |
-| **Executive Dashboard (RAV Command)** | BUILT | 6-section investor-grade BI with proprietary metrics |
+| **Executive Dashboard (RAV Command)** | BUILT | 6-section investor-grade BI with platform-specific metrics |
 | **Owner Confirmation Timer** | BUILT | Configurable countdown, extensions, auto-cancel workflow |
 | **Cancellation System** | BUILT | 4-tier policy engine with automated refund processing |
 | **Membership Tiers** | BUILT | 6 tiers (3 traveler, 3 owner), voice quotas, commission discounts |
@@ -214,7 +214,7 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 - "The $10.5B vacation ownership market has no tech-first leader" *[Industry data]*
 - "We've built a complete, production-ready platform with 771 automated tests across 99 test files" *[BUILT]*
 - "AI voice search is an industry first — no competitor offers this" *[BUILT]*
-- "117-resort proprietary data layer creates compounding network effects" *[BUILT]*
+- "117-resort curated data layer creates compounding network effects" *[BUILT]*
 - "39 phases shipped in 18 months — execution velocity is our proof" *[BUILT]*
 - "Unit economics model targets 12:1 LTV:CAC ratio and 85%+ contribution margin" *[PROJECTED]*
 
@@ -234,7 +234,7 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 | Maintenance Calculator | **RAV SmartEarn** | Break-even tool — how many weeks to cover fees | BUILT |
 | Owner Verification | **TrustShield** | Multi-step identity and ownership verification | BUILT |
 | Escrow System | **PaySafe** | Funds held securely until confirmed check-in | BUILT |
-| Resort Master Data | **ResortIQ** | Professional resort profiles powering every listing | BUILT |
+| Resort Directory | **ResortIQ** | Curated resort directory — auto-populates listing details | BUILT |
 | Executive Dashboard | **RAV Command** | Real-time business intelligence for leadership | BUILT |
 | Liquidity Score | **Liquidity Score** | Proprietary marketplace health metric | BUILT |
 | Bid Spread Index | **Bid Spread Index** | Proprietary price discovery efficiency metric | BUILT |
@@ -251,14 +251,18 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 ```
 RENT-A-VACATION (Master Brand)
 │
-├── RAVIO (AI Assistant Brand)
+├── For Travelers (Primary — lead with these)
+│   ├── Name Your Price (bidding — primary differentiator)
+│   ├── Vacation Wishes (reverse auction — primary differentiator)
+│   └── PaySafe (escrow protection)
+│
+├── Trust & Safety
+│   ├── TrustShield (owner verification)
+│   └── PaySafe (escrow protection)
+│
+├── RAVIO (AI Discovery — supporting differentiator)
 │   ├── Ask RAVIO (voice search)
 │   └── Chat with RAVIO (text search)
-│
-├── For Travelers
-│   ├── Name Your Price (bidding)
-│   ├── Vacation Wishes (travel requests / reverse auction)
-│   └── PaySafe (escrow protection)
 │
 ├── For Owners
 │   ├── Owner's Edge (dashboard & tools suite)
@@ -270,11 +274,11 @@ RENT-A-VACATION (Master Brand)
 │   │   └── RAV SmartBudget (budget planner)
 │   └── TrustShield (verification program)
 │
-└── For Business / Investors
+└── Infrastructure / Business
     ├── RAV Command (executive dashboard)
-    ├── ResortIQ (resort data layer)
-    ├── Liquidity Score (proprietary metric)
-    └── Bid Spread Index (proprietary metric)
+    ├── ResortIQ (curated resort directory)
+    ├── Liquidity Score (marketplace health metric)
+    └── Bid Spread Index (price discovery metric)
 ```
 
 ---
@@ -301,43 +305,40 @@ RENT-A-VACATION (Master Brand)
 
 ### Value Proposition Pillars
 
-**Pillar 1: AI-First Discovery** *[BUILT]*
-> "The only vacation rental platform with a conversational AI concierge. Ask RAVIO by voice or text — describe your dream vacation in natural language and get personalized results in seconds. No filters. No dropdowns. Just conversation."
-
-**Pillar 2: True Price Discovery** *[BUILT]*
+**Pillar 1: True Price Discovery** *[BUILT]*
 > "Name Your Price isn't a slogan — it's a feature. Bid on any open listing, or post a Vacation Wish and let verified owners compete for your booking. For the first time in travel, the traveler sets the terms."
 
-**Pillar 3: Purpose-Built for Vacation Clubs** *[BUILT]*
-> "We don't dabble in timeshares — we're built for them. 117 resorts. 351 unit types. Professional data that auto-populates listing forms. Owner verification that builds real trust. Resort confirmation workflows that match how vacation clubs actually work."
+**Pillar 2: Purpose-Built for Vacation Clubs** *[BUILT]*
+> "We don't dabble in timeshares — we're built for them. 117 resorts. 351 unit types. Curated resort data that auto-populates listing forms. Owner verification that builds real trust. Resort confirmation workflows that match how vacation clubs actually work."
 
-**Pillar 4: Owner Empowerment** *[BUILT]*
-> "Listing is designed to take minutes, not hours. RAV SmartPrice shows what to charge. The RAV SmartEarn shows exactly how many weeks cover your maintenance fees. You control pricing, you approve guests, you earn on your terms."
-
-**Pillar 5: Ironclad Trust** *[BUILT]*
+**Pillar 3: Ironclad Trust** *[BUILT]*
 > "Every owner goes through TrustShield verification. Every payment is protected through PaySafe escrow. Every stay is backed by our satisfaction guarantee. We've removed the risk so you can focus on the vacation."
+
+**Pillar 4: AI-Powered Discovery** *[BUILT]*
+> "Ask RAVIO by voice or text — describe your dream vacation in natural language and get personalized results in seconds. No filters. No dropdowns. Just conversation. A supporting feature that makes the marketplace even easier to use."
+
+**Pillar 5: Owner Empowerment** *[BUILT]*
+> "Listing is designed to take minutes, not hours. RAV SmartPrice shows what to charge. RAV SmartEarn shows exactly how many weeks cover your maintenance fees. You control pricing, you approve guests, you earn on your terms."
 
 ---
 
 ## VII. CAMPAIGN PILLARS
 
-### Campaign 1: "Ask RAVIO" (AI Launch Campaign)
+> **Ordering rationale:** Marketplace mechanics are the primary differentiator. AI is a supporting feature. See `BRAND-LOCK.md` for the messaging hierarchy.
 
-**Concept:** Introduce RAVIO as the world's first AI vacation concierge. Position RAV as the Tesla of travel — technology-forward, category-defining.
+### Campaign 1: "Name Your Price" (Marketplace Differentiation — LEAD CAMPAIGN)
 
-**Why This Works Pre-Launch:** The technology IS the product. We can demo voice search live. This campaign is about demonstrating capability, not claiming traction.
-
-**Hero Visual:** Split-screen. Left: someone speaking to their phone on a beach. Right: RAVIO's voice waveform morphing into resort imagery.
+**Concept:** The bidding feature as a category-defining moment. This is what no competitor has.
 
 **Headline Options:**
-- "Meet RAVIO. Your AI Vacation Concierge."
-- "Just Say Where. RAVIO Does the Rest."
-- "The Future of Vacation Search Has a Voice."
-- "Don't Search. Ask."
+- "Name Your Price. Book Your Paradise."
+- "What Would You Pay for a Week in Paradise?"
+- "The Price Tag Just Got a Negotiation Button."
 
 **Supporting Copy:**
-> "RAVIO understands you. Say 'Find me a beachfront suite in Orlando under $1,500 for spring break' and watch results appear before you finish your coffee. Powered by the same AI that understands natural conversation — not keywords, not filters, not frustration. Try it yourself at dev.rent-a-vacation.com."
+> "On every other platform, you take the price or leave. On Rent-A-Vacation, you make an offer. Browse open listings, bid what you think is fair, and let the owner decide. It's how vacation rentals should have always worked."
 
-**Proof Point:** *Live demo — this works today.*
+**Proof Point:** *Live demo — bidding workflow works end-to-end today.*
 
 ---
 
@@ -376,21 +377,7 @@ RENT-A-VACATION (Master Brand)
 
 ---
 
-### Campaign 4: "Name Your Price" (Marketplace Differentiation)
-
-**Concept:** The bidding feature as a category-defining moment.
-
-**Headline Options:**
-- "Name Your Price. Book Your Paradise."
-- "What Would You Pay for a Week in Paradise?"
-- "The Price Tag Just Got a Negotiation Button."
-
-**Supporting Copy:**
-> "On every other platform, you take the price or leave. On Rent-A-Vacation, you make an offer. Browse open listings, bid what you think is fair, and let the owner decide. It's how vacation rentals should have always worked."
-
----
-
-### Campaign 5: "TrustShield" (Trust & Safety)
+### Campaign 4: "TrustShield" (Trust & Safety)
 
 **Concept:** Address the #1 objection in peer-to-peer vacation rentals: "Is this safe?"
 
@@ -401,6 +388,26 @@ RENT-A-VACATION (Master Brand)
 
 **Supporting Copy:**
 > "Before any owner lists on Rent-A-Vacation, they go through TrustShield — our multi-step verification process that confirms identity and ownership. Your payment is held in PaySafe escrow until you check in and confirm your stay."
+
+---
+
+### Campaign 5: "Ask RAVIO" (AI Discovery — Supporting)
+
+**Concept:** Introduce RAVIO as an AI vacation search assistant. Position as a supporting feature that makes the marketplace easier to use.
+
+**Why This Works Pre-Launch:** The technology is demonstrable live. This campaign supports the marketplace story — it's not the headline, it's the "and also."
+
+**Hero Visual:** Split-screen. Left: someone speaking to their phone on a beach. Right: RAVIO's voice waveform morphing into resort imagery.
+
+**Headline Options:**
+- "Meet RAVIO. Your AI Vacation Concierge."
+- "Just Say Where. RAVIO Does the Rest."
+- "Don't Search. Ask."
+
+**Supporting Copy:**
+> "RAVIO understands you. Say 'Find me a beachfront suite in Orlando under $1,500 for spring break' and watch results appear before you finish your coffee. Powered by natural language AI — not keywords, not filters, not frustration. Try it yourself at dev.rent-a-vacation.com."
+
+**Proof Point:** *Live demo — voice search works today.*
 
 ---
 

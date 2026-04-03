@@ -28,7 +28,7 @@ const badges = [
   },
   {
     icon: Star,
-    value: "Up to 70%",
+    value: "20-40%",
     label: "Savings vs. Resort",
   },
 ];

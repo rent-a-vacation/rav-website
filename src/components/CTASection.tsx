@@ -24,7 +24,7 @@ const CTASection = () => {
           </h2>
           
           <p className="text-lg text-white/80 mb-10 max-w-xl mx-auto">
-            Rent directly from timeshare owners at up to 70% off. Place bids on open listings 
+            Rent directly from timeshare owners and save 20-40% vs resort-direct rates. Place bids on open listings
             or post your travel plans and let owners come to you with offers.
           </p>
 

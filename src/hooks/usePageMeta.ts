@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 const BASE_URL = 'https://rent-a-vacation.com';
 const DEFAULT_TITLE = 'Rent-A-Vacation | Where Luxury Becomes Affordable';
 const DEFAULT_DESCRIPTION =
-  'Name Your Price. Book Your Paradise. Rent vacation club and timeshare weeks directly from owners at up to 70% off.';
+  'Name Your Price. Book Your Paradise. Rent vacation club and timeshare weeks directly from owners at 20-40% off resort rates.';
 const DEFAULT_OG_IMAGE = `${BASE_URL}/android-chrome-512x512.png`;
 
 export interface PageMetaOptions {

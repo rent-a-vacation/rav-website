@@ -77,8 +77,8 @@ const Index = () => {
   const { user, isLoading } = useAuth();
 
   usePageMeta({
-    title: 'Luxury Vacation Rentals at 50–70% Off',
-    description: 'Rent luxury timeshare vacation rentals at up to 70% off retail. Browse 117 resorts from Marriott, Hilton, Disney and more.',
+    title: 'Luxury Vacation Rentals at 20–40% Off Resort Rates',
+    description: 'Rent luxury timeshare vacation rentals at 20-40% off resort rates. Browse 117 resorts from Marriott, Hilton, Disney and more.',
     canonicalPath: '/',
   });
 
@@ -91,7 +91,7 @@ const Index = () => {
       url: 'https://rent-a-vacation.com',
       logo: 'https://rent-a-vacation.com/rav-logo.svg',
       description:
-        'The open marketplace for vacation rentals. Rent directly from verified timeshare owners at 50-70% off retail prices.',
+        'The open marketplace for vacation rentals. Rent directly from verified timeshare owners at 20-40% off resort-direct prices.',
       contactPoint: {
         '@type': 'ContactPoint',
         telephone: '+1-800-728-0800',

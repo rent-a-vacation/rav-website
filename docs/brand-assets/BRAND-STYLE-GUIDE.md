@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -196,10 +196,13 @@ Status/Error          → #E53E3E
 | **Success messages** | Celebratory, warm | "Your booking request has been sent!" |
 
 ### Key Phrases
-- "Name Your Price" — the bidding/negotiation value proposition
+- "Name Your Price" — the bidding/negotiation value proposition (primary differentiator)
 - "Book Your Paradise" — the end goal for travelers
 - "Rent-A-Vacation" — always hyphenated, title case
 - "RAV" — acceptable abbreviation in informal contexts
+
+### Messaging Authority
+> **All messaging claims, feature ordering, and savings numbers must align with `docs/brand-assets/BRAND-LOCK.md`.** When in doubt, the Brand Lock is the source of truth.
 
 ---
 

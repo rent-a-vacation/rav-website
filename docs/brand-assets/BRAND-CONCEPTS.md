@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -197,18 +197,18 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 
 ### 7. ResortIQ
 
-**What It Is:** Professional resort database powering all listings.
+**What It Is:** Curated resort directory that auto-populates listing details for owners and provides consistent resort information for travelers.
 
 **Copy Blocks:**
 
 **Headline:**
-> "117 Resorts. 351 Unit Types. One Trusted Source."
+> "117 Resorts. 351 Unit Types. Listed in Minutes."
 
 **Short:**
-> "Every listing is powered by ResortIQ — professional resort data that auto-fills the details."
+> "Every listing is backed by ResortIQ — curated resort data that auto-fills the details so owners list in minutes."
 
 **Medium:**
-> "Behind every listing on Rent-A-Vacation is ResortIQ — our proprietary database of 117 resorts and 351 unit types from Hilton, Marriott, Disney, Wyndham, Bluegreen, and more. When an owner creates a listing, ResortIQ auto-populates bedrooms, bathrooms, square footage, amenities, and policies. When a traveler views a listing, they see professional resort information they can trust. This isn't user-generated guesswork — it's verified resort data."
+> "Behind every listing on Rent-A-Vacation is ResortIQ — our curated directory of 117 resorts and 351 unit types from Hilton, Marriott, Disney, Wyndham, Bluegreen, and more. When an owner creates a listing, ResortIQ auto-populates bedrooms, bathrooms, square footage, amenities, and policies. When a traveler views a listing, they see consistent, accurate resort information. This isn't user-generated guesswork — it's structured data curated from official resort sources."
 
 ---
 
@@ -242,23 +242,23 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 > "6 sections. Proprietary metrics. Live industry feed. The view from the top."
 
 **For Investors:**
-> "RAV Command is where business meets data. Track GMV, revenue, and booking trends with Recharts-powered visualizations. Monitor marketplace health with our proprietary Liquidity Score and Bid Spread Index. Get live industry news, regulatory radar, and macro economic indicators. Connect third-party data sources like AirDNA and STR with our Bring-Your-Own-Key integration. This is the dashboard that turns a marketplace into a business."
+> "RAV Command is where business meets data. Track GMV, revenue, and booking trends with Recharts-powered visualizations. Monitor marketplace health with our platform-specific Liquidity Score and Bid Spread Index. Get live industry news, regulatory radar, and macro economic indicators. Connect third-party data sources like AirDNA and STR with our Bring-Your-Own-Key integration. This is the dashboard that turns a marketplace into a business."
 
 ---
 
 ## III. ELEVATOR PITCHES (By Audience)
 
 ### For a Traveler (15 seconds)
-> "Rent-A-Vacation lets you stay at Hilton, Marriott, and Disney resorts at owner prices — up to 70% less than booking direct. Search by voice, bid on listings, or tell us your dream trip and let owners compete. Every owner is verified, every payment is protected."
+> "Rent-A-Vacation lets you stay at Hilton, Marriott, and Disney resorts at owner prices — saving 20-40% compared to booking direct. Bid on listings, tell us your dream trip and let owners compete, or search by voice. Every owner is verified, every payment is protected."
 
 ### For a Timeshare Owner (15 seconds)
 > "You're paying maintenance fees on weeks you don't use. Rent-A-Vacation lets you list those weeks in minutes, our AI tells you what to charge, and travelers bid on your property. You approve guests, set prices, and earn income that offsets your fees."
 
 ### For an Investor (30 seconds)
-> "Rent-A-Vacation is the first AI-powered marketplace for the $10.5 billion vacation ownership industry. We've built voice and text AI search, a two-sided bidding engine, a 117-resort data layer, and proprietary pricing intelligence — all fully deployed and tested. The platform is pre-launch, disciplined, and ready to scale. We charge a 15% default commission on successful bookings only — no upfront fees to list — with tier-based discounts for subscribed owners. Projected 85%+ contribution margins."
+> "Rent-A-Vacation is the first marketplace purpose-built for the $10.5 billion vacation ownership industry. We've built a two-sided bidding engine, a reverse-auction system where owners compete for travelers, a 117-resort data layer, and AI-powered voice and text search — all fully deployed and tested. The platform is pre-launch, disciplined, and ready to scale. We charge a 15% default commission on successful bookings only — no upfront fees to list — with tier-based discounts for subscribed owners. Projected 85%+ contribution margins."
 
 ### For a Journalist (30 seconds)
-> "There are 10 million American families paying over a thousand dollars a year in timeshare maintenance fees for weeks they never use — and travelers paying inflated prices for those same rooms through other platforms. We built the first AI-powered marketplace to connect them directly. Our AI concierge, RAVIO, lets travelers search by voice — an industry first. Travelers can also bid on listings or post 'Vacation Wishes' for owners to compete over. The platform is fully built, pre-launch, and demonstrable today."
+> "There are 10 million American families paying over a thousand dollars a year in timeshare maintenance fees for weeks they never use — and travelers paying inflated prices for those same rooms through other platforms. We built the first marketplace to connect them directly. Travelers can bid on any listing or post 'Vacation Wishes' for owners to compete over — it's the first bidding engine in vacation rentals. We also offer AI-powered voice and text search through our concierge, RAVIO. The platform is fully built, pre-launch, and demonstrable today."
 
 ### For a Vacation Club Brand Executive (30 seconds)
 > "Your owners are your most valuable long-term asset — and they're frustrated. Maintenance fees are rising, usage is declining, and exit companies are circling. Rent-A-Vacation gives your owners a trusted, verified platform to monetize unused weeks — reducing their financial burden and your churn risk. We've already built profiles for [62/40/15] of your resorts. Let's discuss a pilot program."
@@ -356,7 +356,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 | 1 | "What would you pay for a week in paradise?" | High — curiosity + aspiration |
 | 2 | "You can now bid on vacation rentals" | High — novelty |
 | 3 | "Meet RAVIO, your AI vacation concierge" | Medium-High — tech curiosity |
-| 4 | "Luxury resorts at 50-70% off (here's how)" | High — savings hook |
+| 4 | "Luxury resorts at 20-40% off (here's how)" | High — savings hook |
 | 5 | "Your dream vacation, at your price" | Medium — aspirational |
 | 6 | "Just say where. RAVIO finds the rest." | Medium — AI hook |
 
@@ -383,24 +383,24 @@ Luxury Resorts. Owner Prices.
 
 ━━━ What is it? ━━━
 A marketplace where you rent vacation club properties
-directly from verified owners — at 50-70% less than
+directly from verified owners — at 20-40% less than
 resort-direct prices.
 
 ━━━ How it works ━━━
-1. ASK RAVIO — Search by voice or text
-2. BID or WISH — Name your price or let owners compete
+1. BID or WISH — Name your price or let owners compete
+2. SEARCH — Browse listings, or ask RAVIO by voice or text
 3. BOOK with CONFIDENCE — PaySafe escrow protects every dollar
 
 ━━━ Why it's different ━━━
-✓ AI voice search (industry first)
-✓ Bidding on any listing
+✓ Bidding on any listing (Name Your Price)
 ✓ Vacation Wishes (reverse auction)
+✓ AI voice search with RAVIO
 ✓ 117 resorts, 351 unit types
 ✓ Every owner verified via TrustShield
 ✓ Every payment held in PaySafe escrow
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-rent-a-vacation.com | #AskRAVIO
+rent-a-vacation.com | #NameYourPrice
 Name Your Price. Book Your Paradise.
 ```
 
@@ -481,10 +481,10 @@ Stop Paying. Start Earning.
 | Month | Campaign | Primary Channel | Goal |
 |-------|----------|----------------|------|
 | **Apr** | "RAV SmartEarn" launch | SEO blog + social | Owner leads |
-| **May** | "Ask RAVIO" launch video | Social video + PR | Brand awareness |
+| **May** | "Name Your Price" explainer series | Social carousel + PR | Brand awareness — lead with marketplace |
 | **Jun** | Beta launch announcement | Email + community | Beta signups |
 | **Jul** | "Vacation Wishes" campaign | Social + email | Traveler acquisition |
-| **Aug** | "Name Your Price" explainer series | Social carousel | Feature education |
+| **Aug** | "Ask RAVIO" launch video | Social video + PR | Feature education — AI as supporting differentiator |
 | **Sep** | Public launch | PR + paid social + search | Mass acquisition |
 | **Oct** | "Trust Stories" (TrustShield focus) | Testimonial video | Trust building |
 | **Nov** | Holiday travel deals | Email + social | Seasonal conversion |

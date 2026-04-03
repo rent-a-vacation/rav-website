@@ -99,7 +99,7 @@ describe('sendWelcomeEmail', () => {
     const html = mockInvoke.mock.calls[0][1].body.html as string;
     expect(html).toContain('Hi Jane Doe');
     expect(html).toContain('Start Exploring');
-    expect(html).toContain('Save up to 70%');
+    expect(html).toContain('Save 20-40%');
   });
 
   it('handles empty username gracefully', async () => {

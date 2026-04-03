@@ -22,7 +22,7 @@ const renterSteps = [
   {
     icon: Key,
     title: "Enjoy Your Stay",
-    description: "Check in at the resort and enjoy your luxury vacation at up to 70% less than booking through the resort.",
+    description: "Check in at the resort and enjoy your luxury vacation at 20-40% less than booking through the resort.",
   },
 ];
 
