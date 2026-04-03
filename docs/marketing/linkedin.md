@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-02T01:13:15"
-change_ref: "029d541"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-42"
 status: "active"
 ---
@@ -33,7 +33,7 @@ status: "active"
 
 **Tagline (120 chars):**
 ```
-The AI-powered marketplace where timeshare owners earn and travelers save up to 70% on luxury resort stays.
+The marketplace where timeshare owners earn and travelers save 20-40% on luxury resort stays.
 ```
 
 **About section (2000 chars max):**
@@ -44,15 +44,14 @@ THE PROBLEM
 9.9 million American families own timeshares, paying an average of $1,120/year in maintenance fees — often for weeks they never use. Meanwhile, travelers pay inflated prices for the exact same resort rooms through traditional booking channels.
 
 THE SOLUTION
-We built the marketplace that connects them directly. Owners list unused weeks and earn income that offsets their fees. Travelers get luxury resort stays at 50-70% below resort-direct prices.
+We built the marketplace that connects them directly. Owners list unused weeks and earn income that offsets their fees. Travelers get luxury resort stays at 20-40% below resort-direct prices.
 
 WHAT MAKES US DIFFERENT
-- RAVIO AI Concierge: The first voice and text AI search in vacation rentals. Just say where you want to go.
 - Name Your Price: Travelers bid on listings — the first negotiation engine in the space.
 - Vacation Wishes: Travelers post what they want; owners compete to offer it.
+- TrustShield + PaySafe: Every owner identity-verified before listing. Payment held in escrow until check-in.
+- RAVIO AI Concierge: Voice and text AI search — just describe your dream vacation.
 - SmartPrice Intelligence: AI-powered pricing recommendations for owners.
-- TrustShield Verification: Every owner identity-verified before listing.
-- PaySafe Escrow: Payment held until check-in confirmation.
 
 THE PLATFORM
 117+ resorts across Hilton Grand Vacations, Marriott Vacation Club, Disney Vacation Club, and 6 more brands. 10 destination regions. Full-stack technology: React, Supabase, Stripe, VAPI voice AI. 825 automated tests. Production-ready.
@@ -77,11 +76,11 @@ We're building the future of timeshare rentals.
 Rent-A-Vacation is the AI-powered marketplace that fixes both sides of this equation.
 
 What we've built:
-- RAVIO: An AI concierge that lets travelers search by voice — an industry first
 - Name Your Price: A bidding engine where travelers set the terms
+- Vacation Wishes: Travelers post what they want; owners compete to offer it
+- TrustShield + PaySafe: Multi-step owner verification and escrow-protected payments
+- RAVIO: An AI concierge that lets travelers search by voice or text
 - SmartPrice: AI-powered pricing intelligence for owners
-- TrustShield: Multi-step owner verification
-- PaySafe: Escrow-protected payments
 
 117 resorts. 9 brands. Fully built and tested.
 

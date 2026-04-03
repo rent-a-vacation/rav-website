@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-02T01:13:15"
-change_ref: "029d541"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-42"
 status: "active"
 ---
@@ -21,9 +21,9 @@ status: "active"
 
 **Bio (150 chars max):**
 ```
-Luxury resorts at up to 70% off
-AI-powered timeshare rental marketplace
+Save 20-40% on luxury resort stays
 Name Your Price on any listing
+Timeshare rental marketplace
 rent-a-vacation.com
 ```
 
@@ -56,7 +56,7 @@ Create circular icons in brand teal with white icons/text:
 ```
 Slide 1: "Introducing Rent-A-Vacation" (brand logo on teal background)
 Slide 2: "The Problem: 9.9M families pay $1,000+/yr for timeshare weeks they don't use"
-Slide 3: "The Solution: A marketplace that connects owners with travelers at up to 70% off"
+Slide 3: "The Solution: A marketplace that connects owners with travelers — save 20-40%"
 Slide 4: "For Owners: List your week. Get AI pricing. Earn income."
 Slide 5: "For Travelers: Browse. Bid. Book. Save." + CTA: "Link in bio"
 
@@ -65,7 +65,7 @@ We're building something new in travel.
 
 9.9 million American families own timeshares. Most pay over $1,000/year for weeks they never use. Meanwhile, travelers overpay for the same resort rooms.
 
-Rent-A-Vacation connects them directly. Owners earn. Travelers save up to 70%. Everyone wins.
+Rent-A-Vacation connects them directly. Owners earn. Travelers save 20-40%. Everyone wins.
 
 Link in bio to explore.
 
@@ -80,33 +80,27 @@ Caption:
 Orlando, Florida
 Hilton Grand Vacations | 2BR Suite | Sleeps 8
 
-Resort rate: ~$3,200/week
-On Rent-A-Vacation: from $1,100/week
+Owner prices. No resort markup. No middlemen. Just verified owners renting directly to you.
 
-That's owner pricing. No markup. No middlemen. Just a verified owner renting directly to you.
-
-117+ resorts. 10 destinations. One marketplace.
+Save 20-40% compared to booking direct. 117+ resorts. 10 destinations. One marketplace.
 
 #Orlando #FloridaVacation #ResortLife #VacationRental #TravelDeals #LuxuryForLess #HiltonGrandVacations
 ```
 
-### Post 3: How RAVIO Works (Carousel — 4 slides)
+### Post 3: Name Your Price (Carousel — 3 slides)
 ```
-Slide 1: "Meet RAVIO" (AI icon on teal)
-Slide 2: "Just say: 'Find me a beachfront resort in Maui under $2,000'"
-Slide 3: "RAVIO searches 117 resorts, matches your criteria, and shows results in seconds"
-Slide 4: "No filters. No forms. Just conversation." + "Try it at rent-a-vacation.com"
+Slide 1: "Name Your Price" (bold text on coral background)
+Slide 2: "See a listing for $2,400? Offer $1,800. The owner reviews and responds."
+Slide 3: "The first bidding engine in vacation rentals. You set the terms."
 
 Caption:
-Meet RAVIO — the first AI vacation concierge.
+The price tag just got a negotiation button.
 
-Search by voice or text. Describe your dream vacation in your own words. RAVIO finds your perfect match.
+Name Your Price isn't a slogan — it's a feature. Bid on any listing on Rent-A-Vacation. The owner can accept, counter, or pass.
 
-"Find me a 2-bedroom in Myrtle Beach for under $1,500 in July."
+For the first time in travel, the traveler sets the terms.
 
-Done.
-
-#AskRAVIO #JustSayWhere #AI #VoiceSearch #TravelTech #Innovation
+#NameYourPrice #VacationBidding #TravelHack #SmartTravel #LuxuryForLess
 ```
 
 ### Post 4: Resort Showcase — Hawaii
@@ -126,20 +120,23 @@ Browse Hawaii resorts: link in bio
 #Maui #Hawaii #ResortLife #BeachVacation #MauiResort #MarriottVacationClub #TravelDeals
 ```
 
-### Post 5: Name Your Price (Carousel — 3 slides)
+### Post 5: How RAVIO Works (Carousel — 4 slides)
 ```
-Slide 1: "Name Your Price" (bold text on coral background)
-Slide 2: "See a listing for $2,400? Offer $1,800. The owner reviews and responds."
-Slide 3: "The first bidding engine in vacation rentals. You set the terms."
+Slide 1: "Meet RAVIO" (AI icon on teal)
+Slide 2: "Just say: 'Find me a beachfront resort in Maui under $2,000'"
+Slide 3: "RAVIO searches 117 resorts, matches your criteria, and shows results in seconds"
+Slide 4: "No filters. No forms. Just conversation." + "Try it at rent-a-vacation.com"
 
 Caption:
-The price tag just got a negotiation button.
+Meet RAVIO — the first AI vacation concierge.
 
-Name Your Price isn't a slogan — it's a feature. Bid on any listing on Rent-A-Vacation. The owner can accept, counter, or pass.
+Search by voice or text. Describe your dream vacation in your own words. RAVIO finds your perfect match.
 
-For the first time in travel, the traveler sets the terms.
+"Find me a 2-bedroom in Myrtle Beach for under $1,500 in July."
 
-#NameYourPrice #VacationBidding #TravelHack #SmartTravel #LuxuryForLess
+Done.
+
+#AskRAVIO #JustSayWhere #AI #VoiceSearch #TravelTech #Innovation
 ```
 
 ### Post 6: SmartEarn Calculator
@@ -230,7 +227,7 @@ Verified owners. Protected payments. Guaranteed stays.
 5. **Behind the Build:** Screenshot of dashboard/feature with quick explanation
 
 ### Reel Ideas (30-60 seconds)
-1. **"I just saved $1,500 on a resort vacation. Here's how."** — Walk through the search-to-book flow
+1. **"I just saved hundreds on a resort vacation. Here's how."** — Walk through the search-to-book flow
 2. **RAVIO demo:** Screen record voice search. "I said 'Find me a resort in Orlando' and..."
 3. **Price comparison:** Side-by-side hotel price vs RAV price for the same resort
 4. **SmartEarn reveal:** "I pay $1,800/year in fees. Here's how I'm covering all of them."

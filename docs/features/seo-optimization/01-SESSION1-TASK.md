@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-39-docs-update"
 status: "archived"
 ---
@@ -104,7 +104,7 @@ Add `<SEOHead>` as the first child inside each page's return JSX. Here are the e
 ```tsx
 <SEOHead
   title="Rent-A-Vacation | Where Luxury Becomes Affordable"
-  description="Name Your Price. Book Your Paradise. Rent vacation club and timeshare weeks directly from owners at up to 70% off."
+  description="Name Your Price. Book Your Paradise. Rent vacation club and timeshare weeks directly from owners at 20-40% off resort rates."
   path="/"
 />
 ```
@@ -133,7 +133,7 @@ Note: Extract these values from the existing component state/props. The exact va
 ```tsx
 <SEOHead
   title="How It Works"
-  description="Learn how Rent-A-Vacation connects timeshare owners with travelers. List your property or find luxury vacation rentals at up to 70% off."
+  description="Learn how Rent-A-Vacation connects timeshare owners with travelers. List your property or find luxury vacation rentals at 20-40% off resort rates."
   path="/how-it-works"
 />
 ```

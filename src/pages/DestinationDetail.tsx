@@ -57,7 +57,7 @@ const DestinationDetail = () => {
     : `/destinations/${destinationSlug}`;
   usePageMeta({
     title: `${pageName} Vacation Rentals`,
-    description: `${pageDesc} Browse timeshare rentals in ${pageName} at up to 70% off retail.`,
+    description: `${pageDesc} Browse timeshare rentals in ${pageName} at 20-40% off resort rates.`,
     canonicalPath,
   });
 

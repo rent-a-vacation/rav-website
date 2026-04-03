@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-02T01:13:15"
-change_ref: "029d541"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-42"
 status: "active"
 ---
@@ -23,7 +23,7 @@ status: "active"
 
 **Bio (101 chars max):**
 ```
-Luxury resort vacations at owner prices. AI-powered search. Name Your Price bidding. Up to 70% off.
+Luxury resort vacations at owner prices. Name Your Price bidding. Save 20-40% on top resorts.
 ```
 
 **About — Short description:**
@@ -36,18 +36,17 @@ The AI-powered marketplace where timeshare owners rent directly to travelers —
 Rent-A-Vacation connects timeshare owners with travelers looking for luxury resort stays at a fraction of the cost.
 
 FOR TRAVELERS:
-Browse 117+ resorts across Hilton Grand Vacations, Marriott Vacation Club, Disney Vacation Club, and more. Search by voice with RAVIO, our AI concierge, or make an offer on any listing with Name Your Price. Save 50-70% compared to booking direct. Every owner is verified. Every payment is protected.
+Browse 117+ resorts across Hilton Grand Vacations, Marriott Vacation Club, Disney Vacation Club, and more. Name Your Price — bid on any listing. Post a Vacation Wish and let owners compete for your trip. Every owner is verified through TrustShield. Every payment is protected by PaySafe escrow. Or ask RAVIO, our AI concierge, to search by voice or text. Save 20-40% compared to booking direct.
 
 FOR TIMESHARE OWNERS:
 Turn your unused maintenance fee weeks into income. List your property in minutes. Our SmartPrice AI tells you what to charge. You approve every guest. You set the terms. 15% commission on successful bookings only — no upfront fees, no monthly charges.
 
 FEATURES:
-- RAVIO AI Concierge: Search by voice or text — just describe your dream vacation
-- Name Your Price: Bid on any listing
+- Name Your Price: Bid on any listing — the first negotiation engine in vacation rentals
 - Vacation Wishes: Post what you want; owners compete to offer it
+- TrustShield + PaySafe: Every owner identity-verified, every payment escrow-protected until check-in
+- RAVIO AI Concierge: Search by voice or text — just describe your dream vacation
 - RAV SmartEarn Calculator: See how many weeks cover your maintenance fees (free, no account needed)
-- TrustShield: Every owner identity-verified
-- PaySafe: Escrow-protected payments until check-in
 
 Visit rent-a-vacation.com to get started.
 ```
@@ -77,7 +76,7 @@ We built the marketplace that changes that.
 
 FOR OWNERS: List your unused weeks. Our AI tells you what to charge. Travelers come to you. Earn income that offsets your fees.
 
-FOR TRAVELERS: Stay at Hilton, Marriott, and Disney resorts at up to 70% off. Search by voice with our AI concierge. Or Name Your Price on any listing.
+FOR TRAVELERS: Stay at Hilton, Marriott, and Disney resorts and save 20-40%. Name Your Price on any listing. Post a Vacation Wish and let owners come to you. Or search by voice with our AI concierge.
 
 Every owner verified. Every payment protected.
 
@@ -105,16 +104,16 @@ Try our free SmartEarn Calculator to see how many weeks it takes to cover your a
 
 ### Post 3: How It Works — For Travelers
 ```
-Imagine staying at a luxury resort — Hilton, Marriott, or Disney — for up to 70% less than booking direct.
+Imagine staying at a luxury resort — Hilton, Marriott, or Disney — and saving 20-40% compared to booking direct.
 
 That's Rent-A-Vacation. Here's how:
 
-1. Browse 117+ resorts or ask our AI: "Find me a beachfront resort in Maui for under $2,000"
-2. Found something you love? Book it directly or Name Your Price
-3. Your payment is held in escrow until you check in
+1. Name Your Price — bid on any listing you love
+2. Or post a Vacation Wish — tell us what you want and owners compete to offer it
+3. Your payment is held in PaySafe escrow until you check in
 4. Enjoy your luxury vacation at owner prices
 
-Why is it cheaper? Because you're renting directly from vacation club owners — no resort markup, no middlemen.
+Why is it cheaper? Because you're renting directly from verified vacation club owners — no resort markup, no middlemen.
 
 Every owner is verified. Every payment is protected.
 

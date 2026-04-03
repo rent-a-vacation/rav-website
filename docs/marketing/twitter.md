@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-02T01:13:15"
-change_ref: "029d541"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-42"
 status: "active"
 ---
@@ -21,7 +21,7 @@ status: "active"
 
 **Bio (160 chars max):**
 ```
-AI-powered timeshare rental marketplace. Luxury resorts at up to 70% off. Name Your Price on any listing. Voice search with RAVIO. rent-a-vacation.com
+Timeshare rental marketplace. Save 20-40% on luxury resorts. Name Your Price on any listing. Vacation Wishes. TrustShield verified. rent-a-vacation.com
 ```
 
 **Location:** United States
@@ -47,10 +47,10 @@ We fix both sides. Here's how:
 1/ FOR TRAVELERS:
 
 Browse 117+ resorts (Hilton, Marriott, Disney).
-Search by voice with RAVIO, our AI concierge.
 Name Your Price — bid on any listing.
+Post a Vacation Wish — owners compete to offer it.
 
-Save up to 70% vs booking direct. Every payment held in escrow until check-in.
+Save 20-40% vs booking direct. Every payment held in escrow until check-in.
 ```
 
 ```
@@ -66,11 +66,11 @@ Approve every guest. Earn on your terms.
 ```
 3/ WHAT MAKES US DIFFERENT:
 
-- RAVIO: first voice AI search in vacation rentals
-- Name Your Price: first bidding engine in the space
+- Name Your Price: first bidding engine in vacation rentals
+- Vacation Wishes: post what you want, owners compete
+- TrustShield + PaySafe: verified owners, escrow-protected payments
+- RAVIO: voice + text AI search
 - SmartEarn: see how many weeks cover your fees
-- TrustShield: every owner verified
-- PaySafe: escrow-protected payments
 
 No other platform has all of this.
 ```
@@ -117,12 +117,9 @@ We built a marketplace to fix that: rent-a-vacation.com/calculator
 ```
 Same resort. Same room. Different price.
 
-Resort direct: $3,200
-Rent-A-Vacation: $1,100
-
 That's what happens when you cut out the middlemen and rent directly from verified owners.
 
-117+ resorts. Up to 70% off.
+Name Your Price on any listing. Save 20-40% on 117+ resorts.
 
 rent-a-vacation.com
 ```

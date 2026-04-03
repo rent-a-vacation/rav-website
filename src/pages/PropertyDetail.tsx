@@ -149,7 +149,7 @@ const PropertyDetail = () => {
   // SEO: page meta, canonical, OG tags
   const pageTitle = listing ? `${resortName} — ${locationStr}` : 'Property Detail';
   const pageDescription = listing
-    ? `Book ${unitTypeName} at ${resortName}. Verified timeshare rental at up to 70% off retail.`
+    ? `Book ${unitTypeName} at ${resortName}. Verified timeshare rental at 20-40% off resort rates.`
     : 'View vacation rental property details.';
   usePageMeta({
     title: pageTitle,

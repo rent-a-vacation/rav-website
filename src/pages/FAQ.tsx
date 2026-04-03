@@ -14,7 +14,7 @@ const faqCategories = [
       {
         question: "What is a timeshare rental?",
         answer:
-          "A timeshare rental is when an owner of vacation property (like a resort condo) rents out their allotted time to renters. Instead of booking directly with the resort at full price, you rent from an owner at a significant discount—often 50-70% less.",
+          "A timeshare rental is when an owner of vacation property (like a resort condo) rents out their allotted time to renters. Instead of booking directly with the resort at full price, you rent from an owner at a significant discount—typically 20-40% less.",
       },
       {
         question: "Is it safe to rent from a stranger?",
@@ -24,7 +24,7 @@ const faqCategories = [
       {
         question: "How much can I save compared to booking directly?",
         answer:
-          "On average, our renters save 50-70% compared to booking the same room directly through the resort. This is because owners have already paid for their timeshare and are looking to recoup costs, not make a profit.",
+          "Renters typically save 20-40% compared to booking the same room directly through the resort. This is because owners have already paid for their timeshare and are looking to recoup costs, not make a profit.",
       },
       {
         question: "Do I get access to all resort amenities?",

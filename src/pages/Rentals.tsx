@@ -110,7 +110,7 @@ function getListingBrandLabel(listing: ActiveListing): string {
 const Rentals = () => {
   usePageMeta({
     title: 'Browse Vacation Rentals',
-    description: 'Search and filter vacation rentals from verified timeshare owners. Compare prices and book at up to 70% off.',
+    description: 'Search and filter vacation rentals from verified timeshare owners. Compare prices and book at 20-40% off resort rates.',
     canonicalPath: '/rentals',
   });
 

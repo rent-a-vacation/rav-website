@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -69,7 +69,7 @@ Between each section, use these transition phrases to maintain narrative continu
 **What to show:** The homepage hero section with rotating destination imagery (Kerala, Utah, Yellowstone, Jacksonville Beach), the search bar, and the overall visual branding.
 
 > **Talking point:**
-> "Rent-A-Vacation is a two-sided marketplace that connects timeshare owners with vacation renters. We solve a real problem on both sides: timeshare owners pay thousands in annual maintenance fees whether they use their weeks or not, and travelers overpay for resort stays through traditional booking channels. Our platform lets owners list their unused weeks and renters book them at 50-70% below retail rates."
+> "Rent-A-Vacation is a two-sided marketplace that connects timeshare owners with vacation renters. We solve a real problem on both sides: timeshare owners pay thousands in annual maintenance fees whether they use their weeks or not, and travelers overpay for resort stays through traditional booking channels. Our platform lets owners list their unused weeks and renters book them at 20-40% below resort-direct rates."
 
 ### The Value Proposition
 
@@ -106,7 +106,7 @@ Between each section, use these transition phrases to maintain narrative continu
 - 117 partner resorts, 9 vacation club brands
 - 351 unit types across 10+ countries
 - 15% base commission rate (tiered discounts for Pro/Business)
-- 50-70% savings for renters compared to retail booking
+- 20-40% savings for renters compared to resort-direct booking
 - App version: v0.9.0 (pre-launch)
 
 ### Common Questions
@@ -526,7 +526,7 @@ If asked about cancellation policies during the owner section, here is the refer
 7. Pricing breakdown
 
 > **Talking point:**
-> "The property detail page gives the renter everything they need to make a decision. The Fair Value badge is powered by our proprietary scoring algorithm that compares the listing price against comparable properties in the same resort, location, and unit type. A 'Great Value' badge means this listing is priced below the market average. The cancellation policy is clearly displayed so there are no surprises."
+> "The property detail page gives the renter everything they need to make a decision. The Fair Value badge is powered by our fair value scoring algorithm that compares the listing price against comparable properties in the same resort, location, and unit type. A 'Great Value' badge means this listing is priced below the market average. The cancellation policy is clearly displayed so there are no surprises."
 
 ### Step 4b: Cancellation Policy Display
 

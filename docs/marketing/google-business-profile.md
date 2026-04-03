@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-02T01:13:15"
-change_ref: "029d541"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-42"
 status: "active"
 ---
@@ -30,12 +30,12 @@ status: "active"
 
 **Business description (750 chars max):**
 ```
-Rent-A-Vacation is the AI-powered marketplace where vacation club owners rent directly to travelers — and travelers name their price. Browse 117+ resorts across Hilton, Marriott, and Disney brands at up to 70% off resort-direct prices. Our AI concierge RAVIO lets you search by voice or text — just describe your dream vacation. Every owner is verified through TrustShield, and every payment is protected by PaySafe escrow. Whether you're an owner looking to offset maintenance fees or a traveler looking for luxury resort stays at owner prices, Rent-A-Vacation makes it simple, safe, and smart.
+Rent-A-Vacation is the marketplace where vacation club owners rent directly to travelers — and travelers name their price. Browse 117+ resorts across Hilton, Marriott, and Disney brands and save 20-40% vs resort-direct prices. Name Your Price on any listing. Post a Vacation Wish and let owners compete for your trip. Every owner is verified through TrustShield, and every payment is protected by PaySafe escrow. Whether you're an owner looking to offset maintenance fees or a traveler looking for luxury resort stays at owner prices, Rent-A-Vacation makes it simple, safe, and smart.
 ```
 
 **Short description (for search cards):**
 ```
-AI-powered timeshare rental marketplace. Luxury resorts at up to 70% off. Voice search, owner verification, payment protection.
+Timeshare rental marketplace. Luxury resorts — save 20-40%. Name Your Price bidding. Verified owners. Protected payments.
 ```
 
 ## Photos to Upload
@@ -48,29 +48,29 @@ AI-powered timeshare rental marketplace. Luxury resorts at up to 70% off. Voice 
 
 ## Products / Services Section
 
-**Product 1: Browse Resorts**
-```
-Search 117+ luxury resorts across Hilton, Marriott, and Disney brands. Filter by destination, dates, bedrooms, and price. Or just ask RAVIO — our AI voice search finds your perfect match in seconds.
-```
-
-**Product 2: Name Your Price**
+**Product 1: Name Your Price**
 ```
 Make an offer on any listing. Set the price you want to pay and let the owner decide. It's negotiation made simple — the first bidding system in vacation rentals.
 ```
 
-**Product 3: List Your Week**
+**Product 2: Vacation Wishes**
+```
+Tell us where you want to go, when, and what you want to spend. Verified owners send you personalized proposals. Pick the best one. Like having a personal travel agent — powered by a marketplace.
+```
+
+**Product 3: Browse Resorts**
+```
+Search 117+ luxury resorts across Hilton, Marriott, and Disney brands. Filter by destination, dates, bedrooms, and price. Or ask RAVIO, our AI concierge, to find your perfect match by voice or text.
+```
+
+**Product 4: List Your Week**
 ```
 Own a timeshare you're not using? List your week in minutes. Our SmartPrice AI tells you what to charge, and travelers come to you. 15% commission on successful bookings only — no upfront fees.
 ```
 
-**Product 4: RAV SmartEarn Calculator**
+**Product 5: RAV SmartEarn Calculator**
 ```
 Free tool — no account required. See exactly how many weeks you need to rent to cover your annual maintenance fees. Works with all 9 major vacation club brands.
-```
-
-**Product 5: Vacation Wishes**
-```
-Tell us where you want to go, when, and what you want to spend. Verified owners send you personalized proposals. Pick the best one. Like having a personal travel agent — powered by a marketplace.
 ```
 
 ## Launch Posts (Google Business Posts)
@@ -80,7 +80,7 @@ Tell us where you want to go, when, and what you want to spend. Verified owners 
 ```
 Introducing Rent-A-Vacation — the first AI-powered marketplace for timeshare vacation rentals.
 
-Travelers: Stay at Hilton, Marriott, and Disney resorts at up to 70% off. Search by voice with RAVIO, our AI concierge, or make an offer on any listing with Name Your Price.
+Travelers: Stay at Hilton, Marriott, and Disney resorts and save 20-40%. Name Your Price on any listing, or post a Vacation Wish and let owners compete for your trip.
 
 Owners: Turn unused timeshare weeks into income. List in minutes, get AI pricing suggestions, and earn on your terms.
 

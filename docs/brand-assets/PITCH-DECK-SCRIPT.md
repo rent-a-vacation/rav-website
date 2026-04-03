@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-03T15:20:24"
+change_ref: "fd388ad"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -143,15 +143,14 @@ WHY NOW?
 ```
 RENT-A-VACATION
 
-The first AI-powered marketplace purpose-built
+The first marketplace purpose-built
 for vacation club owners and travelers.
 
-✓ Ask RAVIO — AI voice & text search        [BUILT]
 ✓ Name Your Price — bid on any listing       [BUILT]
 ✓ Vacation Wishes — reverse auction          [BUILT]
+✓ TrustShield + PaySafe — verified & secure  [BUILT]
+✓ Ask RAVIO — AI voice & text search         [BUILT]
 ✓ ResortIQ — 117 resorts, 351 unit types     [BUILT]
-✓ TrustShield — owner verification           [BUILT]
-✓ PaySafe — escrow payment protection        [BUILT]
 ✓ RAV Smart Suite — 5 tools                  [BUILT]
   (SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget)
 ✓ Dynamic Pricing — urgency, seasonal, demand [BUILT]
@@ -162,7 +161,7 @@ Everything listed above is deployed and demonstrable today.
 ```
 
 **Speaker Notes:**
-> "This is what we've built. Not a roadmap. Not a prototype. A fully functional, end-to-end marketplace with AI-powered search, two-sided bidding, owner verification, escrow payments, and proprietary pricing intelligence. Every single item on this slide is built, tested, and deployed. I can show you any of these live."
+> "This is what we've built. Not a roadmap. Not a prototype. A fully functional, end-to-end marketplace with AI-powered search, two-sided bidding, owner verification, escrow payments, and AI-powered pricing intelligence. Every single item on this slide is built, tested, and deployed. I can show you any of these live."
 
 ---
 
@@ -195,32 +194,29 @@ FOR TRAVELERS                    FOR OWNERS
 
 ---
 
-## SLIDE 7: Deep Dive — Ask RAVIO (Voice AI)
+## SLIDE 7: Deep Dive — Name Your Price (Bidding)
 
-**Visual:** Screenshot of voice search in action — waveform animation, search results appearing. Or a 15-second embedded video.
+**Visual:** Screenshot of the bidding interface or a simple graphic of price negotiation.
 
 **Text:**
 ```
-ASK RAVIO — AI Vacation Concierge                    [BUILT]
+NAME YOUR PRICE — Bid on Any Listing                   [BUILT]
 
-"Find me a beachfront 2-bedroom in Orlando
- under $1,500 for spring break"
+On VRBO/Airbnb:  See price → take it or leave it
+On RAV:          See price → make an offer → negotiate
 
-• Deepgram Nova-3 speech-to-text (latest, most accurate)
-• GPT-4o-mini for natural language understanding
-• Results in seconds with voice narration
-• Also available as text chat (Chat with RAVIO)
-• 16 custom keyword boosts for timeshare terminology
-• Smart endpointing — knows when you're done speaking
+Features:
+• Owners open listings for competitive bidding
+• Travelers place bids (with optional message)
+• Owners can accept, reject, or counter-offer
+• Real-time bid activity feed for owners
+• Bid Spread Index tracks market efficiency
 
-This is an industry first.
-No other vacation rental platform offers voice search.
+"The price tag just got a negotiation button."
 ```
 
 **Speaker Notes:**
-> "This is RAVIO — our AI concierge. It's the first voice-powered search on any vacation rental platform. Say what you want in natural language, and RAVIO understands destinations, dates, prices, brands, amenities, even specific resort names. It uses Deepgram's Nova-3 transcriber — the most accurate available — and GPT-4o-mini for intent extraction. We also built a text-based version for users who prefer typing. Both share the same search engine. Let me show you this live."
-
-**[LIVE DEMO MOMENT — switch to dev.rent-a-vacation.com and demonstrate voice search]**
+> "Let's start with our most unique feature. On every other platform, you see a price and that's it. On RAV, owners can open their listings for bidding. Travelers make offers. Owners can accept, reject, or counter. It's real negotiation — and it produces data we can't get any other way. Our Bid Spread Index tracks the gap between what travelers offer and what owners accept, giving us insight into marketplace pricing efficiency. No other vacation rental platform has a bidding engine. This is built and working in our demo environment."
 
 ---
 
@@ -247,69 +243,11 @@ How it works:
 ```
 
 **Speaker Notes:**
-> "This is one of our most powerful features. We call them Vacation Wishes. Instead of the traveler hunting through listings, they simply describe what they want — destination, dates, budget, requirements. We then surface that wish to relevant property owners, who can send personalized proposals. The traveler picks the best offer. This creates real price discovery — owners see actual demand, travelers get competitive offers, and the platform learns what the market really values. The entire workflow is built — wishes, proposals, matching, notifications."
+> "This is the other side of our marketplace innovation. We call them Vacation Wishes. Instead of the traveler hunting through listings, they simply describe what they want — destination, dates, budget, requirements. We then surface that wish to relevant property owners, who can send personalized proposals. The traveler picks the best offer. This creates real price discovery — owners see actual demand, travelers get competitive offers, and the platform learns what the market really values. The entire workflow is built — wishes, proposals, matching, notifications."
 
 ---
 
-## SLIDE 9: Deep Dive — Name Your Price (Bidding)
-
-**Visual:** Screenshot of the bidding interface or a simple graphic of price negotiation.
-
-**Text:**
-```
-NAME YOUR PRICE — Bid on Any Listing                   [BUILT]
-
-On VRBO/Airbnb:  See price → take it or leave it
-On RAV:          See price → make an offer → negotiate
-
-Features:
-• Owners open listings for competitive bidding
-• Travelers place bids (with optional message)
-• Owners can accept, reject, or counter-offer
-• Real-time bid activity feed for owners
-• Bid Spread Index™ tracks market efficiency
-
-"The price tag just got a negotiation button."
-```
-
-**Speaker Notes:**
-> "On every other platform, you see a price and that's it. On RAV, owners can open their listings for bidding. Travelers make offers. Owners can accept, reject, or counter. It's real negotiation — and it produces data we can't get any other way. Our Bid Spread Index tracks the gap between what travelers offer and what owners accept, giving us a proprietary view into marketplace pricing efficiency. This is built and working in our demo environment."
-
----
-
-## SLIDE 10: Deep Dive — ResortIQ (Professional Data Layer)
-
-**Visual:** Screenshot of the listing form auto-populating from resort data. Or a map showing resort coverage.
-
-**Text:**
-```
-RESORTIQ — The Data Layer That Powers Everything       [BUILT]
-
-117 Resorts | 351 Unit Types | 10+ Countries
-
-Coverage:
-• Hilton Grand Vacations — 62 resorts
-• Marriott Vacation Club — 40 resorts
-• Disney Vacation Club — 15 resorts
-• Wyndham, Bluegreen, Hyatt, and more
-
-What it does:
-• Auto-populates listing forms (bedrooms, bathrooms, sq ft, amenities)
-• Displays professional resort profiles on every listing page
-• Enables voice search to understand resort names and locations
-• Owner-crowdsourced corrections improve data quality over time
-
-Impact: Listing creation designed to take ~8 minutes vs. industry ~22 minutes
-```
-
-**Labels:** 117/351/10+ are [BUILT]. Timing comparison is [PROJECTED based on form design analysis].
-
-**Speaker Notes:**
-> "This is one of our strongest defensible assets. We built a professional database of 117 resorts and 351 unit types across 6 major vacation club brands. When an owner creates a listing, they select their brand and resort, and the system auto-fills everything — bedrooms, bathrooms, square footage, amenities, policies. This dramatically reduces listing friction. It also powers our voice search — when a traveler says 'Hilton resorts in Hawaii,' RAVIO knows exactly which properties to show. This data layer gets better over time through owner-submitted corrections, creating a compounding data advantage."
-
----
-
-## SLIDE 11: Deep Dive — TrustShield & PaySafe (Trust Infrastructure)
+## SLIDE 9: Deep Dive — TrustShield & PaySafe (Trust Infrastructure)
 
 **Visual:** Shield/security graphic. Verification steps shown as a checklist.
 
@@ -336,6 +274,67 @@ PAYSAFE (Payment Protection):
 
 **Speaker Notes:**
 > "Trust is the single biggest barrier in peer-to-peer vacation rentals. We solve it with two systems. TrustShield is our multi-step owner verification — identity check, ownership documentation, admin review, with a trust level that improves over time. PaySafe is our escrow system — built on Stripe, funds are held until the traveler checks in and confirms their stay. We also built an owner confirmation timer with extension capability, resort confirmation number tracking, and a 4-tier cancellation policy engine. This entire trust infrastructure is built and operational."
+
+---
+
+## SLIDE 10: Deep Dive — Ask RAVIO (Voice AI)
+
+**Visual:** Screenshot of voice search in action — waveform animation, search results appearing. Or a 15-second embedded video.
+
+**Text:**
+```
+ASK RAVIO — AI Vacation Concierge                    [BUILT]
+
+"Find me a beachfront 2-bedroom in Orlando
+ under $1,500 for spring break"
+
+• Deepgram Nova-3 speech-to-text (latest, most accurate)
+• GPT-4o-mini for natural language understanding
+• Results in seconds with voice narration
+• Also available as text chat (Chat with RAVIO)
+• 16 custom keyword boosts for timeshare terminology
+• Smart endpointing — knows when you're done speaking
+
+An industry first — no other vacation rental platform
+offers voice search.
+```
+
+**Speaker Notes:**
+> "Beyond the marketplace mechanics, we also built an AI search layer. RAVIO is our voice and text concierge — the first voice-powered search on any vacation rental platform. Say what you want in natural language, and RAVIO understands destinations, dates, prices, brands, amenities, even specific resort names. It uses Deepgram's Nova-3 transcriber and GPT-4o-mini for intent extraction. We also built a text-based version for users who prefer typing. This makes the marketplace easier to navigate, especially for less tech-savvy users."
+
+**[LIVE DEMO MOMENT — switch to dev.rent-a-vacation.com and demonstrate voice search]**
+
+---
+
+## SLIDE 11: Deep Dive — ResortIQ (Curated Resort Directory)
+
+**Visual:** Screenshot of the listing form auto-populating from resort data. Or a map showing resort coverage.
+
+**Text:**
+```
+RESORTIQ — Curated Resort Directory                    [BUILT]
+
+117 Resorts | 351 Unit Types | 10+ Countries
+
+Coverage:
+• Hilton Grand Vacations — 62 resorts
+• Marriott Vacation Club — 40 resorts
+• Disney Vacation Club — 15 resorts
+• Wyndham, Bluegreen, Hyatt, and more
+
+What it does:
+• Auto-populates listing forms (bedrooms, bathrooms, sq ft, amenities)
+• Displays consistent resort information on every listing page
+• Enables voice search to understand resort names and locations
+• Owner-crowdsourced corrections improve data quality over time
+
+Impact: Listing creation designed to take ~8 minutes vs. industry ~22 minutes
+```
+
+**Labels:** 117/351/10+ are [BUILT]. Timing comparison is [PROJECTED based on form design analysis].
+
+**Speaker Notes:**
+> "ResortIQ is our curated resort directory — 117 resorts and 351 unit types across 9 vacation club brands, organized from officially published resort information. When an owner creates a listing, they select their brand and resort, and the system auto-fills everything — bedrooms, bathrooms, square footage, amenities, policies. This dramatically reduces listing friction. It also powers our voice search — when a traveler says 'Hilton resorts in Hawaii,' RAVIO knows exactly which properties to show. The directory improves over time through owner-submitted corrections."
 
 ---
 
@@ -629,7 +628,7 @@ Proprietary Metrics:
 ```
 
 **Speaker Notes:**
-> "For our leadership and investors, we built RAV Command — an executive dashboard with 6 sections covering business performance, marketplace health, market intelligence, industry news, and unit economics. It includes two proprietary metrics: the Liquidity Score, a composite marketplace health index, and the Bid Spread Index, which measures how efficiently our bidding system discovers fair prices. The dashboard also supports a 'Bring Your Own Key' pattern for third-party data sources like AirDNA and STR — demo mode by default, connected when API keys are provided. This entire dashboard is built and live in our demo environment."
+> "For our leadership and investors, we built RAV Command — an executive dashboard with 6 sections covering business performance, marketplace health, market intelligence, industry news, and unit economics. It includes two platform-specific metrics: the Liquidity Score, a composite marketplace health index, and the Bid Spread Index, which measures how efficiently our bidding system discovers fair prices. The dashboard also supports a 'Bring Your Own Key' pattern for third-party data sources like AirDNA and STR — demo mode by default, connected when API keys are provided. This entire dashboard is built and live in our demo environment."
 
 ---
 
