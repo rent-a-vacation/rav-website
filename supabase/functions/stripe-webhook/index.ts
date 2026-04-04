@@ -79,6 +79,27 @@ serve(async (req) => {
         await handleTransferReversed(supabase, event.data.object);
         break;
 
+      // ── Subscription lifecycle events ──────────────────────────
+      case "customer.subscription.created":
+        await handleSubscriptionCreated(supabase, event.data.object);
+        break;
+
+      case "customer.subscription.updated":
+        await handleSubscriptionUpdated(supabase, event.data.object);
+        break;
+
+      case "customer.subscription.deleted":
+        await handleSubscriptionDeleted(supabase, event.data.object);
+        break;
+
+      case "invoice.paid":
+        await handleInvoicePaid(supabase, event.data.object);
+        break;
+
+      case "invoice.payment_failed":
+        await handleInvoicePaymentFailed(supabase, event.data.object);
+        break;
+
       default:
         logStep("Unhandled event type", { type: event.type });
     }
@@ -586,4 +607,348 @@ async function handleTransferReversed(
     .eq("id", booking.id);
 
   logStep("Booking payout marked as failed due to reversal", { bookingId: booking.id });
+}
+
+// ══════════════════════════════════════════════════════════════
+// SUBSCRIPTION LIFECYCLE HANDLERS
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Handle customer.subscription.created
+ * Fired when a new subscription is successfully created via Stripe Checkout.
+ * Updates user_memberships with Stripe IDs and new tier.
+ */
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleSubscriptionCreated(supabase: any, subscription: any) {
+  const userId = subscription.metadata?.user_id;
+  const tierKey = subscription.metadata?.tier_key;
+  logStep("Subscription created", { subscriptionId: subscription.id, userId, tierKey });
+
+  if (!userId || !tierKey) {
+    logStep("Missing metadata on subscription — skipping", { subscriptionId: subscription.id });
+    return;
+  }
+
+  // Look up the tier
+  const { data: tier } = await supabase
+    .from("membership_tiers")
+    .select("id, tier_name")
+    .eq("tier_key", tierKey)
+    .single();
+
+  if (!tier) {
+    logStep("Tier not found for tier_key", { tierKey });
+    return;
+  }
+
+  // Update user membership
+  const { error: updateError } = await supabase
+    .from("user_memberships")
+    .update({
+      tier_id: tier.id,
+      stripe_subscription_id: subscription.id,
+      stripe_customer_id: subscription.customer,
+      status: "active",
+      started_at: new Date().toISOString(),
+      expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+      cancelled_at: null,
+    })
+    .eq("user_id", userId);
+
+  if (updateError) {
+    logStep("Failed to update membership", { error: updateError.message });
+    return;
+  }
+
+  logStep("Membership upgraded", { userId, tier: tier.tier_name });
+
+  // Send welcome email
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, email")
+    .eq("id", userId)
+    .single();
+
+  if (profile?.email) {
+    const html = buildEmailHtml({
+      recipientName: profile.full_name || "there",
+      heading: `Welcome to ${tier.tier_name}!`,
+      body: `
+        <p>Your subscription to the <strong>${tier.tier_name}</strong> plan is now active.</p>
+        ${detailRow("Plan", tier.tier_name)}
+        ${detailRow("Status", "Active")}
+        ${detailRow("Next billing date", new Date(subscription.current_period_end * 1000).toLocaleDateString())}
+        <p>You now have access to all ${tier.tier_name} features. Enjoy!</p>
+      `,
+      cta: { label: "Go to Dashboard", url: "https://rent-a-vacation.com/owner-dashboard?tab=account" },
+    });
+
+    await resend.emails.send({
+      from: "Rent-A-Vacation <notifications@updates.rent-a-vacation.com>",
+      to: profile.email,
+      subject: `Welcome to ${tier.tier_name} — Rent-A-Vacation`,
+      html,
+    });
+    logStep("Welcome email sent", { email: profile.email });
+  }
+}
+
+/**
+ * Handle customer.subscription.updated
+ * Fired on: tier changes, cancellation scheduling, payment method updates, renewals.
+ * Checks cancel_at_period_end and price changes.
+ */
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleSubscriptionUpdated(supabase: any, subscription: any) {
+  const userId = subscription.metadata?.user_id;
+  logStep("Subscription updated", { subscriptionId: subscription.id, userId, cancelAtPeriodEnd: subscription.cancel_at_period_end });
+
+  if (!userId) {
+    logStep("Missing user_id in subscription metadata — skipping");
+    return;
+  }
+
+  // Check if admin override — skip if so
+  const { data: membership } = await supabase
+    .from("user_memberships")
+    .select("id, admin_override, tier_id, status")
+    .eq("user_id", userId)
+    .single();
+
+  if (membership?.admin_override) {
+    logStep("Skipping webhook update — admin override active", { userId });
+    return;
+  }
+
+  // Build update payload
+  // deno-lint-ignore no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updates: Record<string, any> = {
+    expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+  };
+
+  // Handle cancellation scheduling
+  if (subscription.cancel_at_period_end && membership?.status !== "cancelled") {
+    updates.status = "cancelled";
+    updates.cancelled_at = new Date().toISOString();
+    logStep("Subscription cancellation scheduled", { userId });
+  } else if (!subscription.cancel_at_period_end && membership?.status === "cancelled") {
+    // Reactivation (user un-cancelled)
+    updates.status = "active";
+    updates.cancelled_at = null;
+    logStep("Subscription reactivated", { userId });
+  }
+
+  // Check for price/tier change
+  const currentPriceId = subscription.items?.data?.[0]?.price?.id;
+  if (currentPriceId) {
+    const { data: newTier } = await supabase
+      .from("membership_tiers")
+      .select("id, tier_name")
+      .eq("stripe_price_id", currentPriceId)
+      .single();
+
+    if (newTier && newTier.id !== membership?.tier_id) {
+      updates.tier_id = newTier.id;
+      logStep("Tier changed via subscription update", { userId, newTier: newTier.tier_name });
+    }
+  }
+
+  await supabase
+    .from("user_memberships")
+    .update(updates)
+    .eq("user_id", userId);
+
+  logStep("Membership updated from webhook", { userId, updates: Object.keys(updates) });
+}
+
+/**
+ * Handle customer.subscription.deleted
+ * Fired when subscription ends (cancellation took effect or payment retries exhausted).
+ * Downgrades user to the default free tier for their role category.
+ */
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleSubscriptionDeleted(supabase: any, subscription: any) {
+  const userId = subscription.metadata?.user_id;
+  logStep("Subscription deleted", { subscriptionId: subscription.id, userId });
+
+  if (!userId) {
+    logStep("Missing user_id in subscription metadata — skipping");
+    return;
+  }
+
+  // Check admin override
+  const { data: membership } = await supabase
+    .from("user_memberships")
+    .select("id, admin_override, tier:membership_tiers(role_category)")
+    .eq("user_id", userId)
+    .single();
+
+  if (membership?.admin_override) {
+    logStep("Skipping deletion — admin override active", { userId });
+    return;
+  }
+
+  // Find the default free tier for this user's role category
+  const roleCategory = membership?.tier?.role_category || "traveler";
+  const { data: freeTier } = await supabase
+    .from("membership_tiers")
+    .select("id, tier_name")
+    .eq("role_category", roleCategory)
+    .eq("is_default", true)
+    .single();
+
+  if (!freeTier) {
+    logStep("Could not find default free tier", { roleCategory });
+    return;
+  }
+
+  // Downgrade to free tier
+  await supabase
+    .from("user_memberships")
+    .update({
+      tier_id: freeTier.id,
+      status: "active",
+      stripe_subscription_id: null,
+      expires_at: null,
+      cancelled_at: null,
+    })
+    .eq("user_id", userId);
+
+  logStep("User downgraded to free tier", { userId, tier: freeTier.tier_name });
+
+  // Send notification email
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, email")
+    .eq("id", userId)
+    .single();
+
+  if (profile?.email) {
+    const html = buildEmailHtml({
+      recipientName: profile.full_name || "there",
+      heading: "Your Subscription Has Ended",
+      body: `
+        <p>Your paid subscription has ended and your account has been moved to the <strong>Free</strong> plan.</p>
+        <p>You can re-subscribe at any time from your account settings to regain access to premium features.</p>
+      `,
+      cta: { label: "View Plans", url: "https://rent-a-vacation.com/owner-dashboard?tab=account" },
+    });
+
+    await resend.emails.send({
+      from: "Rent-A-Vacation <notifications@updates.rent-a-vacation.com>",
+      to: profile.email,
+      subject: "Your subscription has ended — Rent-A-Vacation",
+      html,
+    });
+    logStep("Subscription ended email sent", { email: profile.email });
+  }
+}
+
+/**
+ * Handle invoice.paid
+ * Fired on successful subscription renewal payments.
+ * Updates expires_at to the new period end.
+ */
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleInvoicePaid(supabase: any, invoice: any) {
+  // Only process subscription renewal invoices (skip initial payment — handled by subscription.created)
+  if (invoice.billing_reason !== "subscription_cycle") {
+    logStep("Skipping non-renewal invoice", { billingReason: invoice.billing_reason });
+    return;
+  }
+
+  const subscriptionId = invoice.subscription;
+  logStep("Renewal invoice paid", { subscriptionId, invoiceId: invoice.id });
+
+  if (!subscriptionId) return;
+
+  // Find the membership by stripe_subscription_id
+  const { data: membership } = await supabase
+    .from("user_memberships")
+    .select("id, user_id")
+    .eq("stripe_subscription_id", subscriptionId)
+    .single();
+
+  if (!membership) {
+    logStep("No membership found for subscription", { subscriptionId });
+    return;
+  }
+
+  // Update expiry to new period end
+  const periodEnd = invoice.lines?.data?.[0]?.period?.end;
+  if (periodEnd) {
+    await supabase
+      .from("user_memberships")
+      .update({
+        expires_at: new Date(periodEnd * 1000).toISOString(),
+        status: "active",
+      })
+      .eq("id", membership.id);
+
+    logStep("Membership renewed", { userId: membership.user_id, newExpiresAt: new Date(periodEnd * 1000).toISOString() });
+  }
+}
+
+/**
+ * Handle invoice.payment_failed
+ * Fired when a subscription payment attempt fails.
+ * Sets membership to pending (grace period) and sends notification email.
+ */
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleInvoicePaymentFailed(supabase: any, invoice: any) {
+  const subscriptionId = invoice.subscription;
+  logStep("Invoice payment failed", { subscriptionId, invoiceId: invoice.id, attemptCount: invoice.attempt_count });
+
+  if (!subscriptionId) return;
+
+  const { data: membership } = await supabase
+    .from("user_memberships")
+    .select("id, user_id, stripe_customer_id")
+    .eq("stripe_subscription_id", subscriptionId)
+    .single();
+
+  if (!membership) {
+    logStep("No membership found for failed invoice", { subscriptionId });
+    return;
+  }
+
+  // Set status to pending (grace period — Stripe will retry)
+  await supabase
+    .from("user_memberships")
+    .update({ status: "pending" })
+    .eq("id", membership.id);
+
+  // Send payment failed email
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, email")
+    .eq("id", membership.user_id)
+    .single();
+
+  if (profile?.email) {
+    const html = buildEmailHtml({
+      recipientName: profile.full_name || "there",
+      heading: "Payment Failed — Action Required",
+      body: `
+        <p>We were unable to process your subscription payment. Your account is currently in a grace period.</p>
+        <p>Please update your payment method to avoid losing access to your premium features. Stripe will automatically retry the payment, but you can update your card now to resolve this immediately.</p>
+      `,
+      cta: { label: "Update Payment Method", url: "https://rent-a-vacation.com/owner-dashboard?tab=account" },
+      footerNote: "If you believe this is an error, please contact support@rent-a-vacation.com.",
+    });
+
+    await resend.emails.send({
+      from: "Rent-A-Vacation <notifications@updates.rent-a-vacation.com>",
+      to: profile.email,
+      subject: "Payment failed — update your card — Rent-A-Vacation",
+      html,
+    });
+    logStep("Payment failed email sent", { email: profile.email });
+  }
 }

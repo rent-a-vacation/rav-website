@@ -14,6 +14,7 @@ export function mockMembershipTier(overrides: Partial<MembershipTier> = {}): Mem
     features: ["Browse listings", "Book properties", "Voice search (5/day)"],
     description: "Basic traveler access",
     is_default: true,
+    stripe_price_id: null,
     created_at: "2026-01-01T00:00:00Z",
     updated_at: "2026-01-01T00:00:00Z",
     ...overrides,
@@ -50,6 +51,7 @@ export function mockOwnerProTier(): MembershipTier {
     features: ["List up to 10 properties", "2% commission discount"],
     description: "Professional owner tools",
     is_default: false,
+    stripe_price_id: "price_test_owner_pro",
   });
 }
 
@@ -67,6 +69,7 @@ export function mockOwnerBusinessTier(): MembershipTier {
     features: ["Unlimited listings", "5% commission discount"],
     description: "Unlimited owner access",
     is_default: false,
+    stripe_price_id: "price_test_owner_business",
   });
 }
 
@@ -81,6 +84,7 @@ export function mockTravelerTiers(): MembershipTier[] {
       monthly_price_cents: 500,
       voice_quota_daily: 25,
       is_default: false,
+      stripe_price_id: "price_test_traveler_plus",
     }),
     mockMembershipTier({
       id: "tier-premium-traveler",
@@ -90,6 +94,7 @@ export function mockTravelerTiers(): MembershipTier[] {
       monthly_price_cents: 1500,
       voice_quota_daily: -1,
       is_default: false,
+      stripe_price_id: "price_test_traveler_premium",
     }),
   ];
 }
@@ -109,6 +114,8 @@ export function mockUserMembership(overrides: Partial<UserMembership> = {}): Use
     stripe_subscription_id: null,
     stripe_customer_id: null,
     cancelled_at: null,
+    admin_override: false,
+    admin_notes: null,
     created_at: "2026-01-01T00:00:00Z",
     updated_at: "2026-01-01T00:00:00Z",
     ...overrides,

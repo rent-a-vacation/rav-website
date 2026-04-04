@@ -25,7 +25,9 @@ import {
   useCancelDeletion,
   useExportUserData,
 } from "@/hooks/useAccountDeletion";
-import { User, Mail, Phone, Lock, Shield, Calendar, Save, Loader2, Bell, Download, Trash2, AlertTriangle, XCircle } from "lucide-react";
+import { User, Mail, Phone, Lock, Shield, Calendar, Save, Loader2, Bell, Download, Trash2, AlertTriangle, XCircle, CreditCard } from "lucide-react";
+import { SubscriptionManagement } from "@/components/SubscriptionManagement";
+import { MembershipPlans } from "@/components/MembershipPlans";
 import { Textarea } from "@/components/ui/textarea";
 
 const AccountSettings = () => {
@@ -290,7 +292,25 @@ const AccountSettings = () => {
               </CardContent>
             </Card>
 
-            {/* ─── Section 2: Security ─── */}
+            {/* ─── Section 2: Subscription & Billing ─── */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-primary" />
+                  Subscription & Billing
+                </CardTitle>
+                <CardDescription>
+                  Manage your membership plan and billing details.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <SubscriptionManagement />
+                <Separator />
+                <MembershipPlans />
+              </CardContent>
+            </Card>
+
+            {/* ─── Section 3: Security ─── */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

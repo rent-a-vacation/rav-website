@@ -676,6 +676,7 @@ export type Database = {
           max_active_listings: number | null
           monthly_price_cents: number
           role_category: string
+          stripe_price_id: string | null
           tier_key: string
           tier_level: number
           tier_name: string
@@ -692,6 +693,7 @@ export type Database = {
           max_active_listings?: number | null
           monthly_price_cents?: number
           role_category: string
+          stripe_price_id?: string | null
           tier_key: string
           tier_level?: number
           tier_name: string
@@ -708,6 +710,7 @@ export type Database = {
           max_active_listings?: number | null
           monthly_price_cents?: number
           role_category?: string
+          stripe_price_id?: string | null
           tier_key?: string
           tier_level?: number
           tier_name?: string
@@ -1565,6 +1568,8 @@ export type Database = {
       }
       user_memberships: {
         Row: {
+          admin_notes: string | null
+          admin_override: boolean
           cancelled_at: string | null
           created_at: string | null
           expires_at: string | null
@@ -1578,6 +1583,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admin_notes?: string | null
+          admin_override?: boolean
           cancelled_at?: string | null
           created_at?: string | null
           expires_at?: string | null
@@ -1591,6 +1598,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admin_notes?: string | null
+          admin_override?: boolean
           cancelled_at?: string | null
           created_at?: string | null
           expires_at?: string | null

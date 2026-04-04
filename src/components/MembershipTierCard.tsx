@@ -1,25 +1,36 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, Mic, Crown, Infinity as InfinityIcon } from "lucide-react";
+import { Check, Mic, Crown, Infinity as InfinityIcon, ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 import type { MembershipTier } from "@/types/database";
 
 interface MembershipTierCardProps {
   tier: MembershipTier;
   isCurrent?: boolean;
   highlighted?: boolean;
+  currentTierLevel?: number;
+  hasActiveSubscription?: boolean;
+  onSelectTier?: (tierKey: string) => void;
+  isLoading?: boolean;
 }
 
 export function MembershipTierCard({
   tier,
   isCurrent = false,
   highlighted = false,
+  currentTierLevel = 0,
+  hasActiveSubscription = false,
+  onSelectTier,
+  isLoading = false,
 }: MembershipTierCardProps) {
   const features = Array.isArray(tier.features) ? tier.features : [];
   const priceDisplay =
     tier.monthly_price_cents === 0
       ? "Free"
       : `$${(tier.monthly_price_cents / 100).toFixed(0)}`;
+
+  const isUpgrade = tier.tier_level > currentTierLevel;
+  const isDowngrade = tier.tier_level < currentTierLevel;
 
   return (
     <Card
@@ -123,13 +134,42 @@ export function MembershipTierCard({
             <Button variant="outline" className="w-full" disabled>
               Current Plan
             </Button>
+          ) : isUpgrade && onSelectTier ? (
+            <Button
+              className="w-full"
+              onClick={() => onSelectTier(tier.tier_key)}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <ArrowUp className="h-4 w-4 mr-2" />
+              )}
+              Upgrade to {tier.tier_name}
+            </Button>
+          ) : isDowngrade && onSelectTier ? (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => onSelectTier(tier.tier_key)}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <ArrowDown className="h-4 w-4 mr-2" />
+              )}
+              {tier.monthly_price_cents === 0 && hasActiveSubscription
+                ? "Downgrade to Free"
+                : `Switch to ${tier.tier_name}`}
+            </Button>
           ) : tier.monthly_price_cents === 0 ? (
             <Button variant="outline" className="w-full" disabled>
               Free Tier
             </Button>
           ) : (
             <Button variant="outline" className="w-full" disabled>
-              Coming Soon
+              Free Tier
             </Button>
           )}
         </div>
