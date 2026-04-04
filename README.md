@@ -24,7 +24,7 @@
 
 ## Overview
 
-Rent-A-Vacation (RAV) is a full-stack marketplace platform for the **$10.5 billion vacation ownership industry**. Timeshare owners list unused weeks at their price. Travelers search, bid, and book luxury resort stays at **50-70% below resort-direct pricing**. Every owner is verified, every payment is escrowed, and every search can be done by voice.
+Rent-A-Vacation (RAV) is a full-stack marketplace platform for the **$10.5 billion vacation ownership industry**. Timeshare owners list unused weeks at their price. Travelers search, bid, and book luxury resort stays at **20-40% below resort-direct pricing**. Every owner is verified, every payment is escrowed, and every search can be done by voice.
 
 ### The Problem
 
