@@ -87,4 +87,8 @@ export const RATE_LIMITS = {
   ACCOUNT_DELETION: { endpoint: "delete-user-account", maxRequests: 3, windowSeconds: 60 },
   /** Data export: 3 requests per 5 minutes */
   DATA_EXPORT: { endpoint: "export-user-data", maxRequests: 3, windowSeconds: 300 },
+  /** Subscription checkout: 5 requests per minute */
+  SUBSCRIPTION_CHECKOUT: { endpoint: "create-subscription-checkout", maxRequests: 5, windowSeconds: 60 },
+  /** Manage subscription (billing portal): 10 requests per minute */
+  MANAGE_SUBSCRIPTION: { endpoint: "manage-subscription", maxRequests: 10, windowSeconds: 60 },
 } as const;

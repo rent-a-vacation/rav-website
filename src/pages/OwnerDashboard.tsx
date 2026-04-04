@@ -47,6 +47,7 @@ import { OwnerProposals } from "@/components/owner/OwnerProposals";
 import { OwnerVerification } from "@/components/owner/OwnerVerification";
 import { OwnerPayouts } from "@/components/owner/OwnerPayouts";
 import { MembershipPlans } from "@/components/MembershipPlans";
+import { SubscriptionManagement } from "@/components/SubscriptionManagement";
 import { ReferralDashboard } from "@/components/owner/ReferralDashboard";
 import { useOwnerCommission } from "@/hooks/useOwnerCommission";
 import { useOwnerDashboardStats } from "@/hooks/owner/useOwnerDashboardStats";
@@ -643,6 +644,7 @@ const OwnerDashboard = () => {
                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
               </CollapsibleTrigger>
               <CollapsibleContent>
+                <SubscriptionManagement />
                 <MembershipPlans category="owner" />
               </CollapsibleContent>
             </Collapsible>

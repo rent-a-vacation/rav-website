@@ -55,6 +55,7 @@ const ResortQuiz = lazy(() => import("./pages/ResortQuiz"));
 const BudgetPlanner = lazy(() => import("./pages/BudgetPlanner"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const NotificationPreferences = lazy(() => import("./pages/settings/NotificationPreferences"));
+const SubscriptionSuccess = lazy(() => import("./pages/SubscriptionSuccess"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -203,6 +204,7 @@ const App = () => (
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/settings/notifications" element={<ProtectedRoute><NotificationPreferences /></ProtectedRoute>} />
             <Route path="/checkin" element={<ProtectedRoute><TravelerCheckin /></ProtectedRoute>} />
+            <Route path="/subscription-success" element={<ProtectedRoute><SubscriptionSuccess /></ProtectedRoute>} />
 
             {/* Developer & internal tools */}
             <Route path="/developers" element={<Developers />} />

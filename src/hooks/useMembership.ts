@@ -69,7 +69,7 @@ export function useMyMembership() {
         .from("user_memberships")
         .select("*, tier:membership_tiers(*)")
         .eq("user_id", user.id)
-        .eq("status", "active")
+        .in("status", ["active", "cancelled", "pending"])
         .maybeSingle();
 
       if (error) throw error;
