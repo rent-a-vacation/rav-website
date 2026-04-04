@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => {
         manifest: {
           name: "Rent-A-Vacation",
           short_name: "RAV",
-          description: "Name Your Price. Book Your Paradise. Rent vacation club and timeshare weeks directly from owners at up to 70% off.",
+          description: "Name Your Price. Book Your Paradise. Rent vacation club and timeshare weeks directly from owners at 20-40% off resort rates.",
           theme_color: "#1C7268",
           background_color: "#F8F6F3",
           display: "standalone",
