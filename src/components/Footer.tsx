@@ -66,7 +66,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 mt-0.5 text-primary" />
-                <span>7874 Chase Meadows Dr W<br />Jacksonville, FL 32256</span>
+                <span>Jacksonville, FL, United States</span>
               </li>
               <li>
                 <Link to="/contact" className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors text-sm font-medium mt-2">

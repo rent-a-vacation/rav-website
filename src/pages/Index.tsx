@@ -102,10 +102,8 @@ const Index = () => {
       },
       address: {
         '@type': 'PostalAddress',
-        streetAddress: '7874 Chase Meadows Dr W',
         addressLocality: 'Jacksonville',
         addressRegion: 'FL',
-        postalCode: '32256',
         addressCountry: 'US',
       },
     };
