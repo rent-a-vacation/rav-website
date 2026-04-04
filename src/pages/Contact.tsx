@@ -223,10 +223,9 @@ const Contact = () => {
                       <MapPin className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">Address</p>
+                      <p className="font-medium text-foreground">Location</p>
                       <p className="text-sm text-muted-foreground">
-                        7874 Chase Meadows Dr W<br />
-                        Jacksonville, FL 32256
+                        Jacksonville, FL, United States
                       </p>
                     </div>
                   </li>

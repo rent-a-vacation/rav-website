@@ -197,8 +197,6 @@ const Privacy = () => {
                 </p>
                 <p className="text-muted-foreground">
                   Email: privacy@rentavacation.com
-                  <br />
-                  Address: 7874 Chase Meadows Dr W, Jacksonville, FL 32256
                 </p>
               </section>
             </div>
