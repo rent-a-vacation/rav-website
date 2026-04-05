@@ -1,12 +1,12 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-05T15:57:17"
+change_ref: "800bcfa"
 change_type: "session-39-docs-update"
 status: "active"
 ---
 # P0 Test Cases — Critical Path Library
 
-> These are the 20 scenarios that, if broken, mean the platform cannot operate.
+> These are the 24 scenarios that, if broken, mean the platform cannot operate.
 > Run with: `npm run test:p0`
 
 ## How it works
@@ -73,6 +73,23 @@ The `test:p0` npm script uses Vitest's `--testNamePattern` to run only P0-tagged
 | P0-MSG-01 | Booking messages can be sent and received | `src/hooks/useBookingMessages.test.ts` | `@p0 send message` |
 | P0-MSG-02 | Realtime subscriptions connect and receive updates | `src/hooks/useRealtimeSubscription.test.ts` | `@p0 realtime subscription` |
 
+### 8. Membership & Subscriptions (4 cases)
+
+| ID | Scenario | Test File | Test Name |
+|----|----------|-----------|-----------|
+| P0-SUB-01 | Listing limit blocks creation at tier max | `src/hooks/useCheckListingLimit.test.ts` | `@p0 listing limit enforcement` |
+| P0-SUB-02 | Subscription checkout completes successfully | `src/hooks/useSubscription.test.ts` | `@p0 subscription checkout` |
+| P0-SUB-03 | Commission discount applied correctly per tier | `src/lib/pricing.test.ts` | `@p0 tier commission discount` |
+| P0-SUB-04 | Admin override changes tier immediately | `src/hooks/admin/useAdminMemberships.test.ts` | `@p0 admin tier override` |
+
+**P0-SUB-01:** Owner on Free tier with 3 active listings cannot create a 4th. Enforcement at UI level (`useCheckListingLimit`) and DB level (trigger).
+
+**P0-SUB-02:** Owner selects Pro tier → Stripe Checkout → webhook fires → membership updates to Pro. Critical: revenue path.
+
+**P0-SUB-03:** Commission discount applied correctly per tier — Free: 15%, Pro: 13%, Business: 10%. Verified in checkout edge function (`create-booking-checkout`).
+
+**P0-SUB-04:** Admin sets `admin_override=true` → tier changes → webhook respects override.
+
 ---
 
 ## Coverage Gaps (Not Yet P0-Tagged)
@@ -93,7 +110,7 @@ These are tracked in GitHub Issues and will be addressed in dedicated testing se
 
 Before each production deploy:
 
-1. Run `npm run test:p0` — all 20 P0 tests must pass
+1. Run `npm run test:p0` — all 24 P0 tests must pass
 2. Run `npm run build` — zero TypeScript errors
 3. Run `npm run lint` — zero lint errors
 4. Verify on Vercel preview deploy (manual smoke test)

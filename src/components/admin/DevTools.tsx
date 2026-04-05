@@ -40,6 +40,8 @@ import {
   Loader2,
   Trash2,
   Bug,
+  PackagePlus,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -99,6 +101,7 @@ export function DevTools() {
   const [statusLoading, setStatusLoading] = useState(false);
   const [reseedLoading, setReseedLoading] = useState(false);
   const [reseedLog, setReseedLog] = useState<string[]>([]);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   const invokeSeedManager = useCallback(async (action: string) => {
     // Get the current session token to pass explicitly
@@ -150,6 +153,23 @@ export function DevTools() {
       toast.error(`Reseed failed: ${msg}`);
     } finally {
       setReseedLoading(false);
+    }
+  }, [invokeSeedManager]);
+
+  const handleUpdate = useCallback(async () => {
+    setUpdateLoading(true);
+    setReseedLog(["Starting incremental update..."]);
+    try {
+      const data = await invokeSeedManager("update");
+      setReseedLog(data.log ?? ["Update complete"]);
+      toast.success(`Update complete in ${data.elapsed_seconds}s`);
+      setStatus({ counts: data.counts });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setReseedLog(prev => [...prev, `ERROR: ${msg}`]);
+      toast.error(`Update failed: ${msg}`);
+    } finally {
+      setUpdateLoading(false);
     }
   }, [invokeSeedManager]);
 
@@ -225,21 +245,35 @@ export function DevTools() {
         </CardContent>
       </Card>
 
-      {/* Section 2: Reset & Reseed */}
+      {/* Section 2: Seed Management */}
       <Card className="border-amber-500/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-amber-600">
             <AlertTriangle className="h-5 w-5" />
-            Reset & Reseed
+            Seed Data Management
           </CardTitle>
           <CardDescription>
-            Wipe all non-foundation data and regenerate 3 layers of test data.
-            Foundation users (Layer 1) are preserved.
+            Manage test data in the DEV database. Foundation users (Layer 1) are always preserved.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Info: explain the two actions */}
+          <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 text-sm space-y-2 border border-blue-200 dark:border-blue-800">
+            <div className="flex items-start gap-2">
+              <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+              <div className="space-y-1.5">
+                <p className="text-blue-800 dark:text-blue-200">
+                  <span className="font-semibold">Reset & Reseed</span> — Wipes all test data and recreates from scratch. Use when you want a clean slate.
+                </p>
+                <p className="text-blue-800 dark:text-blue-200">
+                  <span className="font-semibold">Update Seed Data</span> — Adds new feature data without deleting anything. Use after code updates to get new test data while keeping your manual testing intact.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-4 text-sm space-y-2">
-            <p className="font-medium text-amber-800 dark:text-amber-200">This will:</p>
+            <p className="font-medium text-amber-800 dark:text-amber-200">Reset & Reseed will:</p>
             <ul className="list-disc list-inside text-amber-700 dark:text-amber-300 space-y-1">
               <li>Preserve 8 foundation users (3 RAV + 5 owners)</li>
               <li>Delete all properties, listings, bookings, bids</li>
@@ -252,35 +286,64 @@ export function DevTools() {
             </p>
           </div>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" disabled={reseedLoading}>
-                {reseedLoading ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Trash2 className="h-4 w-4 mr-2" />
-                )}
-                {reseedLoading ? "Reseeding..." : "Reset & Reseed DEV"}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Reset & Reseed DEV Database?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will delete ALL non-foundation data and regenerate test data.
-                  This action cannot be undone. Foundation users are preserved.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleReseed}>
-                  Yes, Reset & Reseed
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <div className="flex flex-wrap gap-3">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={reseedLoading || updateLoading}>
+                  {reseedLoading ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4 mr-2" />
+                  )}
+                  {reseedLoading ? "Reseeding..." : "Reset & Reseed DEV"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset & Reseed DEV Database?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will delete ALL non-foundation data and regenerate test data.
+                    This action cannot be undone. Foundation users are preserved.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleReseed}>
+                    Yes, Reset & Reseed
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
-          {/* Reseed Log */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" disabled={reseedLoading || updateLoading}>
+                  {updateLoading ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <PackagePlus className="h-4 w-4 mr-2" />
+                  )}
+                  {updateLoading ? "Updating..." : "Update Seed Data"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Update Seed Data</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Adds missing test data (membership tiers, referral codes, API keys, voice logs) without deleting existing data. Your manual testing data will be preserved.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleUpdate}>
+                    Update
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+
+          {/* Reseed / Update Log */}
           {reseedLog.length > 0 && (
             <div className="bg-slate-950 rounded-lg p-4 max-h-64 overflow-y-auto">
               <pre className="text-xs text-green-400 font-mono space-y-0.5">

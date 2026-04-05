@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-05T15:57:17"
+change_ref: "800bcfa"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -15,8 +15,8 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 771 |
-| **Test files** | 99 |
+| **Total tests** | 848 |
+| **Test files** | 108 |
 | **P0 critical-path tests** | 97 (tagged `@p0`) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~65s |
@@ -66,6 +66,7 @@ npm run test:e2e:headed   # Playwright with browser visible
 
 | Session | Tests | Files | Notes |
 |---------|-------|-------|-------|
+| 44 | 848 | 108 | +23 tests (subscription, listing limits, admin MRR) |
 | 39 | 771 | 99 | Brand rebrand (SmartFee→SmartEarn, etc.), no new test files |
 | 38 | 771 | 99 | Public API, RAV Smart Suite, IP Allowlisting, OpenAPI validation |
 | 37 | 676 | 90 | Dynamic pricing, referral program |

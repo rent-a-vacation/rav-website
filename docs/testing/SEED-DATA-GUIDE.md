@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-05T15:57:17"
+change_ref: "800bcfa"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -61,6 +61,30 @@ These values are set by the `ensureFoundation()` function in seed-manager and ar
 - `EarningsTimeline` — monthly fee target ReferenceLine
 - `MaintenanceFeeTracker` — coverage progress bar
 - `get_owner_dashboard_stats()` RPC — `fees_covered_percent` calculation
+
+### Membership Tier Assignments (Layer 1 — Foundation)
+
+Owner and renter accounts are assigned membership tiers for testing subscription features:
+
+| Account | Tier | Stripe Customer ID | Notes |
+|---------|------|--------------------|-------|
+| Owner1 (Alex Rivera) | Pro | `cus_test_owner1_pro` | 10 listing limit, 13% commission |
+| Owner2 (Maria Chen) | Business | `cus_test_owner2_biz` | 25 listing limit, 10% commission |
+| Owner3 (James Thompson) | Free | — | Default, 3 listing limit |
+| Owner4 (Priya Patel) | Free | — | Default, 3 listing limit |
+| Owner5 (Robert Kim) | Free | — | Default, 3 listing limit |
+| Renter001 | Plus | — | Enhanced renter features |
+| Renter002 | Plus | — | Enhanced renter features |
+| Renter003 | Premium | — | Full renter features |
+| Remaining renters | Free | — | Default tier |
+
+### Additional Seed Data (Layer 3)
+
+| Data Type | Count | Notes |
+|-----------|-------|-------|
+| Referral codes | 5 | One per foundation owner |
+| API keys | 1 | `dev-owner`, partner tier |
+| Voice search logs | 15 | Distributed across users |
 
 ### Renters (Layer 3 — Recreated on reseed)
 - 50 renters: `renter001@rent-a-vacation.com` through `renter050@rent-a-vacation.com`

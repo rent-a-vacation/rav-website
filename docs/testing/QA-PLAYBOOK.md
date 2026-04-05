@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-05T15:57:17"
+change_ref: "800bcfa"
 change_type: "session-40"
 status: "active"
 ---
@@ -944,6 +944,55 @@ Body:
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 
+#### TC-O-029: Listing Limit Enforcement
+
+**Page:** `/list-property`, `/owner-dashboard`
+**Precondition:** Logged in as owner on Free tier (3 listing max)
+**Steps:**
+1. Create 3 listings (all succeed)
+2. Attempt to create a 4th listing
+
+**Expected:** ListingLimitUpsell dialog shows "3/3 listings used" with Pro/Business upgrade options. "Create Listing" button shows usage badge (e.g., "3/3 listings"). Also test via ListProperty page — should show error message.
+**Status:** [ ] Pass  [ ] Fail
+**Notes:** _______________
+
+#### TC-O-030: Subscribe to Pro/Business Tier
+
+**Page:** `/owner-dashboard` (Account tab), Stripe Checkout
+**Precondition:** Logged in as owner on Free tier
+**Steps:**
+1. Go to Owner Dashboard → Account tab
+2. Click "Upgrade to Pro"
+3. Complete Stripe Checkout with test card `4242 4242 4242 4242`
+
+**Expected:** Redirected to `/subscription/success`. SubscriptionManagement shows "Pro" tier. Listing limit increased to 10. Commission shows 13% (2% discount).
+**Status:** [ ] Pass  [ ] Fail
+**Notes:** _______________
+
+#### TC-O-031: Manage Billing via Stripe Portal
+
+**Page:** `/owner-dashboard` (Account tab), Stripe Customer Portal
+**Precondition:** Logged in as owner with active paid subscription
+**Steps:**
+1. Go to Account tab
+2. Click "Manage Billing"
+
+**Expected:** Redirects to Stripe Customer Portal. Can view invoices, update payment method, cancel subscription.
+**Status:** [ ] Pass  [ ] Fail
+**Notes:** _______________
+
+#### TC-O-032: Cancel Subscription
+
+**Page:** Stripe Customer Portal
+**Precondition:** Owner with active Pro subscription
+**Steps:**
+1. Go to Manage Billing
+2. Cancel subscription
+
+**Expected:** Access continues until end of billing period, then auto-downgrades to Free.
+**Status:** [ ] Pass  [ ] Fail
+**Notes:** _______________
+
 ---
 
 ## Role 3: RAV Staff
@@ -1406,6 +1455,33 @@ Body:
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 
+#### TC-A-023: Admin MRR Metrics Dashboard
+
+**Page:** `/admin` (Memberships tab)
+**Precondition:** Logged in as RAV Admin, seed data active
+**Steps:**
+1. Go to Admin Dashboard → Memberships tab
+2. Review KPI cards and tier distribution
+3. Test status and role filters on the membership table
+
+**Expected:** 4 KPI cards visible (MRR, Active Subscribers, ARPU, Churn Rate). Tier distribution cards show breakdown. Membership table displays users with override badges where applicable. Filters work (status, role).
+**Status:** [ ] Pass  [ ] Fail
+**Notes:** _______________
+
+#### TC-A-024: Admin Manual Tier Override
+
+**Page:** `/admin` (Memberships tab)
+**Precondition:** Logged in as RAV Admin
+**Steps:**
+1. In Memberships tab, click settings icon on a user row
+2. Change tier to a different value
+3. Enter admin notes explaining the reason
+4. Click "Apply Override"
+
+**Expected:** Tier updates immediately. "Admin Override" badge appears on the user row. Admin notes saved and visible. Override warning explains Stripe webhook will be disabled for this user.
+**Status:** [ ] Pass  [ ] Fail
+**Notes:** _______________
+
 ---
 
 ## Cross-Role Scenarios
@@ -1769,7 +1845,8 @@ Every route in `App.tsx` should have at least one test case above.
 | `/rentals` | TC-T-003, TC-T-004, TC-T-005 |
 | `/list-property` | TC-O-001, TC-O-002, TC-O-003 |
 | `/owner-dashboard` | TC-O-006 through TC-O-009 |
-| `/admin` | TC-S-001 through TC-S-014, TC-A-001 through TC-A-022 |
+| `/subscription/success` | TC-O-030 |
+| `/admin` | TC-S-001 through TC-S-014, TC-A-001 through TC-A-024 |
 | `/executive-dashboard` | TC-S-013, TC-A-020 |
 | `/checkout` | TC-T-018, TC-T-019, TC-T-020 |
 | `/booking-success` | TC-T-021 |
@@ -1790,12 +1867,12 @@ Every route in `App.tsx` should have at least one test case above.
 | Section | Total | Pass | Fail | Blocked |
 |---------|-------|------|------|---------|
 | Traveler (Renter) | 38 | | | |
-| Property Owner | 28 | | | |
+| Property Owner | 32 | | | |
 | RAV Staff | 14 | | | |
-| RAV Admin/Owner | 22 | | | |
+| RAV Admin/Owner | 24 | | | |
 | Cross-Role | 10 | | | |
 | Public/Unauth | 15 | | | |
-| **Total** | **127** | | | |
+| **Total** | **133** | | | |
 
 **Tested by:** _______________
 **Date:** _______________
