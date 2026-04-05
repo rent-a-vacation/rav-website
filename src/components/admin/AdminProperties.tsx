@@ -54,7 +54,7 @@ const AdminProperties = ({ initialSearch = "", onNavigateToEntity }: AdminNaviga
         .from("properties")
         .select(`
           *,
-          owner:profiles(*)
+          owner:profiles!properties_owner_id_fkey(*)
         `)
         .order("created_at", { ascending: false });
 
