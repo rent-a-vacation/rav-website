@@ -44,7 +44,8 @@ import {
   GitCompare,
   Star,
   Share2,
-  Compass
+  Compass,
+  Crown
 } from "lucide-react";
 
 const UserGuide = () => {
@@ -82,6 +83,7 @@ const UserGuide = () => {
     { id: "idle-alerts", label: "Idle Week Alerts", icon: AlertCircle },
     { id: "owner-profiles", label: "Owner Profiles", icon: UserCheck },
     { id: "dashboard-nav", label: "Dashboard Navigation", icon: LayoutDashboard },
+    { id: "membership-plans", label: "Membership Tiers & Listing Limits", icon: Crown },
     { id: "account-settings", label: "Account & Preferences", icon: Settings },
     { id: "owner-faq", label: "Owner FAQ", icon: MessageSquare },
   ];
@@ -101,6 +103,7 @@ const UserGuide = () => {
     { id: "reviews", label: "Reviews & Ratings", icon: Star },
     { id: "destinations", label: "Explore Destinations", icon: Compass },
     { id: "protection", label: "Renter Protection", icon: Shield },
+    { id: "subscription-plans", label: "Subscription Plans & Benefits", icon: Crown },
     { id: "account-settings", label: "Account & Preferences", icon: Settings },
     { id: "renter-faq", label: "Renter FAQ", icon: MessageSquare },
   ];
@@ -1073,6 +1076,123 @@ const UserGuide = () => {
             )}
 
             {/* Owner Account & Preferences */}
+            {/* Owner Membership Tiers & Listing Limits */}
+            {activeRole === "owner" && (isPrinting || activeSection === "membership-plans") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Membership Tiers & Listing Limits</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Choose the plan that fits your portfolio. Higher tiers unlock more listings, lower commission rates, and premium features.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Crown className="h-5 w-5 text-primary" />
+                    Owner Tier Comparison
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-3">Tier</th>
+                          <th className="text-left py-2 px-3">Price</th>
+                          <th className="text-left py-2 px-3">Listings</th>
+                          <th className="text-left py-2 px-3">Voice/Day</th>
+                          <th className="text-left py-2 px-3">Commission</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b">
+                          <td className="py-2 px-3 font-medium">Free</td>
+                          <td className="py-2 px-3">$0</td>
+                          <td className="py-2 px-3">3</td>
+                          <td className="py-2 px-3">5</td>
+                          <td className="py-2 px-3">15%</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2 px-3 font-medium">Pro</td>
+                          <td className="py-2 px-3">$10/mo</td>
+                          <td className="py-2 px-3">10</td>
+                          <td className="py-2 px-3">25</td>
+                          <td className="py-2 px-3">13% (2% discount)</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-medium">Business</td>
+                          <td className="py-2 px-3">$25/mo</td>
+                          <td className="py-2 px-3">Unlimited</td>
+                          <td className="py-2 px-3">Unlimited</td>
+                          <td className="py-2 px-3">10% (5% discount)</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    Listing Limits
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Each tier has a maximum number of active listings. When you reach your limit:
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span>You will see an <strong>upgrade prompt</strong> when trying to create or publish a new listing</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span>Existing listings remain active — you just cannot add new ones until you upgrade or remove a listing</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span>The limit is also enforced server-side to prevent accidental overages</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <DollarSign className="h-5 w-5 text-primary" />
+                    Commission Discounts
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    The standard RAV commission is <strong>15%</strong> of the booking total. Paid tiers reduce this:
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• <strong>Free</strong> — 15% commission (no discount)</li>
+                    <li>• <strong>Pro</strong> — 13% commission (2% savings on every booking)</li>
+                    <li>• <strong>Business</strong> — 10% commission (5% savings on every booking)</li>
+                  </ul>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Commission discounts apply automatically to all bookings once your subscription is active.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-primary" />
+                    How to Upgrade
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    To change your membership tier:
+                  </p>
+                  <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
+                    <li>Go to your <strong>Owner Dashboard</strong></li>
+                    <li>Open the <strong>Account</strong> tab</li>
+                    <li>Click <strong>Upgrade Plan</strong> or <strong>Manage Subscription</strong></li>
+                    <li>Select your new tier and complete payment through Stripe</li>
+                  </ol>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Upgrades take effect immediately. Downgrades take effect at the end of your current billing cycle.
+                    If a downgrade would put you over the new listing limit, you will need to deactivate listings before the change takes effect.
+                  </p>
+                </div>
+              </section>
+            )}
+
             {activeRole === "owner" && (isPrinting || activeSection === "account-settings") && (
               <section className="space-y-8 print:break-after-page">
                 <div>
@@ -1934,6 +2054,114 @@ const UserGuide = () => {
                       3% of every transaction goes to a reserve fund for emergency resolutions when things go wrong.
                     </p>
                   </div>
+                </div>
+              </section>
+            )}
+
+            {/* Renter Subscription Plans & Benefits */}
+            {activeRole === "renter" && (isPrinting || activeSection === "subscription-plans") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Subscription Plans & Benefits</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Unlock premium features with a traveler subscription. Choose the plan that matches how you travel.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Crown className="h-5 w-5 text-primary" />
+                    Traveler Tier Comparison
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-3">Tier</th>
+                          <th className="text-left py-2 px-3">Price</th>
+                          <th className="text-left py-2 px-3">Voice/Day</th>
+                          <th className="text-left py-2 px-3">Key Benefits</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b">
+                          <td className="py-2 px-3 font-medium">Free</td>
+                          <td className="py-2 px-3">$0</td>
+                          <td className="py-2 px-3">5</td>
+                          <td className="py-2 px-3 text-muted-foreground">Browse listings, basic search, make offers</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2 px-3 font-medium">Plus</td>
+                          <td className="py-2 px-3">$5/mo</td>
+                          <td className="py-2 px-3">25</td>
+                          <td className="py-2 px-3 text-muted-foreground">Priority support, early access to new listings</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-medium">Premium</td>
+                          <td className="py-2 px-3">$15/mo</td>
+                          <td className="py-2 px-3">Unlimited</td>
+                          <td className="py-2 px-3 text-muted-foreground">Concierge support, price drop alerts, exclusive deals</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    What You Get with Each Tier
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-medium mb-1">Free</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Full access to browse and book vacation properties, make offers, submit travel requests, and use up to 5 voice searches per day.
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Plus ($5/mo)</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Everything in Free, plus 25 voice searches per day, priority customer support, and early access to newly listed properties before they appear to Free users.
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1">Premium ($15/mo)</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Everything in Plus, plus unlimited voice searches, dedicated concierge support, automatic price drop alerts on saved searches, and access to exclusive deals and promotions.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-primary" />
+                    How to Subscribe & Manage Billing
+                  </h3>
+                  <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
+                    <li>Click your avatar in the header and go to <strong>Account Settings</strong></li>
+                    <li>Navigate to the <strong>Subscription</strong> section</li>
+                    <li>Select your desired plan and click <strong>Subscribe</strong></li>
+                    <li>Complete payment securely through Stripe</li>
+                  </ol>
+                  <p className="text-sm text-muted-foreground mt-3">
+                    To manage your subscription (upgrade, downgrade, or cancel):
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground mt-2">
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Upgrade</strong> — Takes effect immediately. You are charged the prorated difference.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Downgrade</strong> — Takes effect at the end of your current billing period.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span><strong>Cancel</strong> — Your benefits remain active until the end of the billing period, then revert to Free.</span>
+                    </li>
+                  </ul>
                 </div>
               </section>
             )}

@@ -1932,6 +1932,73 @@ const Documentation = () => {
                     Tier data is defined in migration <code className="text-xs bg-muted px-1 rounded">011_membership_tiers.sql</code>.
                   </p>
                 </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-primary" />
+                    Stripe Subscription Integration
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Subscriptions are managed through Stripe Billing. Four edge functions handle the lifecycle:
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• <code className="text-xs bg-muted px-1 rounded">create-subscription-checkout</code> — Creates a Stripe Checkout Session for new subscriptions. Accepts tier and billing interval, returns a checkout URL.</li>
+                    <li>• <code className="text-xs bg-muted px-1 rounded">update-subscription</code> — Handles upgrades and downgrades by modifying the existing Stripe subscription. Upgrades prorate immediately; downgrades take effect at period end.</li>
+                    <li>• <code className="text-xs bg-muted px-1 rounded">manage-subscription</code> — Creates a Stripe Customer Portal session so users can update payment methods, view invoices, and cancel.</li>
+                    <li>• <code className="text-xs bg-muted px-1 rounded">stripe-webhook</code> — Receives Stripe webhook events and synchronizes the local database.</li>
+                  </ul>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-amber-500" />
+                    Webhook Events Handled
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    The <code className="text-xs bg-muted px-1 rounded">stripe-webhook</code> edge function processes the following subscription-related events:
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• <code className="text-xs bg-muted px-1 rounded">customer.subscription.created</code> — Sets the user's membership tier and records the Stripe subscription ID</li>
+                    <li>• <code className="text-xs bg-muted px-1 rounded">customer.subscription.updated</code> — Handles tier changes, status transitions (active, past_due, canceled), and period updates</li>
+                    <li>• <code className="text-xs bg-muted px-1 rounded">customer.subscription.deleted</code> — Reverts the user to the Free tier when a subscription ends</li>
+                    <li>• <code className="text-xs bg-muted px-1 rounded">invoice.paid</code> — Confirms successful payment and updates the billing period</li>
+                    <li>• <code className="text-xs bg-muted px-1 rounded">invoice.payment_failed</code> — Flags the subscription as past_due so the UI can prompt for payment update</li>
+                  </ul>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    Listing Limit Enforcement
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Owner tiers impose listing limits (Free: 3, Pro: 10, Business: unlimited). Enforcement happens at three layers:
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• <strong>Database RPC:</strong> <code className="text-xs bg-muted px-1 rounded">check_listing_limit</code> returns the user's current count, maximum allowed, and whether they can create more</li>
+                    <li>• <strong>Frontend hook:</strong> <code className="text-xs bg-muted px-1 rounded">useCheckListingLimit</code> calls the RPC and controls UI gating — the "Create Listing" and "Publish" buttons show an upgrade prompt when the limit is reached</li>
+                    <li>• <strong>Database trigger:</strong> A server-side trigger on the <code className="text-xs bg-muted px-1 rounded">listings</code> table prevents INSERT when the owner's active listing count meets or exceeds their tier limit, providing a safety net if the frontend check is bypassed</li>
+                  </ul>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Wrench className="h-5 w-5 text-primary" />
+                    Admin Override Process
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    RAV admins can manually override a user's membership tier via the Admin Dashboard:
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• The <strong>AdminMembershipOverride</strong> dialog (in Admin &gt; Users) lets admins set any tier for any user with a required reason</li>
+                    <li>• Overridden profiles have the <code className="text-xs bg-muted px-1 rounded">admin_override</code> flag set to <code className="text-xs bg-muted px-1 rounded">true</code></li>
+                    <li>• When <code className="text-xs bg-muted px-1 rounded">admin_override</code> is true, the Stripe webhook <strong>skips</strong> tier updates for that user — preventing webhook events from reverting the admin's manual change</li>
+                    <li>• Admins can remove the override at any time, which re-enables normal Stripe synchronization</li>
+                  </ul>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Use cases: comp accounts for partners, temporary upgrades for support issues, testing tier features.
+                  </p>
+                </div>
               </section>
             )}
 

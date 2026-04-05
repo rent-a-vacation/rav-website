@@ -3,6 +3,14 @@ import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -11,8 +19,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Crown, Users } from "lucide-react";
+import { Crown, Users, DollarSign, TrendingDown, BarChart3, Settings2 } from "lucide-react";
 import { MembershipBadge } from "@/components/MembershipBadge";
+import { AdminMembershipOverride } from "@/components/admin/AdminMembershipOverride";
 import { useMembershipTiers } from "@/hooks/useMembership";
 import type { MembershipTier } from "@/types/database";
 import { format } from "date-fns";
@@ -22,58 +31,94 @@ interface MembershipRow {
   user_id: string;
   status: string;
   started_at: string;
+  admin_override: boolean;
+  admin_notes: string | null;
   tier: MembershipTier;
   user_email?: string;
+}
+
+interface SubscriptionMetrics {
+  total_mrr_cents: number;
+  active_paid_count: number;
+  active_free_count: number;
+  cancelled_count: number;
+  override_count: number;
+  tier_breakdown: Array<{
+    tier_key: string;
+    tier_name: string;
+    role_category: string;
+    monthly_price_cents: number;
+    user_count: number;
+    mrr_cents: number;
+  }>;
 }
 
 export function AdminMemberships() {
   const { data: tiers } = useMembershipTiers();
   const [memberships, setMemberships] = useState<MembershipRow[]>([]);
+  const [metrics, setMetrics] = useState<SubscriptionMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [overrideTarget, setOverrideTarget] = useState<MembershipRow | null>(null);
+
+  const fetchData = async () => {
+    try {
+      // Fetch memberships with admin fields
+      const { data, error } = await supabase
+        .from("user_memberships")
+        .select("id, user_id, status, started_at, admin_override, admin_notes, tier:membership_tiers(*)")
+        .order("started_at", { ascending: false });
+
+      if (error) throw error;
+
+      // Fetch user emails
+      const rows = (data || []) as Array<MembershipRow>;
+      const userIds = rows.map((m) => m.user_id);
+      let emailMap: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, email")
+          .in("id", userIds);
+        const profileRows = (profiles || []) as Array<{ id: string; email: string }>;
+        emailMap = profileRows.reduce((acc: Record<string, string>, p) => {
+          acc[p.id] = p.email;
+          return acc;
+        }, {});
+      }
+
+      setMemberships(
+        rows.map((m) => ({
+          ...m,
+          user_email: emailMap[m.user_id] || "Unknown",
+        }))
+      );
+
+      // Fetch MRR metrics
+      const { data: metricsData, error: metricsError } = await supabase.rpc("get_subscription_metrics");
+      if (!metricsError && metricsData) {
+        setMetrics(metricsData as SubscriptionMetrics);
+      }
+    } catch (error) {
+      console.error("Error fetching memberships:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchMemberships = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("user_memberships")
-          .select("id, user_id, status, started_at, tier:membership_tiers(*)")
-          .order("started_at", { ascending: false });
-
-        if (error) throw error;
-
-        // Fetch user emails
-        const rows = (data || []) as Array<{ user_id: string; id: string; status: string; started_at: string; tier: MembershipTier }>;
-        const userIds = rows.map((m) => m.user_id);
-        let emailMap: Record<string, string> = {};
-        if (userIds.length > 0) {
-          const { data: profiles } = await supabase
-            .from("profiles")
-            .select("id, email")
-            .in("id", userIds);
-          const profileRows = (profiles || []) as Array<{ id: string; email: string }>;
-          emailMap = profileRows.reduce((acc: Record<string, string>, p) => {
-            acc[p.id] = p.email;
-            return acc;
-          }, {});
-        }
-
-        setMemberships(
-          rows.map((m) => ({
-            ...m,
-            user_email: emailMap[m.user_id] || "Unknown",
-          }))
-        );
-      } catch (error) {
-        console.error("Error fetching memberships:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMemberships();
+    fetchData();
   }, []);
 
-  // Calculate tier distribution
+  // Filter memberships
+  const filteredMemberships = memberships.filter((m) => {
+    if (statusFilter !== "all" && m.status !== statusFilter) return false;
+    if (roleFilter !== "all" && m.tier?.role_category !== roleFilter) return false;
+    return true;
+  });
+
+  // Tier distribution from metrics or computed
   const tierCounts = (tiers || []).map((tier) => ({
     tier,
     count: memberships.filter((m) => m.tier?.id === tier.id).length,
@@ -83,8 +128,8 @@ export function AdminMemberships() {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
-        <div className="grid gap-4 md:grid-cols-3">
-          {[1, 2, 3].map((i) => (
+        <div className="grid gap-4 md:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} className="h-24" />
           ))}
         </div>
@@ -93,13 +138,81 @@ export function AdminMemberships() {
     );
   }
 
+  const totalMrr = metrics ? metrics.total_mrr_cents / 100 : 0;
+  const activePaid = metrics?.active_paid_count ?? 0;
+  const arpu = activePaid > 0 ? totalMrr / activePaid : 0;
+  const totalActive = activePaid + (metrics?.active_free_count ?? 0);
+  const cancelled = metrics?.cancelled_count ?? 0;
+  const churnRate = totalActive + cancelled > 0
+    ? ((cancelled / (totalActive + cancelled)) * 100).toFixed(1)
+    : "0.0";
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Memberships</h2>
         <p className="text-muted-foreground">
-          Overview of user membership tiers and distribution
+          Subscription metrics, tier distribution, and member management
         </p>
+      </div>
+
+      {/* MRR Metrics */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-teal-600" />
+              Monthly Recurring Revenue
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span className="text-2xl font-bold">${totalMrr.toFixed(0)}</span>
+            <span className="text-muted-foreground text-sm">/mo</span>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Users className="h-4 w-4 text-teal-600" />
+              Active Subscribers
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span className="text-2xl font-bold">{activePaid}</span>
+            <p className="text-xs text-muted-foreground">
+              + {metrics?.active_free_count ?? 0} free
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-teal-600" />
+              ARPU
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span className="text-2xl font-bold">${arpu.toFixed(2)}</span>
+            <p className="text-xs text-muted-foreground">avg revenue per paid user</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-teal-600" />
+              Churn Rate
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span className="text-2xl font-bold">{churnRate}%</span>
+            <p className="text-xs text-muted-foreground">
+              {cancelled} cancelled
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Tier distribution summary */}
@@ -132,11 +245,38 @@ export function AdminMemberships() {
             All User Memberships
           </CardTitle>
           <CardDescription>
-            {memberships.length} total memberships
+            {filteredMemberships.length} of {memberships.length} memberships
+            {metrics?.override_count ? ` (${metrics.override_count} admin overrides)` : ""}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {memberships.length === 0 ? (
+          {/* Filters */}
+          <div className="flex flex-wrap gap-3 mb-4">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="owner">Owners</SelectItem>
+                <SelectItem value="traveler">Travelers</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {filteredMemberships.length === 0 ? (
             <div className="text-center py-8">
               <Crown className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">No memberships found</p>
@@ -149,11 +289,13 @@ export function AdminMemberships() {
                   <TableHead>Tier</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Override</TableHead>
                   <TableHead>Started</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {memberships.map((m) => (
+                {filteredMemberships.map((m) => (
                   <TableRow key={m.id}>
                     <TableCell className="font-medium">
                       {m.user_email}
@@ -172,7 +314,25 @@ export function AdminMemberships() {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      {m.admin_override ? (
+                        <Badge variant="outline" className="text-amber-600 border-amber-300">
+                          Admin Override
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       {format(new Date(m.started_at), "MMM d, yyyy")}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setOverrideTarget(m)}
+                      >
+                        <Settings2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -181,6 +341,21 @@ export function AdminMemberships() {
           )}
         </CardContent>
       </Card>
+
+      {/* Override Dialog */}
+      {overrideTarget && (
+        <AdminMembershipOverride
+          membership={overrideTarget}
+          open={!!overrideTarget}
+          onOpenChange={(open) => {
+            if (!open) setOverrideTarget(null);
+          }}
+          onSaved={() => {
+            setOverrideTarget(null);
+            fetchData();
+          }}
+        />
+      )}
     </div>
   );
 }

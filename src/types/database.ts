@@ -2157,6 +2157,7 @@ export interface MembershipTier {
   features: string[];
   description: string | null;
   is_default: boolean;
+  stripe_price_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -2171,6 +2172,8 @@ export interface UserMembership {
   stripe_subscription_id: string | null;
   stripe_customer_id: string | null;
   cancelled_at: string | null;
+  admin_override: boolean;
+  admin_notes: string | null;
   created_at: string;
   updated_at: string;
 }

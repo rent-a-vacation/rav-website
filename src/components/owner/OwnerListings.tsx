@@ -38,6 +38,8 @@ import {
 import { toast } from "sonner";
 import { Plus, Calendar, MapPin, Edit, Trash2, XCircle, Gavel, Eye, ShieldCheck, Building2 } from "lucide-react";
 import { PricingSuggestion } from "@/components/owner/PricingSuggestion";
+import { ListingLimitUpsell } from "@/components/subscription/ListingLimitUpsell";
+import { useCheckListingLimit } from "@/hooks/useCheckListingLimit";
 import { format, formatDistanceToNow, isPast } from "date-fns";
 import type { Property, Listing, ListingStatus, CancellationPolicy, Database } from "@/types/database";
 import { CANCELLATION_POLICY_LABELS, CANCELLATION_POLICY_DESCRIPTIONS } from "@/types/database";
@@ -104,10 +106,12 @@ const initialFormData: ListingFormData = {
 
 const OwnerListings = () => {
   const { user } = useAuth();
+  const { canCreate, currentCount, maxListings, tierName } = useCheckListingLimit();
   const [listings, setListings] = useState<ListingWithProperty[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [upsellOpen, setUpsellOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editingListing, setEditingListing] = useState<ListingWithProperty | null>(null);
   const [formData, setFormData] = useState<ListingFormData>(initialFormData);
@@ -359,13 +363,27 @@ const OwnerListings = () => {
             Create and manage your rental listings
           </p>
         </div>
+        <div className="flex items-center gap-3">
+          {maxListings !== null && (
+            <span className="text-sm text-muted-foreground">
+              {currentCount}/{maxListings} listings
+            </span>
+          )}
+          <Button
+            disabled={properties.length === 0}
+            onClick={() => {
+              if (!canCreate) {
+                setUpsellOpen(true);
+              } else {
+                setIsDialogOpen(true);
+              }
+            }}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create Listing
+          </Button>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
-          <DialogTrigger asChild>
-            <Button disabled={properties.length === 0}>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Listing
-            </Button>
-          </DialogTrigger>
           <DialogContent className="max-w-lg">
             {listingSuccess ? (
               <ActionSuccessCard
@@ -633,7 +651,7 @@ const OwnerListings = () => {
             <p className="text-muted-foreground text-center mb-4">
               Create your first listing to start accepting bookings
             </p>
-            <Button onClick={() => setIsDialogOpen(true)}>
+            <Button onClick={() => canCreate ? setIsDialogOpen(true) : setUpsellOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Create Listing
             </Button>
@@ -848,6 +866,17 @@ const OwnerListings = () => {
             setBidsManagerOpen(open);
             if (!open) setSelectedListingForBidding(null);
           }}
+        />
+      )}
+
+      {/* Listing Limit Upsell Dialog */}
+      {maxListings !== null && tierName && (
+        <ListingLimitUpsell
+          open={upsellOpen}
+          onOpenChange={setUpsellOpen}
+          currentCount={currentCount}
+          maxListings={maxListings}
+          tierName={tierName}
         />
       )}
     </div>

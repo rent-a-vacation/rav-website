@@ -23,6 +23,7 @@ export const adminLifecycle: FlowDefinition = {
         { condition: 'Booking operations', targetStepId: 'booking_oversight', label: 'Bookings' },
         { condition: 'Support queue', targetStepId: 'issue_resolution', label: 'Issues' },
         { condition: 'Analytics & reports', targetStepId: 'financials', label: 'Reports' },
+        { condition: 'Membership admin', targetStepId: 'membership_management', label: 'Memberships' },
         { condition: 'Launch preparation', targetStepId: 'launch_readiness', label: 'Launch' },
       ],
     },
@@ -190,6 +191,17 @@ export const adminLifecycle: FlowDefinition = {
       branches: [
         { condition: 'Deep-dive analytics', targetStepId: 'executive_dashboard', label: 'Executive view' },
       ],
+    },
+    {
+      id: 'membership_management',
+      route: '/admin',
+      label: 'Membership Management',
+      component: 'AdminMemberships',
+      tab: 'memberships',
+      roles: ['rav_owner'],
+      description: 'View MRR metrics, tier distribution, and manually override user membership tiers.',
+      tables: ['user_memberships', 'membership_tiers'],
+      branches: [],
     },
     {
       id: 'voice_controls',

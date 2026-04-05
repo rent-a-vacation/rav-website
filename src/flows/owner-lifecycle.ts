@@ -87,6 +87,21 @@ export const ownerLifecycle: FlowDefinition = {
       tables: ['properties', 'listings'],
     },
     {
+      id: 'check_listing_limit',
+      route: '/owner-dashboard',
+      label: 'Check Listing Limit',
+      component: 'useCheckListingLimit',
+      tab: 'my-listings',
+      roles: ['property_owner'],
+      nodeStyle: 'decision',
+      description: 'System checks if owner is within their tier listing limit before creating a new listing.',
+      tables: ['user_memberships', 'membership_tiers', 'listings'],
+      branches: [
+        { condition: 'Within limit', targetStepId: 'create_listing', label: 'Can create' },
+        { condition: 'At limit', targetStepId: 'upgrade_plan', label: 'Upgrade needed', edgeStyle: 'dashed' },
+      ],
+    },
+    {
       id: 'create_listing',
       route: '/owner-dashboard',
       label: 'Create Additional Listing',
@@ -95,6 +110,20 @@ export const ownerLifecycle: FlowDefinition = {
       roles: ['property_owner'],
       description: 'Create additional listings for existing properties. Set available dates, nightly rate pricing, cancellation policy.',
       tables: ['listings'],
+    },
+    {
+      id: 'upgrade_plan',
+      route: '/owner-dashboard',
+      label: 'Upgrade Subscription',
+      component: 'MembershipPlans',
+      tab: 'account',
+      roles: ['property_owner'],
+      description: 'Owner upgrades to a higher tier via Stripe Checkout for more listings, commission discounts, and voice quota.',
+      tables: ['user_memberships', 'membership_tiers'],
+      edgeFunctions: ['create-subscription-checkout', 'stripe-webhook'],
+      branches: [
+        { condition: 'Upgraded', targetStepId: 'create_listing', label: 'Now within limit' },
+      ],
     },
     {
       id: 'admin_review',
