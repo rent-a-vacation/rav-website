@@ -10,8 +10,8 @@
   logo-path: "../../public/rav-logo.png",
   mascot-path: "../../public/ravio-v2.png",
   title: "QA Testing Playbook",
-  subtitle: "Version 2.0 — Manual Testing Reference for Team Testers",
-  date: "April 5, 2026",
+  subtitle: "Version 1.0 — Manual Testing Reference for Team Testers",
+  date: "March 14, 2026",
   tagline: "Your Timeshare. Their Dream Vacation.",
   about: "Rent-A-Vacation (RAV) is a peer-to-peer marketplace connecting timeshare owners with travelers seeking premium vacation rentals at below-market rates. This playbook provides step-by-step manual test scenarios organized by role.",
 )
@@ -59,24 +59,19 @@
 === Property Owners
 
 #rav-table(
-  ("Email", "Name", "Brand", "Tier"),
-  widths: (2fr, 1fr, 1.5fr, 1fr),
-  [#raw("owner1@rent-a-vacation.com")], [Alex Rivera], [Hilton Grand Vacations], [*Pro* (#raw("$10/mo"))],
-  [#raw("owner2@rent-a-vacation.com")], [Maria Chen], [Marriott Vacation Club], [*Business* (#raw("$25/mo"))],
-  [#raw("owner3@rent-a-vacation.com")], [James Thompson], [Disney Vacation Club], [Free],
-  [#raw("owner4@rent-a-vacation.com")], [Priya Patel], [Wyndham Destinations], [Free],
-  [#raw("owner5@rent-a-vacation.com")], [Robert Kim], [Bluegreen Vacations], [Free],
+  ("Email", "Name", "Brand"),
+  widths: (2fr, 1fr, 2fr),
+  [#raw("owner1@rent-a-vacation.com")], [Alex Rivera], [Hilton Grand Vacations],
+  [#raw("owner2@rent-a-vacation.com")], [Maria Chen], [Marriott Vacation Club],
+  [#raw("owner3@rent-a-vacation.com")], [James Thompson], [Disney Vacation Club],
+  [#raw("owner4@rent-a-vacation.com")], [Priya Patel], [Wyndham Destinations],
+  [#raw("owner5@rent-a-vacation.com")], [Robert Kim], [Bluegreen Vacations],
 )
 
 === Renters
 
 50 accounts: #raw("renter001@rent-a-vacation.com") through #raw("renter050@rent-a-vacation.com") \
 Password: #raw("SeedTest2026!")
-
-*Tier assignments (after seed):*
-- renter001–002: *Plus* (#raw("$5/mo")) — 25 voice searches/day
-- renter003: *Premium* (#raw("$15/mo")) — unlimited voice, concierge support
-- renter004–050: Free — 5 voice searches/day
 
 == Stripe Test Cards
 
@@ -96,20 +91,13 @@ Password: #raw("SeedTest2026!")
 
 For all test cards: any future expiry (e.g., `12/28`), any 3-digit CVC (e.g., `123`), any ZIP (e.g., `32256`).
 
-== How to Manage DEV Data
+== How to Reseed DEV Data
 
-Two options in Admin Dashboard → Dev Tools tab:
-
-*Reset & Reseed DEV* — Wipes all test data and recreates from scratch. Use when you want a clean slate.
 + Log in as any RAV team account on DEV
 + Navigate to Admin Dashboard → Dev Tools tab
++ Click "Refresh" to see current data counts
 + Click "Reset & Reseed DEV" and confirm
 + Wait 30–60 seconds for completion
-
-*Update Seed Data* — Adds new feature data without deleting anything. Use after code updates to get new test data while keeping your manual testing intact.
-+ Navigate to Admin Dashboard → Dev Tools tab
-+ Click "Update Seed Data" and confirm
-+ Completes in ~10 seconds
 
 == How to Report Bugs
 
@@ -823,71 +811,6 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
   expected: "Portfolio summary across all owned properties.",
 )
 
-== Subscription & Listing Limits
-
-#test-case("TC-O-029", "Listing Limit Enforcement (Free Tier)",
-  page: "/owner-dashboard?tab=my-listings",
-  steps: (
-    "Log in as owner3 (Free tier, 3 listing max)",
-    "Create listings until at limit (3)",
-    "Observe listing count badge next to Create Listing button",
-    "Attempt to create a 4th listing",
-  ),
-  expected: "Badge shows \"3/3 listings\". Clicking Create Listing opens upgrade upsell dialog showing Pro (10 listings, $10/mo) and Business (unlimited, $25/mo). Cannot create listing.",
-)
-
-#test-case("TC-O-030", "Subscribe to Pro Tier",
-  page: "/owner-dashboard?tab=account",
-  steps: (
-    "Log in as owner3 (Free tier)",
-    "Go to Owner Dashboard → Account tab",
-    "Click upgrade to Pro (10 dollars/mo)",
-    "Complete Stripe Checkout with test card 4242 4242 4242 4242",
-    "Use any future expiry (12/28), any CVC (123), any ZIP (32256)",
-  ),
-  expected: "Redirected to Stripe Checkout → payment succeeds → redirected to /subscription/success. Tier badge shows Pro. Listing limit now 10. Commission discount 2% applied.",
-)
-
-#test-case("TC-O-031", "Manage Billing via Stripe Portal",
-  page: "/owner-dashboard?tab=account",
-  steps: (
-    "Log in as owner with active paid subscription",
-    "Go to Account tab → Subscription section",
-    "Click \"Manage Billing\"",
-  ),
-  expected: "Redirects to Stripe Customer Portal. Can view invoices, update payment method. Cancel option shows \"at end of billing period\".",
-)
-
-#test-case("TC-O-032", "Cancel Subscription",
-  page: "Stripe Customer Portal",
-  steps: (
-    "From Manage Billing, click Cancel plan",
-    "Confirm cancellation",
-    "Return to RAV site",
-  ),
-  expected: "Subscription shows \"Cancelling\" with end date. Access continues until billing period ends. Then auto-downgrades to Free tier.",
-)
-
-#test-case("TC-O-033", "Upgrade Between Paid Tiers",
-  page: "/owner-dashboard?tab=account",
-  steps: (
-    "Log in as owner1 (Pro tier)",
-    "Click upgrade to Business (25 dollars/mo)",
-    "Complete Stripe Checkout",
-  ),
-  expected: "Immediate upgrade with proration (pays difference for remaining cycle). Listing limit now unlimited. Commission discount now 5%.",
-)
-
-#test-case("TC-O-034", "Commission Discount Verification",
-  page: "/owner-dashboard?tab=bookings-earnings",
-  steps: (
-    "Log in as owner1 (Pro tier, 2% discount)",
-    "Check earnings breakdown",
-    "Verify commission shows 13% (not 15%)",
-  ),
-  expected: "Service fee shows 13% for Pro tier. Owner2 (Business) would show 10%.",
-)
-
 #pagebreak()
 
 // ============================================================================
@@ -1253,72 +1176,6 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
   expected: "Page views tracked (G-G2YCVHNS25) only after consent.",
 )
 
-== Subscription Management
-
-#test-case("TC-A-023", "MRR Metrics Dashboard",
-  page: "/admin → Memberships",
-  steps: (
-    "Navigate to Admin Dashboard → Memberships tab",
-    "Review 4 KPI cards at top",
-    "Check tier distribution cards (6 tiers)",
-    "Review membership table",
-    "Test status filter (Active / Cancelled / Pending)",
-    "Test role filter (Owners / Travelers)",
-  ),
-  expected: "MRR shows total monthly revenue. Active Subscribers shows paid count. ARPU = MRR / paid. Churn shows cancellation rate. Tier cards show user counts. Filters narrow the table.",
-)
-
-#test-case("TC-A-024", "Manual Tier Override",
-  page: "/admin → Memberships",
-  steps: (
-    "Find a user in the membership table",
-    "Click the settings icon (Actions column)",
-    "In the override dialog: select a different tier",
-    "Enter admin notes (required): e.g., \"VIP promotional override\"",
-    "Click \"Apply Override\"",
-  ),
-  expected: "Tier changes immediately. \"Admin Override\" badge appears on the row. Warning explains Stripe webhooks won't auto-update this user. Override count increments in summary.",
-)
-
-#test-case("TC-A-025", "Clear Admin Override",
-  page: "/admin → Memberships",
-  steps: (
-    "Find a user with \"Admin Override\" badge",
-    "Click settings icon to open override dialog",
-    "Click \"Clear Override\"",
-  ),
-  expected: "Override removed. Badge disappears. Stripe webhooks resume control of this user's tier.",
-)
-
-#test-case("TC-A-026", "Admin Safeguard — Staff-Only Toggle",
-  page: "/admin → Settings",
-  steps: (
-    "Find Staff-Only Mode switch",
-    "Toggle it",
-  ),
-  expected: "AlertDialog appears asking confirmation with impact description. Change only applies after explicit confirm.",
-)
-
-#test-case("TC-A-027", "Admin Safeguard — Commission Rate",
-  page: "/admin → Settings",
-  steps: (
-    "Find commission rate input",
-    "Change the value",
-    "Click Save",
-  ),
-  expected: "Save button enables on change. AlertDialog shows \"Change from X% to Y%?\" on click. Only applies after confirm.",
-)
-
-#test-case("TC-A-028", "Update Seed Data (Incremental)",
-  page: "/admin → Dev Tools",
-  steps: (
-    "Click \"Update Seed Data\" (not Reset & Reseed)",
-    "Confirm in dialog",
-    "Review log output",
-  ),
-  expected: "Adds missing data only (tier upgrades, referral codes, API keys, voice logs). Existing bookings and manual test data preserved.",
-)
-
 #pagebreak()
 
 // ============================================================================
@@ -1436,30 +1293,6 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
     "Compare tab counts",
   ),
   expected: "Staff sees 10 tabs. Admin sees 10 + admin-only. No overlap or missing.",
-)
-
-#test-case("TC-X-011", "Subscription Upgrade → Listing Limit Increase",
-  page: "Multiple pages",
-  steps: (
-    "Owner (Free tier): Create 3 listings (hit limit)",
-    "Verify upsell dialog appears on 4th attempt",
-    "Go to Account tab → upgrade to Pro via Stripe Checkout",
-    "Return to My Listings → Create Listing again",
-    "Verify it now works (limit raised to 10)",
-    "Admin: Go to Memberships tab → verify user shows Pro tier",
-  ),
-  expected: "Full lifecycle: limit enforced → upgrade → limit raised → new listing created. Admin sees tier change.",
-)
-
-#test-case("TC-X-012", "Admin Override → Commission Impact",
-  page: "Multiple pages",
-  steps: (
-    "Admin: Override owner3 from Free to Business tier (admin notes: \"testing\")",
-    "Owner3: Log in → check commission in earnings (should show 10%)",
-    "Admin: Go to Memberships → verify \"Admin Override\" badge on owner3",
-    "Admin: Clear override → verify badge removed",
-  ),
-  expected: "Override changes tier immediately. Commission discount applied. Admin badge visible. Clear restores normal state.",
 )
 
 #pagebreak()
@@ -1609,12 +1442,12 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
   ("Section", "Total", "Pass", "Fail", "Blocked"),
   widths: (2fr, 1fr, 1fr, 1fr, 1fr),
   [Traveler (Renter)], [38], [], [], [],
-  [Property Owner], [34], [], [], [],
+  [Property Owner], [28], [], [], [],
   [RAV Staff], [14], [], [], [],
-  [RAV Admin/Owner], [28], [], [], [],
-  [Cross-Role], [12], [], [], [],
+  [RAV Admin/Owner], [22], [], [], [],
+  [Cross-Role], [10], [], [], [],
   [Public/Unauth], [15], [], [], [],
-  [*Total*], [*141*], [], [], [],
+  [*Total*], [*127*], [], [], [],
 )
 
 #v(1cm)
