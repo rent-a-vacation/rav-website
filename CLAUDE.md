@@ -390,6 +390,42 @@ All emails sent by Rent-A-Vacation MUST use the shared branded template:
 
 ---
 
+## Seed Manager Convention (MANDATORY)
+
+The seed manager (`supabase/functions/seed-manager/index.ts`) creates test data for DEV. It must stay in sync with the database schema.
+
+### When to update the seed manager
+
+You MUST update the seed manager when:
+
+1. **Adding a migration that creates new tables** → Add sample rows for the new tables
+2. **Adding new user-facing features gated by data** → Ensure test users have that data (e.g., varied membership tiers, referral codes, API keys)
+3. **Changing table schemas** that affect existing seed data (renamed columns, new required fields)
+
+### What the seed manager must always provide
+
+- **Foundation users** with diverse roles: RAV admin, RAV staff, property owners at different tiers (Free/Pro/Business), renters at different tiers (Free/Plus/Premium)
+- **Realistic test data** for every user-facing feature: listings, bookings, bids, reviews, notifications, subscriptions
+- **Admin dashboard data** so all admin tabs show meaningful content (MRR metrics, disputes, escrow, voice logs)
+
+### Admin Safeguards Convention (MANDATORY)
+
+All admin actions that modify data MUST have appropriate confirmation dialogs:
+
+| Action Type | Required Safeguard |
+|-------------|-------------------|
+| **Destructive** (delete, reset, revoke) | AlertDialog with explicit description of impact |
+| **Financial** (release escrow, change commission, initiate payout) | AlertDialog showing amounts + recipient |
+| **Platform-wide** (staff-only toggle, kill switches) | AlertDialog with "I understand" confirmation |
+| **Role/permission changes** | AlertDialog + prevent self-demotion |
+| **Tier/subscription overrides** | Dialog with admin notes (required) |
+
+- ❌ Never use bare `window.confirm()` — always use shadcn AlertDialog
+- ❌ Never update settings on keystroke (`onChange`) — use Save button or `onBlur`
+- ❌ Never allow admins to remove their own `rav_admin` or `rav_owner` role
+
+---
+
 ## What NOT to Do
 
 - ❌ Never push directly to `main`
@@ -398,5 +434,6 @@ All emails sent by Rent-A-Vacation MUST use the shared branded template:
 - ❌ Never hardcode business metrics without verifying against docs
 - ❌ Never update GitHub Issues priority — that's the human's job
 - ❌ Never skip updating flow manifests when adding routes
+- ❌ Never skip updating seed manager when adding tables (see Seed Manager Convention)
 - ❌ Never use placeholder content or fake statistics
 - ❌ Never modify production Supabase (xzfllqndrlmhclqfybew) without explicit human confirmation

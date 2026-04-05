@@ -33,6 +33,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   AlertTriangle,
   Calendar,
   CheckCircle2,
@@ -128,6 +138,7 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
   const [verificationNotes, setVerificationNotes] = useState("");
   const [isAutoReleasing, setIsAutoReleasing] = useState(false);
   const [holdingEscrowId, setHoldingEscrowId] = useState<string | null>(null);
+  const [escrowReleaseTarget, setEscrowReleaseTarget] = useState<EscrowWithDetails | null>(null);
 
   const fetchEscrows = useCallback(async () => {
     try {
@@ -203,13 +214,12 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
     }
   };
 
-  const handleReleaseFunds = async (escrow: EscrowWithDetails) => {
-    if (!user) return;
+  const handleReleaseFunds = (escrow: EscrowWithDetails) => {
+    setEscrowReleaseTarget(escrow);
+  };
 
-    const confirmed = window.confirm(
-      `Are you sure you want to release $${escrow.escrow_amount.toLocaleString()} to the owner?`
-    );
-    if (!confirmed) return;
+  const confirmReleaseFunds = async () => {
+    if (!user || !escrowReleaseTarget) return;
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -219,7 +229,7 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
           escrow_status: "released",
           escrow_released_at: new Date().toISOString(),
         })
-        .eq("id", escrow.id);
+        .eq("id", escrowReleaseTarget.id);
 
       if (error) throw error;
 
@@ -230,7 +240,7 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
         .update({
           payout_status: "processing",
         })
-        .eq("id", escrow.booking_id);
+        .eq("id", escrowReleaseTarget.booking_id);
 
       toast({
         title: "Funds Released",
@@ -245,6 +255,8 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
         description: "Failed to release funds.",
         variant: "destructive",
       });
+    } finally {
+      setEscrowReleaseTarget(null);
     }
   };
 
@@ -832,6 +844,59 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Release Funds Confirmation Dialog */}
+      <AlertDialog open={!!escrowReleaseTarget} onOpenChange={(open) => { if (!open) setEscrowReleaseTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Release Escrow Funds?</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                {escrowReleaseTarget && (
+                  <div className="rounded-md border p-3 space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Owner</span>
+                      <span className="font-medium">
+                        {escrowReleaseTarget.owner?.full_name || escrowReleaseTarget.owner?.email || "Unknown"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Amount</span>
+                      <span className="font-semibold text-foreground">
+                        ${escrowReleaseTarget.escrow_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Booking ID</span>
+                      <span className="font-mono text-xs">{escrowReleaseTarget.booking_id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Check-in</span>
+                      <span>{format(new Date(escrowReleaseTarget.booking?.listing?.check_in_date), "PPP")}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Check-out</span>
+                      <span>{format(new Date(escrowReleaseTarget.booking?.listing?.check_out_date), "PPP")}</span>
+                    </div>
+                  </div>
+                )}
+                <p className="text-destructive font-medium">
+                  This action cannot be undone. Funds will be released to the owner.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmReleaseFunds}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Release Funds
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
