@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-05T03:03:26"
+change_ref: "04d0bf8"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -8,6 +8,94 @@ status: "active"
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
 > **Last Archived:** March 10, 2026
+
+---
+
+## Session 44: Stripe Setup + Subscription Phases 5-7
+
+**Completed:** April 4, 2026
+**Issues Closed:** #270, #271 (Phases 5-6), plus Phase 7 documentation
+**Follow-up Issues Created:** #278-#285 (unbuilt tier features), #286 (owner tax UI)
+
+### What Was Done
+
+#### Stripe Sandbox Configuration
+Stripe sandbox account created and configured: 4 products (RAV Traveler Plus $5/mo, RAV Traveler Premium $15/mo, RAV Owner Pro $10/mo, RAV Owner Business $25/mo), webhook registered with 11 events, Customer Portal configured for plan changes/cancellations/payment methods. API keys set in Supabase DEV secrets.
+
+#### Migration 048: Stripe Sandbox Price IDs
+Sets `stripe_price_id` on 4 membership tiers in `membership_tiers` table, mapping each paid tier to its Stripe sandbox price ID.
+
+#### Migration 049: Listing Limit Trigger
+`enforce_listing_limit` — BEFORE INSERT trigger on `listings` table. Checks owner's active listing count against their tier's `max_active_listings`. Raises exception if limit exceeded. Database-level safety net (3rd layer of enforcement).
+
+#### Migration 050: Subscription Metrics RPC
+`get_subscription_metrics()` — returns MRR, active subscriber count, churn rate, and tier breakdown for the admin dashboard. Used by AdminMemberships KPI cards.
+
+#### Phase 5: Listing Limit Enforcement (#270)
+- `useCheckListingLimit` hook — checks current active listings vs tier max before allowing new listing creation
+- `ListingLimitUpsell` dialog — shows current usage bar, tier comparison, and upgrade CTAs when at limit
+- `OwnerListings` — "Add Listing" button checks limit before navigating to ListProperty
+- `ListProperty` — Step 1 checks limit on mount, redirects if exceeded
+- `usePublishDraft` — server-side `check_listing_limit` RPC call before publishing
+- 3-layer defense: frontend hook → RPC check → DB trigger
+
+#### Phase 6: Admin Subscription Management (#271)
+- `AdminMembershipOverride` dialog — admin can override user's tier with reason/notes, bypassing Stripe
+- `AdminMemberships` enhanced — 4 KPI cards (MRR, active subscribers, churn rate, tier breakdown), filters by tier/status/search, override badges on manually-set memberships
+- `get_subscription_metrics` RPC powers the KPI dashboard
+
+#### Phase 7: Documentation & Flow Manifests
+- UserGuide: new membership/subscription sections for owners and renters
+- Documentation page: expanded subscription and admin sections
+- `owner-lifecycle.ts`: updated with subscription and listing limit steps
+- `admin-lifecycle.ts`: updated with subscription management and override steps
+
+#### Tier Feature Audit
+Comprehensive audit of advertised vs built tier features. Found 5 unbuilt features (early access, exclusive deals, priority placement, concierge, dedicated account manager). Created issues #278-#285 to track. DEC-030 established: all must be built before go-live.
+
+### Test Results
+848 tests passing (108 files, +23 new). 0 type errors, build clean. Migrations 047-050 deployed to DEV.
+
+---
+
+## Session 43: Subscription System Phases 1-4
+
+**Completed:** April 1, 2026
+**Issues Closed:** #264-#269 (6 subscription stories from epic #263)
+**PR:** #263 merged to main
+
+### What Was Done
+
+#### Migration 047: Subscription Schema
+Added `stripe_price_id` column to `membership_tiers` table. Added `admin_override` and `admin_notes` columns to `user_memberships`. Created `check_listing_limit` and `get_tier_by_stripe_price` RPCs.
+
+#### Edge Functions (3 new + 1 updated)
+- `create-subscription-checkout` — creates Stripe Checkout Session with tier's price ID
+- `update-subscription` — handles plan upgrades/downgrades via Stripe API
+- `manage-subscription` — creates Stripe Customer Portal session for self-service billing
+- `stripe-webhook` — updated with 5 subscription event handlers (customer.subscription.created/updated/deleted, invoice.paid, invoice.payment_failed)
+
+#### Frontend Components
+- `MembershipPlans` — tier comparison page with live Stripe CTAs
+- `MembershipTierCard` — individual tier card with features, pricing, and subscribe/manage buttons
+- `SubscriptionManagement` — current plan display with upgrade/downgrade/cancel options
+- `SubscriptionSuccess` — post-checkout confirmation page
+- `MembershipBadge` — tier badge component for profile display
+
+#### Hooks
+- `useCreateSubscription` — initiates Stripe Checkout
+- `useUpdateSubscription` — handles plan changes
+- `useManageBilling` — opens Stripe Customer Portal
+- `useMembershipTiers` — fetches all tier definitions
+- `useMyMembership` — fetches current user's membership
+- `useOwnerTiers` / `useRenterTiers` — filtered tier queries
+
+#### Brand & Content Updates
+- Brand Lock: retired "70% claim" from all pages (index.html, PWA manifest, README)
+- Personal address removed from public-facing pages (Contact, Terms, Privacy)
+
+### Test Results
+825 tests passing (104 files). Build clean. PR #263 merged to main.
 
 ---
 

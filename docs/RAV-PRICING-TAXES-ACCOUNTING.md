@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-05T03:03:26"
+change_ref: "04d0bf8"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -49,6 +49,35 @@ Benefits of per-night pricing:
 - **Bidding clarity:** Bids expressed as $/night are intuitive
 - **Fair Value Score:** Per-night comparison is apples-to-apples
 - **Travel Requests:** Budget ranges expressed as $/night are standard
+
+---
+
+## 3.1 Subscription Tier Pricing & Stripe Configuration
+
+**Subscription Products (Stripe Sandbox):**
+
+| Tier | Role | Monthly | Stripe Product ID | Stripe Price ID | Listings | Commission |
+|------|------|---------|-------------------|-----------------|----------|------------|
+| Free | Traveler | $0 | — | — | — | — |
+| Plus | Traveler | $5 | prod_UHBglcbzfRvApy | price_1TIdJLE8AICp7gyW1QUm6Eu4 | — | — |
+| Premium | Traveler | $15 | prod_UHCMIZLyOj2Eqb | price_1TIdxhE8AICp7gyW52JjvV5C | — | — |
+| Free | Owner | $0 | — | — | 3 max | 15% |
+| Pro | Owner | $10 | prod_UHCUFTZBBYMTrz | price_1TIe5xE8AICp7gyWVVxlxlLD | 10 max | 13% (2% discount) |
+| Business | Owner | $25 | prod_UHCZxftwwwd87K | price_1TIeARE8AICp7gyWsDIWqycw | Unlimited | 10% (5% discount) |
+
+Note: These are TEST mode IDs. Production IDs will be different.
+
+**Commission Discount Calculation:**
+- Base commission: 15% (configurable in `system_settings.platform_commission_rate`)
+- Owner Pro discount: 2% → effective rate 13%
+- Owner Business discount: 5% → effective rate 10%
+- Per-owner agreement override: `owner_agreements.commission_rate` takes highest priority
+- Stripe processing fee (2.9% + $0.30): Deducted by Stripe from total payment, NOT from owner payout
+
+**Listing Limit Enforcement:**
+- `check_listing_limit()` RPC checks active + pending_approval listings vs tier max
+- Frontend enforcement: useCheckListingLimit hook + ListingLimitUpsell dialog
+- Server-side safety net: BEFORE INSERT trigger on listings table (migration 049)
 
 ---
 
@@ -328,6 +357,15 @@ The admin dashboard includes an Accounting Integration panel:
 | **Phase E** | Accounting integration — Puzzle.io (pluggable) | 📋 Planned (Issue #63) | See below |
 | **Phase F** | 1099-K compliance | ✅ Handled by Stripe Connect | $2.99/form |
 | **Phase G** | Automated tax filing (Avalara/TaxJar) | 📋 Future — when volume justifies | 8-16 hours |
+
+**Phase H — Subscription Billing (Session 43-44, Apr 2026):**
+- Stripe Products created (4 paid tiers)
+- Subscription checkout, upgrade/downgrade, cancellation via edge functions
+- Webhook handlers for 5 subscription events
+- Customer Portal for billing self-service
+- Listing limit enforcement (3-layer)
+- Admin MRR dashboard + manual tier override
+- Status: DEV complete, pending PR to main
 
 ### Phase E Breakdown — Accounting Integration
 

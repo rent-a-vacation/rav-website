@@ -30,6 +30,7 @@ import type { VacationClubBrand, Resort, ResortUnitType } from "@/types/database
 import { supabase } from "@/lib/supabase";
 import { PricingSuggestion } from "@/components/owner/PricingSuggestion";
 import { useAuth } from "@/hooks/useAuth";
+import { useCheckListingLimit } from "@/hooks/useCheckListingLimit";
 import { RoleUpgradeDialog } from "@/components/RoleUpgradeDialog";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
@@ -137,6 +138,7 @@ function clearDraft() {
 const ListProperty = () => {
   const navigate = useNavigate();
   const { user, isPropertyOwner, isEmailVerified } = useAuth();
+  const { canCreate: canCreateListing } = useCheckListingLimit();
 
   // Load draft from localStorage (survives page refresh after role upgrade)
   const draft = loadDraft();
@@ -270,6 +272,13 @@ const ListProperty = () => {
     if (!user || !isPropertyOwner()) return;
     setIsSubmitting(true);
     setSubmitError(null);
+
+    // Check listing limit before creating
+    if (!canCreateListing) {
+      setSubmitError("You've reached your listing limit. Please upgrade your plan to create more listings.");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       // 1. Create property

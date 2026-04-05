@@ -6,6 +6,7 @@ import { usePublishDraft, loadDraft, clearDraft, type ListPropertyDraft } from "
 const mockInsert = vi.fn();
 const mockSelect = vi.fn();
 const mockSingle = vi.fn();
+const mockRpc = vi.fn();
 
 vi.mock("@/lib/supabase", () => ({
   supabase: {
@@ -16,6 +17,7 @@ vi.mock("@/lib/supabase", () => ({
         }),
       }),
     })),
+    rpc: (...args: unknown[]) => mockRpc(...args),
   },
 }));
 
@@ -47,6 +49,9 @@ describe("usePublishDraft", () => {
   });
 
   it("creates property and listing successfully", async () => {
+    // Listing limit check passes
+    mockRpc.mockResolvedValueOnce({ data: true, error: null });
+
     // First call: property insert → success
     mockSingle
       .mockResolvedValueOnce({ data: { id: "prop-123" }, error: null });
@@ -88,7 +93,54 @@ describe("usePublishDraft", () => {
     expect(localStorage.getItem("rav-list-property-draft")).toBeNull();
   });
 
+  it("rejects when listing limit is reached", async () => {
+    mockRpc.mockResolvedValueOnce({ data: false, error: null });
+
+    const { result } = renderHook(() => usePublishDraft());
+
+    let outcome: { success: boolean; error?: string };
+    await act(async () => {
+      outcome = await result.current.publishDraft("user-1", baseDraft);
+    });
+
+    expect(outcome!.success).toBe(false);
+    expect(result.current.error).toBe("Listing limit reached. Please upgrade your plan to create more listings.");
+  });
+
+  it("proceeds when listing limit check passes", async () => {
+    mockRpc.mockResolvedValueOnce({ data: true, error: null });
+
+    const { supabase } = await import("@/lib/supabase");
+    let callCount = 0;
+    vi.mocked(supabase.from).mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) {
+        return {
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({ data: { id: "prop-123" }, error: null }),
+            }),
+          }),
+        } as never;
+      }
+      return {
+        insert: vi.fn().mockResolvedValue({ error: null }),
+      } as never;
+    });
+
+    const { result } = renderHook(() => usePublishDraft());
+
+    let outcome: { success: boolean; error?: string };
+    await act(async () => {
+      outcome = await result.current.publishDraft("user-1", baseDraft);
+    });
+
+    expect(outcome!.success).toBe(true);
+    expect(mockRpc).toHaveBeenCalledWith("check_listing_limit", { _owner_id: "user-1" });
+  });
+
   it("returns error when property insert fails", async () => {
+    mockRpc.mockResolvedValueOnce({ data: true, error: null });
     const { supabase } = await import("@/lib/supabase");
     vi.mocked(supabase.from).mockImplementation(() => ({
       insert: vi.fn().mockReturnValue({
@@ -110,6 +162,7 @@ describe("usePublishDraft", () => {
   });
 
   it("returns error when listing insert fails", async () => {
+    mockRpc.mockResolvedValueOnce({ data: true, error: null });
     const { supabase } = await import("@/lib/supabase");
     let callCount = 0;
     vi.mocked(supabase.from).mockImplementation(() => {

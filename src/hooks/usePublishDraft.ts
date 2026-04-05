@@ -46,6 +46,16 @@ export function usePublishDraft() {
     setError(null);
 
     try {
+      // 0. Check listing limit
+      const { data: canCreate, error: limitError } = await supabase.rpc(
+        "check_listing_limit",
+        { _owner_id: userId }
+      );
+      if (limitError) throw new Error(limitError.message);
+      if (!canCreate) {
+        throw new Error("Listing limit reached. Please upgrade your plan to create more listings.");
+      }
+
       // 1. Create property
       const propertyData = {
         owner_id: userId,

@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-02T02:34:44"
-change_ref: "eebad91"
+last_updated: "2026-04-05T03:03:26"
+change_ref: "04d0bf8"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -93,16 +93,33 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **825 automated tests** (104 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **848 automated tests** (108 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-046 (all deployed to both DEV and PROD)
-- **Edge functions:** 30 total (27 deployed to PROD + 3 SMS functions pending LLC/EIN: `notification-dispatcher`, `sms-scheduler`, `twilio-webhook`)
+- **Migrations created:** 001-050 (001-046 deployed to both DEV and PROD, 047-050 deployed to DEV only)
+- **Edge functions:** 33 total (27 deployed to PROD + 3 subscription functions on DEV + 3 SMS functions pending LLC/EIN: `notification-dispatcher`, `sms-scheduler`, `twilio-webhook`)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync (PR #239 merged Apr 1, 2026)
+- **dev and main:** NOT in sync (Phases 5-7 on dev, pending PR)
 
-### Session Handoff (Sessions 25-42)
+### Session Handoff (Sessions 25-44)
+
+**Session 44 — Stripe Setup + Subscription Phases 5-7 (Apr 4, 2026):**
+- Stripe sandbox account created, 4 products configured, webhook registered (11 events), Customer Portal configured
+- Migration 048 (Stripe price IDs), 049 (listing limit trigger), 050 (subscription metrics RPC)
+- Phase 5: Listing limit enforcement — useCheckListingLimit hook, ListingLimitUpsell dialog, OwnerListings/ListProperty/usePublishDraft guards, DB trigger
+- Phase 6: Admin MRR metrics (get_subscription_metrics RPC) + AdminMembershipOverride dialog + enhanced AdminMemberships with 4 KPI cards and filters
+- Phase 7: UserGuide + Documentation sections, owner/admin flow manifest updates
+- 8 new issues created for unbuilt tier features (#278-#285), 1 for owner tax UI (#286)
+- Tests: 825→848 (+23), 0 type errors, migrations 047-050 deployed to DEV
+- dev and main: NOT in sync (Phases 5-7 on dev, pending PR)
+
+**Session 43 — Subscription System Phases 1-4 (Apr 1, 2026):**
+- Subscription schema (migration 047), 3 new edge functions, stripe-webhook updated with 5 subscription handlers
+- MembershipPlans, MembershipTierCard, SubscriptionManagement components
+- SubscriptionSuccess page, useSubscription + useMembership hooks
+- Brand Lock + 70% claim retired. Personal address removed from public pages
+- PR #263 merged to main. Issues #264-#269 closed
 
 **Session 42 — Operational Housekeeping, Mobile App & Marketing Strategy (Apr 1):**
 - Merged dev → main: PR #239 (22 commits — Sessions 38-41 work: Notifications, SEO, CI, boardroom docs).
@@ -685,6 +702,53 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-030: Tier Feature Audit — Build Before Go-Live
+**Date:** April 4, 2026
+**Decision:** All advertised tier features must be built before go-live. Tracked as issues #278-#285. Option B chosen: keep aspirational descriptions in Stripe products, build features on priority basis.
+**Status:** Active
+
+**Context:** Audit revealed 5 advertised tier features not yet built (early access, exclusive deals, priority placement, concierge, dedicated account manager). Price drop alerts partially built. Listing limits not enforced.
+
+**Approach:**
+- Issues #278-#285 track each unbuilt feature
+- Aspirational descriptions remain in Stripe product metadata and MembershipTierCard
+- Features built on priority basis before go-live
+- Listing limits now enforced (DEC-029)
+
+---
+
+### DEC-029: Listing Limit Enforcement Strategy
+**Date:** April 4, 2026
+**Decision:** 3-layer enforcement — (1) Frontend: useCheckListingLimit hook blocks UI before creation, (2) usePublishDraft: RPC check before insert, (3) Database: BEFORE INSERT trigger as safety net. Upsell dialog shows upgrade options when at limit.
+**Status:** Active
+
+**Context:** Owner tiers have max_active_listings (Free:3, Pro:10, Business:unlimited) but no enforcement existed.
+
+**Approach:**
+- `useCheckListingLimit` hook checks current count vs tier limit before allowing new listing creation
+- `ListingLimitUpsell` dialog shows current usage and upgrade CTAs when at limit
+- `usePublishDraft` performs server-side check via `check_listing_limit` RPC before publishing
+- Migration 049: `enforce_listing_limit` BEFORE INSERT trigger on `listings` table as database-level safety net
+- All three layers must pass — defense in depth
+
+---
+
+### DEC-028: Stripe Subscription Product Structure
+**Date:** April 4, 2026
+**Decision:** 4 separate Stripe Products (RAV Traveler Plus $5/mo, RAV Traveler Premium $15/mo, RAV Owner Pro $10/mo, RAV Owner Business $25/mo). Flat rate pricing, monthly only (annual deferred). Stripe Checkout for payments, Stripe Customer Portal for billing management.
+**Status:** Active
+
+**Context:** Needed to map membership tiers to Stripe billing products.
+
+**Approach:**
+- Price IDs stored in `membership_tiers.stripe_price_id`, looked up via `get_tier_by_stripe_price()` RPC
+- `create-subscription-checkout` edge function creates Stripe Checkout Session with price ID
+- `stripe-webhook` handles 5 subscription events (created, updated, deleted, invoice.paid, invoice.payment_failed)
+- Stripe Customer Portal handles plan changes, cancellations, and payment method updates
+- Migration 048 sets sandbox price IDs; production price IDs set during go-live
 
 ---
 
