@@ -32,6 +32,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Users, Search, Shield, Plus, X, MessageSquare, StickyNote } from "lucide-react";
 import { format } from "date-fns";
 import type { Profile, AppRole } from "@/types/database";
@@ -68,6 +78,7 @@ const AdminUsers = ({ initialSearch = "" }: { initialSearch?: string }) => {
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
   const [newNoteText, setNewNoteText] = useState("");
   const [isSavingNote, setIsSavingNote] = useState(false);
+  const [roleRemoveTarget, setRoleRemoveTarget] = useState<{ userId: string; role: AppRole; email: string } | null>(null);
 
   const isRavOwner = hasRole("rav_owner");
   const isRavTeam = hasRole("rav_owner") || hasRole("rav_admin") || hasRole("rav_staff");
@@ -145,7 +156,24 @@ const AdminUsers = ({ initialSearch = "" }: { initialSearch?: string }) => {
     }
   };
 
-  const handleRemoveRole = async (userId: string, role: AppRole) => {
+  const handleRemoveRole = (userId: string, role: AppRole, email: string) => {
+    // Self-protection: prevent removing your own admin/owner role
+    if (userId === currentUser?.id && (role === "rav_admin" || role === "rav_owner")) {
+      toast({
+        title: "Not Allowed",
+        description: "Cannot remove your own admin role",
+        variant: "destructive",
+      });
+      return;
+    }
+    setRoleRemoveTarget({ userId, role, email });
+  };
+
+  const confirmRemoveRole = async () => {
+    if (!roleRemoveTarget) return;
+    const { userId, role } = roleRemoveTarget;
+    setRoleRemoveTarget(null);
+
     try {
       const { error } = await supabase
         .from("user_roles")
@@ -320,7 +348,7 @@ const AdminUsers = ({ initialSearch = "" }: { initialSearch?: string }) => {
                             {ROLE_LABELS[role]}
                             {isRavOwner && user.id !== currentUser?.id && role !== "renter" && (
                               <button
-                                onClick={() => handleRemoveRole(user.id, role)}
+                                onClick={() => handleRemoveRole(user.id, role, user.email)}
                                 className="ml-1 hover:bg-white/20 rounded-full p-0.5"
                               >
                                 <X className="h-3 w-3" />
@@ -464,6 +492,22 @@ const AdminUsers = ({ initialSearch = "" }: { initialSearch?: string }) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Role Removal Confirmation Dialog */}
+      <AlertDialog open={!!roleRemoveTarget} onOpenChange={(open) => { if (!open) setRoleRemoveTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Role?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Remove {roleRemoveTarget ? ROLE_LABELS[roleRemoveTarget.role] : ""} role from {roleRemoveTarget?.email}? This takes effect immediately.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveRole}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

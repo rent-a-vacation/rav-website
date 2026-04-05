@@ -11,6 +11,17 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -49,6 +60,14 @@ export function SystemSettings() {
   const [updatingVoice, setUpdatingVoice] = useState<string | null>(null);
   const [updatingCommission, setUpdatingCommission] = useState(false);
   const [updatingTimer, setUpdatingTimer] = useState<string | null>(null);
+
+  // Staff-Only Mode confirmation
+  const [staffOnlyConfirmOpen, setStaffOnlyConfirmOpen] = useState(false);
+  const [staffOnlyPendingValue, setStaffOnlyPendingValue] = useState(false);
+
+  // Commission rate confirmation
+  const [pendingCommissionRate, setPendingCommissionRate] = useState<number | null>(null);
+  const [commissionConfirmOpen, setCommissionConfirmOpen] = useState(false);
 
   const handleToggleApproval = async (enabled: boolean) => {
     setUpdating(true);
@@ -142,21 +161,9 @@ export function SystemSettings() {
             <Switch
               id="staff-only"
               checked={platformStaffOnly}
-              onCheckedChange={async (enabled) => {
-                setUpdatingStaffOnly(true);
-                try {
-                  await updateSetting("platform_staff_only", { enabled });
-                  toast.success(
-                    enabled
-                      ? "Platform locked — only RAV team can access"
-                      : "Platform unlocked — all approved users can access"
-                  );
-                } catch (error) {
-                  console.error("Failed to update setting:", error);
-                  toast.error("Failed to update setting");
-                } finally {
-                  setUpdatingStaffOnly(false);
-                }
+              onCheckedChange={(enabled) => {
+                setStaffOnlyPendingValue(enabled);
+                setStaffOnlyConfirmOpen(true);
               }}
               disabled={updatingStaffOnly}
             />
@@ -473,6 +480,73 @@ export function SystemSettings() {
         </CardContent>
       </Card>
 
+      {/* Staff-Only Mode Confirmation Dialog */}
+      <AlertDialog open={staffOnlyConfirmOpen} onOpenChange={setStaffOnlyConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {staffOnlyPendingValue ? "Lock Platform?" : "Unlock Platform?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {staffOnlyPendingValue
+                ? "All non-staff users will see a \"Coming Soon\" page immediately. Are you sure?"
+                : "All users will have full access immediately. Are you sure?"}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                setStaffOnlyConfirmOpen(false);
+                setUpdatingStaffOnly(true);
+                try {
+                  await updateSetting("platform_staff_only", { enabled: staffOnlyPendingValue });
+                  toast.success(
+                    staffOnlyPendingValue
+                      ? "Platform locked — only RAV team can access"
+                      : "Platform unlocked — all approved users can access"
+                  );
+                } catch (error) {
+                  console.error("Failed to update setting:", error);
+                  toast.error("Failed to update setting");
+                } finally {
+                  setUpdatingStaffOnly(false);
+                }
+              }}
+            >
+              {staffOnlyPendingValue ? "Lock Platform" : "Unlock Platform"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Commission Rate Confirmation Dialog */}
+      <AlertDialog open={commissionConfirmOpen} onOpenChange={setCommissionConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change Commission Rate?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Change commission rate from {platformCommissionRate.rate}% to {pendingCommissionRate}%?
+              This affects all future bookings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                setCommissionConfirmOpen(false);
+                if (pendingCommissionRate !== null) {
+                  await handleCommissionRateChange(pendingCommissionRate);
+                  setPendingCommissionRate(null);
+                }
+              }}
+            >
+              Confirm Change
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Platform Commission */}
       <Card>
         <CardHeader>
@@ -488,15 +562,26 @@ export function SystemSettings() {
               id="commission-rate"
               type="number"
               className="w-24"
-              value={platformCommissionRate.rate}
+              value={pendingCommissionRate ?? platformCommissionRate.rate}
               onChange={(e) => {
                 const val = parseFloat(e.target.value);
-                if (!isNaN(val)) handleCommissionRateChange(val);
+                if (!isNaN(val)) setPendingCommissionRate(val);
               }}
               disabled={updatingCommission}
               min={0}
               max={100}
             />
+            <Button
+              size="sm"
+              disabled={
+                updatingCommission ||
+                pendingCommissionRate === null ||
+                pendingCommissionRate === platformCommissionRate.rate
+              }
+              onClick={() => setCommissionConfirmOpen(true)}
+            >
+              Save
+            </Button>
           </div>
 
           <div className="space-y-2 text-sm">

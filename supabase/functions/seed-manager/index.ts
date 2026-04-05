@@ -229,8 +229,9 @@ async function getStatus(log: string[]): Promise<Record<string, number>> {
     "booking_confirmations", "cancellation_requests", "listing_bids",
     "travel_requests", "travel_proposals", "notifications",
     "owner_verifications", "owner_agreements", "user_memberships",
-    "voice_search_usage", "favorites", "platform_guarantee_fund",
-    "checkin_confirmations",
+    "voice_search_usage", "voice_search_logs", "favorites",
+    "platform_guarantee_fund", "checkin_confirmations",
+    "referral_codes", "api_keys",
   ];
 
   const counts: Record<string, number> = {};
@@ -375,7 +376,34 @@ async function deleteNonFoundation(log: string[]): Promise<void> {
   }
   log.push("Deleted non-protected favorites: OK");
 
-  // 16. user_memberships (non-protected)
+  // 16a. referral_codes (non-protected)
+  if (nonProtectedIds.length > 0) {
+    for (let i = 0; i < nonProtectedIds.length; i += 50) {
+      const batch = nonProtectedIds.slice(i, i + 50);
+      await admin.from("referral_codes").delete().in("user_id", batch);
+    }
+  }
+  log.push("Deleted non-protected referral_codes: OK");
+
+  // 16b. api_keys (non-protected)
+  if (nonProtectedIds.length > 0) {
+    for (let i = 0; i < nonProtectedIds.length; i += 50) {
+      const batch = nonProtectedIds.slice(i, i + 50);
+      await admin.from("api_keys").delete().in("user_id", batch);
+    }
+  }
+  log.push("Deleted non-protected api_keys: OK");
+
+  // 16c. voice_search_logs (non-protected)
+  if (nonProtectedIds.length > 0) {
+    for (let i = 0; i < nonProtectedIds.length; i += 50) {
+      const batch = nonProtectedIds.slice(i, i + 50);
+      await admin.from("voice_search_logs").delete().in("user_id", batch);
+    }
+  }
+  log.push("Deleted non-protected voice_search_logs: OK");
+
+  // 16d. user_memberships (non-protected)
   if (nonProtectedIds.length > 0) {
     for (let i = 0; i < nonProtectedIds.length; i += 50) {
       const batch = nonProtectedIds.slice(i, i + 50);
@@ -1070,6 +1098,107 @@ async function createTransactions(
     if (!error) proposalsCreated++;
   }
   log.push(`Created ${proposalsCreated} travel proposals`);
+
+  // ── Upgrade membership tiers for diverse testing ──
+  // Fetch tier IDs
+  const { data: allTiers } = await admin
+    .from("membership_tiers")
+    .select("id, tier_key");
+  const tierMap = new Map((allTiers ?? []).map((t: { id: string; tier_key: string }) => [t.tier_key, t.id]));
+
+  // Owner 1 (Alex Rivera) → Pro, Owner 2 (Maria Chen) → Business
+  const owner1Id = emailToId.get("owner1@rent-a-vacation.com");
+  const owner2Id = emailToId.get("owner2@rent-a-vacation.com");
+  const proTierId = tierMap.get("owner_pro");
+  const businessTierId = tierMap.get("owner_business");
+
+  if (owner1Id && proTierId) {
+    await admin.from("user_memberships")
+      .update({ tier_id: proTierId, stripe_customer_id: "cus_test_owner1_pro", stripe_subscription_id: "sub_test_owner1_pro" })
+      .eq("user_id", owner1Id);
+    log.push("Upgraded owner1 (Alex Rivera) to Pro tier");
+  }
+  if (owner2Id && businessTierId) {
+    await admin.from("user_memberships")
+      .update({ tier_id: businessTierId, stripe_customer_id: "cus_test_owner2_biz", stripe_subscription_id: "sub_test_owner2_biz" })
+      .eq("user_id", owner2Id);
+    log.push("Upgraded owner2 (Maria Chen) to Business tier");
+  }
+
+  // Upgrade 2 renters to Plus and 1 to Premium
+  const plusTierId = tierMap.get("traveler_plus");
+  const premiumTierId = tierMap.get("traveler_premium");
+
+  if (renterIds.length >= 3 && plusTierId && premiumTierId) {
+    await admin.from("user_memberships")
+      .update({ tier_id: plusTierId, stripe_customer_id: "cus_test_renter1_plus", stripe_subscription_id: "sub_test_renter1_plus" })
+      .eq("user_id", renterIds[0]);
+    await admin.from("user_memberships")
+      .update({ tier_id: plusTierId, stripe_customer_id: "cus_test_renter2_plus", stripe_subscription_id: "sub_test_renter2_plus" })
+      .eq("user_id", renterIds[1]);
+    await admin.from("user_memberships")
+      .update({ tier_id: premiumTierId, stripe_customer_id: "cus_test_renter3_prem", stripe_subscription_id: "sub_test_renter3_prem" })
+      .eq("user_id", renterIds[2]);
+    log.push("Upgraded 2 renters to Plus, 1 to Premium");
+  }
+
+  // ── Referral codes for foundation owners ──
+  let referralsCreated = 0;
+  for (const [email, userId] of emailToId.entries()) {
+    if (!email.startsWith("owner")) continue;
+    const code = `REF${email.replace(/[^0-9]/g, "").slice(0, 1)}${randomHex(3).toUpperCase()}`;
+    const { error: refErr } = await admin.from("referral_codes").upsert({
+      user_id: userId,
+      code,
+      is_active: true,
+    }, { onConflict: "user_id" });
+    if (!refErr) referralsCreated++;
+  }
+  log.push(`Created ${referralsCreated} referral codes`);
+
+  // ── API key for dev testing ──
+  const devOwnerId = emailToId.get("dev-owner@rent-a-vacation.com");
+  if (devOwnerId) {
+    const testApiKey = `rav_test_${randomHex(16)}`;
+    await admin.from("api_keys").upsert({
+      user_id: devOwnerId,
+      key_hash: testApiKey, // In real usage this would be hashed
+      key_prefix: testApiKey.slice(0, 12),
+      label: "DEV Test Key",
+      tier: "partner",
+      is_active: true,
+      daily_limit: 10000,
+      per_minute_limit: 100,
+    }, { onConflict: "key_hash" });
+    log.push(`Created API key for dev-owner (prefix: ${testApiKey.slice(0, 12)})`);
+  }
+
+  // ── Voice search logs for observability dashboard ──
+  let voiceLogsCreated = 0;
+  const voiceQueries = [
+    "Find me a resort in Orlando", "Beach vacation in Maui next month",
+    "Hilton timeshare Las Vegas", "Family resort with 3 bedrooms",
+    "Cheapest week in Myrtle Beach", "Luxury resort Cancun all-inclusive",
+    "Disney vacation club availability", "Ski resort Colorado February",
+    "Marriott timeshare Hawaii summer", "Weekend getaway near me",
+    "Pet friendly resort Florida", "Golf resort Scottsdale Arizona",
+    "Beachfront condo Panama City", "Mountain cabin Gatlinburg",
+    "Waterpark resort Wisconsin Dells",
+  ];
+  for (let i = 0; i < 15; i++) {
+    const userId = renterIds[i % renterIds.length];
+    if (!userId) continue;
+    const daysBack = randomInt(0, 14);
+    const { error: logErr } = await admin.from("voice_search_logs").insert({
+      user_id: userId,
+      query_text: voiceQueries[i],
+      results_count: randomInt(0, 12),
+      duration_ms: randomInt(800, 4500),
+      created_at: daysAgo(daysBack),
+    });
+    if (!logErr) voiceLogsCreated++;
+  }
+  log.push(`Created ${voiceLogsCreated} voice search logs`);
 
   // ── Update last_seed_timestamp ──
   await admin.from("system_settings").upsert({
