@@ -1099,6 +1099,21 @@ async function createTransactions(
   }
   log.push(`Created ${proposalsCreated} travel proposals`);
 
+  // ── Seed missing / new-feature data (shared with "update" action) ──
+  await seedMissingData(emailToId, renterIds, log);
+}
+
+// ============================================================
+// SEED MISSING DATA (called by both "reseed" and "update")
+// ============================================================
+
+async function seedMissingData(
+  emailToId: Map<string, string>,
+  renterIds: string[],
+  log: string[],
+): Promise<void> {
+  const admin = createAdminClient();
+
   // ── Upgrade membership tiers for diverse testing ──
   // Fetch tier IDs
   const { data: allTiers } = await admin
@@ -1159,46 +1174,66 @@ async function createTransactions(
   // ── API key for dev testing ──
   const devOwnerId = emailToId.get("dev-owner@rent-a-vacation.com");
   if (devOwnerId) {
-    const testApiKey = `rav_test_${randomHex(16)}`;
-    await admin.from("api_keys").upsert({
-      user_id: devOwnerId,
-      key_hash: testApiKey, // In real usage this would be hashed
-      key_prefix: testApiKey.slice(0, 12),
-      label: "DEV Test Key",
-      tier: "partner",
-      is_active: true,
-      daily_limit: 10000,
-      per_minute_limit: 100,
-    }, { onConflict: "key_hash" });
-    log.push(`Created API key for dev-owner (prefix: ${testApiKey.slice(0, 12)})`);
+    // Check if key already exists
+    const { count: existingKeys } = await admin
+      .from("api_keys")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", devOwnerId);
+
+    if ((existingKeys ?? 0) === 0) {
+      const testApiKey = `rav_test_${randomHex(16)}`;
+      await admin.from("api_keys").upsert({
+        user_id: devOwnerId,
+        key_hash: testApiKey, // In real usage this would be hashed
+        key_prefix: testApiKey.slice(0, 12),
+        label: "DEV Test Key",
+        tier: "partner",
+        is_active: true,
+        daily_limit: 10000,
+        per_minute_limit: 100,
+      }, { onConflict: "key_hash" });
+      log.push(`Created API key for dev-owner (prefix: ${testApiKey.slice(0, 12)})`);
+    } else {
+      log.push("API key for dev-owner already exists — skipped");
+    }
   }
 
   // ── Voice search logs for observability dashboard ──
-  let voiceLogsCreated = 0;
-  const voiceQueries = [
-    "Find me a resort in Orlando", "Beach vacation in Maui next month",
-    "Hilton timeshare Las Vegas", "Family resort with 3 bedrooms",
-    "Cheapest week in Myrtle Beach", "Luxury resort Cancun all-inclusive",
-    "Disney vacation club availability", "Ski resort Colorado February",
-    "Marriott timeshare Hawaii summer", "Weekend getaway near me",
-    "Pet friendly resort Florida", "Golf resort Scottsdale Arizona",
-    "Beachfront condo Panama City", "Mountain cabin Gatlinburg",
-    "Waterpark resort Wisconsin Dells",
-  ];
-  for (let i = 0; i < 15; i++) {
-    const userId = renterIds[i % renterIds.length];
-    if (!userId) continue;
-    const daysBack = randomInt(0, 14);
-    const { error: logErr } = await admin.from("voice_search_logs").insert({
-      user_id: userId,
-      query_text: voiceQueries[i],
-      results_count: randomInt(0, 12),
-      duration_ms: randomInt(800, 4500),
-      created_at: daysAgo(daysBack),
-    });
-    if (!logErr) voiceLogsCreated++;
+  const { count: existingVoiceLogs } = await admin
+    .from("voice_search_logs")
+    .select("id", { count: "exact", head: true });
+  const TARGET_VOICE_LOGS = 15;
+
+  if ((existingVoiceLogs ?? 0) < TARGET_VOICE_LOGS) {
+    let voiceLogsCreated = 0;
+    const voiceQueries = [
+      "Find me a resort in Orlando", "Beach vacation in Maui next month",
+      "Hilton timeshare Las Vegas", "Family resort with 3 bedrooms",
+      "Cheapest week in Myrtle Beach", "Luxury resort Cancun all-inclusive",
+      "Disney vacation club availability", "Ski resort Colorado February",
+      "Marriott timeshare Hawaii summer", "Weekend getaway near me",
+      "Pet friendly resort Florida", "Golf resort Scottsdale Arizona",
+      "Beachfront condo Panama City", "Mountain cabin Gatlinburg",
+      "Waterpark resort Wisconsin Dells",
+    ];
+    const logsToCreate = TARGET_VOICE_LOGS - (existingVoiceLogs ?? 0);
+    for (let i = 0; i < logsToCreate; i++) {
+      const userId = renterIds[i % renterIds.length];
+      if (!userId) continue;
+      const daysBack = randomInt(0, 14);
+      const { error: logErr } = await admin.from("voice_search_logs").insert({
+        user_id: userId,
+        query_text: voiceQueries[i % voiceQueries.length],
+        results_count: randomInt(0, 12),
+        duration_ms: randomInt(800, 4500),
+        created_at: daysAgo(daysBack),
+      });
+      if (!logErr) voiceLogsCreated++;
+    }
+    log.push(`Created ${voiceLogsCreated} voice search logs`);
+  } else {
+    log.push(`Voice search logs already at ${existingVoiceLogs} — skipped`);
   }
-  log.push(`Created ${voiceLogsCreated} voice search logs`);
 
   // ── Update last_seed_timestamp ──
   await admin.from("system_settings").upsert({
@@ -1273,6 +1308,41 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
+    if (action === "update") {
+      log.push("=== Starting incremental update ===");
+      const startTime = Date.now();
+
+      // Step 1: Ensure foundation users exist and get their IDs
+      log.push("--- Ensuring foundation users ---");
+      const emailToId = await ensureFoundation(log);
+
+      // Step 2: Find existing non-foundation renter IDs (no deletion, no creation)
+      const admin = createAdminClient();
+      const foundationEmails = FOUNDATION_USERS.map(u => u.email);
+      const { data: renterProfiles } = await admin
+        .from("profiles")
+        .select("id")
+        .not("email", "in", `(${foundationEmails.join(",")})`)
+        .order("created_at", { ascending: true });
+      const renterIds = (renterProfiles ?? []).map((p: { id: string }) => p.id);
+      log.push(`Found ${renterIds.length} existing non-foundation users`);
+
+      // Step 3: Seed missing feature data (idempotent)
+      log.push("--- Seeding missing data ---");
+      await seedMissingData(emailToId, renterIds, log);
+
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      log.push(`=== Update complete in ${elapsed}s ===`);
+
+      // Get final status
+      const counts = await getStatus(log);
+
+      return new Response(
+        JSON.stringify({ success: true, elapsed_seconds: parseFloat(elapsed), counts, log }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     if (action === "restore-user") {
       const { email, full_name, role, password } = body;
       if (!email || !role) {
@@ -1337,7 +1407,7 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     return new Response(
-      JSON.stringify({ error: `Unknown action: ${action}. Use "status", "reseed", or "restore-user".` }),
+      JSON.stringify({ error: `Unknown action: ${action}. Use "status", "reseed", "update", or "restore-user".` }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {
