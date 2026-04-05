@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-05T03:03:26"
-change_ref: "04d0bf8"
+last_updated: "2026-04-05T23:39:43"
+change_ref: "02a1c26"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -11,11 +11,12 @@ status: "active"
 
 ---
 
-## Session 44: Stripe Setup + Subscription Phases 5-7
+## Session 44: Stripe Setup + Subscription Phases 5-7 + Project Board
 
-**Completed:** April 4, 2026
-**Issues Closed:** #270, #271 (Phases 5-6), plus Phase 7 documentation
+**Completed:** April 4-5, 2026
+**Issues Closed:** #263 (epic), #264-#271, #284 (all subscription stories)
 **Follow-up Issues Created:** #278-#285 (unbuilt tier features), #286 (owner tax UI)
+**PRs Merged:** #287-#292
 
 ### What Was Done
 
@@ -53,8 +54,41 @@ Sets `stripe_price_id` on 4 membership tiers in `membership_tiers` table, mappin
 #### Tier Feature Audit
 Comprehensive audit of advertised vs built tier features. Found 5 unbuilt features (early access, exclusive deals, priority placement, concierge, dedicated account manager). Created issues #278-#285 to track. DEC-030 established: all must be built before go-live.
 
+#### Admin Safeguards (PR #288)
+- Staff-Only Mode toggle: AlertDialog confirmation before platform lock/unlock
+- Commission rate: Save button + confirmation dialog (was updating on keystroke)
+- Role removal: AlertDialog + self-demotion protection (prevents removing own rav_admin)
+- Escrow release: AlertDialog with amount/owner details (replaced window.confirm)
+- CLAUDE.md: Seed Manager Convention + Admin Safeguards Convention added as mandatory rules
+
+#### Seed Manager Updates (PR #289)
+- Incremental "Update Seed Data" action: adds missing data without deleting existing test data
+- Diverse tier assignments: owner1→Pro, owner2→Business, renter001-002→Plus, renter003→Premium
+- Added: referral codes (5), API key (1), voice search logs (15)
+- DevTools UI: two buttons with info card explaining Reset vs Update
+
+#### QA Playbook v2.0 (PR #290)
+- 141 test cases (+14 new): subscription checkout, listing limits, billing portal, cancel, upgrade, commission, MRR dashboard, tier override, admin safeguards, incremental seed
+- P0-TEST-CASES: 4 new subscription P0 scenarios (P0-SUB-01 through P0-SUB-04)
+- TESTING-STATUS updated: 848 tests, 108 files
+- SEED-DATA-GUIDE: tier assignments documented
+- v1.0 archived to docs/exports/archive/
+
+#### Bug Fix: AdminProperties FK Ambiguity (PR #292)
+- PostgREST PGRST201 error: properties table has two FKs to profiles (owner_id + last_edited_by)
+- Fix: explicit FK hint `owner:profiles!properties_owner_id_fkey(*)`
+
+#### GitHub Project Board (RAV Roadmap)
+- All 202 issues populated with Status, Category, Sub-Category, Type, Assignee
+- Category field (6 options): Marketplace, Platform, Experience, Compliance, Marketing, Documentation
+- Sub-Category field (10 options): Subscription, Booking Engine, Owner Tools, Traveler Tools, Admin Tools, Voice & AI, Mobile App, Social Media, SEO & Analytics, Infrastructure
+- Type field: Bug/Feature/Task mapped from labels
+- Workflows enabled: auto-add issues, item closed→Done, item reopened→In Progress
+- Blocked status added for #127 (LLC/EIN) and #80 (Legal)
+- PRs removed from project (issues only)
+
 ### Test Results
-848 tests passing (108 files, +23 new). 0 type errors, build clean. Migrations 047-050 deployed to DEV.
+848 tests passing (108 files, +23 new). 0 type errors, build clean. Migrations 047-050 deployed to DEV. 6 PRs merged (#287-#292).
 
 ---
 
