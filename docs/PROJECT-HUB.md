@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-05T03:03:26"
-change_ref: "04d0bf8"
+last_updated: "2026-04-05T23:39:43"
+change_ref: "02a1c26"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -94,25 +94,33 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Platform Status
 - **848 automated tests** (108 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 97 critical-path tests tagged `@p0` — run with `npm run test:p0`
+- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-050 (001-046 deployed to both DEV and PROD, 047-050 deployed to DEV only)
-- **Edge functions:** 33 total (27 deployed to PROD + 3 subscription functions on DEV + 3 SMS functions pending LLC/EIN: `notification-dispatcher`, `sms-scheduler`, `twilio-webhook`)
+- **Edge functions:** 34 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN)
+- **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** NOT in sync (Phases 5-7 on dev, pending PR)
+- **dev and main:** in sync (PRs #287-#292 merged Apr 5)
+- **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
 ### Session Handoff (Sessions 25-44)
 
-**Session 44 — Stripe Setup + Subscription Phases 5-7 (Apr 4, 2026):**
+**Session 44 — Stripe Setup + Subscription Phases 5-7 + Project Board (Apr 4-5, 2026):**
 - Stripe sandbox account created, 4 products configured, webhook registered (11 events), Customer Portal configured
 - Migration 048 (Stripe price IDs), 049 (listing limit trigger), 050 (subscription metrics RPC)
 - Phase 5: Listing limit enforcement — useCheckListingLimit hook, ListingLimitUpsell dialog, OwnerListings/ListProperty/usePublishDraft guards, DB trigger
 - Phase 6: Admin MRR metrics (get_subscription_metrics RPC) + AdminMembershipOverride dialog + enhanced AdminMemberships with 4 KPI cards and filters
-- Phase 7: UserGuide + Documentation sections, owner/admin flow manifest updates
-- 8 new issues created for unbuilt tier features (#278-#285), 1 for owner tax UI (#286)
-- Tests: 825→848 (+23), 0 type errors, migrations 047-050 deployed to DEV
-- dev and main: NOT in sync (Phases 5-7 on dev, pending PR)
+- Phase 7: UserGuide + Documentation sections, flow manifests (owner/traveler/admin), all docs updated
+- Admin safeguards: AlertDialog confirmations for Staff-Only toggle, commission rate, role removal (self-protection), escrow release
+- Seed manager: incremental "Update Seed Data" action, diverse tier assignments, referral codes, API keys, voice logs
+- CLAUDE.md: Seed Manager Convention + Admin Safeguards Convention added
+- QA Playbook v2.0: 141 test cases (+14), subscription/listing limit/admin MRR scenarios
+- QA docs updated: P0-TEST-CASES (4 subscription P0s), TESTING-STATUS (848 tests), SEED-DATA-GUIDE (tier assignments)
+- Fixed: AdminProperties FK ambiguity (PGRST201) — owner:profiles!properties_owner_id_fkey
+- GitHub Project (RAV Roadmap): 202 issues fully populated — Status, Category, Sub-Category, Type, Assignee. Auto-add workflow enabled. PRs removed.
+- Issues created: #278-#286 (unbuilt tier features + owner tax UI). Subscription epic #263 CLOSED (all 9 stories)
+- PRs merged: #287-#292. Tests: 825→848 (+23), 0 type errors. dev and main in sync
 
 **Session 43 — Subscription System Phases 1-4 (Apr 1, 2026):**
 - Subscription schema (migration 047), 3 new edge functions, stripe-webhook updated with 5 subscription handlers
