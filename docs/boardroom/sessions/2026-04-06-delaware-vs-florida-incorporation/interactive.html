@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Boardroom — Delaware + Florida vs. Florida-Only</title>
+<style>
+  :root {
+    --primary: #1C7268;
+    --accent: #E8703A;
+    --bg: #F8F6F3;
+    --text: #1D2E38;
+    --card: #FFFFFF;
+    --muted: #6b7a82;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.55;
+  }
+  header {
+    background: var(--primary);
+    color: white;
+    padding: 36px 24px;
+  }
+  header .container { max-width: 1100px; margin: 0 auto; }
+  header h1 { margin: 0 0 8px 0; font-size: 28px; }
+  header .question { font-size: 18px; opacity: 0.95; margin-bottom: 14px; }
+  header .verdict {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+  h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 6px; margin-top: 36px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(29,46,56,0.08);
+    border-top: 4px solid var(--primary);
+  }
+  .card h3 { margin: 0 0 4px 0; color: var(--primary); font-size: 18px; }
+  .card .domain { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .votes { display: flex; gap: 8px; margin: 10px 0 12px 0; flex-wrap: wrap; }
+  .vote-pill {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .vote-yes { background: #d4edda; color: #155724; }
+  .vote-conditional { background: #fff3cd; color: #856404; }
+  .vote-no { background: #f8d7da; color: #721c24; }
+  .changed-badge {
+    background: var(--accent);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+  }
+  blockquote {
+    margin: 0;
+    padding: 10px 14px;
+    border-left: 3px solid var(--accent);
+    background: #faf6f1;
+    color: #444;
+    font-style: italic;
+    font-size: 14px;
+  }
+  .tensions { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(29,46,56,0.08); }
+  .tension { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px dashed #ddd; }
+  .tension:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .tension strong { color: var(--accent); }
+  .sliders { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(29,46,56,0.08); }
+  .slider-row { margin: 18px 0; }
+  .slider-row label { display: block; font-weight: bold; margin-bottom: 4px; color: var(--primary); }
+  .slider-row input[type=range] { width: 100%; accent-color: var(--accent); }
+  .slider-value { color: var(--accent); font-weight: bold; }
+  #impact {
+    margin-top: 18px;
+    padding: 16px;
+    background: #faf6f1;
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .briefing { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(29,46,56,0.08); }
+  .briefing p { margin: 0 0 12px 0; }
+  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>Boardroom — LEGAL ADVISORY</h1>
+    <div class="question">Should we "incorporate in Florida only" or "incorporate in Delaware and register in Florida as foreign entity?"</div>
+    <div class="verdict">FINAL VERDICT: YES — Delaware C-Corp + Florida Foreign Entity (5–0 unanimous)</div>
+  </div>
+</header>
+
+<main>
+
+<h2>Advisor Cards</h2>
+<div class="grid">
+
+  <div class="card">
+    <h3>Yokum Taku</h3>
+    <div class="domain">Startup Formation / Delaware C-Corp</div>
+    <div class="votes">
+      <span class="vote-pill vote-yes">R1: YES</span>
+      <span class="vote-pill vote-yes">Final: YES</span>
+    </div>
+    <blockquote>"The cost of preserving optionality is under $1,500 a year. The cost of forgoing it is weeks of deal slippage and tens of thousands in conversion fees during an acquisition close."</blockquote>
+  </div>
+
+  <div class="card">
+    <h3>Brian T. Lower</h3>
+    <div class="domain">Timeshare Operations Law / 26 yrs HICV</div>
+    <div class="votes">
+      <span class="vote-pill vote-conditional">R1: CONDITIONAL</span>
+      <span class="vote-pill vote-yes">Final: YES</span>
+      <span class="changed-badge">CHANGED</span>
+    </div>
+    <blockquote>"The first kind of platform got a phone call. The second kind got a cease-and-desist letter. Corporate structure is the cheapest signal a brand protection team reads."</blockquote>
+  </div>
+
+  <div class="card">
+    <h3>Tonia Klausner</h3>
+    <div class="domain">Platform Litigation Defense / WSGR</div>
+    <div class="votes">
+      <span class="vote-pill vote-yes">R1: YES</span>
+      <span class="vote-pill vote-yes">Final: YES</span>
+    </div>
+    <blockquote>"The litigation defense case for Delaware pays out at the moment when you have the least flexibility to fix things — when the class action complaint has already been filed."</blockquote>
+  </div>
+
+  <div class="card">
+    <h3>Jason Gamel</h3>
+    <div class="domain">Timeshare Regulation / ARDA CEO</div>
+    <div class="votes">
+      <span class="vote-pill vote-conditional">R1: CONDITIONAL</span>
+      <span class="vote-pill vote-yes">Final: YES</span>
+      <span class="changed-badge">CHANGED</span>
+    </div>
+    <blockquote>"The charter decision is the easy part. The five-state timeshare regulatory opinion is the hard part — and the gating issue for whether this platform survives its first inquiry."</blockquote>
+  </div>
+
+  <div class="card">
+    <h3>Patrick McKenzie</h3>
+    <div class="domain">Payments / Marketplace Risk / Stripe</div>
+    <div class="votes">
+      <span class="vote-pill vote-yes">R1: YES</span>
+      <span class="vote-pill vote-yes">Final: YES</span>
+    </div>
+    <blockquote>"The entire payments compliance ecosystem is built around Delaware C-Corps as the default. Deviation forces every reviewer to redo work that would otherwise be accepted as standard."</blockquote>
+  </div>
+
+</div>
+
+<h2>Key Tensions</h2>
+<div class="tensions">
+  <div class="tension">
+    <strong>Tension 1 — Optionality vs. Operational Simplicity:</strong> Yokum framed Delaware as preserving every exit path cheaply. Brian initially pushed back that Delaware "buys nothing except acquisition-readiness optionality." Resolution: optionality IS the value, and four other dimensions of value (litigation defense, payments fit, founder-dispute predictability, brand signaling) compound on top.
+  </div>
+  <div class="tension">
+    <strong>Tension 2 — Charter Decision vs. Regulatory Work:</strong> Brian and Jason came in conditional because they feared the charter decision would distract from the harder five-state timeshare regulatory mapping. Resolution: the room committed to running both as parallel non-negotiable tracks the same week.
+  </div>
+  <div class="tension">
+    <strong>Tension 3 — Federal Standard vs. Florida Specifics:</strong> Tonia's federal/litigation-defense framing vs. Brian and Jason's state-specific timeshare expertise. Resolution: Delaware C-Corp does NOT substitute for Florida regulatory work; both are required and they don't overlap.
+  </div>
+</div>
+
+<h2>Cost / Timing Sensitivity</h2>
+<div class="sliders">
+  <p style="margin-top:0;">Adjust the assumptions below to see how the cost asymmetry changes:</p>
+
+  <div class="slider-row">
+    <label>Year-1 Delaware setup cost: $<span id="setupVal" class="slider-value">1500</span></label>
+    <input type="range" id="setup" min="500" max="5000" step="100" value="1500">
+  </div>
+
+  <div class="slider-row">
+    <label>Probability of acquisition within 4 years: <span id="probVal" class="slider-value">60</span>%</label>
+    <input type="range" id="prob" min="0" max="100" step="5" value="60">
+  </div>
+
+  <div class="slider-row">
+    <label>Cost of late conversion at acquisition: $<span id="convVal" class="slider-value">60000</span></label>
+    <input type="range" id="conv" min="10000" max="200000" step="5000" value="60000">
+  </div>
+
+  <div id="impact"></div>
+</div>
+
+<script>
+function updateImpact() {
+  const setup = parseInt(document.getElementById('setup').value);
+  const prob = parseInt(document.getElementById('prob').value);
+  const conv = parseInt(document.getElementById('conv').value);
+
+  document.getElementById('setupVal').textContent = setup;
+  document.getElementById('probVal').textContent = prob;
+  document.getElementById('convVal').textContent = conv;
+
+  const expectedSavings = (prob / 100) * conv;
+  const fourYearSetup = setup + (700 * 3); // y1 + 3 recurring years
+  const net = expectedSavings - fourYearSetup;
+
+  let verdict = '';
+  if (net > 5000) verdict = '<strong style="color:#155724;">→ Delaware-now is the dominant choice.</strong>';
+  else if (net > 0) verdict = '<strong style="color:#856404;">→ Delaware-now is favorable but margin is thin.</strong>';
+  else verdict = '<strong style="color:#721c24;">→ At these inputs, Florida-only is defensible — but you are betting against acquisition.</strong>';
+
+  document.getElementById('impact').innerHTML =
+    `Over a 4-year horizon, expected savings from avoiding late conversion = <strong>$${expectedSavings.toLocaleString()}</strong>. ` +
+    `Total Delaware setup + 3 years of recurring fees = <strong>$${fourYearSetup.toLocaleString()}</strong>. ` +
+    `Net expected value of choosing Delaware now = <strong>$${net.toLocaleString()}</strong>. ${verdict}`;
+}
+document.getElementById('setup').addEventListener('input', updateImpact);
+document.getElementById('prob').addEventListener('input', updateImpact);
+document.getElementById('conv').addEventListener('input', updateImpact);
+updateImpact();
+</script>
+
+<h2>Founder Briefing</h2>
+<div class="briefing">
+  <p><strong>The verdict is strong, not narrow.</strong> Five advisors with different lenses converged on Delaware C-Corp + Florida foreign entity registration for five non-overlapping reasons. When that kind of convergence happens, the Florida-only path looks attractive from inside the founding team for legitimate reasons but is paid for by friction at every downstream inflection point.</p>
+
+  <p><strong>The core tension</strong> was whether the charter decision substitutes for substantive Florida regulatory work. The room committed to treating these as parallel non-negotiable tracks, which moved Brian and Jason from CONDITIONAL to YES.</p>
+
+  <p><strong>The sharpest insight</strong> came from Brian's Round 2 reversal: corporate structure is not just an M&A optimization — it changes whether resort brand protection counsel start the conversation with you with a phone call or a cease-and-desist letter.</p>
+
+  <p><strong>This week:</strong> file Delaware C-Corp with Sujit and Sandhya as initial stockholders, four-year vesting with one-year cliff; file Florida foreign entity registration with a real Florida-licensed registered agent; have all four founders sign IP assignment agreements regardless of OBA status; file 83(b) elections within 30 days of share issuance. <strong>In parallel, same week:</strong> commission a five-state timeshare regulatory opinion (FL, HI, NV, CA, SC) and a written merchant-of-record analysis of the Stripe Connect + PaySafe escrow flow.</p>
+
+  <p><strong>The dissent worth heeding:</strong> Brian and Jason's insistence that the charter decision is the easy part. Do not let convergence on Delaware let you feel "the legal work is done." It is barely begun.</p>
+</div>
+
+</main>
+
+<footer>Boardroom session — LEGAL-ADVISORY board — 2026-04-06</footer>
+</body>
+</html>

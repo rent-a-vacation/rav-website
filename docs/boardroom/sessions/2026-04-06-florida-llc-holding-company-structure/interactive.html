@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boardroom — Florida LLC + Holding Company Structure</title>
+<style>
+  :root {
+    --primary: #1C7268;
+    --accent: #E8703A;
+    --bg: #F8F6F3;
+    --text: #1D2E38;
+    --gray: #6B7280;
+    --light-gray: #E5E7EB;
+    --green: #16A34A;
+    --red: #DC2626;
+    --amber: #F59E0B;
+    --shadow: 0 2px 8px rgba(29, 46, 56, 0.08);
+    --shadow-lg: 0 8px 24px rgba(29, 46, 56, 0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header {
+    background: linear-gradient(135deg, var(--primary) 0%, #14584F 100%);
+    color: white;
+    padding: 40px 36px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 32px;
+  }
+  header .label {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 11px;
+    opacity: 0.85;
+    margin-bottom: 12px;
+  }
+  header h1 {
+    font-size: 26px;
+    line-height: 1.35;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+  .verdict {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+  }
+  h2 {
+    color: var(--primary);
+    font-size: 22px;
+    margin: 40px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+  }
+  .advisor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .advisor-card {
+    background: white;
+    border-radius: 10px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--primary);
+    position: relative;
+  }
+  .advisor-card.changed { border-top-color: var(--accent); }
+  .advisor-card h3 {
+    font-size: 17px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .advisor-card .domain {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  .vote-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .vote-pill {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .vote-pill .label {
+    display: block;
+    font-size: 9px;
+    color: var(--gray);
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  .vote-no { background: #FEE2E2; color: var(--red); }
+  .vote-yes { background: #DCFCE7; color: var(--green); }
+  .vote-cond { background: #FEF3C7; color: var(--amber); }
+  .changed-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .quote {
+    background: var(--bg);
+    border-left: 3px solid var(--primary);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--text);
+    font-style: italic;
+    line-height: 1.55;
+    border-radius: 0 6px 6px 0;
+  }
+  .tensions {
+    background: white;
+    border-radius: 10px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    margin-bottom: 32px;
+  }
+  .tension {
+    border-left: 4px solid var(--accent);
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    background: var(--bg);
+    border-radius: 0 6px 6px 0;
+  }
+  .tension:last-child { margin-bottom: 0; }
+  .tension h4 {
+    color: var(--primary);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .tension p { font-size: 13px; color: var(--text); }
+  .sliders {
+    background: white;
+    border-radius: 10px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    margin-bottom: 32px;
+  }
+  .slider-group { margin-bottom: 26px; }
+  .slider-group:last-child { margin-bottom: 0; }
+  .slider-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .slider-group .help {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  input[type="range"] {
+    flex: 1;
+    accent-color: var(--primary);
+    height: 6px;
+  }
+  .slider-value {
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 60px;
+    text-align: center;
+  }
+  .impact {
+    margin-top: 24px;
+    padding: 20px;
+    background: linear-gradient(135deg, #1C7268 0%, #14584F 100%);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .impact strong { color: #F4D9C7; }
+  .briefing {
+    background: white;
+    border-radius: 10px;
+    padding: 32px;
+    box-shadow: var(--shadow-lg);
+    border-top: 5px solid var(--accent);
+  }
+  .briefing h3 {
+    color: var(--primary);
+    font-size: 18px;
+    margin: 18px 0 8px 0;
+  }
+  .briefing h3:first-child { margin-top: 0; }
+  .briefing p { font-size: 14px; margin-bottom: 8px; }
+  .briefing ol { margin-left: 22px; font-size: 14px; }
+  .briefing ol li { margin-bottom: 6px; }
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 16px;
+    color: var(--gray);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="label">RAV Boardroom — Legal Advisory Board</div>
+    <h1>Should we form a Florida LLC, with TechSilon LLC owning 50% and Ajumon and Celin as the other partners, while preserving long-term VC and acquisition goals?</h1>
+    <div class="verdict">FINAL VERDICT: NO — 5/5 UNANIMOUS</div>
+  </header>
+
+  <h2>Advisor Positions</h2>
+  <div class="advisor-grid">
+
+    <div class="advisor-card">
+      <h3>Yokum Taku</h3>
+      <div class="domain">Startup Formation / VC Counsel</div>
+      <div class="vote-row">
+        <div class="vote-pill vote-no"><span class="label">Round 1</span>NO</div>
+        <div class="vote-pill vote-no"><span class="label">Final</span>NO</div>
+      </div>
+      <div class="quote">"The decision today is between paying $3,000 now or $100,000 later. There is no middle path that ends well."</div>
+    </div>
+
+    <div class="advisor-card changed">
+      <h3>Brian T. Lower</h3>
+      <div class="domain">Timeshare Operations Law (26 yrs HICV)</div>
+      <div class="vote-row">
+        <div class="vote-pill vote-cond"><span class="label">Round 1</span>CONDITIONAL</div>
+        <div class="vote-pill vote-no"><span class="label">Final</span>NO</div>
+      </div>
+      <span class="changed-badge">Changed</span>
+      <div class="quote">"You can have the most beautiful Delaware C-Corp in the world and still be operating an unregistered timeshare resale service in violation of Florida law."</div>
+    </div>
+
+    <div class="advisor-card">
+      <h3>Tonia Klausner</h3>
+      <div class="domain">Platform Compliance / Litigation Defense</div>
+      <div class="vote-row">
+        <div class="vote-pill vote-no"><span class="label">Round 1</span>NO</div>
+        <div class="vote-pill vote-no"><span class="label">Final</span>NO</div>
+      </div>
+      <div class="quote">"The entity that takes the user's money must be the entity named in the terms of service, period."</div>
+    </div>
+
+    <div class="advisor-card changed">
+      <h3>Jason Gamel</h3>
+      <div class="domain">Timeshare Industry / ARDA President</div>
+      <div class="vote-row">
+        <div class="vote-pill vote-cond"><span class="label">Round 1</span>CONDITIONAL</div>
+        <div class="vote-pill vote-no"><span class="label">Final</span>NO</div>
+      </div>
+      <span class="changed-badge">Changed</span>
+      <div class="quote">"The exit conversation with a strategic acquirer doesn't start with the M&A team. It starts with a corporate development scout 18–36 months earlier — and they will pull your filings."</div>
+    </div>
+
+    <div class="advisor-card">
+      <h3>Patrick McKenzie</h3>
+      <div class="domain">Payments / Stripe Risk Architecture</div>
+      <div class="vote-row">
+        <div class="vote-pill vote-no"><span class="label">Round 1</span>NO</div>
+        <div class="vote-pill vote-no"><span class="label">Final</span>NO</div>
+      </div>
+      <div class="quote">"The day RAV LLC is filed with Florida naming Ajumon and Celin, that filing appears in their employer's OBA monitoring within days. This is not a hypothetical."</div>
+    </div>
+
+  </div>
+
+  <h2>Key Tensions</h2>
+  <div class="tensions">
+    <div class="tension">
+      <h4>Optimize today vs. defer until later</h4>
+      <p>The real fight was whether the long-term VC/acquisition goal justifies optimizing structure today. Board landed firmly on optimize today: a few thousand dollars now vs. $50,000–$200,000 later, plus QSBS tax benefits worth potentially $9.5M+ to the founder group at exit.</p>
+    </div>
+    <div class="tension">
+      <h4>Florida vs. Delaware: is this even a debate?</h4>
+      <p>Brian initially pushed back on the "Delaware default" framing. Yokum's response — that RAV's specific fact pattern (software platform, national customer base, VC/acquisition ambition) is exactly when Delaware C-Corp is structurally correct, not just default — moved Brian to concede. State of formation matters; Delaware wins.</p>
+    </div>
+    <div class="tension">
+      <h4>Structure question vs. regulatory question</h4>
+      <p>Brian's enduring point: even the cleanest C-Corp doesn't save RAV from Florida Chapter 721 timeshare resale registration exposure. Structure and regulation are independent risks. Both must be addressed in writing, by Florida-licensed timeshare counsel, before the first transaction.</p>
+    </div>
+  </div>
+
+  <h2>Test Your Assumptions</h2>
+  <div class="sliders">
+    <div class="slider-group">
+      <label for="exit-years">Years to Exit (acquisition or IPO)</label>
+      <div class="help">How long until the acquisition or VC liquidity event happens?</div>
+      <div class="slider-row">
+        <input type="range" id="exit-years" min="2" max="10" value="6" step="1" oninput="updateImpact()">
+        <div class="slider-value" id="exit-years-val">6 years</div>
+      </div>
+    </div>
+
+    <div class="slider-group">
+      <label for="exit-value">Exit Value (millions USD)</label>
+      <div class="help">Estimated company value at acquisition.</div>
+      <div class="slider-row">
+        <input type="range" id="exit-value" min="5" max="200" value="40" step="5" oninput="updateImpact()">
+        <div class="slider-value" id="exit-value-val">$40M</div>
+      </div>
+    </div>
+
+    <div class="slider-group">
+      <label for="founder-share">Founder Group Share at Exit (%)</label>
+      <div class="help">Percentage of exit proceeds going to the four founders combined (after dilution).</div>
+      <div class="slider-row">
+        <input type="range" id="founder-share" min="20" max="100" value="60" step="5" oninput="updateImpact()">
+        <div class="slider-value" id="founder-share-val">60%</div>
+      </div>
+    </div>
+
+    <div class="impact" id="impact-text">
+      Adjust the sliders above to see the projected cost of starting with the proposed LLC structure.
+    </div>
+  </div>
+
+  <h2>Founder Briefing</h2>
+  <div class="briefing">
+    <h3>The Decision</h3>
+    <p>Whether to form Rent-A-Vacation LLC in Florida, with TechSilon LLC owning 50% and Ajumon and Celin as the other two equity holders.</p>
+
+    <h3>The Verdict</h3>
+    <p>Unanimous NO — five out of five against the proposed structure. Two advisors started CONDITIONAL and moved to NO after the debate. Not a close call.</p>
+
+    <h3>The Sharpest Insight</h3>
+    <p>Tonia's "adversarial readers" frame: every legal structure has multiple readers — investors, plaintiffs' lawyers, payment processors, regulators, M&A scouts, OBA monitoring at your co-founders' employers. Pick the structure that satisfies the most readers simultaneously. The proposed structure satisfies none of them. A single Delaware C-Corp satisfies most.</p>
+
+    <h3>Recommended Action</h3>
+    <ol>
+      <li>Do not file Florida LLC paperwork. Do not put Ajumon or Celin's names on any public corporate filing while their OBA is unresolved.</li>
+      <li>Form a Delaware C-Corporation this week with Sujit and Sandhya as the only initial stockholders. Cost: $1,500–$5,000.</li>
+      <li>800,000 shares to founders, 200,000 reserved as option pool, 1,000,000 authorized.</li>
+      <li>File 83(b) elections within 30 days — this window is absolute.</li>
+      <li>Execute a four-founder written agreement documenting Ajumon and Celin's promised equity contingent on documented OBA clearance.</li>
+      <li>Retain a Florida-licensed timeshare attorney now. Commission written legal opinions on Florida Chapter 721 and Chapter 560 before opening to real customers.</li>
+      <li>Register the Delaware C-Corp as a foreign entity in Florida.</li>
+      <li>Apply for ARDA membership in the next 90 days.</li>
+      <li>Submit Stripe Connect application under the clean C-Corp identity.</li>
+    </ol>
+
+    <h3>The Dissent Worth Heeding</h3>
+    <p>Brian Lower's original instinct — that Florida Chapter 721 timeshare regulatory exposure is more important than the corporate structure debate — must not get lost. The cleanest C-Corp in the world does not save you from operating an unregistered timeshare resale service in Florida. Get the legal opinion in writing, on letterhead, before the first transaction.</p>
+  </div>
+
+  <footer>
+    Boardroom session — April 6, 2026 — Legal Advisory Board<br>
+    Generated by /boardroom command — Claude Code
+  </footer>
+</div>
+
+<script>
+  function fmt(n) {
+    return n.toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0});
+  }
+  function updateImpact() {
+    const years = parseInt(document.getElementById('exit-years').value);
+    const exitM = parseInt(document.getElementById('exit-value').value);
+    const founderPct = parseInt(document.getElementById('founder-share').value);
+
+    document.getElementById('exit-years-val').textContent = years + ' years';
+    document.getElementById('exit-value-val').textContent = '$' + exitM + 'M';
+    document.getElementById('founder-share-val').textContent = founderPct + '%';
+
+    // QSBS analysis
+    // QSBS requires 5-year hold from C-Corp formation
+    // If LLC then convert at year 2, clock starts year 2
+    // For exit in N years: if N >= 5 from C-Corp now, founders qualify
+    //                       if N < 5, they don't qualify either way
+    //                       if LLC->C-Corp later, conversion year + 5 must be <= N
+    const founderProceeds = exitM * 1_000_000 * (founderPct / 100);
+    const qsbsCapPerFounder = 10_000_000;
+    const numFounders = 4;
+    const totalCap = qsbsCapPerFounder * numFounders;
+    const qsbsEligibleGain = Math.min(founderProceeds, totalCap);
+    const capGainsRate = 0.238;
+
+    // Scenario A: clean C-Corp now, exit in N years
+    const cleanQsbsSavings = years >= 5 ? qsbsEligibleGain * capGainsRate : 0;
+    // Scenario B: LLC now, convert at year 2, exit in N years
+    const messyQsbsSavings = (years - 2) >= 5 ? qsbsEligibleGain * capGainsRate : 0;
+    const qsbsLoss = cleanQsbsSavings - messyQsbsSavings;
+
+    // Conversion legal fees
+    const conversionFees = 100_000; // mid estimate
+
+    // Total cost of starting wrong
+    const totalCost = qsbsLoss + conversionFees;
+
+    let scenarioMsg = '';
+    if (years >= 5 && (years - 2) < 5) {
+      scenarioMsg = `<strong>QSBS qualifies if you form a Delaware C-Corp today, but does NOT qualify if you start as an LLC and convert in 2 years.</strong> The 5-year holding period for the LLC-then-convert path won't be met before exit.`;
+    } else if (years >= 5 && (years - 2) >= 5) {
+      scenarioMsg = `<strong>QSBS qualifies in both paths</strong>, but the LLC-to-C-Corp conversion still costs ~${fmt(conversionFees)} in legal fees and creates due-diligence friction.`;
+    } else {
+      scenarioMsg = `<strong>Exit too soon for QSBS qualification under either path.</strong> Starting as an LLC still costs ~${fmt(conversionFees)} in conversion legal fees, plus operational friction.`;
+    }
+
+    document.getElementById('impact-text').innerHTML = `
+      <strong>Founder Proceeds at Exit:</strong> ${fmt(founderProceeds)}<br>
+      <strong>QSBS-Eligible Gain (capped at $10M × 4 founders):</strong> ${fmt(qsbsEligibleGain)}<br>
+      <strong>Tax Savings if clean Delaware C-Corp now:</strong> ${fmt(cleanQsbsSavings)}<br>
+      <strong>Tax Savings if LLC → convert at year 2:</strong> ${fmt(messyQsbsSavings)}<br>
+      <strong>QSBS Lost by starting wrong:</strong> ${fmt(qsbsLoss)}<br>
+      <strong>Plus conversion legal fees:</strong> ~${fmt(conversionFees)}<br>
+      <strong style="font-size:16px;">Total cost of starting with the proposed LLC structure: ${fmt(totalCost)}</strong><br><br>
+      ${scenarioMsg}
+    `;
+  }
+  updateImpact();
+</script>
+</body>
+</html>

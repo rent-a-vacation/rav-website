@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-02T00:03:48"
-change_ref: "73ad192"
+last_updated: "2026-04-10T11:02:46"
+change_ref: "2a9cb39"
 change_type: "manual-edit"
 status: "active"
 ---
@@ -8,7 +8,7 @@ status: "active"
 # Rent-A-Vacation — Boardroom Business Context
 > Read by every boardroom advisor at the start of each session.
 > Keep current. Update after major milestones, pivots, or structural changes.
-> Last updated: March 2026
+> Last updated: April 2026
 
 ---
 
@@ -41,12 +41,12 @@ Rent-A-Vacation (RAV) is a dual-sided bidding marketplace for timeshare and vaca
 
 ---
 
-## Platform Status (March 2026)
+## Platform Status (April 2026)
 
 | Layer | Status |
 |-------|--------|
 | Frontend (React 18, TypeScript, Vite, Tailwind) | ✅ Built, deployed to Vercel |
-| Backend (Supabase PostgreSQL + 27 Edge Functions on Deno) | ✅ Built, deployed |
+| Backend (Supabase PostgreSQL + 33 Edge Functions on Deno) | ✅ Built, deployed |
 | Payments (Stripe Checkout + Connect) | ✅ Integrated — test keys DEV, live keys PROD |
 | Voice AI — RAVIO (VAPI + Deepgram + ElevenLabs) | ✅ Built, tier-gated |
 | Text Chat — RAVIO (OpenRouter / Gemini Flash + SSE) | ✅ Built |
@@ -58,7 +58,7 @@ Rent-A-Vacation (RAV) is a dual-sided bidding marketplace for timeshare and vaca
 | RAV Smart Suite (5 free SEO tools) | ✅ Built |
 | Executive Dashboard (investor-grade) | ✅ Built |
 | Public API (read-only v1, 5 endpoints) | ✅ Built |
-| Automated tests | ✅ 825 passing, 104 test files |
+| Automated tests | ✅ 848 passing, 108 test files |
 | Staff Only Mode (pre-launch lock) | ✅ ON — no public access |
 | LLC / legal entity | ❌ Blocked — OBA disclosures pending for 2 co-founders |
 | Stripe Tax | ❌ Blocked — requires EIN (blocked on LLC) |
@@ -89,7 +89,7 @@ Rent-A-Vacation (RAV) is a dual-sided bidding marketplace for timeshare and vaca
 | **TrustShield** | Owner verification (deed, membership certificate, government ID) |
 | **PaySafe** | Escrow — holds funds until resort confirmation number verified |
 | **Owner's Edge** | Analytics for owners (pricing intelligence, fair value score, dynamic pricing) |
-| **RAV Command** | Admin dashboard (14 tabs) |
+| **RAV Command** | Admin dashboard (21 tabs — 10 staff-accessible + 11 admin-only) |
 | **ResortIQ** | Resort database — 117 resorts, 9 vacation club brands, auto-populates listings |
 | **RAV Smart Suite** | 5 free tools: SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget |
 
