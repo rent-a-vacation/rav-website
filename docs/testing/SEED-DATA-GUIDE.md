@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-05T15:57:17"
-change_ref: "800bcfa"
+last_updated: "2026-04-10T19:18:28"
+change_ref: "cf233ec"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -14,7 +14,7 @@ The seed system generates realistic test data for the DEV environment. It operat
 |-------|----------|--------------------|
 | **Layer 1: Foundation** | 8 core users (3 RAV + 5 owners) | **Preserved** (never deleted) |
 | **Layer 2: Inventory** | 10 properties, 30 listings | Deleted & recreated |
-| **Layer 3: Transactions** | 50 renters, 90 bookings, bids, requests | Deleted & recreated |
+| **Layer 3: Transactions** | 50 renters, 90 bookings, bids, requests, conversations | Deleted & recreated |
 
 ## Architecture
 
@@ -85,6 +85,9 @@ Owner and renter accounts are assigned membership tiers for testing subscription
 | Referral codes | 5 | One per foundation owner |
 | API keys | 1 | `dev-owner`, partner tier |
 | Voice search logs | 15 | Distributed across users |
+| Conversations | ~50 | One per booking/bid with conversation_id FK set |
+| Conversation messages | ~100 | 2 messages per conversation (traveler + owner) |
+| Conversation events | ~50 | booking_confirmed / bid_placed / bid_accepted events |
 
 ### Renters (Layer 3 — Recreated on reseed)
 - 50 renters: `renter001@rent-a-vacation.com` through `renter050@rent-a-vacation.com`

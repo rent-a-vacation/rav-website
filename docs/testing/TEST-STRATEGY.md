@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-10T19:18:28"
+change_ref: "cf233ec"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -370,8 +370,21 @@ Located in `src/test/helpers/`:
 
 ### P0 Test Case Library
 - **Docs:** `docs/P0-TEST-CASES.md` — 20 critical-path scenarios across 7 journeys
-- **Run:** `npm run test:p0` — executes 97 `@p0`-tagged tests
-- **Coverage:** Auth, Search, Pricing, Bidding, Owner Dashboard, Cancellation, Messaging
+- **Run:** `npm run test:p0` — executes 97+ `@p0`-tagged tests
+- **Coverage:** Auth, Search, Pricing, Bidding, Owner Dashboard, Cancellation, Messaging, Conversations
+
+### Messaging System (P0) — Session 45
+
+| Test | File | What it validates |
+|------|------|------------------|
+| Context badge labels | `src/lib/conversations.test.ts` | `getContextBadge()` returns correct label/variant for all 4 types |
+| Event formatting | `src/lib/conversations.test.ts` | `formatConversationEvent()` for bids, bookings, proposals |
+| Type guards | `src/lib/conversations.test.ts` | `isValidContextType()` and `isValidEventType()` |
+| Query key factory | `src/hooks/useConversations.test.ts` | Hierarchical keys for partial invalidation |
+| Other participant | `src/hooks/useConversations.test.ts` | `getOtherParticipant()` resolves correct party |
+| Inbox rendering | `src/components/messaging/ConversationInbox.test.tsx` | Filter tabs, participant names, context badges, click selection |
+| Thread rendering | `src/components/messaging/ConversationThread.test.tsx` | Message bubbles, events, mark-read-on-mount, composer |
+| Messages page | `src/pages/Messages.test.tsx` | Two-panel layout, empty state, filter tabs |
 
 ---
 

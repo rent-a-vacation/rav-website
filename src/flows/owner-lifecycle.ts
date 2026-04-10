@@ -207,6 +207,26 @@ export const ownerLifecycle: FlowDefinition = {
       ],
     },
     {
+      id: 'conversations_inbox',
+      route: '/messages',
+      label: 'Messages',
+      component: 'Messages',
+      description: 'Unified inbox — all conversations with travelers across bookings, bids, inquiries, and travel requests',
+      tables: ['conversations', 'conversation_messages'],
+      branches: [
+        { condition: 'Open thread', targetStepId: 'conversation_thread', label: 'View Thread' },
+      ],
+    },
+    {
+      id: 'conversation_thread',
+      route: '/messages/:id',
+      label: 'Conversation',
+      component: 'Messages',
+      description: 'Threaded view with messages and system events. Notification-dispatcher sends alerts for new messages.',
+      tables: ['conversation_messages', 'conversation_events'],
+      edgeFunctions: ['notification-dispatcher'],
+    },
+    {
       id: 'submit_confirmation',
       route: '/owner-dashboard',
       label: 'Submit Resort Confirmation',
