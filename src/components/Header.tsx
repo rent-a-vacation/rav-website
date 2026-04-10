@@ -162,16 +162,15 @@ const Header = () => {
               <div className="w-20 h-9 bg-muted animate-pulse rounded-md" />
             ) : user ? (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild className="relative">
-                  <Link to="/messages">
-                    <MessageSquare className="h-5 w-5" />
-                    {unreadMessages > 0 && (
-                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px]">
-                        {unreadMessages > 99 ? '99+' : unreadMessages}
-                      </Badge>
-                    )}
-                  </Link>
-                </Button>
+                <Link to="/messages" className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30">
+                  <MessageSquare className="h-4 w-4" />
+                  Messages
+                  {unreadMessages > 0 && (
+                    <Badge variant="destructive" className="h-5 min-w-5 px-1 flex items-center justify-center text-[10px]">
+                      {unreadMessages > 99 ? '99+' : unreadMessages}
+                    </Badge>
+                  )}
+                </Link>
                 <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -272,16 +271,14 @@ const Header = () => {
             )}
             {user && !isLoading && (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild className="relative h-8 w-8">
-                  <Link to="/messages">
-                    <MessageSquare className="h-4 w-4" />
-                    {unreadMessages > 0 && (
-                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[9px]">
-                        {unreadMessages > 99 ? '99+' : unreadMessages}
-                      </Badge>
-                    )}
-                  </Link>
-                </Button>
+                <Link to="/messages" className="relative flex items-center p-1.5 rounded-lg text-muted-foreground hover:text-foreground">
+                  <MessageSquare className="h-5 w-5" />
+                  {unreadMessages > 0 && (
+                    <Badge variant="destructive" className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-0.5 flex items-center justify-center text-[9px]">
+                      {unreadMessages > 99 ? '99+' : unreadMessages}
+                    </Badge>
+                  )}
+                </Link>
                 <NotificationBell />
                 <button
                   className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-primary/10 hover:bg-primary/15 transition-colors"
@@ -393,6 +390,19 @@ const Header = () => {
                   >
                     <Plane className="h-4 w-4" />
                     My Trips
+                  </Link>
+                  <Link
+                    to="/messages"
+                    className="flex items-center gap-2 text-foreground py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    Messages
+                    {unreadMessages > 0 && (
+                      <Badge variant="destructive" className="h-5 min-w-5 px-1 text-[10px]">
+                        {unreadMessages}
+                      </Badge>
+                    )}
                   </Link>
                   {isRavTeam() && (
                     <Link
