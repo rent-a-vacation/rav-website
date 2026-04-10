@@ -891,6 +891,7 @@ const PropertyDetail = () => {
           onOpenChange={setInquiryDialogOpen}
           listingId={listing.id}
           ownerId={listing.owner_id}
+          propertyId={listing.property_id}
           propertyName={displayName}
         />
       )}

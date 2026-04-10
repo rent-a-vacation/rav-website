@@ -1,3 +1,8 @@
+// @deprecated — Replaced by ConversationThread (src/components/messaging/ConversationThread.tsx)
+// This component is kept for backward compatibility during the transition.
+// New writes go to conversation_messages via the unified conversation layer.
+// TODO: Remove this file and update MyBookings + OwnerBookings to use /messages links.
+
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {

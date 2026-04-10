@@ -1,3 +1,7 @@
+// @deprecated — Replaced by ConversationThread (src/components/messaging/ConversationThread.tsx)
+// This component is kept for backward compatibility. Not actively imported in any page.
+// New writes go to conversation_messages via the unified conversation layer.
+
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useInquiryMessages, useSendInquiryMessage } from '@/hooks/useListingInquiries';
