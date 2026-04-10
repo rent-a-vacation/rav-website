@@ -18,6 +18,11 @@ vi.mock('@/hooks/useBidding', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useConversations', () => ({
+  useGetOrCreateConversation: () => ({ mutate: vi.fn() }),
+  useInsertConversationEvent: () => ({ mutate: vi.fn() }),
+}));
+
 vi.mock('react-router-dom', () => ({
   Link: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
     <a {...props}>{children}</a>

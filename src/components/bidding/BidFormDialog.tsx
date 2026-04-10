@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 import type { ListingWithBidding } from '@/types/bidding';
 import { calculateNights, computeListingPricing } from '@/lib/pricing';
 import { trackEvent } from '@/lib/posthog';
+import { useGetOrCreateConversation, useInsertConversationEvent } from '@/hooks/useConversations';
 
 type BidMode = 'bid' | 'date-proposal';
 
@@ -36,6 +37,8 @@ interface BidFormDialogProps {
 export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: BidFormDialogProps) {
   const { user } = useAuth();
   const createBid = useCreateBid();
+  const getOrCreateConversation = useGetOrCreateConversation();
+  const insertEvent = useInsertConversationEvent();
 
   const [bidAmount, setBidAmount] = useState<number>(listing.min_bid_amount || listing.owner_price);
   const [guestCount, setGuestCount] = useState<number>(1);
@@ -84,6 +87,28 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
 
       setSubmittedBidAmount(bidAmount);
       setBidSuccess(true);
+
+      // Wire to unified conversation layer (fire-and-forget)
+      getOrCreateConversation.mutate({
+        ownerId: listing.owner_id,
+        travelerId: user.id,
+        propertyId: listing.property_id,
+        listingId: listing.id,
+        contextType: 'bid',
+      }, {
+        onSuccess: (conversationId) => {
+          insertEvent.mutate({
+            conversationId,
+            eventType: 'bid_placed',
+            eventData: {
+              amount: bidAmount,
+              check_in: proposedCheckIn || listing.check_in_date,
+              check_out: proposedCheckOut || listing.check_out_date,
+            },
+          });
+        },
+      });
+
       trackEvent("bid_placed", {
         listing_id: listing.id,
         bid_amount: bidAmount,

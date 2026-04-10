@@ -16,6 +16,15 @@ vi.mock('@/hooks/useListingInquiries', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useConversations', () => ({
+  useGetOrCreateConversation: vi.fn().mockReturnValue({
+    mutate: vi.fn(),
+  }),
+  useInsertConversationEvent: vi.fn().mockReturnValue({
+    mutate: vi.fn(),
+  }),
+}));
+
 import { InquiryDialog } from './InquiryDialog';
 
 function renderDialog(open = true) {
@@ -27,6 +36,7 @@ function renderDialog(open = true) {
         onOpenChange={vi.fn()}
         listingId="lst-1"
         ownerId="owner-1"
+        propertyId="prop-1"
         propertyName="Maui Beachfront"
       />
     </QueryClientProvider>

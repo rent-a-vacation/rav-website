@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCreateInquiry } from '@/hooks/useListingInquiries';
+import { useGetOrCreateConversation, useInsertConversationEvent } from '@/hooks/useConversations';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,7 @@ interface InquiryDialogProps {
   onOpenChange: (open: boolean) => void;
   listingId: string;
   ownerId: string;
+  propertyId: string;
   propertyName: string;
 }
 
@@ -43,10 +45,13 @@ export function InquiryDialog({
   onOpenChange,
   listingId,
   ownerId,
+  propertyId,
   propertyName,
 }: InquiryDialogProps) {
   const { user } = useAuth();
   const createInquiry = useCreateInquiry();
+  const getOrCreateConversation = useGetOrCreateConversation();
+  const insertEvent = useInsertConversationEvent();
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
@@ -55,12 +60,31 @@ export function InquiryDialog({
     if (!subject || !message.trim()) return;
 
     try {
-      await createInquiry.mutateAsync({
+      const inquiry = await createInquiry.mutateAsync({
         listing_id: listingId,
         owner_id: ownerId,
         subject,
         message: message.trim(),
       });
+
+      // Wire to unified conversation layer (fire-and-forget)
+      getOrCreateConversation.mutate({
+        ownerId,
+        travelerId: user!.id,
+        propertyId,
+        listingId,
+        contextType: 'inquiry',
+        contextId: inquiry?.id,
+      }, {
+        onSuccess: (conversationId) => {
+          insertEvent.mutate({
+            conversationId,
+            eventType: 'inquiry_started',
+            eventData: { subject },
+          });
+        },
+      });
+
       setSent(true);
       toast.success('Question sent to the owner!');
     } catch {

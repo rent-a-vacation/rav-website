@@ -174,14 +174,43 @@ export function useUpdateBidStatus() {
         .from('listing_bids')
         .update(updateData as never)
         .eq('id', bidId)
-        .select()
+        .select('*, listing:listings(owner_id, property_id)')
         .single();
 
       if (error) throw error;
       return data;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['bids'] });
+
+      // Insert conversation event for bid status change (fire-and-forget)
+      const listing = (data as Record<string, unknown>).listing as { owner_id: string; property_id: string } | null;
+      if (listing) {
+        const eventType = variables.status === 'accepted' ? 'bid_accepted'
+          : variables.status === 'rejected' ? 'bid_rejected'
+          : variables.counterOfferAmount ? 'bid_countered'
+          : null;
+        if (eventType) {
+          supabase.rpc('get_or_create_conversation', {
+            p_owner_id: listing.owner_id,
+            p_traveler_id: (data as Record<string, unknown>).bidder_id as string,
+            p_property_id: listing.property_id,
+            p_context_type: 'bid',
+          }).then(({ data: convId }) => {
+            if (convId) {
+              supabase.rpc('insert_conversation_event', {
+                p_conversation_id: convId,
+                p_event_type: eventType,
+                p_event_data: {
+                  amount: (data as Record<string, unknown>).bid_amount,
+                  counter: variables.counterOfferAmount ?? null,
+                },
+              });
+            }
+          });
+        }
+      }
+
       const message = variables.status === 'accepted'
         ? 'Bid accepted!'
         : variables.status === 'rejected'
@@ -414,8 +443,40 @@ export function useCreateProposal() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['proposals'] });
+
+      // Wire to unified conversation layer (fire-and-forget)
+      // Look up traveler_id from the travel request
+      const proposal = data as Record<string, unknown>;
+      if (proposal.request_id && proposal.property_id) {
+        supabase
+          .from('travel_requests')
+          .select('traveler_id')
+          .eq('id', proposal.request_id as string)
+          .single()
+          .then(({ data: request }) => {
+            if (request?.traveler_id) {
+              supabase.rpc('get_or_create_conversation', {
+                p_owner_id: user!.id,
+                p_traveler_id: request.traveler_id,
+                p_property_id: proposal.property_id as string,
+                p_listing_id: (proposal.listing_id as string) ?? null,
+                p_context_type: 'travel_request',
+                p_context_id: proposal.request_id as string,
+              }).then(({ data: convId }) => {
+                if (convId) {
+                  supabase.rpc('insert_conversation_event', {
+                    p_conversation_id: convId,
+                    p_event_type: 'proposal_sent',
+                    p_event_data: { proposal_id: proposal.id },
+                  });
+                }
+              });
+            }
+          });
+      }
+
       toast.success('Proposal submitted!');
     },
     onError: (error: Error) => {
@@ -491,10 +552,40 @@ export function useUpdateProposalStatus() {
 
       return proposal;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['proposals'] });
       queryClient.invalidateQueries({ queryKey: ['travel-requests'] });
       queryClient.invalidateQueries({ queryKey: ['listings'] });
+
+      // Insert conversation event for proposal status change (fire-and-forget)
+      const proposal = data as Record<string, unknown>;
+      if (proposal.property_id && proposal.owner_id && proposal.request_id) {
+        supabase
+          .from('travel_requests')
+          .select('traveler_id')
+          .eq('id', proposal.request_id as string)
+          .single()
+          .then(({ data: request }) => {
+            if (request?.traveler_id) {
+              supabase.rpc('get_or_create_conversation', {
+                p_owner_id: proposal.owner_id as string,
+                p_traveler_id: request.traveler_id,
+                p_property_id: proposal.property_id as string,
+                p_context_type: 'travel_request',
+              }).then(({ data: convId }) => {
+                if (convId) {
+                  const eventType = variables.status === 'accepted' ? 'proposal_accepted' : 'proposal_rejected';
+                  supabase.rpc('insert_conversation_event', {
+                    p_conversation_id: convId,
+                    p_event_type: eventType,
+                    p_event_data: { proposal_id: proposal.id },
+                  });
+                }
+              });
+            }
+          });
+      }
+
       const message = variables.status === 'accepted'
         ? 'Proposal accepted! You can now proceed to checkout.'
         : 'Proposal updated';

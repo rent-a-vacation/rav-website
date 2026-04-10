@@ -146,6 +146,43 @@ serve(async (req) => {
         logStep("Warning: Failed to update listing status", { error: listingError.message });
       }
 
+      // Wire to unified conversation layer
+      try {
+        const listingData = booking.listing as Record<string, unknown>;
+        const ownerId = listingData?.owner_id as string;
+        const propertyId = listingData?.property_id as string;
+        if (ownerId && propertyId) {
+          const { data: convId } = await supabaseClient.rpc("get_or_create_conversation", {
+            p_owner_id: ownerId,
+            p_traveler_id: booking.renter_id,
+            p_property_id: propertyId,
+            p_listing_id: booking.listing_id,
+            p_context_type: "booking",
+            p_context_id: booking.id,
+          });
+          if (convId) {
+            // Update booking with conversation_id
+            await supabaseClient
+              .from("bookings")
+              .update({ conversation_id: convId })
+              .eq("id", bookingId);
+            // Insert booking_confirmed event
+            await supabaseClient.rpc("insert_conversation_event", {
+              p_conversation_id: convId,
+              p_event_type: "booking_confirmed",
+              p_event_data: {
+                booking_id: booking.id,
+                total: session.amount_total ? session.amount_total / 100 : booking.total_amount,
+                check_in: (listingData as Record<string, unknown>).check_in_date,
+              },
+            });
+          }
+          logStep("Conversation created for booking", { convId });
+        }
+      } catch (convError) {
+        logStep("Warning: Failed to create conversation", { error: String(convError) });
+      }
+
       // Read owner confirmation window from system_settings
       let ownerConfirmationWindowMinutes = 60; // default
       try {
