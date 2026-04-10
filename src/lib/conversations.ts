@@ -123,6 +123,26 @@ export function getConversationTitle(contextType: string, propertyName?: string)
 }
 
 // ============================================================
+// Participant helper
+// ============================================================
+
+export interface ParticipantInfo {
+  id: string;
+  full_name?: string;
+  avatar_url?: string;
+}
+
+export function getOtherParticipant(
+  conversation: { owner_id: string; traveler_id: string; owner?: ParticipantInfo; traveler?: ParticipantInfo },
+  currentUserId: string
+): ParticipantInfo {
+  if (conversation.owner_id === currentUserId) {
+    return conversation.traveler ?? { id: conversation.traveler_id };
+  }
+  return conversation.owner ?? { id: conversation.owner_id };
+}
+
+// ============================================================
 // Valid type guards
 // ============================================================
 
