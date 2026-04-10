@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-05T23:39:43"
-change_ref: "02a1c26"
+last_updated: "2026-04-10T19:18:28"
+change_ref: "cf233ec"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -8,6 +8,55 @@ status: "active"
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
 > **Last Archived:** March 10, 2026
+
+---
+
+## Session 45: Unified Conversation Layer (Phase 21)
+
+**Completed:** April 10, 2026
+**Issues:** #296 (Epic), #297-#306 (Stories A-J)
+**Milestone:** Phase 21: Unified Messaging
+**Migration:** 051_unified_conversations.sql
+
+### What was built
+- **3 new tables:** `conversations`, `conversation_messages`, `conversation_events` — one conversation per owner-traveler-property combination
+- **4 RPCs:** `get_or_create_conversation` (idempotent), `mark_conversation_read`, `get_conversation_thread` (messages + events interleaved), `insert_conversation_event` (SECURITY DEFINER)
+- **12-step backfill** of existing inquiries, bookings, bids, and travel proposals
+- **React Query hooks:** 5 queries + 5 mutations with optimistic updates and realtime subscriptions
+- **Utility library:** `src/lib/conversations.ts` — type guards, context badges, event formatting, participant helpers
+- **Messages page:** `/messages` and `/messages/:conversationId` — two-panel inbox + thread layout, mobile responsive
+- **4 UI components:** ConversationInbox (filter tabs, unread dots), ConversationThread (message bubbles, system events, date separators), MessageComposer (Enter-to-send), ConversationEventBubble
+- **Header integration:** Messages icon with unread badge (desktop + mobile)
+- **All 4 systems wired:** InquiryDialog, BidFormDialog, useBidding mutations, verify-booking-payment edge function
+- **Notification:** `message_received` in notification_catalog (from migration 046)
+- **Deprecation:** BookingMessageThread + InquiryThread marked `@deprecated`
+- **Seed data:** Conversations, messages, and events for seeded bookings and bids
+- **Flow manifests:** `conversations_inbox` + `conversation_thread` steps in traveler + owner lifecycles
+
+### Files created (14)
+- `supabase/migrations/051_unified_conversations.sql`
+- `src/lib/conversations.ts`, `src/lib/conversations.test.ts`
+- `src/hooks/useConversations.ts`, `src/hooks/useConversations.test.ts`
+- `src/components/messaging/ConversationInbox.tsx`, `ConversationInbox.test.tsx`
+- `src/components/messaging/ConversationThread.tsx`, `ConversationThread.test.tsx`
+- `src/components/messaging/ConversationEventBubble.tsx`
+- `src/components/messaging/MessageComposer.tsx`
+- `src/pages/Messages.tsx`, `src/pages/Messages.test.tsx`
+
+### Files modified (12)
+- `src/types/database.ts` — 3 new table types
+- `src/App.tsx` — 2 new routes
+- `src/components/Header.tsx` — Messages icon + unread badge
+- `src/components/InquiryDialog.tsx` — conversation wiring
+- `src/components/bidding/BidFormDialog.tsx` — conversation wiring
+- `src/hooks/useBidding.ts` — bid/proposal event wiring
+- `supabase/functions/verify-booking-payment/index.ts` — booking conversation wiring
+- `supabase/functions/seed-manager/index.ts` — conversation seeding
+- `src/flows/traveler-lifecycle.ts`, `src/flows/owner-lifecycle.ts` — conversation steps
+- `src/components/booking/BookingMessageThread.tsx`, `src/components/InquiryThread.tsx` — deprecated
+
+### Test count
+- Before: 825 → After: 900+ (113+ files)
 
 ---
 

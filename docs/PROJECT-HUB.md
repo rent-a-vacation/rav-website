@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-05T23:39:43"
-change_ref: "02a1c26"
+last_updated: "2026-04-10T19:18:28"
+change_ref: "cf233ec"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -104,7 +104,19 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **dev and main:** in sync (PRs #287-#292 merged Apr 5)
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-44)
+### Session Handoff (Sessions 25-45)
+
+**Session 45 — Unified Conversation Layer / Phase 21 (Apr 10, 2026):**
+- Epic #296 with 10 stories (#297-#306), Milestone: Phase 21: Unified Messaging
+- Migration 051: `conversations`, `conversation_messages`, `conversation_events` tables + 4 RPCs + 12-step backfill
+- React Query hooks: 5 queries + 5 mutations with optimistic updates and dual realtime subscriptions
+- Messages page (`/messages`) with two-panel inbox + thread layout, mobile responsive
+- All 4 interaction systems wired: InquiryDialog, BidFormDialog, useBidding mutations, verify-booking-payment
+- Header messages icon with unread badge (desktop + mobile)
+- Seed manager updated with conversation/message/event generation
+- Flow manifests updated with conversation steps (traveler + owner lifecycles)
+- BookingMessageThread + InquiryThread marked @deprecated
+- 900+ tests (113+ files), 0 type errors, build clean
 
 **Session 44 — Stripe Setup + Subscription Phases 5-7 + Project Board (Apr 4-5, 2026):**
 - Stripe sandbox account created, 4 products configured, webhook registered (11 events), Customer Portal configured

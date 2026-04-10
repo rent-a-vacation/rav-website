@@ -245,6 +245,25 @@ export const travelerLifecycle: FlowDefinition = {
       ],
     },
     {
+      id: 'conversations_inbox',
+      route: '/messages',
+      label: 'Messages',
+      component: 'Messages',
+      description: 'Unified inbox — all conversations with owners across inquiries, bookings, bids, and travel requests',
+      tables: ['conversations', 'conversation_messages'],
+      branches: [
+        { condition: 'Open thread', targetStepId: 'conversation_thread', label: 'View Thread' },
+      ],
+    },
+    {
+      id: 'conversation_thread',
+      route: '/messages/:id',
+      label: 'Conversation',
+      component: 'Messages',
+      description: 'Threaded view with messages and system events interleaved by timestamp',
+      tables: ['conversation_messages', 'conversation_events'],
+    },
+    {
       id: 'checkin',
       route: '/checkin',
       label: 'Check In',

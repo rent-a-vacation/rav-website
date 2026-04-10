@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-10T19:18:28"
+change_ref: "cf233ec"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -521,7 +521,7 @@ auth.users (Supabase managed)
 
 ### Migrations
 
-45 migrations deployed via Supabase CLI (`npx supabase db push`). Migrations 001-043 deployed to DEV and PROD; 044-045 pending PROD deploy.
+51 migrations deployed via Supabase CLI (`npx supabase db push`). Migrations 001-050 deployed to DEV; 051 (unified conversations) deployed to DEV.
 
 | # | File | What it creates |
 |---|------|----------------|
@@ -852,6 +852,23 @@ The public API provides read-only access to marketplace data for third-party int
 | `Developers` page | `src/pages/Developers.tsx` | Public Swagger UI at `/developers` |
 | `ApiDocs` page | `src/pages/ApiDocs.tsx` | Admin-gated Swagger UI at `/api-docs` |
 | OpenAPI spec | `docs/api/openapi.yaml` | OpenAPI 3.0.3 spec (26 endpoints, Redocly validated) |
+
+### Unified Conversation Layer (Migration 051)
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `conversations` table | Migration 051 | One conversation per owner-traveler-property combination |
+| `conversation_messages` table | Migration 051 | Human-authored messages (replaces inquiry_messages + booking_messages) |
+| `conversation_events` table | Migration 051 | System events (bid_placed, booking_confirmed, etc.) |
+| `get_or_create_conversation` RPC | Migration 051 | Idempotent conversation creation |
+| `mark_conversation_read` RPC | Migration 051 | Reset unread counts for current user |
+| `get_conversation_thread` RPC | Migration 051 | Combined messages + events sorted by timestamp |
+| `insert_conversation_event` RPC | Migration 051 | SECURITY DEFINER — clients must not INSERT directly |
+| `useConversations.ts` | `src/hooks/useConversations.ts` | 5 queries + 5 mutations with realtime |
+| `conversations.ts` | `src/lib/conversations.ts` | Types, badges, event formatting, participant helpers |
+| `Messages` page | `src/pages/Messages.tsx` | Two-panel inbox + thread at `/messages` |
+| `ConversationInbox` | `src/components/messaging/` | Filter tabs, unread dots, context badges |
+| `ConversationThread` | `src/components/messaging/` | Message bubbles, system events, date separators |
 
 **Auth model:** Dual authentication — API key (header `X-API-Key`) or JWT (Supabase session). Tiered rate limits based on membership.
 

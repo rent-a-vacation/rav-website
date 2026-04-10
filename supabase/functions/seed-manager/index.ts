@@ -232,6 +232,7 @@ async function getStatus(log: string[]): Promise<Record<string, number>> {
     "voice_search_usage", "voice_search_logs", "favorites",
     "platform_guarantee_fund", "checkin_confirmations",
     "referral_codes", "api_keys",
+    "conversations", "conversation_messages", "conversation_events",
   ];
 
   const counts: Record<string, number> = {};
@@ -1098,6 +1099,102 @@ async function createTransactions(
     if (!error) proposalsCreated++;
   }
   log.push(`Created ${proposalsCreated} travel proposals`);
+
+  // ── Seed conversations for demo inbox ──
+  let convsCreated = 0;
+  let msgsCreated = 0;
+  let eventsCreated = 0;
+
+  // Get all bookings with listing details for conversation creation
+  const { data: seededBookings } = await admin
+    .from("bookings")
+    .select("id, renter_id, listing_id, total_amount, status, listing:listings(owner_id, property_id, check_in_date)")
+    .limit(30);
+
+  const conversationMessages = [
+    ["Hi, is this property available in June?", "Yes, still available! Let me know if you have any questions."],
+    ["What time is check-in?", "Check-in is 4 PM. I'll send resort details closer to your stay."],
+    ["Can I get early check-in?", "I can request it with the resort — usually depends on availability."],
+    ["Is parking included?", "Yes, self-parking is complimentary. Valet is $15/day."],
+  ];
+
+  for (const booking of (seededBookings ?? [])) {
+    const listing = booking.listing as { owner_id: string; property_id: string; check_in_date: string } | null;
+    if (!listing) continue;
+
+    const { data: convId } = await admin.rpc("get_or_create_conversation", {
+      p_owner_id: listing.owner_id,
+      p_traveler_id: booking.renter_id,
+      p_property_id: listing.property_id,
+      p_listing_id: booking.listing_id,
+      p_context_type: "booking",
+      p_context_id: booking.id,
+    });
+
+    if (!convId) continue;
+    convsCreated++;
+
+    // Update booking with conversation_id
+    await admin.from("bookings").update({ conversation_id: convId }).eq("id", booking.id);
+
+    // Insert 2 messages per conversation
+    const msgPair = conversationMessages[convsCreated % conversationMessages.length];
+    for (let i = 0; i < msgPair.length; i++) {
+      const senderId = i === 0 ? booking.renter_id : listing.owner_id;
+      const { error: msgErr } = await admin.from("conversation_messages").insert({
+        conversation_id: convId,
+        sender_id: senderId,
+        body: msgPair[i],
+      });
+      if (!msgErr) msgsCreated++;
+    }
+
+    // Insert booking_confirmed event for confirmed/completed bookings
+    if (booking.status === "confirmed" || booking.status === "completed") {
+      const { error: evtErr } = await admin.rpc("insert_conversation_event", {
+        p_conversation_id: convId,
+        p_event_type: "booking_confirmed",
+        p_event_data: { booking_id: booking.id, total: booking.total_amount, check_in: listing.check_in_date },
+      });
+      if (!evtErr) eventsCreated++;
+    }
+  }
+
+  // Seed conversations for bids
+  const { data: seededBids } = await admin
+    .from("listing_bids")
+    .select("id, bidder_id, bid_amount, status, requested_check_in, requested_check_out, listing:listings(owner_id, property_id)")
+    .limit(20);
+
+  for (const bid of (seededBids ?? [])) {
+    const listing = bid.listing as { owner_id: string; property_id: string } | null;
+    if (!listing) continue;
+
+    const { data: convId } = await admin.rpc("get_or_create_conversation", {
+      p_owner_id: listing.owner_id,
+      p_traveler_id: bid.bidder_id,
+      p_property_id: listing.property_id,
+      p_context_type: "bid",
+    });
+
+    if (!convId) continue;
+    convsCreated++;
+
+    const eventType = bid.status === "accepted" ? "bid_accepted"
+      : bid.status === "rejected" ? "bid_rejected"
+      : "bid_placed";
+    const { error: evtErr } = await admin.rpc("insert_conversation_event", {
+      p_conversation_id: convId,
+      p_event_type: eventType,
+      p_event_data: { amount: bid.bid_amount, check_in: bid.requested_check_in, check_out: bid.requested_check_out },
+    });
+    if (!evtErr) eventsCreated++;
+
+    // Update bid with conversation_id
+    await admin.from("listing_bids").update({ conversation_id: convId }).eq("id", bid.id);
+  }
+
+  log.push(`Created ${convsCreated} conversations, ${msgsCreated} messages, ${eventsCreated} events`);
 
   // ── Seed missing / new-feature data (shared with "update" action) ──
   await seedMissingData(emailToId, renterIds, log);
