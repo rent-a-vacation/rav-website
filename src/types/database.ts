@@ -16,6 +16,157 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      conversation_events: {
+        Row: {
+          id: string
+          conversation_id: string
+          event_type: string
+          event_data: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          event_type: string
+          event_data?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          conversation_id?: string
+          event_type?: string
+          event_data?: Json
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_events_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversation_messages: {
+        Row: {
+          id: string
+          conversation_id: string
+          sender_id: string
+          body: string
+          read_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          sender_id: string
+          body: string
+          read_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          conversation_id?: string
+          sender_id?: string
+          body?: string
+          read_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          id: string
+          owner_id: string
+          traveler_id: string
+          property_id: string
+          listing_id: string | null
+          context_type: string
+          context_id: string | null
+          status: string
+          owner_unread_count: number
+          traveler_unread_count: number
+          last_message_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          traveler_id: string
+          property_id: string
+          listing_id?: string | null
+          context_type: string
+          context_id?: string | null
+          status?: string
+          owner_unread_count?: number
+          traveler_unread_count?: number
+          last_message_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          traveler_id?: string
+          property_id?: string
+          listing_id?: string | null
+          context_type?: string
+          context_id?: string | null
+          status?: string
+          owner_unread_count?: number
+          traveler_unread_count?: number
+          last_message_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_traveler_id_fkey"
+            columns: ["traveler_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_confirmations: {
         Row: {
           booking_id: string
