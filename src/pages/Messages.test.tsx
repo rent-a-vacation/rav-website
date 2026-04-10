@@ -28,6 +28,14 @@ vi.mock('@/hooks/usePageMeta', () => ({
   usePageMeta: vi.fn(),
 }));
 
+vi.mock('@/components/Header', () => ({
+  default: () => <div data-testid="header">Header</div>,
+}));
+
+vi.mock('@/components/Footer', () => ({
+  default: () => <div data-testid="footer">Footer</div>,
+}));
+
 import Messages from './Messages';
 
 function renderPage(path = '/messages') {
@@ -50,9 +58,10 @@ describe('Messages page', () => {
     expect(screen.getByTestId('messages-page')).toBeInTheDocument();
   });
 
-  it('shows inbox with Messages heading', () => {
+  it('shows page heading', () => {
     renderPage();
-    expect(screen.getByText('Messages')).toBeInTheDocument();
+    const headings = screen.getAllByRole('heading', { name: /Messages/ });
+    expect(headings.length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows empty state when no conversation selected', () => {
