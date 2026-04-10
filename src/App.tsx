@@ -56,6 +56,7 @@ const BudgetPlanner = lazy(() => import("./pages/BudgetPlanner"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const NotificationPreferences = lazy(() => import("./pages/settings/NotificationPreferences"));
 const SubscriptionSuccess = lazy(() => import("./pages/SubscriptionSuccess"));
+const Messages = lazy(() => import("./pages/Messages"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -201,6 +202,8 @@ const App = () => (
             <Route path="/my-bids" element={<Navigate to="/my-trips?tab=offers" replace />} />
             <Route path="/my-bookings" element={<Navigate to="/my-trips?tab=bookings" replace />} />
             <Route path="/account" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+            <Route path="/messages/:conversationId" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/settings/notifications" element={<ProtectedRoute><NotificationPreferences /></ProtectedRoute>} />
             <Route path="/checkin" element={<ProtectedRoute><TravelerCheckin /></ProtectedRoute>} />

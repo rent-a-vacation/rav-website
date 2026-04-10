@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, ShieldCheck, BarChart3, Settings, GitBranch, Plane, Sparkles } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, ShieldCheck, BarChart3, Settings, GitBranch, Plane, Sparkles, MessageSquare } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/bidding/NotificationBell";
+import { useUnreadConversationCount } from "@/hooks/useConversations";
 import { RoleBadge, getDisplayRole } from "@/components/RoleBadge";
 import {
   DropdownMenu,
@@ -21,6 +22,7 @@ const Header = () => {
   const { user, profile, roles, isPropertyOwner, isRavTeam, signOut, isLoading } = useAuth();
   const displayRole = getDisplayRole(roles);
   const firstName = profile?.full_name?.split(" ")[0];
+  const { data: unreadMessages = 0 } = useUnreadConversationCount();
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
 
@@ -160,6 +162,16 @@ const Header = () => {
               <div className="w-20 h-9 bg-muted animate-pulse rounded-md" />
             ) : user ? (
               <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild className="relative">
+                  <Link to="/messages">
+                    <MessageSquare className="h-5 w-5" />
+                    {unreadMessages > 0 && (
+                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px]">
+                        {unreadMessages > 99 ? '99+' : unreadMessages}
+                      </Badge>
+                    )}
+                  </Link>
+                </Button>
                 <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -260,6 +272,16 @@ const Header = () => {
             )}
             {user && !isLoading && (
               <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild className="relative h-8 w-8">
+                  <Link to="/messages">
+                    <MessageSquare className="h-4 w-4" />
+                    {unreadMessages > 0 && (
+                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[9px]">
+                        {unreadMessages > 99 ? '99+' : unreadMessages}
+                      </Badge>
+                    )}
+                  </Link>
+                </Button>
                 <NotificationBell />
                 <button
                   className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-primary/10 hover:bg-primary/15 transition-colors"
