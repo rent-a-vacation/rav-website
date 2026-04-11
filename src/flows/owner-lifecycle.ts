@@ -26,8 +26,19 @@ export const ownerLifecycle: FlowDefinition = {
       description: 'Account pending RAV team review',
       tables: ['profiles'],
       branches: [
-        { condition: 'Approved', targetStepId: 'request_owner_role', label: 'Approved' },
+        { condition: 'Approved', targetStepId: 'welcome_onboarding', label: 'Approved' },
         { condition: 'Rejected', targetStepId: 'signup', label: 'Rejected', edgeStyle: 'dashed' },
+      ],
+    },
+    {
+      id: 'welcome_onboarding',
+      route: '/welcome',
+      label: 'Welcome Onboarding',
+      component: 'WelcomePage',
+      description: 'Post-approval gate: T&C reconfirm (Step 1) + role-specific getting-started CTAs for the owner (Step 2). Writes to terms_acceptance_log with post_approval_gate method.',
+      tables: ['terms_acceptance_log', 'profiles'],
+      branches: [
+        { condition: 'Onboarding complete', targetStepId: 'request_owner_role', label: 'Continue to owner setup' },
       ],
     },
     {

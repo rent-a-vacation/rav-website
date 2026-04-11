@@ -32,7 +32,18 @@ export const travelerLifecycle: FlowDefinition = {
       nodeStyle: 'decision',
       tables: ['profiles'],
       branches: [
-        { condition: 'Approved', targetStepId: 'search_listings', label: 'Approved' },
+        { condition: 'Approved', targetStepId: 'welcome_onboarding', label: 'Approved' },
+      ],
+    },
+    {
+      id: 'welcome_onboarding',
+      route: '/welcome',
+      label: 'Welcome Onboarding',
+      component: 'WelcomePage',
+      description: 'Post-approval gate: T&C reconfirm (Step 1) + role-specific getting-started CTAs (Step 2). Writes to terms_acceptance_log with post_approval_gate method.',
+      tables: ['terms_acceptance_log', 'profiles'],
+      branches: [
+        { condition: 'Onboarding complete', targetStepId: 'search_listings', label: 'Start exploring' },
       ],
     },
     {
