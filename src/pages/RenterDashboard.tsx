@@ -216,7 +216,7 @@ const RenterDashboard = () => {
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base flex items-center gap-2">
                       <CalendarDays className="h-4 w-4" />
-                      Travel Requests
+                      Vacation Wishes
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

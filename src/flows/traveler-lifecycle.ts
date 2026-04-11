@@ -3,7 +3,7 @@ import type { FlowDefinition } from './types';
 export const travelerLifecycle: FlowDefinition = {
   id: 'traveler-lifecycle',
   label: 'Renter Journey',
-  description: 'End-to-end lifecycle from browsing to check-in. Renters can book directly, bid on listings, or post travel requests for owners to propose against.',
+  description: 'End-to-end lifecycle from browsing to check-in. Renters can book directly, bid on listings, or post Vacation Wishes for owners to propose against.',
   primaryRole: 'renter',
   roleEmoji: '🧳',
   direction: 'TD',
@@ -67,7 +67,7 @@ export const travelerLifecycle: FlowDefinition = {
       edgeFunctions: ['voice-search', 'text-chat'],
       branches: [
         { condition: 'Found listing', targetStepId: 'view_property', label: 'View listing' },
-        { condition: 'Post travel request', targetStepId: 'post_travel_request', label: 'Request vacation' },
+        { condition: 'Post vacation wish', targetStepId: 'post_travel_request', label: 'Post Vacation Wish' },
       ],
     },
     {
@@ -97,10 +97,10 @@ export const travelerLifecycle: FlowDefinition = {
     },
     {
       id: 'post_travel_request',
-      route: '/bidding',
-      label: 'Post Travel Request',
+      route: '/bidding?tab=requests',
+      label: 'Post Vacation Wish',
       component: 'TravelRequestForm',
-      description: 'Renter posts a reverse-auction request specifying destination, dates, budget — owners respond with proposals',
+      description: 'Renter posts a vacation wish (reverse auction) specifying destination, dates, budget — owners respond with proposals',
       tables: ['travel_requests'],
       branches: [
         { condition: 'Request posted', targetStepId: 'my_bids_dashboard', label: 'Track on My Offers' },
@@ -111,7 +111,7 @@ export const travelerLifecycle: FlowDefinition = {
       route: '/my-bids',
       label: 'My Offers & Requests',
       component: 'MyBidsDashboard',
-      description: 'Renter tracks all offers and reviews owner proposals on travel requests. Counter-offers appear here for review and re-negotiation before accepting.',
+      description: 'Renter tracks all offers and reviews owner proposals on Vacation Wishes. Counter-offers appear here for review and re-negotiation before accepting.',
       tables: ['listing_bids', 'travel_proposals'],
       branches: [
         { condition: 'Offer or proposal accepted', targetStepId: 'checkout', label: 'Pay now' },
@@ -249,7 +249,7 @@ export const travelerLifecycle: FlowDefinition = {
       route: '/messages',
       label: 'Messages',
       component: 'Messages',
-      description: 'Unified inbox — all conversations with owners across inquiries, bookings, bids, and travel requests',
+      description: 'Unified inbox — all conversations with owners across inquiries, bookings, bids, and Vacation Wishes',
       tables: ['conversations', 'conversation_messages'],
       branches: [
         { condition: 'Open thread', targetStepId: 'conversation_thread', label: 'View Thread' },

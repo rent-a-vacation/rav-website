@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-10T19:18:28"
-change_ref: "cf233ec"
+last_updated: "2026-04-11T02:29:56"
+change_ref: "0d4a4e5"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -8,6 +8,39 @@ status: "active"
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
 > **Last Archived:** March 10, 2026
+
+---
+
+## WS3: Navigation Redesign & Terminology Consistency
+
+**Completed:** April 10, 2026
+**Scope:** Frontend-only refactor of `Header.tsx` + terminology audit across UI
+
+### What was built
+- **Role-based Header nav** (desktop + mobile): different top-level links rendered based on role
+  - **Owner view:** Owner's Edge · My Listings · Vacation Wishes · Messages
+  - **Traveler view:** Explore · Name Your Price · Vacation Wishes · My Trips · Messages
+  - **Unauthenticated view:** Explore · How It Works · Name Your Price · List Your Property · Free Tools (unchanged)
+  - **RAV Team view:** Existing admin nav preserved
+- **Owner avatar dropdown:** Added List a Property + Free Tools for owners (moved from top nav)
+- **Terminology updates (user-facing strings only):**
+  - `BiddingMarketplace.tsx`: "Make an Offer" tab → "Listings"
+  - `InspiredTravelRequestDialog.tsx`: "Travel Request Posted!" → "Vacation Wish Posted!"
+  - `RenterDashboard.tsx`: "Travel Requests" card → "Vacation Wishes"
+  - `MyBidsDashboard.tsx`: "My Travel Requests" tab → "My Vacation Wishes"
+  - `Notifications.tsx`: "Travel Requests" filter → "Vacation Wishes"
+  - `OwnerProposals.tsx`: fallback label → "Vacation Wish"
+  - `UserGuide.tsx`: sidebar + heading → "Submit Vacation Wishes"
+  - Flow manifests (traveler + owner lifecycle): descriptions + labels updated
+
+### NOT changed (intentional)
+- Database column `travel_requests` — stays
+- Component filenames (`TravelRequestForm`, `TravelRequestCard`, `InspiredTravelRequestDialog`)
+- TypeScript types, hook names, query keys, state variable names
+
+### Tests
+- Created `src/components/Header.test.tsx` with 10 tests
+- **Before:** 907 (114 files) → **After:** 917 (115 files)
 
 ---
 
