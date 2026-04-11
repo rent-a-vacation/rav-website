@@ -57,8 +57,10 @@ export function getNotificationLink(notification: {
 
     case "booking_confirmed":
     case "payment_received":
-    case "message_received":
       return booking_id ? "/my-trips?tab=bookings" : "/my-trips";
+
+    case "message_received":
+      return "/messages";
 
     case "new_proposal_received":
     case "proposal_accepted":

@@ -210,6 +210,32 @@ export function useSendMessage() {
         .single();
 
       if (error) throw error;
+
+      // Fire notification to the other participant (fire-and-forget)
+      // Look up the conversation to find the recipient
+      supabase
+        .from('conversations')
+        .select('owner_id, traveler_id')
+        .eq('id', conversationId)
+        .single()
+        .then(({ data: conv }) => {
+          if (!conv) return;
+          const recipientId = conv.owner_id === user!.id ? conv.traveler_id : conv.owner_id;
+          const preview = body.length > 80 ? `${body.slice(0, 80)}…` : body;
+          supabase.functions.invoke('notification-dispatcher', {
+            body: {
+              type_key: 'message_received',
+              user_id: recipientId,
+              payload: {
+                title: 'New message',
+                message: preview,
+              },
+            },
+          }).catch(() => {
+            // Notification dispatch is best-effort; don't fail the send
+          });
+        });
+
       return data;
     },
     onMutate: async ({ conversationId, body }) => {
