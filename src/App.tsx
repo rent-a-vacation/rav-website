@@ -57,6 +57,7 @@ const Notifications = lazy(() => import("./pages/Notifications"));
 const NotificationPreferences = lazy(() => import("./pages/settings/NotificationPreferences"));
 const SubscriptionSuccess = lazy(() => import("./pages/SubscriptionSuccess"));
 const Messages = lazy(() => import("./pages/Messages"));
+const WelcomePage = lazy(() => import("./pages/WelcomePage"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -127,6 +128,18 @@ function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode;
       return;
     }
 
+    // Post-approval onboarding gate: redirect newly approved users to /welcome
+    // Whitelist: /welcome, /terms, /privacy are reachable so users can read terms before accepting
+    const onboardingWhitelist = ["/welcome", "/terms", "/privacy"];
+    if (
+      profile?.approval_status === "approved" &&
+      !profile?.onboarding_completed_at &&
+      !onboardingWhitelist.includes(location.pathname)
+    ) {
+      navigate("/welcome");
+      return;
+    }
+
     // Check role-specific access
     if (requiredRole && !hasRole(requiredRole)) {
       navigate("/rentals");
@@ -137,6 +150,15 @@ function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode;
   if (isLoading) return null;
   if (!user) return null;
   if (!isRavTeam() && profile?.approval_status !== "approved") return null;
+  // Block render for newly-approved users who haven't onboarded (unless they're on a whitelisted page)
+  if (
+    !isRavTeam() &&
+    profile?.approval_status === "approved" &&
+    !profile?.onboarding_completed_at &&
+    !["/welcome", "/terms", "/privacy"].includes(location.pathname)
+  ) {
+    return null;
+  }
   if (requiredRole && !isRavTeam() && !hasRole(requiredRole)) return null;
 
   return <>{children}</>;
@@ -178,6 +200,7 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/pending-approval" element={<PendingApproval />} />
+            <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
             <Route path="/documentation" element={<Documentation />} />
             <Route path="/user-guide" element={<UserGuide />} />
             <Route path="/user-journeys" element={<UserJourneys />} />
