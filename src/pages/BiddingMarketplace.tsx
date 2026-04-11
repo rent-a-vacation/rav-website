@@ -130,7 +130,7 @@ const BiddingMarketplace = () => {
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
               <TabsTrigger value="listings" className="gap-2">
                 <Gavel className="h-4 w-4" />
-                Make an Offer
+                Listings
               </TabsTrigger>
               <TabsTrigger value="requests" className="gap-2">
                 <Send className="h-4 w-4" />

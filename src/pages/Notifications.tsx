@@ -140,7 +140,7 @@ const Notifications = () => {
     { value: "all", label: "All" },
     { value: "bookings", label: "Bookings" },
     { value: "bids", label: "Bids" },
-    { value: "travel_requests", label: "Travel Requests" },
+    { value: "travel_requests", label: "Vacation Wishes" },
     { value: "reminders", label: "Reminders" },
     { value: "system", label: "System" },
   ];

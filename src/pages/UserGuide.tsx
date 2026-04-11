@@ -91,7 +91,7 @@ const UserGuide = () => {
   const renterSections = [
     { id: "getting-started", label: "Getting Started", icon: Home },
     { id: "search-book", label: "Search & Book", icon: Search },
-    { id: "travel-requests", label: "Submit Travel Requests", icon: Plane },
+    { id: "travel-requests", label: "Submit Vacation Wishes", icon: Plane },
     { id: "place-bids", label: "Make Offers on Listings", icon: Gavel },
     { id: "my-bookings", label: "My Bookings & Cancellations", icon: Calendar },
     { id: "checkin", label: "Check-In Process", icon: Key },
@@ -1486,7 +1486,7 @@ const UserGuide = () => {
             {activeRole === "renter" && (isPrinting || activeSection === "travel-requests") && (
               <section className="space-y-8 print:break-after-page">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-4">Submit Travel Requests</h1>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Submit Vacation Wishes</h1>
                   <p className="text-xl text-muted-foreground">
                     Tell us where you want to go and let property owners compete for your booking.
                   </p>

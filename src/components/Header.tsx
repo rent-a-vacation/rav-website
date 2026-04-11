@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, ShieldCheck, BarChart3, Settings, GitBranch, Plane, Sparkles, MessageSquare } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, ShieldCheck, BarChart3, Settings, GitBranch, Plane, Sparkles, MessageSquare, FileText } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/bidding/NotificationBell";
 import { useUnreadConversationCount } from "@/hooks/useConversations";
 import { RoleBadge, getDisplayRole } from "@/components/RoleBadge";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,107 +54,213 @@ const Header = () => {
             <span className="font-display font-bold text-xl text-foreground">Rent-A-Vacation</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            <div
-              className="relative pb-2 -mb-2"
-              onMouseEnter={() => setIsDropdownOpen(true)}
-              onMouseLeave={() => setIsDropdownOpen(false)}
-            >
-              <button
-                className={`flex items-center gap-1 cursor-pointer group px-3 py-2 rounded-lg transition-colors ${
-                  isActive("/rentals") || isActive("/destinations")
-                    ? "text-foreground bg-muted/50"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                }`}
-                aria-haspopup="true"
-                aria-expanded={isDropdownOpen}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') setIsDropdownOpen(false);
-                }}
-              >
-                <span className="text-sm font-medium">Explore</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
-              </button>
-              {isDropdownOpen && (
-                <div
-                  className="absolute top-full left-0 w-52 bg-card rounded-xl shadow-lg border border-border/60 p-1.5 animate-fade-in z-50"
-                  role="menu"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') setIsDropdownOpen(false);
-                  }}
+          {/* Desktop Navigation — role-based */}
+          <nav className="hidden md:flex items-center gap-1" data-testid="desktop-nav">
+            {/* Owner view: Owner's Edge | My Listings | Vacation Wishes */}
+            {user && isPropertyOwner() && !isRavTeam() && (
+              <>
+                <Link
+                  to="/owner-dashboard"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive("/owner-dashboard")
+                      ? "text-foreground bg-muted/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  }`}
                 >
-                  <Link
-                    to="/rentals"
-                    role="menuitem"
-                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    All Rentals
-                  </Link>
-                  <Link
-                    to="/destinations"
-                    role="menuitem"
-                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    By Destination
-                  </Link>
-                  <Link
-                    to="/rentals?filter=deals"
-                    role="menuitem"
-                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Last Minute Deals
-                  </Link>
-                </div>
-              )}
-            </div>
-            <Link
-              to="/how-it-works"
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive("/how-it-works")
-                  ? "text-foreground bg-muted/50"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-              }`}
-            >
-              How It Works
-            </Link>
-            <Link
-              to="/bidding"
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive("/bidding")
-                  ? "text-foreground bg-muted/50"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-              }`}
-            >
-              Name Your Price
-            </Link>
-            {(isPropertyOwner() || isRavTeam() || !user) && (
-              <Link
-                to="/list-property"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/list-property")
-                    ? "text-foreground bg-muted/50"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                }`}
-              >
-                List Your Property
-              </Link>
+                  Owner's Edge
+                </Link>
+                <Link
+                  to="/owner-dashboard?tab=my-listings"
+                  className="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                >
+                  My Listings
+                </Link>
+                <Link
+                  to="/bidding?tab=requests"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive("/bidding")
+                      ? "text-foreground bg-muted/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  }`}
+                >
+                  Vacation Wishes
+                </Link>
+              </>
             )}
-            <Link
-              to="/tools"
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                isActive("/tools") || isActive("/calculator")
-                  ? "text-primary bg-primary/5"
-                  : "text-primary/80 hover:text-primary hover:bg-primary/5"
-              }`}
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              Free Tools
-            </Link>
+
+            {/* Traveler (renter) view OR unauthenticated: Explore | Name Your Price | Vacation Wishes | My Trips */}
+            {(!user || (user && !isPropertyOwner() && !isRavTeam())) && (
+              <>
+                <div
+                  className="relative pb-2 -mb-2"
+                  onMouseEnter={() => setIsDropdownOpen(true)}
+                  onMouseLeave={() => setIsDropdownOpen(false)}
+                >
+                  <button
+                    className={`flex items-center gap-1 cursor-pointer group px-3 py-2 rounded-lg transition-colors ${
+                      isActive("/rentals") || isActive("/destinations")
+                        ? "text-foreground bg-muted/50"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    }`}
+                    aria-haspopup="true"
+                    aria-expanded={isDropdownOpen}
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') setIsDropdownOpen(false);
+                    }}
+                  >
+                    <span className="text-sm font-medium">Explore</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {isDropdownOpen && (
+                    <div
+                      className="absolute top-full left-0 w-52 bg-card rounded-xl shadow-lg border border-border/60 p-1.5 animate-fade-in z-50"
+                      role="menu"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Escape') setIsDropdownOpen(false);
+                      }}
+                    >
+                      <Link
+                        to="/rentals"
+                        role="menuitem"
+                        className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        All Rentals
+                      </Link>
+                      <Link
+                        to="/destinations"
+                        role="menuitem"
+                        className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        By Destination
+                      </Link>
+                      <Link
+                        to="/rentals?filter=deals"
+                        role="menuitem"
+                        className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        Last Minute Deals
+                      </Link>
+                    </div>
+                  )}
+                </div>
+                {!user && (
+                  <Link
+                    to="/how-it-works"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/how-it-works")
+                        ? "text-foreground bg-muted/50"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    }`}
+                  >
+                    How It Works
+                  </Link>
+                )}
+                <Link
+                  to="/bidding"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive("/bidding") && !location.search.includes("tab=requests")
+                      ? "text-foreground bg-muted/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  }`}
+                >
+                  Name Your Price
+                </Link>
+                <Link
+                  to="/bidding?tab=requests"
+                  className="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                >
+                  Vacation Wishes
+                </Link>
+                {user && (
+                  <Link
+                    to="/my-trips"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/my-trips")
+                        ? "text-foreground bg-muted/50"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    }`}
+                  >
+                    My Trips
+                  </Link>
+                )}
+                {!user && (
+                  <Link
+                    to="/list-property"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/list-property")
+                        ? "text-foreground bg-muted/50"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    }`}
+                  >
+                    List Your Property
+                  </Link>
+                )}
+                {!user && (
+                  <Link
+                    to="/tools"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                      isActive("/tools") || isActive("/calculator")
+                        ? "text-primary bg-primary/5"
+                        : "text-primary/80 hover:text-primary hover:bg-primary/5"
+                    }`}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Free Tools
+                  </Link>
+                )}
+              </>
+            )}
+
+            {/* RAV Team view: keep original nav intact */}
+            {user && isRavTeam() && (
+              <>
+                <Link
+                  to="/rentals"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive("/rentals")
+                      ? "text-foreground bg-muted/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  }`}
+                >
+                  Explore
+                </Link>
+                <Link
+                  to="/bidding"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive("/bidding")
+                      ? "text-foreground bg-muted/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  }`}
+                >
+                  Name Your Price
+                </Link>
+                <Link
+                  to="/list-property"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive("/list-property")
+                      ? "text-foreground bg-muted/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  }`}
+                >
+                  List Your Property
+                </Link>
+                <Link
+                  to="/tools"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    isActive("/tools") || isActive("/calculator")
+                      ? "text-primary bg-primary/5"
+                      : "text-primary/80 hover:text-primary hover:bg-primary/5"
+                  }`}
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Free Tools
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Desktop CTA */}
@@ -224,15 +331,24 @@ const Header = () => {
                       </DropdownMenuItem>
                     )}
 
-                    {isPropertyOwner() && (
+                    {isPropertyOwner() && !isRavTeam() && (
                       <DropdownMenuItem asChild>
-                        <Link to="/owner-dashboard" className="flex items-center gap-2 cursor-pointer">
-                          <LayoutDashboard className="h-4 w-4" />
-                          Owner's Edge
+                        <Link to="/list-property" className="flex items-center gap-2 cursor-pointer">
+                          <FileText className="h-4 w-4" />
+                          List a Property
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    
+
+                    {isPropertyOwner() && !isRavTeam() && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/tools" className="flex items-center gap-2 cursor-pointer">
+                          <Sparkles className="h-4 w-4" />
+                          Free Tools
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
                     {(isRavTeam() || isPropertyOwner()) && <DropdownMenuSeparator />}
 
                     <DropdownMenuItem asChild>
@@ -327,43 +443,109 @@ const Header = () => {
               </div>
             )}
 
-            <Link
-              to="/rentals"
-              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rentals") ? "text-foreground" : "text-muted-foreground"}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Browse Rentals
-            </Link>
-            <Link
-              to="/destinations"
-              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/destinations") ? "text-foreground" : "text-muted-foreground"}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Destinations
-            </Link>
-            <Link
-              to="/how-it-works"
-              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/how-it-works") ? "text-foreground" : "text-muted-foreground"}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              How It Works
-            </Link>
-            <Link
-              to="/bidding"
-              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") ? "text-foreground" : "text-muted-foreground"}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Name Your Price
-            </Link>
-            {(isPropertyOwner() || isRavTeam() || !user) && (
-              <Link
-                to="/list-property"
-                className={`py-2.5 text-sm font-medium transition-colors ${isActive("/list-property") ? "text-foreground" : "text-muted-foreground"}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                List Your Property
-              </Link>
+            {/* Owner mobile nav */}
+            {user && isPropertyOwner() && !isRavTeam() && (
+              <>
+                <Link
+                  to="/owner-dashboard"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/owner-dashboard") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Owner's Edge
+                </Link>
+                <Link
+                  to="/owner-dashboard?tab=my-listings"
+                  className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  My Listings
+                </Link>
+                <Link
+                  to="/bidding?tab=requests"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Vacation Wishes
+                </Link>
+              </>
             )}
+
+            {/* Traveler mobile nav */}
+            {user && !isPropertyOwner() && !isRavTeam() && (
+              <>
+                <Link
+                  to="/rentals"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rentals") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Explore
+                </Link>
+                <Link
+                  to="/bidding"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") && !location.search.includes("tab=requests") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Name Your Price
+                </Link>
+                <Link
+                  to="/bidding?tab=requests"
+                  className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Vacation Wishes
+                </Link>
+                <Link
+                  to="/my-trips"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/my-trips") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  My Trips
+                </Link>
+              </>
+            )}
+
+            {/* Unauthenticated + RAV Team: full public nav */}
+            {(!user || isRavTeam()) && (
+              <>
+                <Link
+                  to="/rentals"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rentals") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Browse Rentals
+                </Link>
+                <Link
+                  to="/destinations"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/destinations") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Destinations
+                </Link>
+                <Link
+                  to="/how-it-works"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/how-it-works") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  How It Works
+                </Link>
+                <Link
+                  to="/bidding"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Name Your Price
+                </Link>
+                <Link
+                  to="/list-property"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/list-property") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  List Your Property
+                </Link>
+              </>
+            )}
+
+            {/* Free Tools + FAQs — visible to all authenticated users + unauthenticated */}
             <Link
               to="/tools"
               className="py-2.5 text-sm font-medium text-primary flex items-center gap-1.5"
