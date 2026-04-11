@@ -328,6 +328,8 @@ const AdminUsers = ({ initialSearch = "" }: { initialSearch?: string }) => {
                   <TableHead>User</TableHead>
                   <TableHead>Roles</TableHead>
                   <TableHead>Registered</TableHead>
+                  <TableHead>T&amp;C Accepted</TableHead>
+                  <TableHead>Onboarding</TableHead>
                   {isRavTeam && <TableHead>Notes</TableHead>}
                   {isRavTeam && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
@@ -363,6 +365,22 @@ const AdminUsers = ({ initialSearch = "" }: { initialSearch?: string }) => {
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {format(new Date(user.created_at), "MMM d, yyyy")}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {user.current_terms_version ? (
+                        <span className="text-muted-foreground">
+                          v{user.current_terms_version}
+                        </span>
+                      ) : (
+                        <span className="text-yellow-600 text-xs">⚠️ Not recorded</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {user.onboarding_completed_at ? (
+                        format(new Date(user.onboarding_completed_at), "MMM d, yyyy")
+                      ) : (
+                        <span className="text-yellow-600 text-xs">Pending</span>
+                      )}
                     </TableCell>
                     {isRavTeam && (
                       <TableCell>

@@ -152,11 +152,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Auth methods
   const signUp = async (email: string, password: string, fullName?: string, accountType?: string, referralCode?: string) => {
+    // Note: T&C acceptance is now recorded in the terms_acceptance_log table
+    // via Signup.tsx after signUp() succeeds. We no longer store it in auth
+    // metadata (which was hardcoded to true regardless of user consent).
     const metadata: Record<string, unknown> = {
       full_name: fullName,
       account_type: accountType || 'renter',
-      terms_accepted_at: new Date().toISOString(),
-      age_verified: true,
     };
     if (referralCode) {
       metadata.referral_code = referralCode;

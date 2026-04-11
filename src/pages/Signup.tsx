@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ActionSuccessCard } from "@/components/ActionSuccessCard";
 import { supabase } from "@/lib/supabase";
 import { extractReferralCode } from "@/lib/referral";
+import { CURRENT_TERMS_VERSION, CURRENT_PRIVACY_VERSION } from "@/lib/termsVersions";
 
 const Signup = () => {
   usePageMeta('Sign Up', 'Create your free Rent-A-Vacation account to start booking or listing vacation properties.');
@@ -20,6 +21,8 @@ const Signup = () => {
     email: "",
     password: "",
     accountType: "renter",
+    ageVerified: false,
+    termsAccepted: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isSignupComplete, setIsSignupComplete] = useState(false);
@@ -75,11 +78,20 @@ const Signup = () => {
       });
       return;
     }
-    
+
+    if (!formData.ageVerified || !formData.termsAccepted) {
+      toast({
+        title: "Agreement required",
+        description: "You must confirm your age and accept the Terms of Service and Privacy Policy.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     const { error } = await signUp(formData.email, formData.password, formData.name, formData.accountType, referralCode || undefined);
     setIsLoading(false);
-    
+
     if (error) {
       toast({
         title: "Signup failed",
@@ -87,6 +99,26 @@ const Signup = () => {
         variant: "destructive",
       });
     } else {
+      // Best-effort audit log write — don't fail the signup if this errors.
+      // The profile exists at this point via the handle_new_user trigger.
+      try {
+        const { data: { user: newUser } } = await supabase.auth.getUser();
+        if (newUser) {
+          await supabase.from("terms_acceptance_log").insert({
+            user_id: newUser.id,
+            terms_version: CURRENT_TERMS_VERSION,
+            privacy_version: CURRENT_PRIVACY_VERSION,
+            terms_accepted: true,
+            privacy_accepted: true,
+            age_verified: formData.ageVerified,
+            acceptance_method: "signup_checkbox",
+            user_agent: navigator.userAgent,
+          });
+        }
+      } catch (auditError) {
+        // Audit write is best-effort; log but don't block signup success.
+        console.error("Failed to write terms_acceptance_log:", auditError);
+      }
       setIsSignupComplete(true);
     }
   };
@@ -291,21 +323,46 @@ const Signup = () => {
                   )}
                 </div>
 
-                <div className="flex items-start gap-2">
-                  <input type="checkbox" className="rounded border-border mt-1" required />
-                  <span className="text-sm text-muted-foreground">
-                    I am 18 years or older and agree to Rent-A-Vacation's{" "}
-                    <Link to="/terms" className="text-primary hover:underline">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link to="/privacy" className="text-primary hover:underline">
-                      Privacy Policy
-                    </Link>
-                  </span>
+                <div className="space-y-3">
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded border-border mt-1"
+                      checked={formData.ageVerified}
+                      onChange={(e) => setFormData({ ...formData, ageVerified: e.target.checked })}
+                      aria-label="I am 18 years or older"
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      I confirm that I am 18 years or older
+                    </span>
+                  </label>
+
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded border-border mt-1"
+                      checked={formData.termsAccepted}
+                      onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
+                      aria-label="I accept the Terms of Service and Privacy Policy"
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      I have read and accept the{" "}
+                      <Link to="/terms" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                        Terms of Service
+                      </Link>{" "}
+                      and{" "}
+                      <Link to="/privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                        Privacy Policy
+                      </Link>
+                    </span>
+                  </label>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading || !formData.ageVerified || !formData.termsAccepted}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />

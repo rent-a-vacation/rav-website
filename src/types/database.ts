@@ -1206,6 +1206,8 @@ export type Database = {
           approved_by: string | null
           avatar_url: string | null
           created_at: string
+          current_privacy_version: string | null
+          current_terms_version: string | null
           deletion_reason: string | null
           deletion_requested_at: string | null
           deletion_scheduled_for: string | null
@@ -1215,6 +1217,7 @@ export type Database = {
           is_anonymized: boolean
           is_seed_foundation: boolean | null
           maintenance_fee_updated_at: string | null
+          onboarding_completed_at: string | null
           phone: string | null
           rejection_reason: string | null
           stripe_account_id: string | null
@@ -1230,6 +1233,8 @@ export type Database = {
           approved_by?: string | null
           avatar_url?: string | null
           created_at?: string
+          current_privacy_version?: string | null
+          current_terms_version?: string | null
           deletion_reason?: string | null
           deletion_requested_at?: string | null
           deletion_scheduled_for?: string | null
@@ -1239,6 +1244,7 @@ export type Database = {
           is_anonymized?: boolean
           is_seed_foundation?: boolean | null
           maintenance_fee_updated_at?: string | null
+          onboarding_completed_at?: string | null
           phone?: string | null
           rejection_reason?: string | null
           stripe_account_id?: string | null
@@ -1254,6 +1260,8 @@ export type Database = {
           approved_by?: string | null
           avatar_url?: string | null
           created_at?: string
+          current_privacy_version?: string | null
+          current_terms_version?: string | null
           deletion_reason?: string | null
           deletion_requested_at?: string | null
           deletion_scheduled_for?: string | null
@@ -1263,6 +1271,7 @@ export type Database = {
           is_anonymized?: boolean
           is_seed_foundation?: boolean | null
           maintenance_fee_updated_at?: string | null
+          onboarding_completed_at?: string | null
           phone?: string | null
           rejection_reason?: string | null
           stripe_account_id?: string | null
@@ -1272,6 +1281,59 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      terms_acceptance_log: {
+        Row: {
+          id: string
+          user_id: string
+          terms_version: string
+          privacy_version: string
+          terms_accepted: boolean
+          privacy_accepted: boolean
+          age_verified: boolean
+          accepted_at: string
+          acceptance_method: string
+          user_agent: string | null
+          ip_address: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          terms_version: string
+          privacy_version: string
+          terms_accepted?: boolean
+          privacy_accepted?: boolean
+          age_verified?: boolean
+          accepted_at?: string
+          acceptance_method: string
+          user_agent?: string | null
+          ip_address?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          terms_version?: string
+          privacy_version?: string
+          terms_accepted?: boolean
+          privacy_accepted?: boolean
+          age_verified?: boolean
+          accepted_at?: string
+          acceptance_method?: string
+          user_agent?: string | null
+          ip_address?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terms_acceptance_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       properties: {
         Row: {

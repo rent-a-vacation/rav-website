@@ -82,14 +82,15 @@ const handler = async (req: Request): Promise<Response> => {
       heading = "Welcome to Rent-A-Vacation!";
       body = `
         <p><strong>Great news!</strong> Your account has been approved and you now have full access to Rent-A-Vacation.</p>
-        <p>You can now:</p>
+        <p>Log in to complete a quick welcome step and get started:</p>
         <ul style="line-height: 1.8; padding-left: 20px;">
           <li>Browse and book vacation rentals</li>
-          <li>Use voice search to find properties</li>
-          <li>Create bids and travel requests</li>
+          <li>Name Your Price on open listings</li>
+          <li>Post Vacation Wishes to get owner proposals</li>
           <li>List your own timeshare properties</li>
-        </ul>`;
-      cta = { label: "Start Browsing Rentals", url: "https://rent-a-vacation.com/rentals" };
+        </ul>
+        <p style="margin-top: 16px;">Click the button below to log in and begin.</p>`;
+      cta = { label: "Log In to Your Account", url: "https://rent-a-vacation.com/login" };
     } else {
       subject = "Update on your Rent-A-Vacation account";
       heading = "Account Update";
