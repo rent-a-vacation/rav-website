@@ -101,13 +101,13 @@ describe("getNotificationLink", () => {
     ).toBe("/my-trips?tab=overview");
   });
 
-  it("returns my-trips bookings for message_received", () => {
+  it("returns /messages for message_received", () => {
     expect(
       getNotificationLink({
         type: "message_received",
         booking_id: "book-3",
       }),
-    ).toBe("/my-trips?tab=bookings");
+    ).toBe("/messages");
   });
 
   it("returns null for unknown notification type", () => {
