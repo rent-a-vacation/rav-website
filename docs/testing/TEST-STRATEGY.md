@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-10T19:18:28"
-change_ref: "cf233ec"
+last_updated: "2026-04-11T04:04:36"
+change_ref: "902990b"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -385,6 +385,44 @@ Located in `src/test/helpers/`:
 | Inbox rendering | `src/components/messaging/ConversationInbox.test.tsx` | Filter tabs, participant names, context badges, click selection |
 | Thread rendering | `src/components/messaging/ConversationThread.test.tsx` | Message bubbles, events, mark-read-on-mount, composer |
 | Messages page | `src/pages/Messages.test.tsx` | Two-panel layout, empty state, filter tabs |
+
+### Navigation & Terminology (P0) — WS3
+
+| Test | File | What it validates |
+|------|------|------------------|
+| Unauthenticated nav | `src/components/Header.test.tsx` | Public nav shows Explore, How It Works, Name Your Price, List Your Property, Free Tools |
+| Traveler nav | `src/components/Header.test.tsx` | Traveler sees Explore, Name Your Price, Vacation Wishes, My Trips, Messages |
+| Owner nav | `src/components/Header.test.tsx` | Owner sees Owner's Edge, My Listings, Vacation Wishes, Messages |
+| Traveler exclusions | `src/components/Header.test.tsx` | Traveler does NOT see How It Works or List Your Property in top nav |
+| Owner exclusions | `src/components/Header.test.tsx` | Owner does NOT see Explore or Name Your Price in top nav |
+| Owner's Edge route | `src/components/Header.test.tsx` | Link routes to `/owner-dashboard` |
+| My Listings route | `src/components/Header.test.tsx` | Link routes to `/owner-dashboard?tab=my-listings` |
+| Vacation Wishes route | `src/components/Header.test.tsx` | Link routes to `/bidding?tab=requests` |
+| Messages badge visible | `src/components/Header.test.tsx` | Badge shows when `useUnreadConversationCount > 0` |
+| Messages badge hidden | `src/components/Header.test.tsx` | Badge hidden when count is 0 |
+
+### Registration & Onboarding (P0) — WS2
+
+| Test | File | What it validates |
+|------|------|------------------|
+| Terms version constants | `src/lib/termsVersions.test.ts` | `CURRENT_TERMS_VERSION` / `CURRENT_PRIVACY_VERSION` exist and match semver format |
+| Signup two checkboxes | `src/pages/Signup.test.tsx` | Both age and terms checkboxes render and are separately toggleable |
+| Signup submit disabled | `src/pages/Signup.test.tsx` | Submit stays disabled until both checkboxes are checked |
+| Signup partial state | `src/pages/Signup.test.tsx` | Submit stays disabled if only age OR only terms is checked |
+| needsOnboarding for RAV team | `src/hooks/useOnboarding.test.ts` | Returns false for RAV team (bypass gate entirely) |
+| needsOnboarding for onboarded | `src/hooks/useOnboarding.test.ts` | Returns false for users with non-null `onboarding_completed_at` |
+| needsOnboarding for new users | `src/hooks/useOnboarding.test.ts` | Returns true for newly approved users with null `onboarding_completed_at` |
+| needsOnboarding for pending | `src/hooks/useOnboarding.test.ts` | Returns false for pending_approval and rejected users |
+| WelcomePage Step 1 | `src/pages/WelcomePage.test.tsx` | Renders welcome heading with user first name, T&C checkboxes |
+| Continue button gated | `src/pages/WelcomePage.test.tsx` | Continue disabled until both T&C checkboxes checked |
+| Continue calls mutation | `src/pages/WelcomePage.test.tsx` | Clicking Continue calls `useCompleteOnboarding` |
+| Advances to Step 2 | `src/pages/WelcomePage.test.tsx` | After successful mutation, Step 2 renders |
+| Owner-specific CTAs | `src/pages/WelcomePage.test.tsx` | Owner sees List Property, Owner's Edge, Browse Vacation Wishes |
+| Traveler-specific CTAs | `src/pages/WelcomePage.test.tsx` | Traveler sees Start Exploring, Name Your Price, Post Vacation Wish |
+| Pending user redirect | `src/pages/WelcomePage.test.tsx` | User with pending_approval redirected to `/pending-approval` |
+| RAV team redirect | `src/pages/WelcomePage.test.tsx` | RAV team redirected to `/rentals` (bypass gate) |
+| Onboarded owner redirect | `src/pages/WelcomePage.test.tsx` | Already-onboarded owner redirected to `/owner-dashboard` |
+| Onboarded traveler redirect | `src/pages/WelcomePage.test.tsx` | Already-onboarded traveler redirected to `/my-trips` |
 
 ---
 
