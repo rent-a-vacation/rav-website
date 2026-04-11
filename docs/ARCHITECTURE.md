@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-10T19:18:28"
-change_ref: "cf233ec"
+last_updated: "2026-04-11T04:04:36"
+change_ref: "902990b"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -521,7 +521,7 @@ auth.users (Supabase managed)
 
 ### Migrations
 
-51 migrations deployed via Supabase CLI (`npx supabase db push`). Migrations 001-050 deployed to DEV; 051 (unified conversations) deployed to DEV.
+52 migrations deployed via Supabase CLI (`npx supabase db push`). Migrations 001-050 deployed to DEV; 051 (unified conversations) and 052 (terms acceptance audit) deployed to DEV.
 
 | # | File | What it creates |
 |---|------|----------------|
@@ -568,6 +568,13 @@ auth.users (Supabase managed)
 | 043 | `referral_program.sql` | `referral_codes` + `referrals` tables, 3 referral RPCs |
 | 044 | `api_keys.sql` | `api_keys` + `api_request_log` tables, 4 API management RPCs |
 | 045 | `api_key_ip_allowlist.sql` | `allowed_ips text[]` on api_keys + CIDR validation |
+| 046 | `notification_center.sql` | `notification_catalog`, `user_notification_preferences`, seasonal events, delivery log |
+| 047 | `membership_stripe_prices.sql` | Stripe price IDs on membership tiers |
+| 048 | `set_stripe_price_ids.sql` | Production Stripe price ID seeding |
+| 049 | `listing_limit_trigger.sql` | DB trigger enforcing per-tier listing limits |
+| 050 | `subscription_metrics_rpc.sql` | `get_subscription_metrics` RPC for admin MRR dashboard |
+| 051 | `unified_conversations.sql` | `conversations`, `conversation_messages`, `conversation_events` + 4 RPCs + 12-step backfill |
+| 052 | `terms_acceptance_audit.sql` | `terms_acceptance_log` + 3 profile columns (onboarding_completed_at, current_terms_version, current_privacy_version) + backfill of 60 approved users |
 
 Additional non-numbered migrations:
 - `20260211_resort_master_data.sql` — Resort master data seed
@@ -871,6 +878,22 @@ The public API provides read-only access to marketplace data for third-party int
 | `ConversationThread` | `src/components/messaging/` | Message bubbles, system events, date separators |
 
 **Auth model:** Dual authentication — API key (header `X-API-Key`) or JWT (Supabase session). Tiered rate limits based on membership.
+
+### Terms Acceptance Audit + Post-Approval Onboarding Gate (Migration 052 / WS2)
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `terms_acceptance_log` table | Migration 052 | Permanent audit trail of every T&C acceptance event (version, method, timestamp, user_agent, ip_address) |
+| `profiles.onboarding_completed_at` | Migration 052 | Timestamp when user completed the post-approval onboarding gate |
+| `profiles.current_terms_version` | Migration 052 | Latest T&C version accepted by the user |
+| `profiles.current_privacy_version` | Migration 052 | Latest Privacy Policy version accepted by the user |
+| `termsVersions.ts` | `src/lib/termsVersions.ts` | `CURRENT_TERMS_VERSION` / `CURRENT_PRIVACY_VERSION` constants (bump when legal docs change) |
+| `useOnboarding.ts` | `src/hooks/useOnboarding.ts` | Pure `needsOnboarding(profile, isRavTeam)` + `useCompleteOnboarding()` mutation |
+| `WelcomePage` | `src/pages/WelcomePage.tsx` | 2-step post-approval gate at `/welcome` — T&C reconfirm + role-specific CTAs |
+| `ProtectedRoute` onboarding gate | `src/App.tsx` | Redirects approved users with null `onboarding_completed_at` to `/welcome`; whitelists `/welcome`, `/terms`, `/privacy`; RAV team bypasses entirely |
+| `Signup` controlled form | `src/pages/Signup.tsx` | 2 separate checkboxes (age 18+, Terms + Privacy), submit disabled until both checked, writes audit row with `signup_checkbox` method |
+
+**Acceptance methods:** `signup_checkbox` | `post_approval_gate` | `terms_update_prompt` (future, for when T&C versions change and we need re-acceptance).
 
 ---
 

@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-11T02:29:56"
-change_ref: "0d4a4e5"
+last_updated: "2026-04-11T04:04:36"
+change_ref: "902990b"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -8,6 +8,53 @@ status: "active"
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
 > **Last Archived:** March 10, 2026
+
+---
+
+## WS2: Registration T&C Audit & Post-Approval Onboarding Gate
+
+**Completed:** April 10-11, 2026
+**Epic:** #317 (closed) — 2 sessions across 2 PRs (#320, #321)
+**Milestone:** WS2: Registration, T&C & Onboarding
+
+### Problem closed
+Users were signing up with a single combined "age + T&C" checkbox that had NO controlled state — `terms_accepted_at` was hardcoded to `true` in auth metadata regardless of what the user actually did. No queryable audit trail existed. The approval email had no login link. There was no post-approval reconfirmation of the current T&C version.
+
+### Story 1 (PR #320) — Migration + Signup rewrite + Admin column
+- **Migration 052** — new `terms_acceptance_log` table (user_id, terms/privacy version, terms/privacy/age flags, accepted_at, acceptance_method, user_agent, ip_address), 2 indexes, RLS (user-scoped insert, participants + RAV team select)
+- **Profile columns added** — `onboarding_completed_at`, `current_terms_version`, `current_privacy_version`
+- **Backfill** — 60 existing approved users got audit rows + were marked onboarding complete
+- **`src/lib/termsVersions.ts`** — `CURRENT_TERMS_VERSION` and `CURRENT_PRIVACY_VERSION` constants (both 1.0)
+- **`src/pages/Signup.tsx`** — rewritten with 2 controlled checkboxes (age 18+, Terms + Privacy), submit disabled until both checked, audit log write after signup
+- **`src/contexts/AuthContext.tsx`** — removed hardcoded `terms_accepted_at`/`age_verified` from auth metadata
+- **`supabase/functions/send-approval-email/index.ts`** — added explicit "Log In to Your Account" CTA pointing to `/login` (was `/rentals` with no login link)
+- **`src/components/admin/AdminUsers.tsx`** — new "T&C Accepted" and "Onboarding" columns showing version + date or "⚠️ Not recorded" / "Pending"
+- **Tests:** 7 new (3 termsVersions + 4 Signup)
+
+### Story 2 (PR #321) — /welcome post-approval onboarding gate
+- **`src/hooks/useOnboarding.ts`** — pure `needsOnboarding(profile, isRavTeam)` guard + `useCompleteOnboarding()` mutation that writes audit row (`post_approval_gate` method) and updates profile (onboarding_completed_at + versions)
+- **`src/pages/WelcomePage.tsx`** — 2-step post-approval flow:
+  - Step 1: T&C reconfirm with 2 controlled checkboxes, Continue disabled until both checked
+  - Step 2: role-specific CTAs — Owner sees List First Property, Owner's Edge, Browse Vacation Wishes; Traveler sees Start Exploring, Name Your Price, Post a Vacation Wish
+  - Skip-for-now button navigates away (onboarding already marked complete)
+- **`src/App.tsx` ProtectedRoute** — onboarding gate: redirects approved users with null `onboarding_completed_at` to `/welcome`; whitelists `/welcome`, `/terms`, `/privacy` so users can read before accepting; RAV team bypasses entirely; already-onboarded users redirected away
+- **Flow manifests** — `welcome_onboarding` step inserted between `pending_approval` and first role action in both `traveler-lifecycle.ts` and `owner-lifecycle.ts`
+- **Tests:** 16 new (6 useOnboarding + 10 WelcomePage)
+
+### End-to-end flow now
+1. Signup with 2 controlled checkboxes → audit log row with `signup_checkbox` method
+2. User sits on `/pending-approval` until admin approves
+3. Approval email fires with "Log In to Your Account" CTA
+4. First login detects `onboarding_completed_at IS NULL` → redirects to `/welcome`
+5. Step 1 reconfirm → audit log row with `post_approval_gate` method, profile updated
+6. Step 2 role-specific CTAs → navigate into the app
+7. Admin Users list shows T&C version + onboarding date per user
+8. Gate never triggers again for that user
+
+### Test count
+- Before WS2: 917 (115 files)
+- After WS2 Story 1: 924 (117 files)
+- After WS2 Story 2: **940 (119 files)**
 
 ---
 
