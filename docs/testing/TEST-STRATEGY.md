@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-11T04:04:36"
-change_ref: "902990b"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -391,13 +391,13 @@ Located in `src/test/helpers/`:
 | Test | File | What it validates |
 |------|------|------------------|
 | Unauthenticated nav | `src/components/Header.test.tsx` | Public nav shows Explore, How It Works, Name Your Price, List Your Property, Free Tools |
-| Traveler nav | `src/components/Header.test.tsx` | Traveler sees Explore, Name Your Price, Vacation Wishes, My Trips, Messages |
-| Owner nav | `src/components/Header.test.tsx` | Owner sees Owner's Edge, My Listings, Vacation Wishes, Messages |
+| Traveler nav | `src/components/Header.test.tsx` | Traveler sees Explore, Name Your Price, RAV Wishes, My Trips, Messages |
+| Owner nav | `src/components/Header.test.tsx` | Owner sees RAV Edge, My Listings, RAV Wishes, Messages |
 | Traveler exclusions | `src/components/Header.test.tsx` | Traveler does NOT see How It Works or List Your Property in top nav |
 | Owner exclusions | `src/components/Header.test.tsx` | Owner does NOT see Explore or Name Your Price in top nav |
-| Owner's Edge route | `src/components/Header.test.tsx` | Link routes to `/owner-dashboard` |
+| RAV Edge route | `src/components/Header.test.tsx` | Link routes to `/owner-dashboard` |
 | My Listings route | `src/components/Header.test.tsx` | Link routes to `/owner-dashboard?tab=my-listings` |
-| Vacation Wishes route | `src/components/Header.test.tsx` | Link routes to `/bidding?tab=requests` |
+| RAV Wishes route | `src/components/Header.test.tsx` | Link routes to `/bidding?tab=requests` |
 | Messages badge visible | `src/components/Header.test.tsx` | Badge shows when `useUnreadConversationCount > 0` |
 | Messages badge hidden | `src/components/Header.test.tsx` | Badge hidden when count is 0 |
 
@@ -417,8 +417,8 @@ Located in `src/test/helpers/`:
 | Continue button gated | `src/pages/WelcomePage.test.tsx` | Continue disabled until both T&C checkboxes checked |
 | Continue calls mutation | `src/pages/WelcomePage.test.tsx` | Clicking Continue calls `useCompleteOnboarding` |
 | Advances to Step 2 | `src/pages/WelcomePage.test.tsx` | After successful mutation, Step 2 renders |
-| Owner-specific CTAs | `src/pages/WelcomePage.test.tsx` | Owner sees List Property, Owner's Edge, Browse Vacation Wishes |
-| Traveler-specific CTAs | `src/pages/WelcomePage.test.tsx` | Traveler sees Start Exploring, Name Your Price, Post Vacation Wish |
+| Owner-specific CTAs | `src/pages/WelcomePage.test.tsx` | Owner sees List Property, RAV Edge, Browse RAV Wishes |
+| Traveler-specific CTAs | `src/pages/WelcomePage.test.tsx` | Traveler sees Start Exploring, Name Your Price, Post RAV Wish |
 | Pending user redirect | `src/pages/WelcomePage.test.tsx` | User with pending_approval redirected to `/pending-approval` |
 | RAV team redirect | `src/pages/WelcomePage.test.tsx` | RAV team redirected to `/rentals` (bypass gate) |
 | Onboarded owner redirect | `src/pages/WelcomePage.test.tsx` | Already-onboarded owner redirected to `/owner-dashboard` |

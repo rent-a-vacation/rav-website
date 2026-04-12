@@ -77,7 +77,7 @@ export function OwnerProposals() {
                 </div>
                 
                 <h3 className="font-semibold text-lg">
-                  {proposal.request?.destination_location || 'Vacation Wish'}
+                  {proposal.request?.destination_location || 'RAV Wish'}
                 </h3>
                 
                 <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">

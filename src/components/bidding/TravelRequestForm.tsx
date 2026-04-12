@@ -133,14 +133,14 @@ export function TravelRequestForm({ onSuccess, defaultValues }: TravelRequestFor
       <DialogTrigger asChild>
         <Button size="lg" className="gap-2">
           <Sparkles className="h-4 w-4" />
-          Make a Vacation Wish
+          Make a RAV Wish
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-accent" />
-            Vacation Wishes
+            RAV Wishes
           </DialogTitle>
           <DialogDescription>
             Tell us your dream trip — verified owners compete with personalized proposals!

@@ -109,7 +109,7 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
               </TabsTrigger>
               <TabsTrigger value="requests" className="gap-2">
                 <Send className="h-4 w-4" />
-                My Vacation Wishes
+                My RAV Wishes
                 {myRequests && myRequests.length > 0 && (
                   <Badge variant="secondary" className="ml-1">{myRequests.length}</Badge>
                 )}

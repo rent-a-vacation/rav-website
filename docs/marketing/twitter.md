@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-42"
 status: "active"
 ---
@@ -21,7 +21,7 @@ status: "active"
 
 **Bio (160 chars max):**
 ```
-Timeshare rental marketplace. Save 20-40% on luxury resorts. Name Your Price on any listing. Vacation Wishes. TrustShield verified. rent-a-vacation.com
+Timeshare rental marketplace. Save 20-40% on luxury resorts. Name Your Price on any listing. RAV Wishes. TrustShield verified. rent-a-vacation.com
 ```
 
 **Location:** United States
@@ -48,7 +48,7 @@ We fix both sides. Here's how:
 
 Browse 117+ resorts (Hilton, Marriott, Disney).
 Name Your Price — bid on any listing.
-Post a Vacation Wish — owners compete to offer it.
+Post a RAV Wish — owners compete to offer it.
 
 Save 20-40% vs booking direct. Every payment held in escrow until check-in.
 ```
@@ -67,7 +67,7 @@ Approve every guest. Earn on your terms.
 3/ WHAT MAKES US DIFFERENT:
 
 - Name Your Price: first bidding engine in vacation rentals
-- Vacation Wishes: post what you want, owners compete
+- RAV Wishes: post what you want, owners compete
 - TrustShield + PaySafe: verified owners, escrow-protected payments
 - RAVIO: voice + text AI search
 - SmartEarn: see how many weeks cover your fees

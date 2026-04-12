@@ -90,7 +90,7 @@ interface DashboardStats {
 }
 
 const OwnerDashboard = () => {
-  usePageMeta("Owner's Edge Dashboard", 'Manage your timeshare listings, bookings, earnings, and owner account.');
+  usePageMeta("RAV Edge Dashboard", 'Manage your timeshare listings, bookings, earnings, and owner account.');
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -310,7 +310,7 @@ const OwnerDashboard = () => {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold">Owner's Edge</h1>
+                <h1 className="text-xl sm:text-2xl font-bold">RAV Edge</h1>
                 <p className="text-sm text-muted-foreground">
                   Your command center — manage listings, bookings, earnings, and more
                 </p>

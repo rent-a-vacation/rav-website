@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-11T04:04:36"
-change_ref: "902990b"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -112,7 +112,7 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 
 - **Phase 21 DoD completion (PR #314):** Wired `useSendMessage` to invoke `notification-dispatcher` for the recipient after each new message (best-effort fire-and-forget). Updated `getNotificationLink` to route `message_received` → `/messages`.
 - **Messages page layout fix (PR #312, Issue #315):** QA reported Messages page rendered without Header/Footer, nav was too subtle. Fixed: added Header + Footer + bordered card layout, replaced icon-only button with visible "Messages" text link + badge (desktop + mobile), added Messages quick-access card to Owner Dashboard. Fix: missing Footer default export import.
-- **WS3 Navigation Redesign (PR #313, Issue #316):** Role-based nav in `Header.tsx` — Owner sees Owner's Edge | My Listings | Vacation Wishes | Messages; Traveler sees Explore | Name Your Price | Vacation Wishes | My Trips | Messages. Owner avatar dropdown gets List a Property + Free Tools. Terminology updates across 7 files ("Travel Requests" → "Vacation Wishes", "Make an Offer" tab → "Listings"). Bug fix: missing Badge import in Header.tsx. New `Header.test.tsx` with 10 tests.
+- **WS3 Navigation Redesign (PR #313, Issue #316):** Role-based nav in `Header.tsx` — Owner sees RAV Edge | My Listings | RAV Wishes | Messages; Traveler sees Explore | Name Your Price | RAV Wishes | My Trips | Messages. Owner avatar dropdown gets List a Property + Free Tools. Terminology updates across 7 files ("Travel Requests" → "RAV Wishes", "Make a RAV Offer" tab → "Listings"). Bug fix: missing Badge import in Header.tsx. New `Header.test.tsx` with 10 tests.
 - **WS2 Story 1 (PR #320, Issue #318):** Migration 052 `terms_acceptance_log` audit table + 3 profile columns (onboarding_completed_at, current_terms_version, current_privacy_version) + backfill of 60 existing approved users. Signup form rewritten with 2 controlled checkboxes (age + terms), submit disabled until both checked, audit log write after signup. AuthContext metadata cleanup (removed hardcoded `terms_accepted_at: true`). `send-approval-email` gets explicit "Log In to Your Account" CTA. AdminUsers gets T&C Accepted + Onboarding columns.
 - **WS2 Story 2 (PR #321, Issue #319, closed Epic #317):** `/welcome` post-approval onboarding gate. `useOnboarding` hook with `needsOnboarding` guard + `useCompleteOnboarding` mutation. `WelcomePage` with 2-step flow: Step 1 T&C reconfirm (writes audit log with `post_approval_gate` method), Step 2 role-specific CTAs. `App.tsx` `ProtectedRoute` redirects approved-but-not-onboarded users to `/welcome` with `/terms` `/privacy` whitelist. RAV team bypasses gate. Flow manifests updated.
 - **WS4 (Issue #322, parked):** Post-beta feature brief for proposal location enforcement + fast-track property listing. DESIGN COMPLETE, implementation deferred until 30+ days of real proposal data. Issue created with full decisions + migration SQL + acceptance criteria embedded.

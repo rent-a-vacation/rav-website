@@ -333,9 +333,9 @@ def generate_roadmap():
     doc.add_paragraph()
     add_body(doc, "Key Differentiators:", bold=True)
     bullets = [
-        ("Two-Sided Marketplace with Real-Time Negotiation:", " Travelers can book at listed prices, bid their own price (\"Name Your Price\"), propose different dates, or post wish lists (\"Vacation Wishes\") that owners compete to fulfill. Owners see live demand signals while creating listings. Auto-matching connects newly approved listings with open traveler requests."),
+        ("Two-Sided Marketplace with Real-Time Negotiation:", " Travelers can book at listed prices, bid their own price (\"Name Your Price\"), propose different dates, or post wish lists (\"RAV Wishes\") that owners compete to fulfill. Owners see live demand signals while creating listings. Auto-matching connects newly approved listings with open traveler requests."),
         ("Traveler-Friendly Pricing:", " Per-night rate transparency (not lump-sum), flexible date proposals that auto-compute from nightly rate, and AI-powered fair value analysis so travelers know if a price is competitive."),
-        ("Owner-Centric Tools:", " Full business intelligence suite (\"Owner's Edge\") with earnings tracking against maintenance fee targets, pricing recommendations based on comparable accepted bids, bid activity feed, and idle week alerts."),
+        ("Owner-Centric Tools:", " Full business intelligence suite (\"RAV Edge\") with earnings tracking against maintenance fee targets, pricing recommendations based on comparable accepted bids, bid activity feed, and idle week alerts."),
         ("Trust & Payment Protection:", " Escrow system (PaySafe) holds funds until the traveler physically checks in. Owner verification (TrustShield) with progressive trust levels. Admin-controlled approval workflows. 4 cancellation policy tiers."),
         ("AI-Enhanced Search:", " Voice concierge (Ask RAVIO) and text chat (Chat with RAVIO) provide natural language property search as an additional discovery channel \u2014 complementing the traditional search, filter, and browse experience."),
     ]
@@ -376,7 +376,7 @@ def generate_roadmap():
         [
             ["Place a Bid (Name Your Price)", "Travelers bid on any listing where the owner has opted in. Owners review, accept, reject, or counter-offer", "BUILT"],
             ["Date Proposals", "Travelers propose different dates; bid amount auto-computes from nightly rate \u00d7 proposed nights. Owners see proposed dates highlighted in bid manager", "BUILT"],
-            ["Travel Requests (Vacation Wishes)", "Reverse auction \u2014 travelers post dream trips (destination, dates, budget, bedrooms), owners compete with proposals", "BUILT"],
+            ["Travel Requests (RAV Wishes)", "Reverse auction \u2014 travelers post dream trips (destination, dates, budget, bedrooms), owners compete with proposals", "BUILT"],
             ["Inspired Requests", "\"Request Similar Dates\" from any listing detail page \u2014 pre-fills destination, dates, bedrooms. Optional \"Send to this owner first\" targeting", "BUILT"],
             ["Auto-Matching", "Newly approved listings are automatically matched against open travel requests by destination, dates (\u00b130 days), budget, bedrooms, and brand", "BUILT"],
             ["Demand Signals", "Owners see matching travel request count + max disclosed budget while creating listings, helping them price competitively", "BUILT"],
@@ -402,7 +402,7 @@ def generate_roadmap():
     add_table_from_data(doc,
         ["Dashboard", "Audience", "Description"],
         [
-            ["Owner Dashboard (Owner's Edge)", "Property Owners", "6 BI sections: Headline Stats (earned YTD, fees covered %, active bids), Earnings Timeline (chart with maintenance fee target line), My Listings Table (status badges, idle week alerts), Bid Activity Feed, Pricing Intelligence (per-listing fair value + market range), Maintenance Fee Tracker (coverage progress bar)"],
+            ["Owner Dashboard (RAV Edge)", "Property Owners", "6 BI sections: Headline Stats (earned YTD, fees covered %, active bids), Earnings Timeline (chart with maintenance fee target line), My Listings Table (status badges, idle week alerts), Bid Activity Feed, Pricing Intelligence (per-listing fair value + market range), Maintenance Fee Tracker (coverage progress bar)"],
             ["Fair Value Score (RAV SmartPrice)", "All users", "Analysis of comparable accepted bids using P25-P75 percentile range. Shows whether a listing is priced below market, at fair value, or above market. Different messaging for owners vs travelers"],
             ["Maintenance Fee Calculator", "Public (no auth)", "Break-even analysis for 9 vacation club brands and 4 unit types \u2014 shows owners how many weeks to rent to cover annual maintenance fees. Live progress bars, CTA to owner signup"],
             ["Executive Dashboard (RAV Command)", "RAV Leadership", "Investor-grade strategic dashboard. 6 sections: KPI headline bar, Business Performance (4 charts), Marketplace Health (proprietary Liquidity Score and Bid Spread Index), Market Intelligence (AirDNA + STR via BYOK), Industry Feed, Unit Economics"],
@@ -618,9 +618,9 @@ def generate_roadmap():
          "PostgreSQL RPC function analyzing comparable accepted bids (P25-P75 percentile range). Frontend components with role-specific messaging. Wired into Rentals cards, PropertyDetail sidebar, and owner listings management.", None),
         ("Phase 16: Maintenance Fee Calculator — Fee Freedom Calculator", "Feb 21, 2026",
          "Public break-even analysis tool at /calculator. Pure calculation logic covering 9 brands and 4 unit types. Color-coded progress bars and CTA to owner signup.", None),
-        ("Phase 17: Owner Dashboard — Owner's Edge", "Feb 21, 2026",
+        ("Phase 17: Owner Dashboard — RAV Edge", "Feb 21, 2026",
          "6 business intelligence sections replacing placeholder Overview tab. 2 new PostgreSQL RPCs, 4 data hooks, 6 analytics components including earnings timeline chart and maintenance fee tracker.", None),
-        ("Phase 18: Travel Request Enhancements — Vacation Wishes", "Feb 21, 2026",
+        ("Phase 18: Travel Request Enhancements — RAV Wishes", "Feb 21, 2026",
          "Auto-match engine on listing approval, demand signal display on listing form, \"Post a Travel Request\" CTA on empty search results, and expiry warning system.", None),
         ("Phase 19: Flexible Date Booking + Per-Night Pricing", "Feb 22, 2026",
          "Switched from lump-sum to per-night pricing. Added \"Propose Different Dates\" bidding mode and \"Request Similar Dates\" inspired travel requests from listing detail. Shared pricing utility replacing 4 duplicated functions.", None),
@@ -837,8 +837,8 @@ def generate_roadmap():
             ["Voice search (Ask RAVIO)", "Ready", "Auth-gated, tier-based quotas, rate-limited, VAPI + Deepgram Nova-3"],
             ["Text chat (Chat with RAVIO)", "Ready", "Deployed on DEV + PROD, OpenRouter key configured"],
             ["Bidding system (Name Your Price)", "Ready", "Full lifecycle: bid > counter > accept > checkout, date proposals"],
-            ["Travel requests (Vacation Wishes)", "Ready", "Auto-matching, demand signals, expiry warnings, inspired requests"],
-            ["Owner tools (Owner's Edge)", "Ready", "Dashboard, earnings, pricing intel, fee tracker, bid activity"],
+            ["Travel requests (RAV Wishes)", "Ready", "Auto-matching, demand signals, expiry warnings, inspired requests"],
+            ["Owner tools (RAV Edge)", "Ready", "Dashboard, earnings, pricing intel, fee tracker, bid activity"],
             ["Admin suite", "Ready", "12 tabs: approvals, escrow, payouts, voice admin, executive BI"],
             ["Per-night pricing", "Ready", "Phase 19 complete — nightly_rate as atomic pricing unit"],
             ["Voice admin & observability", "Ready", "Voice Tracks C-D complete — admin controls, logging, alerts"],
@@ -903,14 +903,14 @@ def generate_roadmap():
             ["RAV", "Short for Rent-A-Vacation. Used in informal contexts, internal docs, and UI where space is limited"],
             ["RAVIO", "Rent-A-Vacation Intelligent Operator. The AI assistant brand identity for both voice (Ask RAVIO) and text chat (Chat with RAVIO)"],
             ["Name Your Price", "The bidding feature \u2014 travelers submit their own price offer on any listing where the owner has opted in"],
-            ["Vacation Wishes", "The travel request feature \u2014 reverse auction where travelers post their dream trip and owners compete with proposals"],
+            ["RAV Wishes", "The travel request feature \u2014 reverse auction where travelers post their dream trip and owners compete with proposals"],
             ["RAV SmartPrice", "Fair value scoring system using P25-P75 percentile analysis of comparable accepted bids"],
             ["Fee Freedom Calculator", "Public break-even calculator showing owners how many weeks to rent to cover maintenance fees"],
             ["TrustShield", "Owner verification program with progressive trust levels (New \u2192 Verified \u2192 Trusted \u2192 Premium). Includes document upload and admin review"],
             ["PaySafe", "Escrow payment system \u2014 holds traveler funds from booking until check-in is confirmed. Owners receive payout after checkout + 5 days"],
             ["ResortIQ", "Curated database of 117 resorts and 351 unit types from 9 vacation club brands. Auto-populates listing specs"],
             ["RAV Command", "Executive dashboard with proprietary metrics, market data integrations, and live industry feed. For RAV leadership only"],
-            ["Owner's Edge", "Owner dashboard suite with 6 business intelligence sections: earnings, pricing, bids, listings, fee tracking"],
+            ["RAV Edge", "Owner dashboard suite with 6 business intelligence sections: earnings, pricing, bids, listings, fee tracking"],
             ["Liquidity Score", "Proprietary marketplace health metric measuring supply-demand matching efficiency"],
             ["Bid Spread Index", "Proprietary price discovery metric measuring how closely bids track listed prices"],
             ["Demand Signals", "Real-time indicators showing owners matching travel request count and max budget while creating listings"],
@@ -1041,7 +1041,7 @@ def generate_status_report():
         [
             ["Standard Bids", "Name Your Price", "Travelers bid on listings where owner opted in. Owner reviews → accept/reject/counter"],
             ["Date Proposals", "—", "Bid with different dates; amount auto-computes from nightly_rate × proposed nights. Blue badge in owner's bid manager"],
-            ["Travel Requests", "Vacation Wishes", "Reverse auction: travelers post destination + dates + budget, owners respond with proposals. Auto-matching on listing approval"],
+            ["Travel Requests", "RAV Wishes", "Reverse auction: travelers post destination + dates + budget, owners respond with proposals. Auto-matching on listing approval"],
             ["Inspired Requests", "—", "\"Request Similar Dates\" button on PropertyDetail pre-fills travel request. Optional owner targeting"],
             ["Demand Signals", "—", "Owners see matching travel request count + max budget while creating listings (500ms debounce)"],
             ["Auto-Matching", "—", "match-travel-requests edge function runs on listing approval, matches by destination, dates (±30 days), bedrooms, budget, brand"],
@@ -1054,7 +1054,7 @@ def generate_status_report():
         ["Dashboard", "Name", "Audience", "Sections"],
         [
             ["Executive", "RAV Command", "RAV Owner", "(1) Headline KPI bar, (2) Business Performance (4 charts), (3) Marketplace Health (Liquidity Score gauge, supply/demand map, voice funnel), (4) Market Intelligence (AirDNA + STR via BYOK), (5) Industry Feed, (6) Unit Economics"],
-            ["Owner", "Owner's Edge", "Property Owners", "(1) Headline Stats, (2) Earnings Timeline (AreaChart + fee target), (3) My Listings Table (status/Fair Value badges), (4) Bid Activity Feed, (5) Pricing Intelligence, (6) Maintenance Fee Tracker"],
+            ["Owner", "RAV Edge", "Property Owners", "(1) Headline Stats, (2) Earnings Timeline (AreaChart + fee target), (3) My Listings Table (status/Fair Value badges), (4) Bid Activity Feed, (5) Pricing Intelligence, (6) Maintenance Fee Tracker"],
             ["Fair Value", "RAV SmartPrice", "All users", "P25-P75 percentile analysis. Tiers: below_market, fair_value, above_market. Role-specific messaging"],
             ["Calculator", "Fee Freedom Calculator", "Public", "Break-even analysis for 9 brands, 4 unit types. Progress bars + CTA"],
         ]

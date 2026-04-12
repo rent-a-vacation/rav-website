@@ -40,6 +40,19 @@ A two-sided marketplace with AI-powered discovery, competitive pricing, and buil
 
 ## Key Features
 
+### Name Your Price
+
+Competitive bidding on any listing. Travelers Make a RAV Offer, owners accept, counter, or decline. Real negotiation, real savings.
+
+### RAV Wishes
+
+Travelers post their dream trip parameters. Verified owners compete with personalized proposals. The traveler picks the winner — a reverse auction for travel.
+
+### TrustShield & PaySafe
+
+- **TrustShield** — Multi-step owner verification (identity + property ownership) before any listing goes live
+- **PaySafe** — Stripe-powered escrow holds payment until confirmed check-in
+
 ### RAVIO — AI Vacation Concierge
 
 **R**ent-**A**-**V**acation **I**ntelligent **O**perator. The first voice-powered vacation search in the industry.
@@ -48,28 +61,15 @@ A two-sided marketplace with AI-powered discovery, competitive pricing, and buil
 - **Chat with RAVIO** — Streaming text chat with clickable property cards via OpenRouter
 - Understands destinations, dates, budgets, and resort preferences across **117 resorts**
 
-### Name Your Price
+### RAV Smart Suite
 
-Competitive bidding on any listing. Travelers make offers, owners accept, counter, or decline. Real negotiation, real savings.
+- **RAV SmartPrice** — AI-powered fair value scoring. Every listing earns a Fair Value badge.
+- **RAV SmartEarn** — Free calculator showing break-even weeks and projected rental income. No account required.
+- **RAV SmartCompare** — Side-by-side cost comparison across booking platforms
+- **RAV SmartMatch** — Quiz to find your ideal vacation club brand
+- **RAV SmartBudget** — Vacation budget planning tool
 
-### Vacation Wishes
-
-Travelers post their dream trip parameters. Verified owners compete with personalized proposals. The traveler picks the winner — a reverse auction for travel.
-
-### RAV SmartPrice
-
-AI-powered fair value scoring that compares listings against similar properties by resort, unit type, and season. Every listing earns a Fair Value badge.
-
-### RAV SmartEarn
-
-Free public tool that shows timeshare owners exactly how many weeks they need to rent to cover their annual maintenance fees, plus projects annual rental income by brand, unit type, region, and occupancy. No account required.
-
-### TrustShield & PaySafe
-
-- **TrustShield** — Multi-step owner verification (identity + property ownership) before any listing goes live
-- **PaySafe** — Stripe-powered escrow holds payment until confirmed check-in
-
-### Owner's Edge
+### RAV Edge
 
 Complete owner dashboard — listings management, booking tracking, earnings analytics, pricing intelligence, portfolio overview, and Stripe Connect payouts.
 

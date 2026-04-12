@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-11T04:04:36"
-change_ref: "902990b"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -35,7 +35,7 @@ Users were signing up with a single combined "age + T&C" checkbox that had NO co
 - **`src/hooks/useOnboarding.ts`** — pure `needsOnboarding(profile, isRavTeam)` guard + `useCompleteOnboarding()` mutation that writes audit row (`post_approval_gate` method) and updates profile (onboarding_completed_at + versions)
 - **`src/pages/WelcomePage.tsx`** — 2-step post-approval flow:
   - Step 1: T&C reconfirm with 2 controlled checkboxes, Continue disabled until both checked
-  - Step 2: role-specific CTAs — Owner sees List First Property, Owner's Edge, Browse Vacation Wishes; Traveler sees Start Exploring, Name Your Price, Post a Vacation Wish
+  - Step 2: role-specific CTAs — Owner sees List First Property, RAV Edge, Browse RAV Wishes; Traveler sees Start Exploring, Name Your Price, Post a RAV Wish
   - Skip-for-now button navigates away (onboarding already marked complete)
 - **`src/App.tsx` ProtectedRoute** — onboarding gate: redirects approved users with null `onboarding_completed_at` to `/welcome`; whitelists `/welcome`, `/terms`, `/privacy` so users can read before accepting; RAV team bypasses entirely; already-onboarded users redirected away
 - **Flow manifests** — `welcome_onboarding` step inserted between `pending_approval` and first role action in both `traveler-lifecycle.ts` and `owner-lifecycle.ts`
@@ -65,19 +65,19 @@ Users were signing up with a single combined "age + T&C" checkbox that had NO co
 
 ### What was built
 - **Role-based Header nav** (desktop + mobile): different top-level links rendered based on role
-  - **Owner view:** Owner's Edge · My Listings · Vacation Wishes · Messages
-  - **Traveler view:** Explore · Name Your Price · Vacation Wishes · My Trips · Messages
+  - **Owner view:** RAV Edge · My Listings · RAV Wishes · Messages
+  - **Traveler view:** Explore · Name Your Price · RAV Wishes · My Trips · Messages
   - **Unauthenticated view:** Explore · How It Works · Name Your Price · List Your Property · Free Tools (unchanged)
   - **RAV Team view:** Existing admin nav preserved
 - **Owner avatar dropdown:** Added List a Property + Free Tools for owners (moved from top nav)
 - **Terminology updates (user-facing strings only):**
-  - `BiddingMarketplace.tsx`: "Make an Offer" tab → "Listings"
-  - `InspiredTravelRequestDialog.tsx`: "Travel Request Posted!" → "Vacation Wish Posted!"
-  - `RenterDashboard.tsx`: "Travel Requests" card → "Vacation Wishes"
-  - `MyBidsDashboard.tsx`: "My Travel Requests" tab → "My Vacation Wishes"
-  - `Notifications.tsx`: "Travel Requests" filter → "Vacation Wishes"
-  - `OwnerProposals.tsx`: fallback label → "Vacation Wish"
-  - `UserGuide.tsx`: sidebar + heading → "Submit Vacation Wishes"
+  - `BiddingMarketplace.tsx`: "Make a RAV Offer" tab → "Listings"
+  - `InspiredTravelRequestDialog.tsx`: "Travel Request Posted!" → "RAV Wish Posted!"
+  - `RenterDashboard.tsx`: "Travel Requests" card → "RAV Wishes"
+  - `MyBidsDashboard.tsx`: "My Travel Requests" tab → "My RAV Wishes"
+  - `Notifications.tsx`: "Travel Requests" filter → "RAV Wishes"
+  - `OwnerProposals.tsx`: fallback label → "RAV Wish"
+  - `UserGuide.tsx`: sidebar + heading → "Submit RAV Wishes"
   - Flow manifests (traveler + owner lifecycle): descriptions + labels updated
 
 ### NOT changed (intentional)

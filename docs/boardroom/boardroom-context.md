@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-10T11:02:46"
-change_ref: "2a9cb39"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "manual-edit"
 status: "active"
 ---
@@ -53,7 +53,7 @@ Rent-A-Vacation (RAV) is a dual-sided bidding marketplace for timeshare and vaca
 | Owner verification — TrustShield | ✅ Built (deed, certificate, ID upload) |
 | Escrow — PaySafe | ✅ Built |
 | Bidding engine — Name Your Price | ✅ Built |
-| Reverse auction — Vacation Wishes | ✅ Built |
+| Reverse auction — RAV Wishes | ✅ Built |
 | ResortIQ database (117 resorts, 351 unit types, 9 brands) | ✅ Built |
 | RAV Smart Suite (5 free SEO tools) | ✅ Built |
 | Executive Dashboard (investor-grade) | ✅ Built |
@@ -85,10 +85,10 @@ Rent-A-Vacation (RAV) is a dual-sided bidding marketplace for timeshare and vaca
 |-------------|-------------|
 | **RAVIO** | AI voice + text concierge (voice via VAPI, text via OpenRouter) |
 | **Name Your Price** | Bidding engine — travelers set a price, owners accept or counter |
-| **Vacation Wishes** | Reverse auction — travelers post requests, owners submit proposals |
+| **RAV Wishes** | Reverse auction — travelers post requests, owners submit proposals |
 | **TrustShield** | Owner verification (deed, membership certificate, government ID) |
 | **PaySafe** | Escrow — holds funds until resort confirmation number verified |
-| **Owner's Edge** | Analytics for owners (pricing intelligence, fair value score, dynamic pricing) |
+| **RAV Edge** | Analytics for owners (pricing intelligence, fair value score, dynamic pricing) |
 | **RAV Command** | Admin dashboard (21 tabs — 10 staff-accessible + 11 admin-only) |
 | **ResortIQ** | Resort database — 117 resorts, 9 vacation club brands, auto-populates listings |
 | **RAV Smart Suite** | 5 free tools: SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget |

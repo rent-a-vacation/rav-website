@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-10T11:02:46"
-change_ref: "2a9cb39"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-43"
 status: "active"
 ---
@@ -200,7 +200,7 @@ Unlike the QA Playbook (individual test cases per function), this document tests
 | # | As | Action | Page | Checkpoint |
 |---|-----|--------|------|------------|
 | 1 | Renter 1 | Log in → `/rentals` → find Owner 1 listing with "Open for Bidding" badge | /rentals | Bidding badge visible on listing card |
-| 2 | Renter 1 | Click listing → click "Place Bid" (or "Make an Offer") | /property/:id | BidFormDialog opens with amount field, guest count, message |
+| 2 | Renter 1 | Click listing → click "Place Bid" (or "Make a RAV Offer") | /property/:id | BidFormDialog opens with amount field, guest count, message |
 | 3 | Renter 1 | Enter bid at 80% of listed price (e.g., if listed at $1,610, bid $1,288), guests: 4, message: "Family vacation, any flexibility?" → Submit | /property/:id | Toast: "Bid submitted", dialog closes |
 | 4 | Renter 1 | Navigate to `/my-trips?tab=offers` | /my-trips | Bid visible with status "Pending", amount and property name shown |
 | 5 | Owner 1 | Log in → check notification bell | Any page | Notification: "New bid received on [property]" |
@@ -655,7 +655,7 @@ Unlike the QA Playbook (individual test cases per function), this document tests
 
 | # | As | Action | Page | Checkpoint |
 |---|-----|--------|------|------------|
-| 1 | Renter 1 | Log in → find Owner 1's bidding listing → click "Make an Offer" | /property/:id | BidFormDialog opens in 'bid' mode |
+| 1 | Renter 1 | Log in → find Owner 1's bidding listing → click "Make a RAV Offer" | /property/:id | BidFormDialog opens in 'bid' mode |
 | 2 | Renter 1 | Switch to "Propose Different Dates" mode (date-proposal) | /property/:id | Dialog switches: date pickers appear, bid auto-computes from nightly rate × nights |
 | 3 | Renter 1 | Select new check-in/check-out dates (different from listing), verify auto-calculated bid | /property/:id | Bid amount = nightly_rate × proposed nights. Price summary visible |
 | 4 | Renter 1 | Add message: "These dates work better for our schedule" → Submit | /property/:id | Toast: "Date proposal submitted" |

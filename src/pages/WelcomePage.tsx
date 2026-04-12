@@ -232,7 +232,7 @@ export default function WelcomePage() {
                         <Send className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">Browse Vacation Wishes</p>
+                        <p className="font-medium text-sm">Browse RAV Wishes</p>
                         <p className="text-xs text-muted-foreground">See what travelers are looking for</p>
                       </div>
                       <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
@@ -276,7 +276,7 @@ export default function WelcomePage() {
                         <Send className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">Post a Vacation Wish</p>
+                        <p className="font-medium text-sm">Post a RAV Wish</p>
                         <p className="text-xs text-muted-foreground">Tell owners what you want</p>
                       </div>
                       <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
@@ -289,7 +289,7 @@ export default function WelcomePage() {
                   onClick={handleSkipToApp}
                   className="w-full mt-4"
                 >
-                  Skip for now — Go to {isOwner ? "Owner's Edge" : "My Trips"}
+                  Skip for now — Go to {isOwner ? "RAV Edge" : "My Trips"}
                 </Button>
               </CardContent>
             </>

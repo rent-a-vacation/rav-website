@@ -23,11 +23,11 @@ export function PostRequestCTA({ searchDestination, searchCheckIn, searchCheckOu
       <Search className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
       <h4 className="font-semibold text-lg mb-2">Can&apos;t find what you need?</h4>
       <p className="text-sm text-muted-foreground mb-4">
-        Make a Vacation Wish and let owners come to you. Tell us what you need — owners with matching weeks will send you proposals.
+        Make a RAV Wish and let owners come to you. Tell us what you need — owners with matching weeks will send you proposals.
       </p>
       <Link to={href}>
         <Button>
-          Make a Vacation Wish
+          Make a RAV Wish
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </Link>

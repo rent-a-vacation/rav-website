@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-39-docs-update"
 status: "archived"
 ---
@@ -89,7 +89,7 @@ All code is deployed to production and currently locked behind "Staff Only Mode"
 |---------|------|-------------|
 | **Standard Bids** | Name Your Price | Travelers bid on listings where owner opted in. Owner reviews in BidsManagerDialog → accept/reject/counter |
 | **Date Proposals** | — | Bid with different dates; amount auto-computes from `nightly_rate × proposed nights`. Blue badge shows proposed dates in owner's bid manager |
-| **Travel Requests** | Vacation Wishes | Reverse auction: travelers post destination + dates + budget, owners respond with proposals. Auto-matching on listing approval |
+| **Travel Requests** | RAV Wishes | Reverse auction: travelers post destination + dates + budget, owners respond with proposals. Auto-matching on listing approval |
 | **Inspired Requests** | — | "Request Similar Dates" button on PropertyDetail pre-fills travel request from listing. Optional "Send to this owner first" targeting |
 | **Demand Signals** | — | Owners see matching travel request count + max disclosed budget while creating listings (500ms debounce) |
 | **Auto-Matching** | — | `match-travel-requests` edge function runs on listing approval, matches by destination (city ILIKE), dates (±30 days), bedrooms, budget, brand |
@@ -99,7 +99,7 @@ All code is deployed to production and currently locked behind "Staff Only Mode"
 | Dashboard | Name | Audience | Sections |
 |-----------|------|----------|----------|
 | **Executive** | RAV Command | RAV Owner | (1) Headline KPI bar (GMV, Revenue, Active Listings, Liquidity Score, Voice Adoption), (2) Business Performance (4 Recharts: GMV trend, bid activity, bid spread index, revenue waterfall), (3) Marketplace Health (Liquidity Score SVG gauge, supply/demand destination map, voice vs traditional funnel), (4) Market Intelligence (AirDNA + STR benchmarks via BYOK), (5) Industry Feed (NewsAPI + macro indicators), (6) Unit Economics (CAC, LTV, LTV:CAC, Payback, Avg Booking, Take Rate, MoM Growth) |
-| **Owner** | Owner's Edge | Property Owners | (1) Headline Stats (earned YTD, active listings, active bids, fees covered %), (2) Earnings Timeline (AreaChart with monthly/quarterly toggle + fee target reference line), (3) My Listings Table (status badges, Fair Value badges, idle week alerts), (4) Bid Activity Feed (color-coded event stream), (5) Pricing Intelligence (per-listing Fair Value + market range), (6) Maintenance Fee Tracker (inline editor + coverage progress bar) |
+| **Owner** | RAV Edge | Property Owners | (1) Headline Stats (earned YTD, active listings, active bids, fees covered %), (2) Earnings Timeline (AreaChart with monthly/quarterly toggle + fee target reference line), (3) My Listings Table (status badges, Fair Value badges, idle week alerts), (4) Bid Activity Feed (color-coded event stream), (5) Pricing Intelligence (per-listing Fair Value + market range), (6) Maintenance Fee Tracker (inline editor + coverage progress bar) |
 | **Fair Value** | RAV SmartPrice | All users | PostgreSQL RPC: P25-P75 percentile analysis of comparable accepted bids. Tiers: below_market (amber), fair_value (emerald), above_market (red), insufficient_data (hidden). Role-specific messaging |
 | **Calculator** | Fee Freedom Calculator | Public | Break-even analysis for 9 vacation club brands, 4 unit types. Live progress bars showing earnings vs maintenance fees. CTA to owner signup |
 

@@ -56,7 +56,7 @@ const Header = () => {
 
           {/* Desktop Navigation — role-based */}
           <nav className="hidden md:flex items-center gap-1" data-testid="desktop-nav">
-            {/* Owner view: Owner's Edge | My Listings | Vacation Wishes */}
+            {/* Owner view: RAV Edge | My Listings | RAV Wishes */}
             {user && isPropertyOwner() && !isRavTeam() && (
               <>
                 <Link
@@ -67,7 +67,7 @@ const Header = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   }`}
                 >
-                  Owner's Edge
+                  RAV Edge
                 </Link>
                 <Link
                   to="/owner-dashboard?tab=my-listings"
@@ -83,12 +83,12 @@ const Header = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   }`}
                 >
-                  Vacation Wishes
+                  RAV Wishes
                 </Link>
               </>
             )}
 
-            {/* Traveler (renter) view OR unauthenticated: Explore | Name Your Price | Vacation Wishes | My Trips */}
+            {/* Traveler (renter) view OR unauthenticated: Explore | Name Your Price | RAV Wishes | My Trips */}
             {(!user || (user && !isPropertyOwner() && !isRavTeam())) && (
               <>
                 <div
@@ -173,7 +173,7 @@ const Header = () => {
                   to="/bidding?tab=requests"
                   className="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30"
                 >
-                  Vacation Wishes
+                  RAV Wishes
                 </Link>
                 {user && (
                   <Link
@@ -451,7 +451,7 @@ const Header = () => {
                   className={`py-2.5 text-sm font-medium transition-colors ${isActive("/owner-dashboard") ? "text-foreground" : "text-muted-foreground"}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Owner's Edge
+                  RAV Edge
                 </Link>
                 <Link
                   to="/owner-dashboard?tab=my-listings"
@@ -465,7 +465,7 @@ const Header = () => {
                   className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") ? "text-foreground" : "text-muted-foreground"}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Vacation Wishes
+                  RAV Wishes
                 </Link>
               </>
             )}
@@ -492,7 +492,7 @@ const Header = () => {
                   className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Vacation Wishes
+                  RAV Wishes
                 </Link>
                 <Link
                   to="/my-trips"
@@ -623,7 +623,7 @@ const Header = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <LayoutDashboard className="h-4 w-4" />
-                      Owner's Edge
+                      RAV Edge
                     </Link>
                   )}
                   <Link

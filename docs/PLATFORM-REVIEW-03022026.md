@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -199,9 +199,9 @@ Signup (select "Owner")
 | Current | Proposed |
 |---------|----------|
 | "Vacation Marketplace" | "Name Your Price" |
-| "Bid on Listings" | "Make an Offer" |
+| "Bid on Listings" | "Make a RAV Offer" |
 | "Travel Requests" | "Tell Us What You Want" |
-| "Place a Bid" | "Make an Offer" |
+| "Place a Bid" | "Make a RAV Offer" |
 | "Propose Different Dates" | "Request Different Dates" |
 | "Inspired Travel Request" | "Find Something Similar" |
 
