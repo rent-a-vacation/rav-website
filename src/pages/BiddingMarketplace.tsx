@@ -134,7 +134,7 @@ const BiddingMarketplace = () => {
               </TabsTrigger>
               <TabsTrigger value="requests" className="gap-2">
                 <Send className="h-4 w-4" />
-                Vacation Wishes
+                RAV Wishes
               </TabsTrigger>
             </TabsList>
 
@@ -197,7 +197,7 @@ const BiddingMarketplace = () => {
             <TabsContent value="requests" className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold">Open Vacation Wishes</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold">Open RAV Wishes</h2>
                   <p className="text-muted-foreground">
                     Renters looking for vacation rentals - submit your proposal!
                   </p>
@@ -267,7 +267,7 @@ const BiddingMarketplace = () => {
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">1</div>
                   <div>
-                    <p className="font-medium">Make an Offer</p>
+                    <p className="font-medium">Make a RAV Offer</p>
                     <p className="text-sm text-muted-foreground">Browse flexible pricing listings and submit your best offer</p>
                   </div>
                 </div>
@@ -307,7 +307,7 @@ const BiddingMarketplace = () => {
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">2</div>
                   <div>
-                    <p className="font-medium">Browse Vacation Wishes</p>
+                    <p className="font-medium">Browse RAV Wishes</p>
                     <p className="text-sm text-muted-foreground">Find renters looking for properties like yours</p>
                   </div>
                 </div>
@@ -465,7 +465,7 @@ function BiddableListingCard({ listing, onBidClick, canBid }: BiddableListingCar
         {canBid ? (
           <Button onClick={onBidClick} className="w-full group-hover:bg-accent group-hover:text-accent-foreground">
             <Gavel className="h-4 w-4 mr-2" />
-            Make an Offer
+            Make a RAV Offer
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         ) : (

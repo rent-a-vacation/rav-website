@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-42"
 status: "active"
 ---
@@ -36,14 +36,14 @@ The AI-powered marketplace where timeshare owners rent directly to travelers —
 Rent-A-Vacation connects timeshare owners with travelers looking for luxury resort stays at a fraction of the cost.
 
 FOR TRAVELERS:
-Browse 117+ resorts across Hilton Grand Vacations, Marriott Vacation Club, Disney Vacation Club, and more. Name Your Price — bid on any listing. Post a Vacation Wish and let owners compete for your trip. Every owner is verified through TrustShield. Every payment is protected by PaySafe escrow. Or ask RAVIO, our AI concierge, to search by voice or text. Save 20-40% compared to booking direct.
+Browse 117+ resorts across Hilton Grand Vacations, Marriott Vacation Club, Disney Vacation Club, and more. Name Your Price — bid on any listing. Post a RAV Wish and let owners compete for your trip. Every owner is verified through TrustShield. Every payment is protected by PaySafe escrow. Or ask RAVIO, our AI concierge, to search by voice or text. Save 20-40% compared to booking direct.
 
 FOR TIMESHARE OWNERS:
 Turn your unused maintenance fee weeks into income. List your property in minutes. Our SmartPrice AI tells you what to charge. You approve every guest. You set the terms. 15% commission on successful bookings only — no upfront fees, no monthly charges.
 
 FEATURES:
 - Name Your Price: Bid on any listing — the first negotiation engine in vacation rentals
-- Vacation Wishes: Post what you want; owners compete to offer it
+- RAV Wishes: Post what you want; owners compete to offer it
 - TrustShield + PaySafe: Every owner identity-verified, every payment escrow-protected until check-in
 - RAVIO AI Concierge: Search by voice or text — just describe your dream vacation
 - RAV SmartEarn Calculator: See how many weeks cover your maintenance fees (free, no account needed)
@@ -76,7 +76,7 @@ We built the marketplace that changes that.
 
 FOR OWNERS: List your unused weeks. Our AI tells you what to charge. Travelers come to you. Earn income that offsets your fees.
 
-FOR TRAVELERS: Stay at Hilton, Marriott, and Disney resorts and save 20-40%. Name Your Price on any listing. Post a Vacation Wish and let owners come to you. Or search by voice with our AI concierge.
+FOR TRAVELERS: Stay at Hilton, Marriott, and Disney resorts and save 20-40%. Name Your Price on any listing. Post a RAV Wish and let owners come to you. Or search by voice with our AI concierge.
 
 Every owner verified. Every payment protected.
 
@@ -109,7 +109,7 @@ Imagine staying at a luxury resort — Hilton, Marriott, or Disney — and savin
 That's Rent-A-Vacation. Here's how:
 
 1. Name Your Price — bid on any listing you love
-2. Or post a Vacation Wish — tell us what you want and owners compete to offer it
+2. Or post a RAV Wish — tell us what you want and owners compete to offer it
 3. Your payment is held in PaySafe escrow until you check in
 4. Enjoy your luxury vacation at owner prices
 

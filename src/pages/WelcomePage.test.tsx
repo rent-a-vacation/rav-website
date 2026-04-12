@@ -147,8 +147,8 @@ describe('WelcomePage', () => {
       expect(screen.getByText(/You're set up as a Property Owner/)).toBeInTheDocument();
     });
     expect(screen.getByText('List Your First Property')).toBeInTheDocument();
-    expect(screen.getAllByText(/Go to Owner's Edge/).length).toBeGreaterThan(0);
-    expect(screen.getByText('Browse Vacation Wishes')).toBeInTheDocument();
+    expect(screen.getAllByText(/Go to RAV Edge/).length).toBeGreaterThan(0);
+    expect(screen.getByText('Browse RAV Wishes')).toBeInTheDocument();
   });
 
   it('Step 2 shows traveler-specific CTAs for renters', async () => {
@@ -161,7 +161,7 @@ describe('WelcomePage', () => {
       expect(screen.getByText('Start Exploring')).toBeInTheDocument();
     });
     expect(screen.getByText('Name Your Price')).toBeInTheDocument();
-    expect(screen.getByText('Post a Vacation Wish')).toBeInTheDocument();
+    expect(screen.getByText('Post a RAV Wish')).toBeInTheDocument();
   });
 
   it('redirects to /pending-approval if user is not yet approved', () => {

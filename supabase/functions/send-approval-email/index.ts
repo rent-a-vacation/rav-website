@@ -86,7 +86,7 @@ const handler = async (req: Request): Promise<Response> => {
         <ul style="line-height: 1.8; padding-left: 20px;">
           <li>Browse and book vacation rentals</li>
           <li>Name Your Price on open listings</li>
-          <li>Post Vacation Wishes to get owner proposals</li>
+          <li>Post RAV Wishes to get owner proposals</li>
           <li>List your own timeshare properties</li>
         </ul>
         <p style="margin-top: 16px;">Click the button below to log in and begin.</p>`;

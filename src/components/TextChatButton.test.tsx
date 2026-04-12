@@ -15,7 +15,7 @@ function renderWithTooltip(ui: React.ReactElement) {
 describe("TextChatButton", () => {
   it("renders with chat icon and correct aria-label", () => {
     renderWithTooltip(<TextChatButton onClick={() => {}} />);
-    const button = screen.getByRole("button", { name: "Ask RAVIO" });
+    const button = screen.getByRole("button", { name: "Chat with RAVIO" });
     expect(button).toBeInTheDocument();
     expect(button).not.toBeDisabled();
   });
@@ -23,7 +23,7 @@ describe("TextChatButton", () => {
   it("calls onClick when clicked", () => {
     const onClick = vi.fn();
     renderWithTooltip(<TextChatButton onClick={onClick} />);
-    const button = screen.getByRole("button", { name: "Ask RAVIO" });
+    const button = screen.getByRole("button", { name: "Chat with RAVIO" });
     button.click();
     expect(onClick).toHaveBeenCalledTimes(1);
   });

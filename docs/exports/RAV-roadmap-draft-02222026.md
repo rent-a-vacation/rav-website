@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-39-docs-update"
 status: "archived"
 ---
@@ -28,9 +28,9 @@ Rent-A-Vacation (RAV) is a peer-to-peer vacation rental marketplace purpose-buil
 The platform is feature-complete for MVP across 19 completed development phases, with 306 automated tests passing, zero type errors, and zero lint errors. All 21 database migrations and 17 edge functions are deployed to both development and production environments.
 
 **Key differentiators:**
-- **Two-Sided Marketplace with Real-Time Negotiation:** Travelers can book at listed prices, bid their own price ("Name Your Price"), propose different dates, or post wish lists ("Vacation Wishes") that owners compete to fulfill. Owners see live demand signals — matching travel request count and max budget — while creating listings. Auto-matching connects newly approved listings with open traveler requests.
+- **Two-Sided Marketplace with Real-Time Negotiation:** Travelers can book at listed prices, bid their own price ("Name Your Price"), propose different dates, or post wish lists ("RAV Wishes") that owners compete to fulfill. Owners see live demand signals — matching travel request count and max budget — while creating listings. Auto-matching connects newly approved listings with open traveler requests.
 - **Traveler-Friendly Pricing:** Per-night rate transparency (not lump-sum), flexible date proposals that auto-compute from nightly rate, and AI-powered fair value analysis so travelers know if a price is competitive.
-- **Owner-Centric Tools:** Full business intelligence suite ("Owner's Edge") with earnings tracking against maintenance fee targets, pricing recommendations based on comparable accepted bids, bid activity feed, and idle week alerts — giving owners the data they need to maximize returns on their unused weeks.
+- **Owner-Centric Tools:** Full business intelligence suite ("RAV Edge") with earnings tracking against maintenance fee targets, pricing recommendations based on comparable accepted bids, bid activity feed, and idle week alerts — giving owners the data they need to maximize returns on their unused weeks.
 - **Trust & Payment Protection:** Escrow system holds funds until the traveler physically checks in and confirms the stay. Owner verification with progressive trust levels (New → Verified → Trusted → Premium). Admin-controlled approval workflows for both users and listings. 4 cancellation policy tiers.
 - **AI-Enhanced Search (Voice + Text):** Voice concierge and text chat assistant provide natural language property search as an additional discovery channel — complementing the traditional search, filter, and browse experience.
 
@@ -58,7 +58,7 @@ The platform is feature-complete for MVP across 19 completed development phases,
 |---------|-------------|--------|
 | **Place a Bid (Name Your Price)** | Travelers bid on any listing where the owner has opted in. Owners review, accept, reject, or counter-offer | BUILT |
 | **Date Proposals** | Travelers propose different dates; bid amount auto-computes from nightly rate × proposed nights. Owners see proposed dates highlighted in bid manager | BUILT |
-| **Travel Requests (Vacation Wishes)** | Reverse auction — travelers post dream trips (destination, dates, budget, bedrooms), owners compete with proposals | BUILT |
+| **Travel Requests (RAV Wishes)** | Reverse auction — travelers post dream trips (destination, dates, budget, bedrooms), owners compete with proposals | BUILT |
 | **Inspired Requests** | "Request Similar Dates" from any listing detail page — pre-fills destination, dates, bedrooms from listing. Optional "Send to this owner first" targeting | BUILT |
 | **Auto-Matching** | Newly approved listings are automatically matched against open travel requests by destination, dates (±30 days), budget, bedrooms, and brand | BUILT |
 | **Demand Signals** | Owners see matching travel request count + max disclosed budget while creating listings, helping them price competitively | BUILT |
@@ -78,7 +78,7 @@ The platform is feature-complete for MVP across 19 completed development phases,
 
 | Dashboard | Audience | Description |
 |-----------|----------|-------------|
-| **Owner Dashboard (Owner's Edge)** | Property Owners | 6 BI sections: Headline Stats (earned YTD, fees covered %, active bids), Earnings Timeline (monthly/quarterly chart with maintenance fee target reference line), My Listings Table (status badges, idle week alerts), Bid Activity Feed (color-coded event stream), Pricing Intelligence (per-listing fair value based on comparable accepted bids + market range), Maintenance Fee Tracker (inline editor + coverage progress bar) |
+| **Owner Dashboard (RAV Edge)** | Property Owners | 6 BI sections: Headline Stats (earned YTD, fees covered %, active bids), Earnings Timeline (monthly/quarterly chart with maintenance fee target reference line), My Listings Table (status badges, idle week alerts), Bid Activity Feed (color-coded event stream), Pricing Intelligence (per-listing fair value based on comparable accepted bids + market range), Maintenance Fee Tracker (inline editor + coverage progress bar) |
 | **Fair Value Score (RAV SmartPrice)** | All users | PostgreSQL analysis of comparable accepted bids using P25-P75 percentile range. Shows whether a listing is priced below market (opportunity), at fair value, or above market. Different messaging for owners ("you could earn more") vs travelers ("this is a good deal") |
 | **Maintenance Fee Calculator** | Public (no auth) | Break-even analysis tool covering 9 vacation club brands and 4 unit types — shows owners exactly how many weeks they need to rent to cover their annual maintenance fees. Live progress bars, CTA to owner signup |
 | **Executive Dashboard (RAV Command)** | RAV Leadership | Investor-grade strategic dashboard. 6 sections: KPI headline bar, Business Performance (4 charts), Marketplace Health (proprietary Liquidity Score and Bid Spread Index), Market Intelligence (AirDNA + STR benchmarks via Bring-Your-Own-Key), Industry Feed (live news + macro indicators), Unit Economics (CAC, LTV, take rate, MoM growth) |
@@ -294,10 +294,10 @@ PostgreSQL RPC function analyzing comparable accepted bids (P25-P75 percentile r
 ### Phase 16: Maintenance Fee Calculator — Fee Freedom Calculator (Feb 21, 2026)
 Public break-even analysis tool at `/calculator`. Pure calculation logic covering 9 brands and 4 unit types. Color-coded progress bars and CTA to owner signup.
 
-### Phase 17: Owner Dashboard — Owner's Edge (Feb 21, 2026)
+### Phase 17: Owner Dashboard — RAV Edge (Feb 21, 2026)
 6 business intelligence sections replacing placeholder Overview tab. 2 new PostgreSQL RPCs, 4 data hooks, 6 analytics components including earnings timeline chart and maintenance fee tracker.
 
-### Phase 18: Travel Request Enhancements — Vacation Wishes (Feb 21, 2026)
+### Phase 18: Travel Request Enhancements — RAV Wishes (Feb 21, 2026)
 Auto-match engine on listing approval, demand signal display on listing form, "Post a Travel Request" CTA on empty search results, and expiry warning system.
 
 ### Phase 19: Flexible Date Booking + Per-Night Pricing (Feb 22, 2026)
@@ -469,8 +469,8 @@ Enables travelers to book a subset of an owner's listed dates (e.g., 6 of 8 days
 | Voice search (Ask RAVIO) | **Ready** | Auth-gated, tier-based quotas, rate-limited, VAPI + Deepgram Nova-3 |
 | Text chat (Chat with RAVIO) | **Ready** | Deployed on DEV + PROD, OpenRouter key configured |
 | Bidding system (Name Your Price) | **Ready** | Full lifecycle: bid → counter → accept → checkout, date proposals |
-| Travel requests (Vacation Wishes) | **Ready** | Auto-matching, demand signals, expiry warnings, inspired requests |
-| Owner tools (Owner's Edge) | **Ready** | Dashboard, earnings, pricing intel, fee tracker, bid activity |
+| Travel requests (RAV Wishes) | **Ready** | Auto-matching, demand signals, expiry warnings, inspired requests |
+| Owner tools (RAV Edge) | **Ready** | Dashboard, earnings, pricing intel, fee tracker, bid activity |
 | Admin suite | **Ready** | 12 tabs: approvals, escrow, payouts, voice admin, executive BI |
 | Per-night pricing | **Ready** | Phase 19 complete — nightly_rate as atomic pricing unit |
 | Voice admin & observability | **Ready** | Voice Tracks C-D complete — admin controls, logging, alerts |
@@ -528,14 +528,14 @@ All branded terms below are **RAV-coined names** — proprietary marketing terms
 | **Ask RAVIO** | RAV-coined | The voice search feature — travelers speak natural language queries to find properties. Powered by VAPI + Deepgram Nova-3 |
 | **Chat with RAVIO** | RAV-coined | The text chat feature — travelers type questions to find properties. Powered by OpenRouter LLM |
 | **Name Your Price** | RAV-coined | The bidding feature — travelers submit their own price offer on any listing where the owner has opted in to receiving bids |
-| **Vacation Wishes** | RAV-coined | The travel request feature — a reverse auction where travelers post their dream trip (destination, dates, budget) and owners compete with proposals |
+| **RAV Wishes** | RAV-coined | The travel request feature — a reverse auction where travelers post their dream trip (destination, dates, budget) and owners compete with proposals |
 | **RAV SmartPrice** | RAV-coined | The fair value scoring system — uses P25-P75 percentile analysis of comparable accepted bids to tell users whether a listing is priced below market, at fair value, or above market |
 | **Fee Freedom Calculator** | RAV-coined | The public break-even calculator — shows timeshare owners how many weeks they need to rent to cover their annual maintenance fees, across 9 vacation club brands |
 | **TrustShield** | RAV-coined | The owner verification program — multi-step identity and property ownership verification with progressive trust levels (New → Verified → Trusted → Premium). Includes document upload and admin review |
 | **PaySafe** | RAV-coined | The escrow payment system — holds traveler funds from booking until check-in is confirmed. Owners receive payout after checkout + 5 days. If issues arise, funds are held for resolution |
 | **ResortIQ** | RAV-coined | The resort knowledge base — a curated database of 117 resorts and 351 unit types from 9 vacation club brands. Auto-populates listing specs when owners create listings |
 | **RAV Command** | RAV-coined | The executive dashboard — investor-grade business intelligence with proprietary metrics, market data integrations, and live industry feed. For RAV leadership only |
-| **Owner's Edge** | RAV-coined | The owner dashboard suite — 6 business intelligence sections giving property owners earnings tracking, pricing recommendations, bid activity, and maintenance fee coverage progress |
+| **RAV Edge** | RAV-coined | The owner dashboard suite — 6 business intelligence sections giving property owners earnings tracking, pricing recommendations, bid activity, and maintenance fee coverage progress |
 | **Liquidity Score** | RAV-coined | A proprietary marketplace health metric displayed on the executive dashboard — measures how efficiently supply (listings) is being matched with demand (bookings + bids) |
 | **Bid Spread Index** | RAV-coined | A proprietary price discovery metric displayed on the executive dashboard — measures how closely bid amounts track listed prices, indicating pricing efficiency |
 | **Demand Signals** | RAV-coined | Real-time indicators shown to owners while creating listings — displays matching travel request count and maximum disclosed budget to help owners price competitively |

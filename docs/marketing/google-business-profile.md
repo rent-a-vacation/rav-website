@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-42"
 status: "active"
 ---
@@ -30,7 +30,7 @@ status: "active"
 
 **Business description (750 chars max):**
 ```
-Rent-A-Vacation is the marketplace where vacation club owners rent directly to travelers — and travelers name their price. Browse 117+ resorts across Hilton, Marriott, and Disney brands and save 20-40% vs resort-direct prices. Name Your Price on any listing. Post a Vacation Wish and let owners compete for your trip. Every owner is verified through TrustShield, and every payment is protected by PaySafe escrow. Whether you're an owner looking to offset maintenance fees or a traveler looking for luxury resort stays at owner prices, Rent-A-Vacation makes it simple, safe, and smart.
+Rent-A-Vacation is the marketplace where vacation club owners rent directly to travelers — and travelers name their price. Browse 117+ resorts across Hilton, Marriott, and Disney brands and save 20-40% vs resort-direct prices. Name Your Price on any listing. Post a RAV Wish and let owners compete for your trip. Every owner is verified through TrustShield, and every payment is protected by PaySafe escrow. Whether you're an owner looking to offset maintenance fees or a traveler looking for luxury resort stays at owner prices, Rent-A-Vacation makes it simple, safe, and smart.
 ```
 
 **Short description (for search cards):**
@@ -53,7 +53,7 @@ Timeshare rental marketplace. Luxury resorts — save 20-40%. Name Your Price bi
 Make an offer on any listing. Set the price you want to pay and let the owner decide. It's negotiation made simple — the first bidding system in vacation rentals.
 ```
 
-**Product 2: Vacation Wishes**
+**Product 2: RAV Wishes**
 ```
 Tell us where you want to go, when, and what you want to spend. Verified owners send you personalized proposals. Pick the best one. Like having a personal travel agent — powered by a marketplace.
 ```
@@ -80,7 +80,7 @@ Free tool — no account required. See exactly how many weeks you need to rent t
 ```
 Introducing Rent-A-Vacation — the first AI-powered marketplace for timeshare vacation rentals.
 
-Travelers: Stay at Hilton, Marriott, and Disney resorts and save 20-40%. Name Your Price on any listing, or post a Vacation Wish and let owners compete for your trip.
+Travelers: Stay at Hilton, Marriott, and Disney resorts and save 20-40%. Name Your Price on any listing, or post a RAV Wish and let owners compete for your trip.
 
 Owners: Turn unused timeshare weeks into income. List in minutes, get AI pricing suggestions, and earn on your terms.
 

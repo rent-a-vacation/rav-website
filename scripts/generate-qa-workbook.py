@@ -568,7 +568,7 @@ SCENARIOS = [
         "capability": "Propose alt dates \u2192 Owner reviews \u2192 Accept",
         "preconditions": "Active bidding listing from Owner 1",
         "steps": [
-            ("Renter 1", "Find bidding listing \u2192 Make an Offer", "/property/:id", "BidFormDialog in bid mode"),
+            ("Renter 1", "Find bidding listing \u2192 Make a RAV Offer", "/property/:id", "BidFormDialog in bid mode"),
             ("Renter 1", "Switch to Propose Different Dates mode", "/property/:id", "Date pickers + auto-computed bid"),
             ("Renter 1", "Select different check-in/out, verify auto-calc", "/property/:id", "Bid = nightly_rate \u00d7 nights"),
             ("Renter 1", "Add message \u2192 Submit", "/property/:id", "Toast: Date proposal submitted"),

@@ -91,7 +91,7 @@ const UserGuide = () => {
   const renterSections = [
     { id: "getting-started", label: "Getting Started", icon: Home },
     { id: "search-book", label: "Search & Book", icon: Search },
-    { id: "travel-requests", label: "Submit Vacation Wishes", icon: Plane },
+    { id: "travel-requests", label: "Submit RAV Wishes", icon: Plane },
     { id: "place-bids", label: "Make Offers on Listings", icon: Gavel },
     { id: "my-bookings", label: "My Bookings & Cancellations", icon: Calendar },
     { id: "checkin", label: "Check-In Process", icon: Key },
@@ -1359,7 +1359,7 @@ const UserGuide = () => {
                     </div>
                     <div className="bg-card rounded-xl p-6 border text-center">
                       <Gavel className="h-8 w-8 mx-auto mb-3 text-primary" />
-                      <h4 className="font-medium mb-2">Make an Offer</h4>
+                      <h4 className="font-medium mb-2">Make a RAV Offer</h4>
                       <p className="text-xs text-muted-foreground">Offer your price on open listings</p>
                     </div>
                     <div className="bg-card rounded-xl p-6 border text-center">
@@ -1486,7 +1486,7 @@ const UserGuide = () => {
             {activeRole === "renter" && (isPrinting || activeSection === "travel-requests") && (
               <section className="space-y-8 print:break-after-page">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-4">Submit Vacation Wishes</h1>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Submit RAV Wishes</h1>
                   <p className="text-xl text-muted-foreground">
                     Tell us where you want to go and let property owners compete for your booking.
                   </p>
@@ -1551,7 +1551,7 @@ const UserGuide = () => {
                 </div>
 
                 <div className="bg-card rounded-xl p-6 border">
-                  <h3 className="font-semibold text-lg mb-4">How to Make an Offer</h3>
+                  <h3 className="font-semibold text-lg mb-4">How to Make a RAV Offer</h3>
                   <ol className="space-y-3 text-sm">
                     <li className="flex gap-3">
                       <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold">1</span>

@@ -34,13 +34,13 @@ export function TextChatButton({
             disabled && "opacity-50 cursor-not-allowed",
             className,
           )}
-          aria-label={disabled && disabledReason ? disabledReason : "Ask RAVIO"}
+          aria-label={disabled && disabledReason ? disabledReason : "Chat with RAVIO"}
         >
           <img src="/ravio-v2.png" alt="RAVIO" className="h-5 w-5" />
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>{disabled && disabledReason ? disabledReason : "Ask RAVIO"}</p>
+        <p>{disabled && disabledReason ? disabledReason : "Chat with RAVIO"}</p>
       </TooltipContent>
     </Tooltip>
   );

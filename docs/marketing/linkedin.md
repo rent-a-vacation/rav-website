@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-42"
 status: "active"
 ---
@@ -48,7 +48,7 @@ We built the marketplace that connects them directly. Owners list unused weeks a
 
 WHAT MAKES US DIFFERENT
 - Name Your Price: Travelers bid on listings — the first negotiation engine in the space.
-- Vacation Wishes: Travelers post what they want; owners compete to offer it.
+- RAV Wishes: Travelers post what they want; owners compete to offer it.
 - TrustShield + PaySafe: Every owner identity-verified before listing. Payment held in escrow until check-in.
 - RAVIO AI Concierge: Voice and text AI search — just describe your dream vacation.
 - SmartPrice Intelligence: AI-powered pricing recommendations for owners.
@@ -77,7 +77,7 @@ Rent-A-Vacation is the AI-powered marketplace that fixes both sides of this equa
 
 What we've built:
 - Name Your Price: A bidding engine where travelers set the terms
-- Vacation Wishes: Travelers post what they want; owners compete to offer it
+- RAV Wishes: Travelers post what they want; owners compete to offer it
 - TrustShield + PaySafe: Multi-step owner verification and escrow-protected payments
 - RAVIO: An AI concierge that lets travelers search by voice or text
 - SmartPrice: AI-powered pricing intelligence for owners

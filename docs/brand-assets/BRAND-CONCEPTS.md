@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
+change_type: "session-47-brand-rebrand"
 status: "active"
 ---
 # Rent-A-Vacation Brand Concepts & Creative Assets
@@ -62,34 +62,35 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 
 ## II. NAMED PRODUCT FEATURES
 
-### 1. Vacation Wishes
+### 1. RAV Wishes
 
 **What It Is:** Travelers post their dream trip parameters. Owners compete with proposals. Traveler picks the winner.
+
+> **Rebrand note (Session 47):** Formerly "Vacation Wishes." Renamed to "RAV Wishes" for brand family consistency — all platform features carry the RAV identity.
 
 **Marketing Names (Pick One):**
 | Option | Vibe | Best For |
 |--------|------|----------|
-| **Vacation Wishes** | Aspirational, emotional | Consumer campaigns |
-| **Wish for a Vacation** | Action-oriented, inviting | CTAs, landing pages |
-| **Dream Deals** | Value + aspiration | Price-conscious audience |
+| **RAV Wishes** | Branded, aspirational | Consumer campaigns, nav labels |
+| **Make a RAV Wish** | Action-oriented, branded | CTA buttons, landing pages |
 | **Your Trip, Their Offer** | Marketplace framing | Investor audiences |
 
-**Recommended:** "Vacation Wishes" (primary) / "Wish for a Vacation" (CTA verb form)
+**Recommended:** "RAV Wishes" (primary) / "Make a RAV Wish" (CTA verb form)
 
 **Copy Blocks:**
 
 **Headline:**
-> "Wish for a Vacation. Owners Compete to Make It Happen."
+> "Make a RAV Wish. Owners Compete to Make It Happen."
 
 **Short:**
 > "Tell us your dream trip. Verified owners send you their best offers. You pick the winner."
 
 **Medium:**
-> "Vacation Wishes flips the script on travel booking. Instead of you hunting for the right listing, you tell us what you want — destination, dates, budget, requirements — and verified vacation club owners compete with personalized proposals. You review the offers, pick the best one, and book. It's the travel experience you've always wished for."
+> "RAV Wishes flips the script on travel booking. Instead of you hunting for the right listing, you tell us what you want — destination, dates, budget, requirements — and verified vacation club owners compete with personalized proposals. You review the offers, pick the best one, and book. It's the travel experience you've always wished for."
 
 **CTA Options:**
-- "Make a Vacation Wish"
-- "Post Your Wish"
+- "Make a RAV Wish"
+- "Post Your RAV Wish"
 - "Tell Us Your Dream Trip"
 - "Let Owners Compete for You"
 
@@ -112,8 +113,8 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 
 **CTA Options:**
 - "Name Your Price"
+- "Make a RAV Offer"
 - "Place a Bid"
-- "Make an Offer"
 - "Start Bidding"
 
 ---
@@ -212,9 +213,11 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 
 ---
 
-### 8. Owner's Edge
+### 8. RAV Edge
 
 **What It Is:** The complete owner tools suite — dashboard, earnings, analytics, pricing.
+
+> **Rebrand note (Session 47):** Formerly "Owner's Edge." Renamed to "RAV Edge" for brand family consistency alongside RAV Command.
 
 **Copy Blocks:**
 
@@ -225,7 +228,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 > "Manage everything in one place — listings, bookings, earnings, bids, and verification."
 
 **Medium:**
-> "Owner's Edge is your command center on Rent-A-Vacation. Track your earnings — lifetime, year-to-date, and monthly. Manage active listings and bookings. See incoming bids in real-time. Monitor your maintenance fee coverage percentage. Upload verification documents. Everything an owner needs, in one dashboard."
+> "RAV Edge is your command center on Rent-A-Vacation. Track your earnings — lifetime, year-to-date, and monthly. Manage active listings and bookings. See incoming bids in real-time. Monitor your maintenance fee coverage percentage. Upload verification documents. Everything an owner needs, in one dashboard."
 
 ---
 
@@ -246,10 +249,34 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 
 ---
 
+### 10. RAV Deals
+
+**What It Is:** A curated page surfacing distressed/expiring inventory where owners are highly motivated to accept offers. Feeds directly into the Name Your Price bidding engine.
+
+> **Added:** Session 47, April 12, 2026
+
+**Copy Blocks:**
+
+**Headline:**
+> "Expiring Weeks. Motivated Owners. Your Best Price."
+
+**Short:**
+> "Browse RAV Deals — listings with check-in dates approaching fast. Owners are ready to negotiate. Name your price."
+
+**Medium:**
+> "RAV Deals surfaces vacation weeks that are approaching their check-in date with few or no offers. These owners are motivated — they'd rather earn something than let the week go unused. Browse the deals, Make a RAV Offer, and book a luxury stay at your price. Every deal is backed by TrustShield verification and PaySafe escrow protection."
+
+**CTA Options:**
+- "Browse RAV Deals"
+- "See Today's RAV Deals"
+- "Deals Expiring Soon — Name Your Price"
+
+---
+
 ## III. ELEVATOR PITCHES (By Audience)
 
 ### For a Traveler (15 seconds)
-> "Rent-A-Vacation lets you stay at Hilton, Marriott, and Disney resorts at owner prices — saving 20-40% compared to booking direct. Bid on listings, tell us your dream trip and let owners compete, or search by voice. Every owner is verified, every payment is protected."
+> "Rent-A-Vacation lets you stay at Hilton, Marriott, and Disney resorts at owner prices — saving 20-40% compared to booking direct. Make a RAV Offer on any listing, post a RAV Wish and let owners compete, or search by voice with RAVIO. Every owner is verified, every payment is protected."
 
 ### For a Timeshare Owner (15 seconds)
 > "You're paying maintenance fees on weeks you don't use. Rent-A-Vacation lets you list those weeks in minutes, our AI tells you what to charge, and travelers bid on your property. You approve guests, set prices, and earn income that offsets your fees."
@@ -258,7 +285,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 > "Rent-A-Vacation is the first marketplace purpose-built for the $10.5 billion vacation ownership industry. We've built a two-sided bidding engine, a reverse-auction system where owners compete for travelers, a 117-resort data layer, and AI-powered voice and text search — all fully deployed and tested. The platform is pre-launch, disciplined, and ready to scale. We charge a 15% default commission on successful bookings only — no upfront fees to list — with tier-based discounts for subscribed owners. Projected 85%+ contribution margins."
 
 ### For a Journalist (30 seconds)
-> "There are 10 million American families paying over a thousand dollars a year in timeshare maintenance fees for weeks they never use — and travelers paying inflated prices for those same rooms through other platforms. We built the first marketplace to connect them directly. Travelers can bid on any listing or post 'Vacation Wishes' for owners to compete over — it's the first bidding engine in vacation rentals. We also offer AI-powered voice and text search through our concierge, RAVIO. The platform is fully built, pre-launch, and demonstrable today."
+> "There are 10 million American families paying over a thousand dollars a year in timeshare maintenance fees for weeks they never use — and travelers paying inflated prices for those same rooms through other platforms. We built the first marketplace to connect them directly. Travelers can Make a RAV Offer on any listing or post RAV Wishes for owners to compete over — it's the first bidding engine in vacation rentals. We also offer AI-powered voice and text search through our concierge, RAVIO. The platform is fully built, pre-launch, and demonstrable today."
 
 ### For a Vacation Club Brand Executive (30 seconds)
 > "Your owners are your most valuable long-term asset — and they're frustrated. Maintenance fees are rising, usage is declining, and exit companies are circling. Rent-A-Vacation gives your owners a trusted, verified platform to monetize unused weeks — reducing their financial burden and your churn risk. We've already built profiles for [62/40/15] of your resorts. Let's discuss a pilot program."
@@ -275,7 +302,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 | 2 | **Just Say Where. RAVIO Does the Rest.** | AI/voice campaigns |
 | 3 | **Luxury Resorts. Owner Prices.** | Traveler acquisition |
 | 4 | **Your Timeshare. Your Income. Your Terms.** | Owner acquisition |
-| 5 | **Wish for a Vacation. Owners Make It Happen.** | Vacation Wishes feature |
+| 5 | **Make a RAV Wish. Owners Make It Happen.** | RAV Wishes feature |
 
 ### Secondary Taglines
 
@@ -298,7 +325,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 |---------|-------|
 | #AskRAVIO | Voice/text search moments |
 | #NameYourPrice | Bidding and deal stories |
-| #VacationWishes | Travel request feature |
+| #RAVWishes | RAV Wishes feature |
 | #FeeFreedom | Owner acquisition / calculator |
 | #OwnerPrices | Traveler savings stories |
 | #BookYourParadise | General brand |
@@ -392,8 +419,8 @@ resort-direct prices.
 3. BOOK with CONFIDENCE — PaySafe escrow protects every dollar
 
 ━━━ Why it's different ━━━
-✓ Bidding on any listing (Name Your Price)
-✓ Vacation Wishes (reverse auction)
+✓ Bidding on any listing (Make a RAV Offer)
+�� RAV Wishes (reverse auction)
 ✓ AI voice search with RAVIO
 ✓ 117 resorts, 351 unit types
 ✓ Every owner verified via TrustShield
@@ -430,7 +457,7 @@ You approve guests and earn income.
 ✓ 15% default commission on successful bookings only (Pro −2%, Business −5%)
 ✓ RAV SmartEarn shows your break-even and earnings potential
 ✓ TrustShield builds your reputation
-✓ Owner's Edge dashboard tracks everything
+✓ RAV Edge dashboard tracks everything
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 rent-a-vacation.com | #FeeFreedom
@@ -445,23 +472,24 @@ Stop Paying. Start Earning.
 - Rent-A-Vacation (always hyphenated, title case)
 - RAVIO (all caps when standalone; "Ask RAVIO" / "Chat with RAVIO" in feature context)
 - Ask RAVIO, Chat with RAVIO
-- Vacation Wishes
+- RAV Wishes (formerly Vacation Wishes)
+- RAV Deals
+- RAV Edge (formerly Owner's Edge)
+- RAV Command
 - Name Your Price
-- RAV SmartPrice
-- RAV SmartEarn
-- RAV SmartCompare
-- RAV SmartMatch
-- RAV SmartBudget
+- Make a RAV Offer, Make a RAV Wish, Browse RAV Deals
+- RAV SmartPrice, RAV SmartEarn, RAV SmartCompare, RAV SmartMatch, RAV SmartBudget
 - TrustShield
 - PaySafe
 - ResortIQ
-- RAV Command
-- Owner's Edge
 - Liquidity Score, Bid Spread Index
 
 ### Never
 - "Rent a Vacation" (missing hyphens)
 - "Ravio" (lowercase — always RAVIO)
+- "Vacation Wishes" (retired — use RAV Wishes)
+- "Owner's Edge" (retired — use RAV Edge)
+- "Make an Offer" as CTA (retired — use Make a RAV Offer)
 - "Smart Price" (two words — always SmartPrice)
 - "Smart Earn" (two words — always SmartEarn)
 - "Smart Compare" (two words — always SmartCompare)
@@ -469,6 +497,8 @@ Stop Paying. Start Earning.
 - "Smart Budget" (two words — always SmartBudget)
 - "Trust Shield" (two words — always TrustShield)
 - "Pay Safe" (two words — always PaySafe)
+- "RAV wish" / "Rav Wishes" (always RAV Wishes — RAV is all caps)
+- "RAV deal" / "Rav Deals" (always RAV Deals — RAV is all caps)
 
 ### Abbreviation
 - **RAV** — acceptable in informal contexts, internal docs, and UI where space is limited
@@ -483,7 +513,7 @@ Stop Paying. Start Earning.
 | **Apr** | "RAV SmartEarn" launch | SEO blog + social | Owner leads |
 | **May** | "Name Your Price" explainer series | Social carousel + PR | Brand awareness — lead with marketplace |
 | **Jun** | Beta launch announcement | Email + community | Beta signups |
-| **Jul** | "Vacation Wishes" campaign | Social + email | Traveler acquisition |
+| **Jul** | "RAV Wishes" campaign | Social + email | Traveler acquisition |
 | **Aug** | "Ask RAVIO" launch video | Social video + PR | Feature education — AI as supporting differentiator |
 | **Sep** | Public launch | PR + paid social + search | Mass acquisition |
 | **Oct** | "Trust Stories" (TrustShield focus) | Testimonial video | Trust building |

@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -538,17 +538,17 @@ If asked about cancellation policies during the owner section, here is the refer
 > **Talking point:**
 > "We have made cancellation policies visual and easy to understand. Instead of burying the terms in fine print, we show a color-coded refund timeline right on the listing. Green means full refund, yellow means partial, and red means non-refundable. Each tier shows the exact deadline -- for example, 'Full refund if cancelled by March 15' -- so the renter knows exactly what they are agreeing to before they book. This same display appears on the checkout page as well."
 
-### Step 5: Book, Make an Offer, or Propose Dates
+### Step 5: Book, Make a RAV Offer, or Propose Dates
 
 **What to show:**
 1. The "Book Now" button -- explain it goes to Stripe Checkout
-2. The "Make an Offer" button -- click to show the offer form dialog
+2. The "Make a RAV Offer" button -- click to show the offer form dialog
 3. The "Propose Different Dates" option -- show the date proposal mode with date pickers
 
 > **Talking point:**
 > "Renters have three ways to engage with a listing:
 > 1. **Book Now** -- Pay the listed price immediately through Stripe Checkout
-> 2. **Make an Offer** -- Offer a different price. The owner can accept, counter, or decline
+> 2. **Make a RAV Offer** -- Offer a different price. The owner can accept, counter, or decline
 > 3. **Propose Different Dates** -- Same property, but different dates. The system auto-calculates the price based on the nightly rate and the new date range
 >
 > This flexibility is key to our marketplace model. It is not just a booking engine -- it is a negotiation platform."

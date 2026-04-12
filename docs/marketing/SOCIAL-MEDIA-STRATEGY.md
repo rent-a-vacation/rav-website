@@ -1,13 +1,13 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
+last_updated: "2026-04-12T22:57:23"
+change_ref: "a521368"
 change_type: "session-42"
 status: "active"
 ---
 
 # Social Media Strategy — Rent-A-Vacation
 
-> **Brand Lock:** All social media copy must align with `docs/brand-assets/BRAND-LOCK.md` — the single source of truth for claims, feature ordering, and terminology. Key rules: savings claim is "20-40%" (never "up to 70%"), feature order leads with Name Your Price, then Vacation Wishes, then TrustShield/PaySafe, then RAVIO. Primary hashtag: #NameYourPrice.
+> **Brand Lock:** All social media copy must align with `docs/brand-assets/BRAND-LOCK.md` — the single source of truth for claims, feature ordering, and terminology. Key rules: savings claim is "20-40%" (never "up to 70%"), feature order leads with Name Your Price, then RAV Wishes, then TrustShield/PaySafe, then RAVIO. Primary hashtag: #NameYourPrice.
 
 ## Account Costs (All Free to Start)
 
