@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-13T14:31:34"
-change_ref: "e69f323"
+last_updated: "2026-04-13T16:21:30"
+change_ref: "74c3c98"
 change_type: "session-48"
 status: "active"
 ---
@@ -20,8 +20,8 @@ These are the highest-value items we can build RIGHT NOW. No blockers, no decisi
 
 | Order | Issue | Title | Why it's here |
 |-------|-------|-------|---------------|
-| **A1** | #285 | Owner fee transparency | Owners won't list if they don't understand costs. Trust blocker. |
-| **A2** | #327 | Event-Based Search | High value but needs data curation. 10-15 curated events. |
+| **A1** | #337 | Site-wide contrast & crispness pass | Every user's first impression. Text/pills/header/hero all too dull. |
+| **A2** | #285 | Owner fee transparency | Owners won't list if they don't understand costs. Trust blocker. |
 | **A3** | #283 | Price drop alert notifications | Completes saved search → alert loop (infra already built). |
 | **A4** | #286 | Owner Tax Information form (W-9) | Needed before real payouts. |
 | **A5** | #259 | Testimonials collection + display | Social proof for launch credibility. |
@@ -35,6 +35,8 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #187 | Pre-launch manual verification | Needs systematic walkthrough. Partially done. |
 | #257 | Resort data compliance audit | Legal review of seed data sources. |
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
+| #338 | Admin Event Management UI | Move events from static code to DB-driven admin. Depends on staff workflow. |
+| #339 | Multi-year event support | Recurring templates + 2027+ dates. Depends on #338. |
 
 ### Tier C: Tier Feature Differentiation (Bundle as Sprint)
 
@@ -101,7 +103,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
-| Apr 13, 2026 | 49 | #328 Attraction-Based Filtering completed + closed. Migration 053 deployed to DEV. PR #334 merged. Renumbered Tier A. |
+| Apr 13, 2026 | 49 | #327 Event-Based Search + #328 Attraction-Based Filtering completed + closed. Migration 053 deployed to DEV+PROD. PRs #334-#336 merged. Search prompt updated. Renumbered Tier A. |
 | Apr 13, 2026 | 48 | #326 RAV Deals completed + closed. #273 Homepage completed (Session 47). Header nav consistency fix. Renumbered Tier A. |
 | Apr 12, 2026 | 47 | Initial creation. Brand rebrand completed. Search & Discovery epic created (#325-#328). Full 5-tier prioritization. |
 

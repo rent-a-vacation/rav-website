@@ -33,7 +33,7 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-b border-border shadow-sm">
       {/* Skip-to-content link — WCAG 2.4.1 */}
       <a
         href="#main-content"
@@ -51,7 +51,7 @@ const Header = () => {
               className="h-14 md:h-16 w-auto select-none"
               draggable={false}
             />
-            <span className="font-display font-bold text-xl text-foreground">Rent-A-Vacation</span>
+            <span className="font-display font-bold text-xl text-foreground tracking-tight">Rent-A-Vacation</span>
           </Link>
 
           {/* Desktop Navigation — shared core + role layers */}
@@ -75,7 +75,7 @@ const Header = () => {
                   if (e.key === 'Escape') setIsDropdownOpen(false);
                 }}
               >
-                <span className="text-sm font-medium">Browse Rentals</span>
+                <span className="text-sm font-semibold">Browse Rentals</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
               </button>
               {isDropdownOpen && (

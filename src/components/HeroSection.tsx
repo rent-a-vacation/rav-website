@@ -43,12 +43,12 @@ const HeroSection = () => {
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 animate-slide-up">
             Name Your Price. Book Your Paradise.
           </h1>
-          <p className="text-base md:text-lg text-white/80 mb-8 max-w-xl mx-auto animate-fade-in">
+          <p className="text-base md:text-lg text-white/90 font-medium mb-8 max-w-xl mx-auto animate-fade-in">
             Luxury vacation rentals from verified timeshare owners — save 20-40% vs resort-direct.
           </p>
 
           {/* Search Box */}
-          <div className="bg-card/95 backdrop-blur-lg rounded-2xl shadow-card-hover p-4 md:p-6 max-w-3xl mx-auto animate-scale-in">
+          <div className="bg-card backdrop-blur-lg rounded-2xl shadow-card-hover p-4 md:p-6 max-w-3xl mx-auto animate-scale-in border border-border/50">
             {/* Tabs */}
             <div className="flex gap-2 mb-4">
               <button
@@ -56,7 +56,7 @@ const HeroSection = () => {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   searchTab === "flexible"
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted"
+                    : "text-foreground/70 hover:bg-muted hover:text-foreground"
                 }`}
               >
                 I'm Flexible
@@ -66,7 +66,7 @@ const HeroSection = () => {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   searchTab === "calendar"
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted"
+                    : "text-foreground/70 hover:bg-muted hover:text-foreground"
                 }`}
               >
                 <CalendarIcon className="w-4 h-4 inline-block mr-1" />
