@@ -8,7 +8,9 @@
  * from a nightly rate and number of nights.
  */
 
-const RAV_MARKUP_RATE = 0.15; // 15%
+export const RAV_MARKUP_RATE = 0.15; // 15% base commission
+const STRIPE_RATE = 0.029; // 2.9%
+const STRIPE_FIXED = 0.30; // $0.30 per transaction
 
 /**
  * Calculate the number of nights between check-in and check-out dates.
@@ -66,4 +68,46 @@ export function computeFeeBreakdown(
   const subtotal = baseAmount + serviceFee + cleaningFee;
   const ownerPayout = baseAmount + cleaningFee;
   return { baseAmount, serviceFee, cleaningFee, subtotal, ownerPayout };
+}
+
+export interface OwnerPayoutBreakdown {
+  baseAmount: number;
+  cleaningFee: number;
+  ownerPayout: number;
+  ravCommission: number;
+  stripeFee: number;
+  ravNetRevenue: number;
+  guestTotal: number;
+  effectiveCommissionPct: number;
+}
+
+/**
+ * Compute detailed owner payout breakdown with tier-aware commission and Stripe fees.
+ *
+ * Key insight for owners: Stripe fees come out of RAV's commission, NOT the owner's payout.
+ * Owner always receives baseAmount + cleaningFee.
+ */
+export function computeOwnerPayoutBreakdown(
+  nightlyRate: number,
+  nights: number,
+  commissionPct: number,
+  cleaningFee = 0
+): OwnerPayoutBreakdown {
+  const baseAmount = Math.round(nightlyRate * nights);
+  const ravCommission = Math.round(baseAmount * (commissionPct / 100));
+  const ownerPayout = baseAmount + cleaningFee;
+  const guestTotal = baseAmount + ravCommission + cleaningFee;
+  const stripeFee = Math.round((guestTotal * STRIPE_RATE + STRIPE_FIXED) * 100) / 100;
+  const ravNetRevenue = Math.round((ravCommission - stripeFee) * 100) / 100;
+
+  return {
+    baseAmount,
+    cleaningFee,
+    ownerPayout,
+    ravCommission,
+    stripeFee,
+    ravNetRevenue,
+    guestTotal,
+    effectiveCommissionPct: commissionPct,
+  };
 }

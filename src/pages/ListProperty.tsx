@@ -33,7 +33,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCheckListingLimit } from "@/hooks/useCheckListingLimit";
 import { RoleUpgradeDialog } from "@/components/RoleUpgradeDialog";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
-import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
+import { calculateNights, computeOwnerPayoutBreakdown } from "@/lib/pricing";
+import { useOwnerCommission } from "@/hooks/useOwnerCommission";
 import { trackEvent } from "@/lib/posthog";
 
 const benefits = [
@@ -139,6 +140,7 @@ const ListProperty = () => {
   const navigate = useNavigate();
   const { user, isPropertyOwner, isEmailVerified } = useAuth();
   const { canCreate: canCreateListing } = useCheckListingLimit();
+  const { effectiveRate, tierDiscount, tierName } = useOwnerCommission();
 
   // Load draft from localStorage (survives page refresh after role upgrade)
   const draft = loadDraft();
@@ -172,15 +174,15 @@ const ListProperty = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Pricing preview
+  // Pricing preview with tier-aware commission
   const pricingPreview = useMemo(() => {
     const rate = parseFloat(nightlyRate);
     const cleaning = parseFloat(cleaningFee) || 0;
     if (!rate || !checkInDate || !checkOutDate) return null;
     const nights = calculateNights(checkInDate, checkOutDate);
     if (nights <= 0) return null;
-    return { ...computeFeeBreakdown(rate, nights, cleaning), nights };
-  }, [nightlyRate, cleaningFee, checkInDate, checkOutDate]);
+    return { ...computeOwnerPayoutBreakdown(rate, nights, effectiveRate, cleaning), nights };
+  }, [nightlyRate, cleaningFee, checkInDate, checkOutDate, effectiveRate]);
 
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -302,12 +304,12 @@ const ListProperty = () => {
 
       if (propError || !newProperty) throw new Error(propError?.message || "Failed to create property");
 
-      // 2. Create listing
+      // 2. Create listing (use tier-aware commission rate)
       const rate = parseFloat(nightlyRate);
       const cleaning = parseFloat(cleaningFee) || 0;
       const nights = calculateNights(checkInDate, checkOutDate);
       const ownerPrice = Math.round(rate * nights);
-      const ravMarkup = Math.round(ownerPrice * 0.15);
+      const ravMarkup = Math.round(ownerPrice * (effectiveRate / 100));
       const finalPrice = ownerPrice + ravMarkup;
 
       const listingData = {
@@ -784,27 +786,32 @@ const ListProperty = () => {
                       <p className="text-sm font-medium text-primary">Pricing Preview</p>
                       <div className="text-sm text-muted-foreground space-y-1">
                         <div className="flex justify-between">
-                          <span>${nightlyRate} x {pricingPreview.nights} night{pricingPreview.nights !== 1 ? "s" : ""}</span>
-                          <span>${pricingPreview.baseAmount}</span>
+                          <span>${nightlyRate} × {pricingPreview.nights} night{pricingPreview.nights !== 1 ? "s" : ""}</span>
+                          <span>${pricingPreview.baseAmount.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Service fee (15%)</span>
-                          <span>${pricingPreview.serviceFee}</span>
+                          <span>RAV commission ({effectiveRate}%{tierDiscount > 0 ? "*" : ""})</span>
+                          <span>${pricingPreview.ravCommission.toLocaleString()}</span>
                         </div>
                         {pricingPreview.cleaningFee > 0 && (
                           <div className="flex justify-between">
                             <span>Cleaning fee</span>
-                            <span>${pricingPreview.cleaningFee}</span>
+                            <span>${pricingPreview.cleaningFee.toLocaleString()}</span>
                           </div>
                         )}
                         <div className="flex justify-between font-medium text-foreground border-t pt-1">
                           <span>Guest pays</span>
-                          <span>${pricingPreview.subtotal}</span>
+                          <span>${pricingPreview.guestTotal.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between text-primary">
-                          <span>You earn</span>
-                          <span>${pricingPreview.ownerPayout}</span>
+                        <div className="flex justify-between font-bold text-primary">
+                          <span>You receive</span>
+                          <span>${pricingPreview.ownerPayout.toLocaleString()}</span>
                         </div>
+                        {tierDiscount > 0 && (
+                          <p className="text-xs text-primary/80 pt-1">
+                            * {tierName} tier discount applied (−{tierDiscount}%)
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -857,7 +864,7 @@ const ListProperty = () => {
                     {pricingPreview && (
                       <div className="flex justify-between text-sm pt-1 border-t">
                         <span className="text-muted-foreground">Guest total</span>
-                        <span className="font-medium">${pricingPreview.subtotal}</span>
+                        <span className="font-medium">${pricingPreview.guestTotal.toLocaleString()}</span>
                       </div>
                     )}
                   </div>

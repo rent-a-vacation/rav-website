@@ -45,7 +45,8 @@ import {
   Star,
   Share2,
   Compass,
-  Crown
+  Crown,
+  Percent
 } from "lucide-react";
 
 const UserGuide = () => {
@@ -75,6 +76,7 @@ const UserGuide = () => {
     { id: "manage-bids", label: "Manage Offers & Proposals", icon: Gavel },
     { id: "confirm-bookings", label: "Confirm Bookings", icon: Calendar },
     { id: "receive-payouts", label: "Receive Payouts", icon: DollarSign },
+    { id: "owner-fees-commission", label: "Understanding Fees", icon: Percent },
     { id: "cancellations", label: "Cancellations", icon: Ban },
     { id: "portfolio", label: "Portfolio Overview", icon: BarChart3 },
     { id: "pricing-suggestions", label: "Pricing Suggestions", icon: TrendingUp },
@@ -674,6 +676,109 @@ const UserGuide = () => {
                     View all earnings, pending payouts, and transaction history in Owner Dashboard → "Earnings" tab.
                     You can see your Stripe connection status and payout history at any time.
                   </p>
+                </div>
+              </section>
+            )}
+
+            {/* Owner Fees & Commission */}
+            {activeRole === "owner" && (isPrinting || activeSection === "owner-fees-commission") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Understanding Fees & Commission</h1>
+                  <p className="text-xl text-muted-foreground">
+                    A clear breakdown of how fees work on Rent-A-Vacation — what you pay, what guests pay, and what we keep.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold mb-3">How Commission Works</h3>
+                  <div className="text-sm text-muted-foreground space-y-3">
+                    <p>
+                      Rent-A-Vacation charges a <strong className="text-foreground">15% base commission</strong> on the nightly rate portion of each booking. This commission is added to the guest's total — it does not reduce your payout.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">You always receive:</strong> your nightly rate × nights + cleaning fee. The commission is charged to the guest on top of your price.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold mb-3">Tier Discounts</h3>
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <p>Higher membership tiers reduce the commission rate, making your listings more competitive for guests:</p>
+                    <div className="grid grid-cols-3 gap-3 mt-3">
+                      <div className="text-center p-3 bg-muted/50 rounded-lg">
+                        <p className="font-bold text-foreground text-lg">15%</p>
+                        <p className="text-xs">Free tier</p>
+                      </div>
+                      <div className="text-center p-3 bg-primary/5 rounded-lg border border-primary/20">
+                        <p className="font-bold text-primary text-lg">13%</p>
+                        <p className="text-xs">Pro tier (−2%)</p>
+                      </div>
+                      <div className="text-center p-3 bg-primary/10 rounded-lg border border-primary/30">
+                        <p className="font-bold text-primary text-lg">10%</p>
+                        <p className="text-xs">Business tier (−5%)</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold mb-3">Example Booking Breakdown</h3>
+                  <div className="text-sm space-y-2 bg-muted/50 rounded-lg p-4">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Nightly rate: $200 × 5 nights</span>
+                      <span>$1,000</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Cleaning fee</span>
+                      <span>$100</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">RAV commission (15%)</span>
+                      <span>$150</span>
+                    </div>
+                    <div className="border-t my-1" />
+                    <div className="flex justify-between font-medium">
+                      <span>Guest pays</span>
+                      <span>$1,250</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-primary">
+                      <span>You receive</span>
+                      <span>$1,100</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Stripe processing (2.9% + $0.30)</span>
+                      <span>−$36.55</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>RAV keeps</span>
+                      <span>$113.45</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 dark:bg-green-950/30 rounded-xl p-6 border border-green-200 dark:border-green-800">
+                  <h3 className="font-semibold mb-3 text-green-800 dark:text-green-200">Stripe Fees Never Touch Your Payout</h3>
+                  <p className="text-sm text-green-700 dark:text-green-300">
+                    Stripe charges 2.9% + $0.30 per transaction for payment processing. This fee is deducted from our commission — <strong>your payout is always the full nightly rate plus cleaning fee</strong>. We absorb the cost of payment processing.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold mb-3">Custom Agreements</h3>
+                  <p className="text-sm text-muted-foreground">
+                    In some cases, Rent-A-Vacation may offer custom commission rates for high-volume owners or strategic partnerships. If you have a custom agreement, your personalized rate will be displayed in your Owner Dashboard under "Earnings." Contact <strong>support@rent-a-vacation.com</strong> for inquiries.
+                  </p>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold mb-3">Where to See Your Fees</h3>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• <strong className="text-foreground">Owner Dashboard → Earnings</strong> — Your effective rate, sample calculation, and booking-level fee breakdown</li>
+                    <li>• <strong className="text-foreground">List Property flow</strong> — Real-time pricing preview shows your rate and estimated payout as you set prices</li>
+                    <li>• <strong className="text-foreground">Booking details</strong> — Each booking shows commission charged and your net payout</li>
+                  </ul>
                 </div>
               </section>
             )}

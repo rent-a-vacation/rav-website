@@ -19,6 +19,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import type { Booking, Listing, Property, PayoutStatus, EscrowStatus } from "@/types/database";
 import { useOwnerCommission } from "@/hooks/useOwnerCommission";
 import StripeConnectBanner from "./StripeConnectBanner";
+import { OwnerFeeExplainer } from "./OwnerFeeExplainer";
 
 interface EscrowInfo {
   escrow_status: EscrowStatus;
@@ -344,23 +345,10 @@ const OwnerEarnings = () => {
         <StripeConnectBanner />
       </div>
 
-      {/* Commission Rate Card */}
-      <Card className="mb-6">
-        <CardContent className="flex items-center gap-4 py-4">
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <Percent className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-sm font-medium">
-              Your Commission Rate: {commissionLoading ? "..." : `${effectiveRate}%`}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {tierName} tier
-              {tierDiscount > 0 && ` (${tierDiscount}% discount applied)`}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Fee Transparency */}
+      <div className="mb-6">
+        <OwnerFeeExplainer />
+      </div>
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
