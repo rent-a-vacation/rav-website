@@ -50,6 +50,7 @@ import { OwnerPayouts } from "@/components/owner/OwnerPayouts";
 import { MembershipPlans } from "@/components/MembershipPlans";
 import { SubscriptionManagement } from "@/components/SubscriptionManagement";
 import { ReferralDashboard } from "@/components/owner/ReferralDashboard";
+import { OwnerTaxInfo } from "@/components/owner/OwnerTaxInfo";
 import { useOwnerCommission } from "@/hooks/useOwnerCommission";
 import { useOwnerDashboardStats } from "@/hooks/owner/useOwnerDashboardStats";
 import { useOwnerEarnings } from "@/hooks/owner/useOwnerEarnings";
@@ -650,6 +651,19 @@ const OwnerDashboard = () => {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <OwnerVerification />
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-primary" />
+                  Tax Information
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <OwnerTaxInfo />
               </CollapsibleContent>
             </Collapsible>
 
