@@ -751,6 +751,19 @@ async function createInventory(
   }
 
   log.push(`Created ${listingIds.length} listings (15 active, 10 bidding, 5 draft)`);
+
+  // Simulate price drops on first 3 active listings for UI badge testing
+  for (let i = 0; i < Math.min(3, listingIds.length); i++) {
+    await admin
+      .from("listings")
+      .update({
+        previous_nightly_rate: randomInt(250, 400),
+        price_changed_at: new Date().toISOString(),
+      })
+      .eq("id", listingIds[i]);
+  }
+  log.push("Set price drops on 3 listings for badge testing");
+
   return { propertyIds, listingIds };
 }
 
