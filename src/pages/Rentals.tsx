@@ -449,16 +449,16 @@ const Rentals = () => {
                           onClick={() => toggleAttraction(tagDef.tag)}
                           className={`flex flex-col items-center gap-1.5 min-w-[60px] pb-2 transition-colors ${
                             isSelected
-                              ? "border-b-2 border-foreground"
-                              : "border-b-2 border-transparent hover:border-muted-foreground/40"
+                              ? "border-b-2 border-primary"
+                              : "border-b-2 border-transparent hover:border-primary/30"
                           }`}
                           aria-pressed={isSelected}
                           aria-label={`Filter by ${tagDef.label}`}
                         >
-                          <div className={isSelected ? "text-foreground" : "text-foreground/60"}>
+                          <div className={isSelected ? "text-primary" : "text-primary/70"}>
                             {Icon && <Icon className="w-6 h-6" />}
                           </div>
-                          <span className={`text-xs font-semibold whitespace-nowrap ${isSelected ? "text-foreground" : "text-foreground/60"}`}>
+                          <span className={`text-xs font-semibold whitespace-nowrap ${isSelected ? "text-foreground" : "text-foreground/70"}`}>
                             {tagDef.label}
                           </span>
                         </button>
@@ -486,16 +486,16 @@ const Rentals = () => {
                           onClick={() => setSelectedEvent(isSelected ? null : event.slug)}
                           className={`flex flex-col items-center gap-1.5 min-w-[64px] pb-2 transition-colors ${
                             isSelected
-                              ? "border-b-2 border-foreground"
-                              : "border-b-2 border-transparent hover:border-muted-foreground/40"
+                              ? "border-b-2 border-accent"
+                              : "border-b-2 border-transparent hover:border-accent/30"
                           }`}
                           aria-pressed={isSelected}
                           aria-label={`Filter by ${event.name}`}
                         >
-                          <div className={isSelected ? "text-foreground" : "text-foreground/60"}>
+                          <div className={isSelected ? "text-accent" : "text-accent/70"}>
                             {Icon && <Icon className="w-6 h-6" />}
                           </div>
-                          <span className={`text-xs font-semibold whitespace-nowrap ${isSelected ? "text-foreground" : "text-foreground/60"}`}>
+                          <span className={`text-xs font-semibold whitespace-nowrap ${isSelected ? "text-foreground" : "text-foreground/70"}`}>
                             {event.name}
                           </span>
                         </button>
