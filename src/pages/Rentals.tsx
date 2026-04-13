@@ -409,23 +409,23 @@ const Rentals = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4">
             {/* Tab toggle */}
-            <div className="flex shrink-0 border border-border rounded-lg overflow-hidden">
+            <div className="flex shrink-0 border border-border rounded-lg overflow-hidden shadow-sm">
               <button
                 onClick={() => setDiscoveryTab("activity")}
-                className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
+                className={`px-4 py-2 text-sm font-bold transition-colors ${
                   discoveryTab === "activity"
                     ? "bg-primary text-primary-foreground"
-                    : "bg-card text-muted-foreground hover:text-foreground"
+                    : "bg-card text-foreground hover:bg-muted"
                 }`}
               >
                 Activity
               </button>
               <button
                 onClick={() => setDiscoveryTab("events")}
-                className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
+                className={`px-4 py-2 text-sm font-bold transition-colors ${
                   discoveryTab === "events"
                     ? "bg-primary text-primary-foreground"
-                    : "bg-card text-muted-foreground hover:text-foreground"
+                    : "bg-card text-foreground hover:bg-muted"
                 }`}
               >
                 Events
@@ -437,7 +437,7 @@ const Rentals = () => {
               {/* Right fade hint */}
               <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10" />
 
-              <div className="flex items-end gap-6 overflow-x-auto scrollbar-hide pb-2">
+              <div className="flex items-end gap-7 overflow-x-auto scrollbar-hide pb-3 pt-1">
                 {discoveryTab === "activity" ? (
                   <>
                     {ATTRACTION_TAGS.map((tagDef) => {
@@ -447,18 +447,18 @@ const Rentals = () => {
                         <button
                           key={tagDef.tag}
                           onClick={() => toggleAttraction(tagDef.tag)}
-                          className={`flex flex-col items-center gap-1 min-w-[56px] pt-1 pb-1 transition-all ${
+                          className={`flex flex-col items-center gap-1.5 min-w-[60px] pb-2 transition-colors ${
                             isSelected
                               ? "border-b-2 border-foreground"
-                              : "border-b-2 border-transparent opacity-70 hover:opacity-100"
+                              : "border-b-2 border-transparent hover:border-muted-foreground/40"
                           }`}
                           aria-pressed={isSelected}
                           aria-label={`Filter by ${tagDef.label}`}
                         >
-                          <div className={`w-6 h-6 flex items-center justify-center ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
-                            {Icon && <Icon className="w-5 h-5" />}
+                          <div className={isSelected ? "text-foreground" : "text-foreground/60"}>
+                            {Icon && <Icon className="w-6 h-6" />}
                           </div>
-                          <span className={`text-[11px] font-medium whitespace-nowrap ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
+                          <span className={`text-xs font-semibold whitespace-nowrap ${isSelected ? "text-foreground" : "text-foreground/60"}`}>
                             {tagDef.label}
                           </span>
                         </button>
@@ -467,11 +467,11 @@ const Rentals = () => {
                     {selectedAttractions.size > 0 && (
                       <button
                         onClick={() => setSelectedAttractions(new Set())}
-                        className="flex flex-col items-center gap-1 min-w-[48px] pt-1 pb-1 border-b-2 border-transparent opacity-60 hover:opacity-100 transition-all"
+                        className="flex flex-col items-center gap-1.5 min-w-[48px] pb-2 border-b-2 border-transparent hover:border-muted-foreground/40 transition-colors"
                         aria-label="Clear activity filters"
                       >
-                        <X className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-[11px] font-medium text-muted-foreground whitespace-nowrap">Clear</span>
+                        <X className="w-6 h-6 text-foreground/60" />
+                        <span className="text-xs font-semibold text-foreground/60 whitespace-nowrap">Clear</span>
                       </button>
                     )}
                   </>
@@ -484,18 +484,18 @@ const Rentals = () => {
                         <button
                           key={event.slug}
                           onClick={() => setSelectedEvent(isSelected ? null : event.slug)}
-                          className={`flex flex-col items-center gap-1 min-w-[64px] pt-1 pb-1 transition-all ${
+                          className={`flex flex-col items-center gap-1.5 min-w-[64px] pb-2 transition-colors ${
                             isSelected
                               ? "border-b-2 border-foreground"
-                              : "border-b-2 border-transparent opacity-70 hover:opacity-100"
+                              : "border-b-2 border-transparent hover:border-muted-foreground/40"
                           }`}
                           aria-pressed={isSelected}
                           aria-label={`Filter by ${event.name}`}
                         >
-                          <div className={`w-6 h-6 flex items-center justify-center ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
-                            {Icon && <Icon className="w-5 h-5" />}
+                          <div className={isSelected ? "text-foreground" : "text-foreground/60"}>
+                            {Icon && <Icon className="w-6 h-6" />}
                           </div>
-                          <span className={`text-[11px] font-medium whitespace-nowrap ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
+                          <span className={`text-xs font-semibold whitespace-nowrap ${isSelected ? "text-foreground" : "text-foreground/60"}`}>
                             {event.name}
                           </span>
                         </button>
@@ -504,11 +504,11 @@ const Rentals = () => {
                     {selectedEvent && (
                       <button
                         onClick={() => setSelectedEvent(null)}
-                        className="flex flex-col items-center gap-1 min-w-[48px] pt-1 pb-1 border-b-2 border-transparent opacity-60 hover:opacity-100 transition-all"
+                        className="flex flex-col items-center gap-1.5 min-w-[48px] pb-2 border-b-2 border-transparent hover:border-muted-foreground/40 transition-colors"
                         aria-label="Clear event filter"
                       >
-                        <X className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-[11px] font-medium text-muted-foreground whitespace-nowrap">Clear</span>
+                        <X className="w-6 h-6 text-foreground/60" />
+                        <span className="text-xs font-semibold text-foreground/60 whitespace-nowrap">Clear</span>
                       </button>
                     )}
                   </>
