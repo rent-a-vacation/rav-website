@@ -7,12 +7,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import FeaturedResorts from "@/components/FeaturedResorts";
-import HowItWorks from "@/components/HowItWorks";
-import TrustBadges from "@/components/TrustBadges";
 import TopDestinations from "@/components/TopDestinations";
-import Testimonials from "@/components/Testimonials";
-import CalculatorCTA from "@/components/CalculatorCTA";
-import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 
 const WelcomeBanner = () => {
@@ -126,13 +121,8 @@ const Index = () => {
       <main id="main-content">
         <HeroSection />
         {user && !isLoading && <WelcomeBanner />}
-        <TrustBadges />
         <FeaturedResorts />
-        <HowItWorks />
         <TopDestinations />
-        <Testimonials />
-        <CalculatorCTA />
-        <CTASection />
       </main>
       <Footer />
     </div>
