@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-13T16:21:30"
-change_ref: "74c3c98"
+last_updated: "2026-04-13T19:59:15"
+change_ref: "3750de6"
 change_type: "session-48"
 status: "active"
 ---
@@ -20,11 +20,9 @@ These are the highest-value items we can build RIGHT NOW. No blockers, no decisi
 
 | Order | Issue | Title | Why it's here |
 |-------|-------|-------|---------------|
-| **A1** | #337 | Site-wide contrast & crispness pass | Every user's first impression. Text/pills/header/hero all too dull. |
-| **A2** | #285 | Owner fee transparency | Owners won't list if they don't understand costs. Trust blocker. |
-| **A3** | #283 | Price drop alert notifications | Completes saved search → alert loop (infra already built). |
-| **A4** | #286 | Owner Tax Information form (W-9) | Needed before real payouts. |
-| **A5** | #259 | Testimonials collection + display | Social proof for launch credibility. |
+| **A1** | #283 | Price drop alert notifications | Completes saved search → alert loop (infra already built). |
+| **A2** | #286 | Owner Tax Information form (W-9) | Needed before real payouts. |
+| **A3** | #259 | Testimonials collection + display | Social proof for launch credibility. |
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -103,7 +101,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
-| Apr 13, 2026 | 49 | #327 Event-Based Search + #328 Attraction-Based Filtering completed + closed. Migration 053 deployed to DEV+PROD. PRs #334-#336 merged. Search prompt updated. Renumbered Tier A. |
+| Apr 13, 2026 | 49 | #285 Fee transparency, #327 Event Search, #328 Attraction Filter, #337 Contrast pass completed. Logos updated. Discovery bar redesigned. 1016 tests. PRs #334-#345. |
 | Apr 13, 2026 | 48 | #326 RAV Deals completed + closed. #273 Homepage completed (Session 47). Header nav consistency fix. Renumbered Tier A. |
 | Apr 12, 2026 | 47 | Initial creation. Brand rebrand completed. Search & Discovery epic created (#325-#328). Full 5-tier prioritization. |
 
