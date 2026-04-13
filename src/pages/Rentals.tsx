@@ -125,6 +125,7 @@ const Rentals = () => {
   const [brandFilter, setBrandFilter] = useState("");
   const [selectedAttractions, setSelectedAttractions] = useState<Set<string>>(new Set());
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
+  const [discoveryTab, setDiscoveryTab] = useState<"activity" | "events">("activity");
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
   // Upcoming events for pill bar
@@ -403,88 +404,120 @@ const Rentals = () => {
         </div>
       </section>
 
-      {/* Browse by Activity Pill Bar */}
-      <section className="pt-6 pb-0">
+      {/* Unified Discovery Bar — Airbnb-style horizontal scroll */}
+      <section className="pt-4 pb-0 border-b border-border">
         <div className="container mx-auto px-4">
-          <h3 className="text-sm font-semibold text-foreground mb-3">Browse by Activity</h3>
-          <div className="flex flex-wrap gap-2">
-            {ATTRACTION_TAGS.map((tagDef) => {
-              const Icon = ATTRACTION_ICON_MAP[tagDef.icon];
-              const isSelected = selectedAttractions.has(tagDef.tag);
-              return (
-                <button
-                  key={tagDef.tag}
-                  onClick={() => toggleAttraction(tagDef.tag)}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all border shadow-sm ${
-                    isSelected
-                      ? "bg-primary text-primary-foreground border-primary shadow-md"
-                      : "bg-card text-foreground border-border hover:border-primary/40 hover:shadow-md"
-                  }`}
-                  aria-pressed={isSelected}
-                  aria-label={`Filter by ${tagDef.label}`}
-                >
-                  {Icon && <Icon className={`w-4 h-4 ${isSelected ? "" : "text-primary"}`} />}
-                  {tagDef.label}
-                </button>
-              );
-            })}
-            {selectedAttractions.size > 0 && (
+          <div className="flex items-center gap-4">
+            {/* Tab toggle */}
+            <div className="flex shrink-0 border border-border rounded-lg overflow-hidden">
               <button
-                onClick={() => setSelectedAttractions(new Set())}
-                className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Clear activity filters"
+                onClick={() => setDiscoveryTab("activity")}
+                className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  discoveryTab === "activity"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-muted-foreground hover:text-foreground"
+                }`}
               >
-                <X className="w-3.5 h-3.5" />
-                Clear
+                Activity
               </button>
-            )}
+              <button
+                onClick={() => setDiscoveryTab("events")}
+                className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  discoveryTab === "events"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Events
+              </button>
+            </div>
+
+            {/* Scrollable icon bar */}
+            <div className="relative flex-1 min-w-0">
+              {/* Right fade hint */}
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10" />
+
+              <div className="flex items-end gap-6 overflow-x-auto scrollbar-hide pb-2">
+                {discoveryTab === "activity" ? (
+                  <>
+                    {ATTRACTION_TAGS.map((tagDef) => {
+                      const Icon = ATTRACTION_ICON_MAP[tagDef.icon];
+                      const isSelected = selectedAttractions.has(tagDef.tag);
+                      return (
+                        <button
+                          key={tagDef.tag}
+                          onClick={() => toggleAttraction(tagDef.tag)}
+                          className={`flex flex-col items-center gap-1 min-w-[56px] pt-1 pb-1 transition-all ${
+                            isSelected
+                              ? "border-b-2 border-foreground"
+                              : "border-b-2 border-transparent opacity-70 hover:opacity-100"
+                          }`}
+                          aria-pressed={isSelected}
+                          aria-label={`Filter by ${tagDef.label}`}
+                        >
+                          <div className={`w-6 h-6 flex items-center justify-center ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
+                            {Icon && <Icon className="w-5 h-5" />}
+                          </div>
+                          <span className={`text-[11px] font-medium whitespace-nowrap ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
+                            {tagDef.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                    {selectedAttractions.size > 0 && (
+                      <button
+                        onClick={() => setSelectedAttractions(new Set())}
+                        className="flex flex-col items-center gap-1 min-w-[48px] pt-1 pb-1 border-b-2 border-transparent opacity-60 hover:opacity-100 transition-all"
+                        aria-label="Clear activity filters"
+                      >
+                        <X className="w-5 h-5 text-muted-foreground" />
+                        <span className="text-[11px] font-medium text-muted-foreground whitespace-nowrap">Clear</span>
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {upcomingEvents.map((event) => {
+                      const Icon = EVENT_ICON_MAP[event.icon];
+                      const isSelected = selectedEvent === event.slug;
+                      return (
+                        <button
+                          key={event.slug}
+                          onClick={() => setSelectedEvent(isSelected ? null : event.slug)}
+                          className={`flex flex-col items-center gap-1 min-w-[64px] pt-1 pb-1 transition-all ${
+                            isSelected
+                              ? "border-b-2 border-foreground"
+                              : "border-b-2 border-transparent opacity-70 hover:opacity-100"
+                          }`}
+                          aria-pressed={isSelected}
+                          aria-label={`Filter by ${event.name}`}
+                        >
+                          <div className={`w-6 h-6 flex items-center justify-center ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
+                            {Icon && <Icon className="w-5 h-5" />}
+                          </div>
+                          <span className={`text-[11px] font-medium whitespace-nowrap ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
+                            {event.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                    {selectedEvent && (
+                      <button
+                        onClick={() => setSelectedEvent(null)}
+                        className="flex flex-col items-center gap-1 min-w-[48px] pt-1 pb-1 border-b-2 border-transparent opacity-60 hover:opacity-100 transition-all"
+                        aria-label="Clear event filter"
+                      >
+                        <X className="w-5 h-5 text-muted-foreground" />
+                        <span className="text-[11px] font-medium text-muted-foreground whitespace-nowrap">Clear</span>
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
-
-      {/* Search by Event Pill Bar */}
-      {upcomingEvents.length > 0 && (
-        <section className="pt-4 pb-0">
-          <div className="container mx-auto px-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Search by Event</h3>
-            <div className="flex flex-wrap gap-2">
-              {upcomingEvents.map((event) => {
-                const Icon = EVENT_ICON_MAP[event.icon];
-                const isSelected = selectedEvent === event.slug;
-                return (
-                  <button
-                    key={event.slug}
-                    onClick={() => setSelectedEvent(isSelected ? null : event.slug)}
-                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all border shadow-sm ${
-                      isSelected
-                        ? "bg-primary text-primary-foreground border-primary shadow-md"
-                        : "bg-card text-foreground border-border hover:border-primary/40 hover:shadow-md"
-                    }`}
-                    aria-pressed={isSelected}
-                    aria-label={`Filter by ${event.name}`}
-                  >
-                    {Icon && <Icon className={`w-4 h-4 ${isSelected ? "" : "text-accent"}`} />}
-                    <span>{event.name}</span>
-                    <span className={`text-xs ${isSelected ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                      {formatEventDateRange(event)}
-                    </span>
-                  </button>
-                );
-              })}
-              {selectedEvent && (
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Clear event filter"
-                >
-                  <X className="w-3.5 h-3.5" />
-                  Clear
-                </button>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Event context banner */}
       {selectedEvent && (() => {
