@@ -57,6 +57,7 @@ import { VoiceControls } from "@/components/admin/VoiceControls";
 import AdminDisputes from "@/components/admin/AdminDisputes";
 import AdminTaxReporting from "@/components/admin/AdminTaxReporting";
 import AdminResortImport from "@/components/admin/AdminResortImport";
+import AdminResortTagEditor from "@/components/admin/AdminResortTagEditor";
 import { LaunchReadinessChecklist } from "@/components/admin/LaunchReadinessChecklist";
 import AdminApiKeys from "@/components/admin/AdminApiKeys";
 import AdminNotificationCenter from "@/components/admin/AdminNotificationCenter";
@@ -409,7 +410,10 @@ const AdminDashboard = () => {
 
           {isRavAdmin() && (
             <TabsContent value="resorts">
-              <AdminResortImport />
+              <div className="space-y-6">
+                <AdminResortTagEditor />
+                <AdminResortImport />
+              </div>
             </TabsContent>
           )}
 

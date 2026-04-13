@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-12T23:23:26"
-change_ref: "bc486bf"
-change_type: "session-47"
+last_updated: "2026-04-13T04:36:33"
+change_ref: "699e4cf"
+change_type: "session-48"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -20,14 +20,12 @@ These are the highest-value items we can build RIGHT NOW. No blockers, no decisi
 
 | Order | Issue | Title | Why it's here |
 |-------|-------|-------|---------------|
-| **A1** | #273 | Homepage simplification (Airbnb-style) | VC advisor flagged. First impression = conversion. Integrate new brand terms + RAV Deals. |
-| **A2** | #326 | RAV Deals page (`/rav-deals`) | Existing idle listing infra. Drives bidding engine. Quick win. |
-| **A3** | #285 | Owner fee transparency | Owners won't list if they don't understand costs. Trust blocker. |
-| **A4** | #328 | Attraction-Based Filtering | Visual discovery. Changes how travelers browse. Icon-based pill bar. |
-| **A5** | #327 | Event-Based Search | High value but needs data curation. 10-15 curated events. |
-| **A6** | #283 | Price drop alert notifications | Completes saved search → alert loop (infra already built). |
-| **A7** | #286 | Owner Tax Information form (W-9) | Needed before real payouts. |
-| **A8** | #259 | Testimonials collection + display | Social proof for launch credibility. |
+| **A1** | #285 | Owner fee transparency | Owners won't list if they don't understand costs. Trust blocker. |
+| **A2** | #328 | Attraction-Based Filtering | Visual discovery. Changes how travelers browse. Icon-based pill bar. |
+| **A3** | #327 | Event-Based Search | High value but needs data curation. 10-15 curated events. |
+| **A4** | #283 | Price drop alert notifications | Completes saved search → alert loop (infra already built). |
+| **A5** | #286 | Owner Tax Information form (W-9) | Needed before real payouts. |
+| **A6** | #259 | Testimonials collection + display | Social proof for launch credibility. |
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -104,6 +102,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 13, 2026 | 48 | #326 RAV Deals completed + closed. #273 Homepage completed (Session 47). Header nav consistency fix. Renumbered Tier A. |
 | Apr 12, 2026 | 47 | Initial creation. Brand rebrand completed. Search & Discovery epic created (#325-#328). Full 5-tier prioritization. |
 
 ---

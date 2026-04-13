@@ -2425,6 +2425,7 @@ export interface Resort {
     website: string;
   } | null;
   resort_amenities: string[];
+  attraction_tags: string[];
   policies: {
     check_in: string;
     check_out: string;

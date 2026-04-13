@@ -105,6 +105,7 @@ const AdminResortImport = () => {
         location: row.location,
         description: row.description || null,
         resort_amenities: row.resort_amenities || null,
+        attraction_tags: row.attraction_tags || [],
         guest_rating: row.guest_rating || null,
         nearby_airports: row.nearby_airports || null,
       });

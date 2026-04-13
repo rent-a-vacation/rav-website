@@ -9,6 +9,7 @@ export interface SearchCriteria {
   minGuests?: string;
   minBedrooms?: string;
   brandFilter?: string;
+  attractionTags?: string[];
   dateFrom?: string;
   dateTo?: string;
 }
@@ -100,6 +101,7 @@ export function summarizeCriteria(criteria: SearchCriteria): string {
   }
   if (criteria.minGuests) parts.push(`${criteria.minGuests}+ guests`);
   if (criteria.minBedrooms) parts.push(`${criteria.minBedrooms}+ beds`);
+  if (criteria.attractionTags?.length) parts.push(criteria.attractionTags.join(', '));
   if (criteria.dateFrom) parts.push(`from ${criteria.dateFrom}`);
 
   return parts.length > 0 ? parts.join(', ') : 'All listings';
@@ -114,6 +116,7 @@ export function criteriaToSearchParams(criteria: SearchCriteria): string {
   if (criteria.maxPrice) params.set('maxPrice', criteria.maxPrice);
   if (criteria.minGuests) params.set('minGuests', criteria.minGuests);
   if (criteria.minBedrooms) params.set('minBedrooms', criteria.minBedrooms);
+  if (criteria.attractionTags?.length) params.set('attractions', criteria.attractionTags.join(','));
   return params.toString();
 }
 
@@ -126,6 +129,7 @@ export function hasActiveFilters(criteria: SearchCriteria): boolean {
     criteria.minGuests ||
     criteria.minBedrooms ||
     criteria.brandFilter ||
+    (criteria.attractionTags && criteria.attractionTags.length > 0) ||
     criteria.dateFrom
   );
 }

@@ -644,6 +644,28 @@ async function createInventory(
 
   log.push(`Created ${propertyIds.length} properties`);
 
+  // Update resort attraction_tags for seed resorts
+  const resortTagMap: Record<string, string[]> = {
+    "Elara": ["Casino", "Spa"],
+    "Parc Soleil": ["Theme Park"],
+    "Grande Vista": ["Theme Park", "Golf"],
+    "Ko Olina": ["Beach", "Spa"],
+    "Animal Kingdom": ["Theme Park"],
+    "Beach Club": ["Theme Park", "Beach"],
+    "Bonnet Creek": ["Theme Park"],
+    "Ocean Walk": ["Beach"],
+    "Solterra": ["Theme Park"],
+    "Myrtle Beach": ["Beach", "Golf"],
+  };
+
+  for (const [nameFragment, tags] of Object.entries(resortTagMap)) {
+    await admin
+      .from("resorts")
+      .update({ attraction_tags: tags })
+      .ilike("resort_name", `%${nameFragment}%`);
+  }
+  log.push("Updated resort attraction_tags for seed data");
+
   // Create 30 listings across all properties
   const cancellationPolicies = ["flexible", "moderate", "strict", "super_strict"];
   const ownerEmails = [
