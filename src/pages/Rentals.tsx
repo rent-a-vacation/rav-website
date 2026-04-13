@@ -41,6 +41,13 @@ import {
   Sparkles,
   Mountain as MountainIcon,
   Waves,
+  Film,
+  Trophy,
+  PartyPopper,
+  Sun,
+  Ghost,
+  UtensilsCrossed,
+  Gift,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useVoiceSearch } from "@/hooks/useVoiceSearch";
@@ -66,6 +73,7 @@ import { trackEvent } from "@/lib/posthog";
 import { SaveSearchButton } from "@/components/SaveSearchButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ATTRACTION_TAGS, filterByAttractions, type AttractionTag } from "@/lib/attractionTags";
+import { getUpcomingEvents, filterByEvent, formatEventDateRange, type CuratedEvent } from "@/lib/events";
 const ITEMS_PER_PAGE = 6;
 
 // Icon map for attraction tags (keyed by AttractionTagDef.icon)
@@ -78,6 +86,21 @@ const ATTRACTION_ICON_MAP: Record<string, React.ComponentType<{ className?: stri
   "Sparkles": Sparkles,
   "Mountain": MountainIcon,
   "Waves": Waves,
+};
+
+// Icon map for event categories (keyed by CuratedEvent.icon)
+const EVENT_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  "Film": Film,
+  "Trophy": Trophy,
+  "PartyPopper": PartyPopper,
+  "Sun": Sun,
+  "Flag": Flag,
+  "Snowflake": Snowflake,
+  "Sparkles": Sparkles,
+  "Ghost": Ghost,
+  "UtensilsCrossed": UtensilsCrossed,
+  "Gift": Gift,
+  "Palmtree": Palmtree,
 };
 
 const Rentals = () => {
@@ -101,7 +124,11 @@ const Rentals = () => {
   const [minBedrooms, setMinBedrooms] = useState("");
   const [brandFilter, setBrandFilter] = useState("");
   const [selectedAttractions, setSelectedAttractions] = useState<Set<string>>(new Set());
+  const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("newest");
+
+  // Upcoming events for pill bar
+  const upcomingEvents = getUpcomingEvents(undefined, 8);
 
   // Compare mode
   const [compareMode, setCompareMode] = useState(false);
@@ -174,46 +201,50 @@ const Rentals = () => {
     minBedrooms,
     brandFilter && brandFilter !== "all" ? brandFilter : "",
     selectedAttractions.size > 0 ? "attractions" : "",
+    selectedEvent || "",
   ].filter(Boolean).length;
 
   // Filter listings by all criteria
-  const filteredListings = filterByAttractions(
-    listings.filter((listing) => {
-      // Text search (existing)
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const name = getDisplayName(listing).toLowerCase();
-        const location = getLocation(listing).toLowerCase();
-        const brand = getBrandLabel(listing).toLowerCase();
-        if (!location.includes(q) && !name.includes(q) && !brand.includes(q)) return false;
-      }
+  const baseFiltered = listings.filter((listing) => {
+    // Text search (existing)
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const name = getDisplayName(listing).toLowerCase();
+      const location = getLocation(listing).toLowerCase();
+      const brand = getBrandLabel(listing).toLowerCase();
+      if (!location.includes(q) && !name.includes(q) && !brand.includes(q)) return false;
+    }
 
-      // Date range overlap
-      if (dateRange?.from) {
-        const listingStart = new Date(listing.check_in_date);
-        const listingEnd = new Date(listing.check_out_date);
-        const filterEnd = dateRange.to || dateRange.from;
-        if (listingStart > filterEnd || listingEnd < dateRange.from) return false;
-      }
+    // Date range overlap
+    if (dateRange?.from) {
+      const listingStart = new Date(listing.check_in_date);
+      const listingEnd = new Date(listing.check_out_date);
+      const filterEnd = dateRange.to || dateRange.from;
+      if (listingStart > filterEnd || listingEnd < dateRange.from) return false;
+    }
 
-      // Price range
-      if (minPrice && listing.final_price < Number(minPrice)) return false;
-      if (maxPrice && listing.final_price > Number(maxPrice)) return false;
+    // Price range
+    if (minPrice && listing.final_price < Number(minPrice)) return false;
+    if (maxPrice && listing.final_price > Number(maxPrice)) return false;
 
-      // Guests
-      if (minGuests && listing.property.sleeps < Number(minGuests)) return false;
+    // Guests
+    if (minGuests && listing.property.sleeps < Number(minGuests)) return false;
 
-      // Bedrooms
-      if (minBedrooms && listing.property.bedrooms < Number(minBedrooms)) return false;
+    // Bedrooms
+    if (minBedrooms && listing.property.bedrooms < Number(minBedrooms)) return false;
 
-      // Brand (from filter panel dropdown)
-      if (brandFilter && brandFilter !== "all") {
-        if (listing.property.brand !== brandFilter) return false;
-      }
+    // Brand (from filter panel dropdown)
+    if (brandFilter && brandFilter !== "all") {
+      if (listing.property.brand !== brandFilter) return false;
+    }
 
-      return true;
-    }),
-    selectedAttractions
+    return true;
+  });
+
+  // Apply attraction + event filters
+  const filteredListings = filterByEvent(
+    filterByAttractions(baseFiltered, selectedAttractions),
+    selectedEvent
   );
 
   // Sort
@@ -230,7 +261,7 @@ const Rentals = () => {
   // Reset page when any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, dateRange, minPrice, maxPrice, minGuests, minBedrooms, brandFilter, selectedAttractions, sortOption]);
+  }, [searchQuery, dateRange, minPrice, maxPrice, minGuests, minBedrooms, brandFilter, selectedAttractions, selectedEvent, sortOption]);
 
   // Toggle attraction tag selection
   const toggleAttraction = (tag: string) => {
@@ -254,6 +285,7 @@ const Rentals = () => {
     setMinBedrooms("");
     setBrandFilter("");
     setSelectedAttractions(new Set());
+    setSelectedEvent(null);
     setSearchQuery("");
     setShowFilters(false);
     setCurrentPage(1);
@@ -276,7 +308,7 @@ const Rentals = () => {
               <div className="md:col-span-2 relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
-                  placeholder="Where do you want to go?"
+                  placeholder="Search by destination, resort brand, or event..."
                   className="pl-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -410,6 +442,66 @@ const Rentals = () => {
         </div>
       </section>
 
+      {/* Search by Event Pill Bar */}
+      {upcomingEvents.length > 0 && (
+        <section className="pt-4 pb-0">
+          <div className="container mx-auto px-4">
+            <h3 className="text-sm font-medium text-muted-foreground mb-3">Search by Event</h3>
+            <div className="flex flex-wrap gap-2">
+              {upcomingEvents.map((event) => {
+                const Icon = EVENT_ICON_MAP[event.icon];
+                const isSelected = selectedEvent === event.slug;
+                return (
+                  <button
+                    key={event.slug}
+                    onClick={() => setSelectedEvent(isSelected ? null : event.slug)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                      isSelected
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                    }`}
+                    aria-pressed={isSelected}
+                    aria-label={`Filter by ${event.name}`}
+                  >
+                    {Icon && <Icon className="w-4 h-4" />}
+                    <span>{event.name}</span>
+                    <span className={`text-xs ${isSelected ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                      {formatEventDateRange(event)}
+                    </span>
+                  </button>
+                );
+              })}
+              {selectedEvent && (
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Clear event filter"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Event context banner */}
+      {selectedEvent && (() => {
+        const event = upcomingEvents.find((e) => e.slug === selectedEvent);
+        if (!event) return null;
+        return (
+          <div className="container mx-auto px-4 mt-4">
+            <div className="bg-primary/5 border border-primary/20 rounded-lg px-4 py-2 text-sm">
+              Showing listings near <span className="font-semibold">{event.name}</span> — {formatEventDateRange(event)}
+              {!event.nationwide && event.destinations.length > 0 && (
+                <span className="text-muted-foreground"> in {event.destinations.slice(0, 3).join(", ")}{event.destinations.length > 3 ? ` +${event.destinations.length - 3} more` : ""}</span>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Filters & Results */}
       <section className="py-8">
         <div className="container mx-auto px-4">
@@ -461,6 +553,7 @@ const Rentals = () => {
                   minBedrooms: minBedrooms || undefined,
                   brandFilter: brandFilter || undefined,
                   attractionTags: selectedAttractions.size > 0 ? Array.from(selectedAttractions) : undefined,
+                  eventSlug: selectedEvent || undefined,
                   dateFrom: dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
                   dateTo: dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
                 }}
