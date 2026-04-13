@@ -6,7 +6,9 @@ import { Search, LayoutDashboard, Gavel, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import TrustBadges from "@/components/TrustBadges";
 import FeaturedResorts from "@/components/FeaturedResorts";
+import HowItWorks from "@/components/HowItWorks";
 import TopDestinations from "@/components/TopDestinations";
 import Footer from "@/components/Footer";
 
@@ -121,7 +123,9 @@ const Index = () => {
       <main id="main-content">
         <HeroSection />
         {user && !isLoading && <WelcomeBanner />}
+        <TrustBadges />
         <FeaturedResorts />
+        <HowItWorks />
         <TopDestinations />
       </main>
       <Footer />
