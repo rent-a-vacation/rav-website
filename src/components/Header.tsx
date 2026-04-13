@@ -54,212 +54,155 @@ const Header = () => {
             <span className="font-display font-bold text-xl text-foreground">Rent-A-Vacation</span>
           </Link>
 
-          {/* Desktop Navigation — role-based */}
+          {/* Desktop Navigation — shared core + role layers */}
           <nav className="hidden md:flex items-center gap-1" data-testid="desktop-nav">
-            {/* Owner view: My Rentals | My Listings | Make a Wish */}
-            {user && isPropertyOwner() && !isRavTeam() && (
-              <>
-                <Link
-                  to="/owner-dashboard"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive("/owner-dashboard")
-                      ? "text-foreground bg-muted/50"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                  }`}
-                >
-                  My Rentals
-                </Link>
-                <Link
-                  to="/owner-dashboard?tab=my-listings"
-                  className="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                >
-                  My Listings
-                </Link>
-                <Link
-                  to="/bidding?tab=requests"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive("/bidding")
-                      ? "text-foreground bg-muted/50"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                  }`}
-                >
-                  Make a Wish
-                </Link>
-              </>
-            )}
-
-            {/* Traveler (renter) view OR unauthenticated: Browse Rentals | Name Your Price | Make a Wish | My Trips */}
-            {(!user || (user && !isPropertyOwner() && !isRavTeam())) && (
-              <>
+            {/* CORE: Browse Rentals dropdown — all roles */}
+            <div
+              className="relative pb-2 -mb-2"
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
+            >
+              <button
+                className={`flex items-center gap-1 cursor-pointer group px-3 py-2 rounded-lg transition-colors ${
+                  isActive("/rentals") || isActive("/destinations") || isActive("/rav-deals")
+                    ? "text-foreground bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                }`}
+                aria-haspopup="true"
+                aria-expanded={isDropdownOpen}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setIsDropdownOpen(false);
+                }}
+              >
+                <span className="text-sm font-medium">Browse Rentals</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+              {isDropdownOpen && (
                 <div
-                  className="relative pb-2 -mb-2"
-                  onMouseEnter={() => setIsDropdownOpen(true)}
-                  onMouseLeave={() => setIsDropdownOpen(false)}
+                  className="absolute top-full left-0 w-52 bg-card rounded-xl shadow-lg border border-border/60 p-1.5 animate-fade-in z-50"
+                  role="menu"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') setIsDropdownOpen(false);
+                  }}
                 >
-                  <button
-                    className={`flex items-center gap-1 cursor-pointer group px-3 py-2 rounded-lg transition-colors ${
-                      isActive("/rentals") || isActive("/destinations")
-                        ? "text-foreground bg-muted/50"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    }`}
-                    aria-haspopup="true"
-                    aria-expanded={isDropdownOpen}
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') setIsDropdownOpen(false);
-                    }}
+                  <Link
+                    to="/rentals"
+                    role="menuitem"
+                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                    onClick={() => setIsDropdownOpen(false)}
                   >
-                    <span className="text-sm font-medium">Browse Rentals</span>
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
-                  </button>
-                  {isDropdownOpen && (
-                    <div
-                      className="absolute top-full left-0 w-52 bg-card rounded-xl shadow-lg border border-border/60 p-1.5 animate-fade-in z-50"
-                      role="menu"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') setIsDropdownOpen(false);
-                      }}
-                    >
-                      <Link
-                        to="/rentals"
-                        role="menuitem"
-                        className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        All Rentals
-                      </Link>
-                      <Link
-                        to="/destinations"
-                        role="menuitem"
-                        className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        By Destination
-                      </Link>
-                      <Link
-                        to="/rav-deals"
-                        role="menuitem"
-                        className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        RAV Deals
-                      </Link>
-                    </div>
-                  )}
+                    All Rentals
+                  </Link>
+                  <Link
+                    to="/destinations"
+                    role="menuitem"
+                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    By Destination
+                  </Link>
+                  <Link
+                    to="/rav-deals"
+                    role="menuitem"
+                    className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    RAV Deals
+                  </Link>
                 </div>
-                {!user && (
-                  <Link
-                    to="/how-it-works"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive("/how-it-works")
-                        ? "text-foreground bg-muted/50"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    }`}
-                  >
-                    How It Works
-                  </Link>
-                )}
-                <Link
-                  to="/bidding"
-                  className={`px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
-                    isActive("/bidding") && !location.search.includes("tab=requests")
-                      ? "text-accent bg-accent/10"
-                      : "text-accent hover:text-accent hover:bg-accent/10"
-                  }`}
-                >
-                  Name Your Price
-                </Link>
-                <Link
-                  to="/bidding?tab=requests"
-                  className="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                >
-                  Make a Wish
-                </Link>
-                {user && (
-                  <Link
-                    to="/my-trips"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive("/my-trips")
-                        ? "text-foreground bg-muted/50"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    }`}
-                  >
-                    My Trips
-                  </Link>
-                )}
-                {!user && (
-                  <Link
-                    to="/list-property"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive("/list-property")
-                        ? "text-foreground bg-muted/50"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    }`}
-                  >
-                    List Your Property
-                  </Link>
-                )}
-                {!user && (
-                  <Link
-                    to="/tools"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                      isActive("/tools") || isActive("/calculator")
-                        ? "text-primary bg-primary/5"
-                        : "text-primary/80 hover:text-primary hover:bg-primary/5"
-                    }`}
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Free Tools
-                  </Link>
-                )}
-              </>
+              )}
+            </div>
+
+            {/* CORE: Name Your Price — hero item, accent color, all roles */}
+            <Link
+              to="/bidding"
+              className={`px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
+                isActive("/bidding") && !location.search.includes("tab=requests")
+                  ? "text-accent bg-accent/10"
+                  : "text-accent hover:text-accent hover:bg-accent/10"
+              }`}
+            >
+              Name Your Price
+            </Link>
+
+            {/* CORE: Make a Wish — all roles */}
+            <Link
+              to="/bidding?tab=requests"
+              className="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30"
+            >
+              Make a Wish
+            </Link>
+
+            {/* ROLE: Owner — My Rentals */}
+            {user && isPropertyOwner() && (
+              <Link
+                to="/owner-dashboard"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/owner-dashboard")
+                    ? "text-foreground bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                }`}
+              >
+                My Rentals
+              </Link>
             )}
 
-            {/* RAV Team view: keep original nav intact */}
-            {user && isRavTeam() && (
-              <>
-                <Link
-                  to="/rentals"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive("/rentals")
-                      ? "text-foreground bg-muted/50"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                  }`}
-                >
-                  Browse Rentals
-                </Link>
-                <Link
-                  to="/bidding"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive("/bidding")
-                      ? "text-foreground bg-muted/50"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                  }`}
-                >
-                  Name Your Price
-                </Link>
-                <Link
-                  to="/list-property"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive("/list-property")
-                      ? "text-foreground bg-muted/50"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                  }`}
-                >
-                  List Your Property
-                </Link>
-                <Link
-                  to="/tools"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                    isActive("/tools") || isActive("/calculator")
-                      ? "text-primary bg-primary/5"
-                      : "text-primary/80 hover:text-primary hover:bg-primary/5"
-                  }`}
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Free Tools
-                </Link>
-              </>
+            {/* ROLE: Renter or Owner (not team) — My Trips */}
+            {user && !isRavTeam() && (
+              <Link
+                to="/my-trips"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/my-trips")
+                    ? "text-foreground bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                }`}
+              >
+                My Trips
+              </Link>
+            )}
+
+            {/* UNAUTHENTICATED: How It Works */}
+            {!user && (
+              <Link
+                to="/how-it-works"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/how-it-works")
+                    ? "text-foreground bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                }`}
+              >
+                How It Works
+              </Link>
+            )}
+
+            {/* UNAUTHENTICATED: List Your Property */}
+            {!user && (
+              <Link
+                to="/list-property"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/list-property")
+                    ? "text-foreground bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                }`}
+              >
+                List Your Property
+              </Link>
+            )}
+
+            {/* UNAUTHENTICATED: Free Tools */}
+            {!user && (
+              <Link
+                to="/tools"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                  isActive("/tools") || isActive("/calculator")
+                    ? "text-primary bg-primary/5"
+                    : "text-primary/80 hover:text-primary hover:bg-primary/5"
+                }`}
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                Free Tools
+              </Link>
             )}
           </nav>
 
@@ -331,7 +274,7 @@ const Header = () => {
                       </DropdownMenuItem>
                     )}
 
-                    {isPropertyOwner() && !isRavTeam() && (
+                    {(isPropertyOwner() || isRavTeam()) && (
                       <DropdownMenuItem asChild>
                         <Link to="/list-property" className="flex items-center gap-2 cursor-pointer">
                           <FileText className="h-4 w-4" />
@@ -340,16 +283,14 @@ const Header = () => {
                       </DropdownMenuItem>
                     )}
 
-                    {isPropertyOwner() && !isRavTeam() && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/tools" className="flex items-center gap-2 cursor-pointer">
-                          <Sparkles className="h-4 w-4" />
-                          Free Tools
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
+                    <DropdownMenuItem asChild>
+                      <Link to="/tools" className="flex items-center gap-2 cursor-pointer">
+                        <Sparkles className="h-4 w-4" />
+                        Free Tools
+                      </Link>
+                    </DropdownMenuItem>
 
-                    {(isRavTeam() || isPropertyOwner()) && <DropdownMenuSeparator />}
+                    <DropdownMenuSeparator />
 
                     <DropdownMenuItem asChild>
                       <Link to="/account" className="flex items-center gap-2 cursor-pointer">
@@ -443,97 +384,74 @@ const Header = () => {
               </div>
             )}
 
-            {/* Owner mobile nav */}
-            {user && isPropertyOwner() && !isRavTeam() && (
-              <>
-                <Link
-                  to="/owner-dashboard"
-                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/owner-dashboard") ? "text-foreground" : "text-muted-foreground"}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  My Rentals
-                </Link>
-                <Link
-                  to="/owner-dashboard?tab=my-listings"
-                  className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  My Listings
-                </Link>
-                <Link
-                  to="/bidding?tab=requests"
-                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") ? "text-foreground" : "text-muted-foreground"}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Make a Wish
-                </Link>
-              </>
+            {/* CORE mobile nav — all roles */}
+            <Link
+              to="/rentals"
+              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rentals") ? "text-foreground" : "text-muted-foreground"}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Browse Rentals
+            </Link>
+            <Link
+              to="/destinations"
+              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/destinations") ? "text-foreground" : "text-muted-foreground"}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Destinations
+            </Link>
+            <Link
+              to="/rav-deals"
+              className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rav-deals") ? "text-foreground" : "text-muted-foreground"}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              RAV Deals
+            </Link>
+            <Link
+              to="/bidding"
+              className={`py-2.5 text-sm font-bold transition-colors ${isActive("/bidding") && !location.search.includes("tab=requests") ? "text-accent" : "text-accent/80"}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Name Your Price
+            </Link>
+            <Link
+              to="/bidding?tab=requests"
+              className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Make a Wish
+            </Link>
+
+            {/* ROLE: Owner — My Rentals */}
+            {user && isPropertyOwner() && (
+              <Link
+                to="/owner-dashboard"
+                className={`py-2.5 text-sm font-medium transition-colors ${isActive("/owner-dashboard") ? "text-foreground" : "text-muted-foreground"}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                My Rentals
+              </Link>
             )}
 
-            {/* Traveler mobile nav */}
-            {user && !isPropertyOwner() && !isRavTeam() && (
-              <>
-                <Link
-                  to="/rentals"
-                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rentals") ? "text-foreground" : "text-muted-foreground"}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Browse Rentals
-                </Link>
-                <Link
-                  to="/bidding"
-                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") && !location.search.includes("tab=requests") ? "text-foreground" : "text-muted-foreground"}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Name Your Price
-                </Link>
-                <Link
-                  to="/bidding?tab=requests"
-                  className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Make a Wish
-                </Link>
-                <Link
-                  to="/my-trips"
-                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/my-trips") ? "text-foreground" : "text-muted-foreground"}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  My Trips
-                </Link>
-              </>
+            {/* ROLE: Renter or Owner (not team) — My Trips */}
+            {user && !isRavTeam() && (
+              <Link
+                to="/my-trips"
+                className={`py-2.5 text-sm font-medium transition-colors ${isActive("/my-trips") ? "text-foreground" : "text-muted-foreground"}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                My Trips
+              </Link>
             )}
 
-            {/* Unauthenticated + RAV Team: full public nav */}
-            {(!user || isRavTeam()) && (
+            {/* UNAUTHENTICATED: How It Works + List Your Property */}
+            {!user && (
               <>
-                <Link
-                  to="/rentals"
-                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rentals") ? "text-foreground" : "text-muted-foreground"}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Browse Rentals
-                </Link>
-                <Link
-                  to="/destinations"
-                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/destinations") ? "text-foreground" : "text-muted-foreground"}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Destinations
-                </Link>
                 <Link
                   to="/how-it-works"
                   className={`py-2.5 text-sm font-medium transition-colors ${isActive("/how-it-works") ? "text-foreground" : "text-muted-foreground"}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   How It Works
-                </Link>
-                <Link
-                  to="/bidding"
-                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") ? "text-foreground" : "text-muted-foreground"}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Name Your Price
                 </Link>
                 <Link
                   to="/list-property"
@@ -563,79 +481,69 @@ const Header = () => {
             </Link>
             
             {user && (
-              <>
-                <div className="border-t border-border pt-4">
+              <div className="border-t border-border pt-4">
+                <Link
+                  to="/messages"
+                  className="flex items-center gap-2 text-foreground py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Messages
+                  {unreadMessages > 0 && (
+                    <Badge variant="destructive" className="h-5 min-w-5 px-1 text-[10px]">
+                      {unreadMessages}
+                    </Badge>
+                  )}
+                </Link>
+                {(isPropertyOwner() || isRavTeam()) && (
                   <Link
-                    to="/my-trips"
+                    to="/list-property"
                     className="flex items-center gap-2 text-foreground py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Plane className="h-4 w-4" />
-                    My Trips
+                    <FileText className="h-4 w-4" />
+                    List a Property
                   </Link>
+                )}
+                {isRavTeam() && (
                   <Link
-                    to="/messages"
+                    to="/admin"
                     className="flex items-center gap-2 text-foreground py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <MessageSquare className="h-4 w-4" />
-                    Messages
-                    {unreadMessages > 0 && (
-                      <Badge variant="destructive" className="h-5 min-w-5 px-1 text-[10px]">
-                        {unreadMessages}
-                      </Badge>
-                    )}
+                    <ShieldCheck className="h-4 w-4" />
+                    RAV Ops
                   </Link>
-                  {isRavTeam() && (
-                    <Link
-                      to="/admin"
-                      className="flex items-center gap-2 text-foreground py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <ShieldCheck className="h-4 w-4" />
-                      RAV Ops
-                    </Link>
-                  )}
-                  {isRavTeam() && (
-                    <Link
-                      to="/executive-dashboard"
-                      className="flex items-center gap-2 text-foreground py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <BarChart3 className="h-4 w-4" />
-                      RAV Insights
-                    </Link>
-                  )}
-                  {isRavTeam() && (
-                    <Link
-                      to="/user-journeys"
-                      className="flex items-center gap-2 text-foreground py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <GitBranch className="h-4 w-4" />
-                      User Journeys
-                    </Link>
-                  )}
-                  {isPropertyOwner() && (
-                    <Link
-                      to="/owner-dashboard"
-                      className="flex items-center gap-2 text-foreground py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <LayoutDashboard className="h-4 w-4" />
-                      My Rentals
-                    </Link>
-                  )}
+                )}
+                {isRavTeam() && (
                   <Link
-                    to="/account"
+                    to="/executive-dashboard"
                     className="flex items-center gap-2 text-foreground py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Settings className="h-4 w-4" />
-                    Account Settings
+                    <BarChart3 className="h-4 w-4" />
+                    RAV Insights
                   </Link>
-                </div>
-              </>
+                )}
+                {isRavTeam() && (
+                  <Link
+                    to="/user-journeys"
+                    className="flex items-center gap-2 text-foreground py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <GitBranch className="h-4 w-4" />
+                    User Journeys
+                  </Link>
+                )}
+                <Link
+                  to="/account"
+                  className="flex items-center gap-2 text-foreground py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Settings className="h-4 w-4" />
+                  Account Settings
+                </Link>
+              </div>
             )}
             
             <div className="flex gap-3 pt-4 border-t border-border">

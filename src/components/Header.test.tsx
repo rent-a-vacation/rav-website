@@ -115,7 +115,7 @@ describe('Header — role-based navigation', () => {
     expect(nav).not.toHaveTextContent('List Your Property');
   });
 
-  it('renders owner nav with My Rentals, My Listings, Make a Wish', () => {
+  it('renders owner nav with shared core + My Rentals, My Trips', () => {
     setAuth({
       user: { id: 'user-2', email: 'owner@example.com' },
       profile: { full_name: 'Owner Alex' },
@@ -123,12 +123,14 @@ describe('Header — role-based navigation', () => {
     });
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
-    expect(nav).toHaveTextContent("My Rentals");
-    expect(nav).toHaveTextContent('My Listings');
+    expect(nav).toHaveTextContent('Browse Rentals');
+    expect(nav).toHaveTextContent('Name Your Price');
     expect(nav).toHaveTextContent('Make a Wish');
+    expect(nav).toHaveTextContent('My Rentals');
+    expect(nav).toHaveTextContent('My Trips');
   });
 
-  it('owner nav does NOT show Browse Rentals, Name Your Price, or List Your Property in top nav', () => {
+  it('owner nav does NOT show How It Works or List Your Property in top nav', () => {
     setAuth({
       user: { id: 'user-2', email: 'owner@example.com' },
       profile: { full_name: 'Owner Alex' },
@@ -136,11 +138,11 @@ describe('Header — role-based navigation', () => {
     });
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
-    expect(nav).not.toHaveTextContent('Browse Rentals');
-    expect(nav).not.toHaveTextContent('Name Your Price');
+    expect(nav).not.toHaveTextContent('How It Works');
+    expect(nav).not.toHaveTextContent('List Your Property');
   });
 
-  it('Owner\'s Edge link routes to /owner-dashboard', () => {
+  it('My Rentals link routes to /owner-dashboard', () => {
     setAuth({
       user: { id: 'user-2', email: 'owner@example.com' },
       profile: { full_name: 'Owner Alex' },
@@ -149,17 +151,6 @@ describe('Header — role-based navigation', () => {
     renderHeader();
     const link = screen.getByRole('link', { name: "My Rentals" });
     expect(link).toHaveAttribute('href', '/owner-dashboard');
-  });
-
-  it('My Listings link routes to /owner-dashboard?tab=my-listings', () => {
-    setAuth({
-      user: { id: 'user-2', email: 'owner@example.com' },
-      profile: { full_name: 'Owner Alex' },
-      isPropertyOwner: vi.fn(() => true),
-    });
-    renderHeader();
-    const link = screen.getByRole('link', { name: 'My Listings' });
-    expect(link).toHaveAttribute('href', '/owner-dashboard?tab=my-listings');
   });
 
   it('Make a Wish link routes to /bidding?tab=requests', () => {
