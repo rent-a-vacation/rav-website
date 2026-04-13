@@ -11,6 +11,7 @@ export interface ResortImportRow {
   };
   description?: string;
   resort_amenities?: string[];
+  attraction_tags?: string[];
   guest_rating?: number;
   nearby_airports?: string[];
 }
@@ -118,6 +119,7 @@ export function generateTemplateJson(): string {
       },
       description: "A beautiful resort with world-class amenities.",
       resort_amenities: ["Pool", "Spa", "Fitness Center", "Restaurant"],
+      attraction_tags: ["Beach", "Spa"],
       guest_rating: 4.5,
       nearby_airports: ["MCO", "SFB"],
     },

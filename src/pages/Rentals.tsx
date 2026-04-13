@@ -29,6 +29,14 @@ import {
   Loader2,
   Mic,
   ArrowUpDown,
+  Palmtree,
+  FerrisWheel,
+  Flag,
+  Dice5,
+  Snowflake,
+  Sparkles,
+  Mountain as MountainIcon,
+  Waves,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useVoiceSearch } from "@/hooks/useVoiceSearch";
@@ -43,7 +51,7 @@ import { useFavoriteIds, useToggleFavorite } from "@/hooks/useFavorites";
 import { useToast } from "@/hooks/use-toast";
 import { useActiveListings, type ActiveListing } from "@/hooks/useListings";
 import { useListingSocialProof } from "@/hooks/useListingSocialProof";
-import { ListingCard } from "@/components/ListingCard";
+import { ListingCard, BRAND_LABELS, getDisplayName, getLocation, getBrandLabel } from "@/components/ListingCard";
 import { useVoiceFeatureFlags } from "@/hooks/useVoiceFeatureFlags";
 import { ListingFairValueBadge } from "@/components/fair-value/ListingFairValueBadge";
 import { PostRequestCTA } from "@/components/bidding/PostRequestCTA";
@@ -53,9 +61,20 @@ import { CompareListingsDialog } from "@/components/CompareListingsDialog";
 import { trackEvent } from "@/lib/posthog";
 import { SaveSearchButton } from "@/components/SaveSearchButton";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ATTRACTION_TAGS, filterByAttractions, type AttractionTag } from "@/lib/attractionTags";
 const ITEMS_PER_PAGE = 6;
 
-// Shared helpers now in ListingCard.tsx (BRAND_LABELS, getDisplayName, etc.)
+// Icon map for attraction tags (keyed by AttractionTagDef.icon)
+const ATTRACTION_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  "Palmtree": Palmtree,
+  "Ferris Wheel": FerrisWheel,
+  "Flag": Flag,
+  "Dice5": Dice5,
+  "Snowflake": Snowflake,
+  "Sparkles": Sparkles,
+  "Mountain": MountainIcon,
+  "Waves": Waves,
+};
 
 const Rentals = () => {
   usePageMeta({
@@ -77,6 +96,7 @@ const Rentals = () => {
   const [minGuests, setMinGuests] = useState("");
   const [minBedrooms, setMinBedrooms] = useState("");
   const [brandFilter, setBrandFilter] = useState("");
+  const [selectedAttractions, setSelectedAttractions] = useState<Set<string>>(new Set());
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
   // Compare mode
@@ -149,44 +169,48 @@ const Rentals = () => {
     minGuests,
     minBedrooms,
     brandFilter && brandFilter !== "all" ? brandFilter : "",
+    selectedAttractions.size > 0 ? "attractions" : "",
   ].filter(Boolean).length;
 
   // Filter listings by all criteria
-  const filteredListings = listings.filter((listing) => {
-    // Text search (existing)
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const name = getListingDisplayName(listing).toLowerCase();
-      const location = getListingLocation(listing).toLowerCase();
-      const brand = getListingBrandLabel(listing).toLowerCase();
-      if (!location.includes(q) && !name.includes(q) && !brand.includes(q)) return false;
-    }
+  const filteredListings = filterByAttractions(
+    listings.filter((listing) => {
+      // Text search (existing)
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const name = getDisplayName(listing).toLowerCase();
+        const location = getLocation(listing).toLowerCase();
+        const brand = getBrandLabel(listing).toLowerCase();
+        if (!location.includes(q) && !name.includes(q) && !brand.includes(q)) return false;
+      }
 
-    // Date range overlap
-    if (dateRange?.from) {
-      const listingStart = new Date(listing.check_in_date);
-      const listingEnd = new Date(listing.check_out_date);
-      const filterEnd = dateRange.to || dateRange.from;
-      if (listingStart > filterEnd || listingEnd < dateRange.from) return false;
-    }
+      // Date range overlap
+      if (dateRange?.from) {
+        const listingStart = new Date(listing.check_in_date);
+        const listingEnd = new Date(listing.check_out_date);
+        const filterEnd = dateRange.to || dateRange.from;
+        if (listingStart > filterEnd || listingEnd < dateRange.from) return false;
+      }
 
-    // Price range
-    if (minPrice && listing.final_price < Number(minPrice)) return false;
-    if (maxPrice && listing.final_price > Number(maxPrice)) return false;
+      // Price range
+      if (minPrice && listing.final_price < Number(minPrice)) return false;
+      if (maxPrice && listing.final_price > Number(maxPrice)) return false;
 
-    // Guests
-    if (minGuests && listing.property.sleeps < Number(minGuests)) return false;
+      // Guests
+      if (minGuests && listing.property.sleeps < Number(minGuests)) return false;
 
-    // Bedrooms
-    if (minBedrooms && listing.property.bedrooms < Number(minBedrooms)) return false;
+      // Bedrooms
+      if (minBedrooms && listing.property.bedrooms < Number(minBedrooms)) return false;
 
-    // Brand (from filter panel dropdown)
-    if (brandFilter && brandFilter !== "all") {
-      if (listing.property.brand !== brandFilter) return false;
-    }
+      // Brand (from filter panel dropdown)
+      if (brandFilter && brandFilter !== "all") {
+        if (listing.property.brand !== brandFilter) return false;
+      }
 
-    return true;
-  });
+      return true;
+    }),
+    selectedAttractions
+  );
 
   // Sort
   const sortedListings = sortListings(filteredListings, sortOption);
@@ -202,7 +226,20 @@ const Rentals = () => {
   // Reset page when any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, dateRange, minPrice, maxPrice, minGuests, minBedrooms, brandFilter, sortOption]);
+  }, [searchQuery, dateRange, minPrice, maxPrice, minGuests, minBedrooms, brandFilter, selectedAttractions, sortOption]);
+
+  // Toggle attraction tag selection
+  const toggleAttraction = (tag: string) => {
+    setSelectedAttractions((prev) => {
+      const next = new Set(prev);
+      if (next.has(tag)) {
+        next.delete(tag);
+      } else {
+        next.add(tag);
+      }
+      return next;
+    });
+  };
 
   // Clear all filters helper
   const clearAllFilters = () => {
@@ -212,6 +249,7 @@ const Rentals = () => {
     setMinGuests("");
     setMinBedrooms("");
     setBrandFilter("");
+    setSelectedAttractions(new Set());
     setSearchQuery("");
     setShowFilters(false);
     setCurrentPage(1);
@@ -329,6 +367,45 @@ const Rentals = () => {
         </div>
       </section>
 
+      {/* Browse by Activity Pill Bar */}
+      <section className="pt-6 pb-0">
+        <div className="container mx-auto px-4">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3">Browse by Activity</h3>
+          <div className="flex flex-wrap gap-2">
+            {ATTRACTION_TAGS.map((tagDef) => {
+              const Icon = ATTRACTION_ICON_MAP[tagDef.icon];
+              const isSelected = selectedAttractions.has(tagDef.tag);
+              return (
+                <button
+                  key={tagDef.tag}
+                  onClick={() => toggleAttraction(tagDef.tag)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                    isSelected
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-card text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                  aria-pressed={isSelected}
+                  aria-label={`Filter by ${tagDef.label}`}
+                >
+                  {Icon && <Icon className="w-4 h-4" />}
+                  {tagDef.label}
+                </button>
+              );
+            })}
+            {selectedAttractions.size > 0 && (
+              <button
+                onClick={() => setSelectedAttractions(new Set())}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Clear activity filters"
+              >
+                <X className="w-3.5 h-3.5" />
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Filters & Results */}
       <section className="py-8">
         <div className="container mx-auto px-4">
@@ -379,6 +456,7 @@ const Rentals = () => {
                   minGuests: minGuests || undefined,
                   minBedrooms: minBedrooms || undefined,
                   brandFilter: brandFilter || undefined,
+                  attractionTags: selectedAttractions.size > 0 ? Array.from(selectedAttractions) : undefined,
                   dateFrom: dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
                   dateTo: dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
                 }}
