@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-13T22:19:39"
-change_ref: "bd9f850"
+last_updated: "2026-04-13T23:02:02"
+change_ref: "c90ec51"
 change_type: "session-48"
 status: "active"
 ---
@@ -29,6 +29,7 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
 | #338 | Admin Event Management UI | Move events from static code to DB-driven admin. Depends on staff workflow. |
 | #339 | Multi-year event support | Recurring templates + 2027+ dates. Depends on #338. |
+| #349 | UI polish audit — spacing, sections, visual hierarchy | Aggressive site-wide pass. Can run in parallel with feature work. |
 
 ### Tier C: Tier Feature Differentiation (Bundle as Sprint)
 
