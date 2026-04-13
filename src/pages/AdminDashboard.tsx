@@ -162,7 +162,7 @@ const AdminDashboard = () => {
               </Button>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-bold">RAV Admin Dashboard</h1>
+                  <h1 className="text-xl sm:text-2xl font-bold">RAV Ops</h1>
                   <ShieldCheck className="h-5 w-5 text-primary" />
                 </div>
                 <p className="text-sm text-muted-foreground">

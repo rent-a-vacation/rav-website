@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-12T22:57:23"
-change_ref: "a521368"
+last_updated: "2026-04-13T03:22:39"
+change_ref: "4d55707"
 change_type: "session-47-brand-rebrand"
 status: "active"
 ---
@@ -26,8 +26,9 @@ Features are presented in this order across all materials. Lead with marketplace
 | **Supporting** | **TrustShield + PaySafe** (trust) | Removes risk, enables transactions | After marketplace features — builds confidence |
 | **Supporting** | **Ask RAVIO / Chat with RAVIO** (AI) | Discovery tool — voice and text search | Supporting — nice-to-have, not the headline |
 | **Supporting** | **RAV Smart Suite** (5 tools) | Owner acquisition + lead generation | Supporting — owner onboarding |
-| **Supporting** | **RAV Edge** (owner dashboard) | Owner tools — earnings, listings, bookings | Supporting — owner-facing |
-| **Infrastructure** | **RAV Command** (executive dashboard) | Business intelligence for leadership | Investor/admin only |
+| **Supporting** | **My Rentals** (owner dashboard) | Owner tools — earnings, listings, bookings | Nav: "My Rentals" (mirrors "My Trips") |
+| **Infrastructure** | **RAV Insights** (executive dashboard) | Business intelligence for leadership | Formerly "RAV Command" |
+| **Infrastructure** | **RAV Ops** (admin operations) | User/listing/verification management | Formerly "Admin Dashboard" |
 | **Infrastructure** | **ResortIQ** (resort directory) | Data layer — auto-fill, consistency | Mention when relevant, don't feature-lead |
 
 ### Hierarchy rules
@@ -126,8 +127,9 @@ Canonical names and descriptions. Use these exact names in all materials.
 | **RAV SmartCompare** | Side-by-side cost comparison across booking platforms | Supporting | Free tool |
 | **RAV SmartMatch** | Quiz to find your ideal vacation club brand | Supporting | Free tool |
 | **RAV SmartBudget** | Vacation budget planning tool | Supporting | Free tool |
-| **RAV Edge** | Owner dashboard suite — earnings, listings, bookings, tools | Supporting | Formerly "Owner's Edge." Umbrella for owner-facing features |
-| **RAV Command** | Executive dashboard — real-time business intelligence for leadership | Infrastructure | Investor/admin facing only |
+| **My Rentals** | Owner dashboard — earnings, listings, bookings, tools | Supporting | Formerly "RAV Edge" / "Owner's Edge." Nav label = "My Rentals" (mirrors "My Trips" for renters) |
+| **RAV Insights** | Executive dashboard — real-time business intelligence for leadership | Infrastructure | Formerly "RAV Command." Nav label = "RAV Insights" |
+| **RAV Ops** | Admin operations — users, listings, verifications, disputes | Infrastructure | Formerly "Admin Dashboard." Nav label = "RAV Ops" |
 | **ResortIQ** | Curated resort directory — 117 resorts, 351 unit types from 9 brands. Auto-populates listing details so owners list in minutes and travelers see consistent, accurate resort info | Infrastructure | NOT "proprietary" — data is curated from publicly available resort information |
 | **Dynamic Pricing** | Urgency discounts, seasonal factors, demand-based price adjustments | Infrastructure | Transparent to users |
 
@@ -187,7 +189,10 @@ These claims, terms, and framings are retired. Do not use them in any material.
 | "On average, our renters save X%" | "Designed to save you 20-40%" | We are pre-launch — no actual average exists |
 | "Proprietary metrics" (for Liquidity Score, etc.) | "Platform metrics" or "marketplace health metrics" | These are calculated from platform data, not proprietary research |
 | "Vacation Wishes" | **RAV Wishes** | Rebranded Session 47 for RAV brand family consistency |
-| "Owner's Edge" | **RAV Edge** | Rebranded Session 47 for RAV brand family consistency |
+| "Owner's Edge" / "RAV Edge" | **My Rentals** | Rebranded Session 47 — nav mirrors "My Trips" for renters |
+| "RAV Command" | **RAV Insights** | Rebranded Session 47 — self-descriptive: "I get business insights here" |
+| "Admin Dashboard" | **RAV Ops** | Rebranded Session 47 — self-descriptive: "operations management" |
+| "Explore" (nav label) | **Browse Rentals** | Generic; replaced with descriptive action |
 | "Make an Offer" (as CTA button text) | **Make a RAV Offer** | All transactional CTAs carry RAV identity |
 | "Browse Deals" / "Last-Minute Deals" (as CTA) | **Browse RAV Deals** | Discovery CTAs carry RAV identity |
 | #VacationWishes (hashtag) | **#RAVWishes** | Aligns with rebrand |
@@ -232,23 +237,42 @@ Every named feature follows one of three naming patterns. When adding a new feat
 
 | Pattern | When to Use | Examples |
 |---------|-------------|---------|
-| **RAV [Name]** | Platform features you interact with — dashboards, marketplace mechanics, tools | RAVIO, RAV Command, RAV Edge, RAV Wishes, RAV Deals, RAV Smart[X] |
+| **RAV [Name]** | Platform features — tools, AI, internal dashboards | RAVIO, RAV Insights, RAV Ops, RAV Wishes, RAV Deals, RAV Smart[X] |
 | **[CompoundName]** | Trust & infrastructure — the "serious" layer where gravitas matters | TrustShield, PaySafe, ResortIQ |
 | **[Action Phrase]** | Verb-based CTAs — what users DO (all transactional CTAs carry RAV) | Name Your Price, Make a RAV Offer, Make a RAV Wish, Browse RAV Deals |
+| **[Plain Language]** | User-facing nav labels — self-explanatory, says what you GET | My Trips, My Rentals, Browse Rentals |
 
-### RAV-Prefixed Naming Rules
+### Nav Labels vs Brand Names (CRITICAL)
 
-1. **Every platform feature gets the RAV prefix** unless it's a verb-phrase CTA or trust infrastructure
-2. **RAV-prefixed names are 2-3 syllables after "RAV"** — Command, Edge, Wishes, Deals. Keep it short.
-3. **Tools always use "RAV Smart[X]"** pattern — one compound word after Smart (SmartEarn, not Smart Earn)
-4. **Discovery filters are NOT branded** — "Search by Event," "Browse by Activity" are UI labels, not products
+> **Nav labels = what you DO or what you GET (plain language, self-explanatory)**
+> **Page titles = brand name + one-line value promise**
+
+| Nav Label | Page Title | Who sees it |
+|---|---|---|
+| **Name Your Price** | Name Your Price — The Vacation Bidding Marketplace | Everyone (hero item, accent color) |
+| **Make a Wish** | RAV Wishes — Tell us your dream trip. Owners compete. | Everyone |
+| **Browse Rentals** | Vacation Rentals | Everyone |
+| **My Trips** | My Trips | Renters |
+| **My Rentals** | My Rentals | Owners |
+| **RAV Insights** | RAV Insights — Business Intelligence | Executives |
+| **RAV Ops** | RAV Ops — Operations | Staff/Admin |
+| **List Your Property** | List Your Property | Everyone (owner CTA) |
+
+### Naming Rules
+
+1. **Every nav label must pass the test: "does my customer instantly know what they get?"**
+2. **RAV prefix for internal/admin tools** (RAV Insights, RAV Ops, RAV Smart[X]) — staff know the brand
+3. **Plain language for customer-facing nav** (My Trips, My Rentals, Browse Rentals) — customers need clarity
+4. **Tools always use "RAV Smart[X]"** pattern — one compound word after Smart (SmartEarn, not Smart Earn)
+5. **Discovery filters are NOT branded** — "Search by Event," "Browse by Activity" are UI labels, not products
+6. **"Name Your Price" is the hero nav item** — accent color (coral), bolder weight. It visually dominates.
 
 ### CTA Naming Rules
 
 1. **Every transactional CTA (where a user takes a marketplace action) carries "RAV"** in it
 2. **The master tagline "Name Your Price" is the exception** — it's above the CTAs as the brand promise
 3. **CTAs use verb form:** Make a RAV [X], Browse RAV [X]
-4. **Navigation labels can drop the verb:** "RAV Wishes" (nav), "Make a RAV Wish" (button)
+4. **Navigation labels use plain language, not CTA form:** "Make a Wish" (nav), "Make a RAV Wish" (button)
 
 ### When NOT to Brand
 
@@ -265,6 +289,11 @@ Every named feature follows one of three naming patterns. When adding a new feat
 | Apr 12, 2026 | Make an Offer | **Make a RAV Offer** | Transactional CTAs carry RAV identity |
 | Apr 12, 2026 | *(new)* | **RAV Deals** | New feature — distressed inventory surface |
 | Apr 12, 2026 | *(new)* | **Browse RAV Deals** | CTA for RAV Deals page |
+| Apr 12, 2026 | RAV Edge | **My Rentals** | Nav mirrors "My Trips" — self-descriptive |
+| Apr 12, 2026 | RAV Command | **RAV Insights** | Self-descriptive: business intelligence |
+| Apr 12, 2026 | Admin Dashboard | **RAV Ops** | Self-descriptive: operations management |
+| Apr 12, 2026 | Explore (nav) | **Browse Rentals** | Generic → descriptive action |
+| Apr 12, 2026 | RAV Wishes (nav) | **Make a Wish** | Nav labels = plain language actions |
 
 ---
 
@@ -274,17 +303,19 @@ Every named feature follows one of three naming patterns. When adding a new feat
 
 ### Navigation & Page Titles
 
-| Location | Text | Notes |
-|----------|------|-------|
-| Header nav (traveler) | Browse Rentals | Link to /rentals |
-| Header nav (traveler) | RAV Wishes | Link to /bidding (wishes tab) |
-| Header nav (traveler) | RAV Deals | Link to /rav-deals (new page) |
-| Header nav (owner) | RAV Edge | Link to owner dashboard |
-| Header nav (admin) | RAV Command | Link to /executive-dashboard |
-| Header nav (tools) | Free Tools | Link to /tools |
-| Page title — bidding | Name Your Price | /bidding page title |
-| Tab label — listings | Listings | Within /bidding |
-| Tab label — wishes | RAV Wishes | Within /bidding |
+| Location | Nav Label | Page Title | Link |
+|----------|-----------|------------|------|
+| Header nav (everyone) | **Name Your Price** | Name Your Price — The Vacation Bidding Marketplace | /bidding |
+| Header nav (everyone) | **Make a Wish** | RAV Wishes | /bidding (wishes tab) |
+| Header nav (everyone) | **Browse Rentals** | Vacation Rentals | /rentals |
+| Header nav (owner) | **My Rentals** | My Rentals | /owner-dashboard |
+| Header nav (renter) | **My Trips** | My Trips | /my-trips |
+| Header nav (admin) | **RAV Ops** | RAV Ops — Operations | /admin |
+| Header nav (executive) | **RAV Insights** | RAV Insights — Business Intelligence | /executive-dashboard |
+| Header nav (tools) | **Free Tools** | RAV Tools | /tools |
+| Header nav (owner CTA) | **List Your Property** | List Your Property | /list-property |
+| Tab label — listings | Listings | — | Within /bidding |
+| Tab label — wishes | RAV Wishes | — | Within /bidding |
 
 ### CTA Buttons
 
@@ -299,26 +330,29 @@ Every named feature follows one of three naming patterns. When adding a new feat
 
 ### Feature References in Copy
 
-| When referring to... | Use this exact term |
-|---------------------|-------------------|
-| The bidding marketplace (umbrella) | **Name Your Price** |
-| The reverse auction feature | **RAV Wishes** |
-| The distressed inventory page | **RAV Deals** |
-| The owner dashboard | **RAV Edge** |
-| The executive dashboard | **RAV Command** |
-| The AI voice search | **Ask RAVIO** |
-| The AI text chat | **Chat with RAVIO** |
-| Owner verification | **TrustShield** |
-| Payment escrow | **PaySafe** |
-| Resort data directory | **ResortIQ** |
-| Any Smart tool | **RAV Smart[Name]** |
+| When referring to... | Brand Name | Nav Label |
+|---------------------|-----------|-----------|
+| The bidding marketplace (umbrella) | **Name Your Price** | Name Your Price |
+| The reverse auction feature | **RAV Wishes** | Make a Wish |
+| The distressed inventory page | **RAV Deals** | Browse RAV Deals |
+| The owner dashboard | **My Rentals** | My Rentals |
+| The executive dashboard | **RAV Insights** | RAV Insights |
+| The admin operations panel | **RAV Ops** | RAV Ops |
+| The AI voice search | **Ask RAVIO** | — |
+| The AI text chat | **Chat with RAVIO** | — |
+| Owner verification | **TrustShield** | — |
+| Payment escrow | **PaySafe** | — |
+| Resort data directory | **ResortIQ** | — |
+| Any Smart tool | **RAV Smart[Name]** | — |
 
 ### Internal vs. External Naming
 
-| Internal (code/DB) | External (UI/marketing) | Notes |
-|--------------------|------------------------|-------|
-| `travel_requests` table | RAV Wishes | DB name stays; UI shows branded name |
-| `travel_proposals` table | Proposals (within RAV Wishes) | Generic is fine for sub-concepts |
-| `listing_bids` table | Offers (within Name Your Price) | "Bid" internally, "Offer" in UI |
-| `owner-dashboard` route | RAV Edge | Route can stay; display name changes |
-| `useLastMinuteDeals` hook | RAV Deals | Hook names are internal; UI shows branded |
+| Internal (code/DB) | External (UI/marketing) | Nav Label | Notes |
+|--------------------|------------------------|-----------|-------|
+| `travel_requests` table | RAV Wishes | Make a Wish | DB name stays; nav is plain language |
+| `travel_proposals` table | Proposals (within RAV Wishes) | — | Generic is fine for sub-concepts |
+| `listing_bids` table | Offers (within Name Your Price) | — | "Bid" internally, "Offer" in UI |
+| `owner-dashboard` route | My Rentals | My Rentals | Route can stay; display name changes |
+| `executive-dashboard` route | RAV Insights | RAV Insights | Route can stay; display name changes |
+| `admin` route | RAV Ops | RAV Ops | Route can stay; display name changes |
+| `useLastMinuteDeals` hook | RAV Deals | Browse RAV Deals | Hook names are internal; UI shows branded |

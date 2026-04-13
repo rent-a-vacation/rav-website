@@ -289,7 +289,7 @@ export default function WelcomePage() {
                   onClick={handleSkipToApp}
                   className="w-full mt-4"
                 >
-                  Skip for now — Go to {isOwner ? "RAV Edge" : "My Trips"}
+                  Skip for now — Go to {isOwner ? "My Rentals" : "My Trips"}
                 </Button>
               </CardContent>
             </>

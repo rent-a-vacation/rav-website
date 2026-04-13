@@ -3,7 +3,7 @@ import type { FlowDefinition } from './types';
 export const adminLifecycle: FlowDefinition = {
   id: 'admin-lifecycle',
   label: 'RAV Admin Operations',
-  description: 'Administrative workflows for the RAV team: approvals, verifications, escrow management, and issue resolution. The Admin Dashboard is the central hub with independent operational tracks.',
+  description: 'Administrative workflows for the RAV team: approvals, verifications, escrow management, and issue resolution. The RAV Ops is the central hub with independent operational tracks.',
   primaryRole: 'rav_admin',
   roleEmoji: '🛡️',
   direction: 'TD',
@@ -11,7 +11,7 @@ export const adminLifecycle: FlowDefinition = {
     {
       id: 'dashboard',
       route: '/admin',
-      label: 'Admin Dashboard',
+      label: 'RAV Ops',
       component: 'AdminOverview',
       nodeStyle: 'start',
       roles: ['rav_owner', 'rav_admin', 'rav_staff'],

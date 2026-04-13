@@ -79,7 +79,7 @@ const Documentation = () => {
     { id: "confirmations", label: "Booking Confirmations", icon: FileCheck },
     { id: "cancellations", label: "Cancellation Policies", icon: AlertTriangle },
     { id: "notifications", label: "Email Notifications", icon: Mail },
-    { id: "admin", label: "Admin Dashboard", icon: Settings },
+    { id: "admin", label: "RAV Ops", icon: Settings },
     { id: "rav-owner-guide", label: "RAV Owner How-To Guide", icon: Briefcase },
     { id: "membership-tiers", label: "Membership Tiers", icon: Crown },
     { id: "ai-assistants", label: "AI Assistants (RAVIO)", icon: MessageSquare },
@@ -1340,11 +1340,11 @@ const Documentation = () => {
               </section>
             )}
 
-            {/* Admin Dashboard Section */}
+            {/* RAV Ops Section */}
             {(isPrinting || activeSection === "admin") && (
               <section className="space-y-8 print:break-after-page">
                 <div>
-                  <h1 className="text-4xl font-bold text-foreground mb-4">Admin Dashboard</h1>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">RAV Ops</h1>
                   <p className="text-xl text-muted-foreground">
                     Comprehensive administrative interface for platform management.
                   </p>
@@ -1385,7 +1385,7 @@ const Documentation = () => {
                 <div className="bg-muted/50 rounded-xl p-6">
                   <h3 className="font-semibold mb-3">Access Requirements</h3>
                   <p className="text-sm text-muted-foreground">
-                    Admin Dashboard is accessible only to users with <strong>rav_owner</strong> or <strong>rav_admin</strong> roles.
+                    RAV Ops is accessible only to users with <strong>rav_owner</strong> or <strong>rav_admin</strong> roles.
                     Access the dashboard at <code className="bg-muted px-2 py-1 rounded">/admin</code>
                   </p>
                 </div>
@@ -1987,7 +1987,7 @@ const Documentation = () => {
                     Admin Override Process
                   </h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    RAV admins can manually override a user's membership tier via the Admin Dashboard:
+                    RAV admins can manually override a user's membership tier via the RAV Ops:
                   </p>
                   <ul className="text-sm text-muted-foreground space-y-2">
                     <li>• The <strong>AdminMembershipOverride</strong> dialog (in Admin &gt; Users) lets admins set any tier for any user with a required reason</li>
@@ -2411,7 +2411,7 @@ const Documentation = () => {
                     <h3 className="font-semibold text-lg mb-4">Dispute Workflow</h3>
                     <ol className="space-y-2 text-sm text-muted-foreground">
                       <li><strong>1. Filing:</strong> Renter clicks "Report Issue" on a booking → selects category (property_not_as_described, access_issues, safety_concerns, etc.) → describes the problem</li>
-                      <li><strong>2. Triage:</strong> Admin sees dispute in Admin Dashboard → Disputes tab with priority/status/assignment filters</li>
+                      <li><strong>2. Triage:</strong> Admin sees dispute in RAV Ops → Disputes tab with priority/status/assignment filters</li>
                       <li><strong>3. Investigation:</strong> Admin updates status (open → investigating), assigns to team member, sends messages to parties via internal thread</li>
                       <li><strong>4. Resolution:</strong> Admin resolves with optional refund amount → dispute closed, booking/escrow updated</li>
                     </ol>
@@ -2505,7 +2505,7 @@ const Documentation = () => {
                   <div className="bg-card rounded-xl p-6 border">
                     <h3 className="font-semibold text-lg mb-4">Payout Flow</h3>
                     <p className="text-sm text-muted-foreground">
-                      Admin initiates payouts via Admin Dashboard → Payouts → "Pay via Stripe". The
+                      Admin initiates payouts via RAV Ops → Payouts → "Pay via Stripe". The
                       <code className="bg-muted px-1 rounded"> create-stripe-payout</code> edge function creates a Stripe Transfer
                       from the RAV platform account to the owner's connected account. Transfer ID is recorded on the booking.
                     </p>
@@ -2909,7 +2909,7 @@ const Documentation = () => {
                       <li>• <strong>Tables:</strong> <code className="bg-muted px-1 rounded">api_keys</code> (hashed keys, scopes, tiers) + <code className="bg-muted px-1 rounded">api_request_log</code> (per-request analytics)</li>
                       <li>• <strong>RPCs:</strong> <code className="bg-muted px-1 rounded">validate_api_key</code>, <code className="bg-muted px-1 rounded">increment_api_key_usage</code>, <code className="bg-muted px-1 rounded">list_api_keys</code>, <code className="bg-muted px-1 rounded">get_api_key_stats</code></li>
                       <li>• <strong>Shared Modules:</strong> <code className="bg-muted px-1 rounded">_shared/api-auth.ts</code>, <code className="bg-muted px-1 rounded">_shared/api-response.ts</code></li>
-                      <li>• <strong>Admin UI:</strong> "API Keys" tab in Admin Dashboard (rav_admin only)</li>
+                      <li>• <strong>Admin UI:</strong> "API Keys" tab in RAV Ops (rav_admin only)</li>
                       <li>• <strong>Public Docs:</strong> <code className="bg-muted px-1 rounded">/developers</code> — Swagger UI (no auth required)</li>
                       <li>• <strong>IP Allowlisting:</strong> Optional per-key IP restriction with CIDR support (e.g., <code className="bg-muted px-1 rounded">203.0.113.0/24</code>) — requests from unlisted IPs get <code className="bg-muted px-1 rounded">403</code></li>
                       <li>• <strong>Migrations:</strong> 044 (tables + RPCs), 045 (IP allowlist column)</li>
@@ -2976,7 +2976,7 @@ const Documentation = () => {
                     <ol className="space-y-3 text-sm text-muted-foreground">
                       <li className="flex gap-3">
                         <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">1</span>
-                        <span>Admin Dashboard → API Keys tab → Create Key</span>
+                        <span>RAV Ops → API Keys tab → Create Key</span>
                       </li>
                       <li className="flex gap-3">
                         <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold flex-shrink-0">2</span>

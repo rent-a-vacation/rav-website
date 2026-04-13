@@ -56,7 +56,7 @@ const Header = () => {
 
           {/* Desktop Navigation — role-based */}
           <nav className="hidden md:flex items-center gap-1" data-testid="desktop-nav">
-            {/* Owner view: RAV Edge | My Listings | RAV Wishes */}
+            {/* Owner view: My Rentals | My Listings | Make a Wish */}
             {user && isPropertyOwner() && !isRavTeam() && (
               <>
                 <Link
@@ -67,7 +67,7 @@ const Header = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   }`}
                 >
-                  RAV Edge
+                  My Rentals
                 </Link>
                 <Link
                   to="/owner-dashboard?tab=my-listings"
@@ -83,12 +83,12 @@ const Header = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   }`}
                 >
-                  RAV Wishes
+                  Make a Wish
                 </Link>
               </>
             )}
 
-            {/* Traveler (renter) view OR unauthenticated: Explore | Name Your Price | RAV Wishes | My Trips */}
+            {/* Traveler (renter) view OR unauthenticated: Browse Rentals | Name Your Price | Make a Wish | My Trips */}
             {(!user || (user && !isPropertyOwner() && !isRavTeam())) && (
               <>
                 <div
@@ -109,7 +109,7 @@ const Header = () => {
                       if (e.key === 'Escape') setIsDropdownOpen(false);
                     }}
                   >
-                    <span className="text-sm font-medium">Explore</span>
+                    <span className="text-sm font-medium">Browse Rentals</span>
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
                   </button>
                   {isDropdownOpen && (
@@ -161,10 +161,10 @@ const Header = () => {
                 )}
                 <Link
                   to="/bidding"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
                     isActive("/bidding") && !location.search.includes("tab=requests")
-                      ? "text-foreground bg-muted/50"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                      ? "text-accent bg-accent/10"
+                      : "text-accent hover:text-accent hover:bg-accent/10"
                   }`}
                 >
                   Name Your Price
@@ -173,7 +173,7 @@ const Header = () => {
                   to="/bidding?tab=requests"
                   className="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30"
                 >
-                  RAV Wishes
+                  Make a Wish
                 </Link>
                 {user && (
                   <Link
@@ -226,7 +226,7 @@ const Header = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   }`}
                 >
-                  Explore
+                  Browse Rentals
                 </Link>
                 <Link
                   to="/bidding"
@@ -310,7 +310,7 @@ const Header = () => {
                       <DropdownMenuItem asChild>
                         <Link to="/admin" className="flex items-center gap-2 cursor-pointer">
                           <ShieldCheck className="h-4 w-4" />
-                          Admin Dashboard
+                          RAV Ops
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -318,7 +318,7 @@ const Header = () => {
                       <DropdownMenuItem asChild>
                         <Link to="/executive-dashboard" className="flex items-center gap-2 cursor-pointer">
                           <BarChart3 className="h-4 w-4" />
-                          RAV Command
+                          RAV Insights
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -451,7 +451,7 @@ const Header = () => {
                   className={`py-2.5 text-sm font-medium transition-colors ${isActive("/owner-dashboard") ? "text-foreground" : "text-muted-foreground"}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  RAV Edge
+                  My Rentals
                 </Link>
                 <Link
                   to="/owner-dashboard?tab=my-listings"
@@ -465,7 +465,7 @@ const Header = () => {
                   className={`py-2.5 text-sm font-medium transition-colors ${isActive("/bidding") ? "text-foreground" : "text-muted-foreground"}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  RAV Wishes
+                  Make a Wish
                 </Link>
               </>
             )}
@@ -478,7 +478,7 @@ const Header = () => {
                   className={`py-2.5 text-sm font-medium transition-colors ${isActive("/rentals") ? "text-foreground" : "text-muted-foreground"}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Explore
+                  Browse Rentals
                 </Link>
                 <Link
                   to="/bidding"
@@ -492,7 +492,7 @@ const Header = () => {
                   className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  RAV Wishes
+                  Make a Wish
                 </Link>
                 <Link
                   to="/my-trips"
@@ -593,7 +593,7 @@ const Header = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <ShieldCheck className="h-4 w-4" />
-                      Admin Dashboard
+                      RAV Ops
                     </Link>
                   )}
                   {isRavTeam() && (
@@ -603,7 +603,7 @@ const Header = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <BarChart3 className="h-4 w-4" />
-                      RAV Command
+                      RAV Insights
                     </Link>
                   )}
                   {isRavTeam() && (
@@ -623,7 +623,7 @@ const Header = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <LayoutDashboard className="h-4 w-4" />
-                      RAV Edge
+                      My Rentals
                     </Link>
                   )}
                   <Link
