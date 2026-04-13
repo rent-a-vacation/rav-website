@@ -137,12 +137,12 @@ const Header = () => {
                         By Destination
                       </Link>
                       <Link
-                        to="/rentals?filter=deals"
+                        to="/rav-deals"
                         role="menuitem"
                         className="block px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
                         onClick={() => setIsDropdownOpen(false)}
                       >
-                        Last Minute Deals
+                        RAV Deals
                       </Link>
                     </div>
                   )}

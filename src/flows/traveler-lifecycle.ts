@@ -79,6 +79,19 @@ export const travelerLifecycle: FlowDefinition = {
       branches: [
         { condition: 'Found listing', targetStepId: 'view_property', label: 'View listing' },
         { condition: 'Post vacation wish', targetStepId: 'post_travel_request', label: 'Post RAV Wish' },
+        { condition: 'Browse deals', targetStepId: 'rav_deals', label: 'Browse RAV Deals' },
+      ],
+    },
+    {
+      id: 'rav_deals',
+      route: '/rav-deals',
+      label: 'RAV Deals',
+      component: 'RavDeals',
+      description: 'Browse distressed inventory with urgency pricing — expiring weeks from motivated sellers',
+      tables: ['listings', 'properties'],
+      branches: [
+        { condition: 'Found deal', targetStepId: 'view_property', label: 'View listing' },
+        { condition: 'Make offer', targetStepId: 'place_bid', label: 'Make a RAV Offer' },
       ],
     },
     {

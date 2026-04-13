@@ -57,6 +57,7 @@ const Notifications = lazy(() => import("./pages/Notifications"));
 const NotificationPreferences = lazy(() => import("./pages/settings/NotificationPreferences"));
 const SubscriptionSuccess = lazy(() => import("./pages/SubscriptionSuccess"));
 const Messages = lazy(() => import("./pages/Messages"));
+const RavDeals = lazy(() => import("./pages/RavDeals"));
 const WelcomePage = lazy(() => import("./pages/WelcomePage"));
 
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
@@ -212,6 +213,9 @@ const App = () => (
             <Route path="/tools/resort-quiz" element={<Suspense fallback={<PageLoadingFallback />}><ResortQuiz /></Suspense>} />
             <Route path="/tools/budget-planner" element={<Suspense fallback={<PageLoadingFallback />}><BudgetPlanner /></Suspense>} />
 
+            {/* Discovery — public */}
+            <Route path="/rav-deals" element={<Suspense fallback={<PageLoadingFallback />}><RavDeals /></Suspense>} />
+
             {/* Protected routes — require approved account */}
             <Route path="/rentals" element={<ProtectedRoute><Rentals /></ProtectedRoute>} />
             <Route path="/list-property" element={<ProtectedRoute requiredRole="property_owner"><ListProperty /></ProtectedRoute>} />
@@ -237,7 +241,7 @@ const App = () => (
             <Route path="/api-docs" element={<ApiDocs />} />
 
             {/* Legacy routes - redirect to proper sections */}
-            <Route path="/deals" element={<Navigate to="/rentals" replace />} />
+            <Route path="/deals" element={<Navigate to="/rav-deals" replace />} />
             <Route path="/owner-resources" element={<Navigate to="/how-it-works#for-owners" replace />} />
             <Route path="/pricing" element={<Navigate to="/how-it-works#pricing" replace />} />
             <Route path="/success-stories" element={<Navigate to="/how-it-works#success-stories" replace />} />
