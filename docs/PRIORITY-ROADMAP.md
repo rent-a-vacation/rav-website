@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-13T21:22:54"
-change_ref: "cc4ccb8"
+last_updated: "2026-04-13T21:55:14"
+change_ref: "94c5739"
 change_type: "session-48"
 status: "active"
 ---
@@ -20,8 +20,7 @@ These are the highest-value items we can build RIGHT NOW. No blockers, no decisi
 
 | Order | Issue | Title | Why it's here |
 |-------|-------|-------|---------------|
-| **A1** | #286 | Owner Tax Information form (W-9) | Needed before real payouts. |
-| **A2** | #259 | Testimonials collection + display | Social proof for launch credibility. |
+| **A1** | #259 | Testimonials collection + display | Social proof for launch credibility. |
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -100,7 +99,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
-| Apr 13, 2026 | 49 | #283 Price drop alerts, #285 Fee transparency, #327 Event Search, #328 Attraction Filter, #337 Contrast pass. Logos updated. Discovery bar. 1035 tests. PRs #334-#346. |
+| Apr 13, 2026 | 49 | #283, #285, #286, #327, #328, #337 completed. Logos updated. Discovery bar. Tax form. 1047 tests. PRs #334-#347. |
 | Apr 13, 2026 | 48 | #326 RAV Deals completed + closed. #273 Homepage completed (Session 47). Header nav consistency fix. Renumbered Tier A. |
 | Apr 12, 2026 | 47 | Initial creation. Brand rebrand completed. Search & Discovery epic created (#325-#328). Full 5-tier prioritization. |
 
