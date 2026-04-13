@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateNights, computeListingPricing, computeFeeBreakdown } from './pricing';
+import { calculateNights, computeListingPricing, computeFeeBreakdown, computeOwnerPayoutBreakdown } from './pricing';
 
 describe('calculateNights @p0', () => {
   it('returns correct nights for a standard week', () => {
@@ -126,5 +126,66 @@ describe('computeFeeBreakdown @p0', () => {
   it('defaults cleaning fee to 0 when not provided', () => {
     const result = computeFeeBreakdown(100, 1);
     expect(result.cleaningFee).toBe(0);
+  });
+});
+
+describe('computeOwnerPayoutBreakdown', () => {
+  it('calculates standard 15% commission breakdown', () => {
+    // $200/night × 5 nights = $1000 base, 15% commission
+    const result = computeOwnerPayoutBreakdown(200, 5, 15, 100);
+    expect(result.baseAmount).toBe(1000);
+    expect(result.cleaningFee).toBe(100);
+    expect(result.ownerPayout).toBe(1100); // base + cleaning
+    expect(result.ravCommission).toBe(150); // 15% of 1000
+    expect(result.guestTotal).toBe(1250); // 1000 + 150 + 100
+    expect(result.effectiveCommissionPct).toBe(15);
+  });
+
+  it('owner payout is always base + cleaning (Stripe comes from RAV)', () => {
+    const result = computeOwnerPayoutBreakdown(200, 5, 15, 100);
+    expect(result.ownerPayout).toBe(result.baseAmount + result.cleaningFee);
+    expect(result.ravNetRevenue).toBeLessThan(result.ravCommission);
+  });
+
+  it('calculates Stripe fee correctly (2.9% + $0.30)', () => {
+    const result = computeOwnerPayoutBreakdown(200, 5, 15, 100);
+    // Stripe fee on $1250 total: 1250 × 0.029 + 0.30 = 36.25 + 0.30 = 36.55
+    expect(result.stripeFee).toBe(36.55);
+    expect(result.ravNetRevenue).toBe(113.45); // 150 - 36.55
+  });
+
+  it('applies Pro tier discount (13%)', () => {
+    const result = computeOwnerPayoutBreakdown(200, 5, 13, 0);
+    expect(result.ravCommission).toBe(130); // 13% of 1000
+    expect(result.ownerPayout).toBe(1000); // unchanged — owner always gets base
+    expect(result.guestTotal).toBe(1130);
+    expect(result.effectiveCommissionPct).toBe(13);
+  });
+
+  it('applies Business tier discount (10%)', () => {
+    const result = computeOwnerPayoutBreakdown(200, 5, 10, 0);
+    expect(result.ravCommission).toBe(100);
+    expect(result.guestTotal).toBe(1100);
+  });
+
+  it('handles zero commission', () => {
+    const result = computeOwnerPayoutBreakdown(200, 5, 0, 0);
+    expect(result.ravCommission).toBe(0);
+    expect(result.ownerPayout).toBe(1000);
+    expect(result.guestTotal).toBe(1000);
+    expect(result.ravNetRevenue).toBeLessThan(0); // RAV absorbs Stripe fee
+  });
+
+  it('handles zero-night edge case', () => {
+    const result = computeOwnerPayoutBreakdown(200, 0, 15, 0);
+    expect(result.baseAmount).toBe(0);
+    expect(result.ravCommission).toBe(0);
+    expect(result.ownerPayout).toBe(0);
+  });
+
+  it('cleaning fee passes through to owner payout untouched', () => {
+    const withCleaning = computeOwnerPayoutBreakdown(100, 1, 15, 500);
+    expect(withCleaning.ownerPayout).toBe(600); // 100 + 500
+    expect(withCleaning.ravCommission).toBe(15); // 15% of 100 only
   });
 });
