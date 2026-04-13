@@ -406,7 +406,7 @@ const Rentals = () => {
       {/* Browse by Activity Pill Bar */}
       <section className="pt-6 pb-0">
         <div className="container mx-auto px-4">
-          <h3 className="text-sm font-medium text-muted-foreground mb-3">Browse by Activity</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">Browse by Activity</h3>
           <div className="flex flex-wrap gap-2">
             {ATTRACTION_TAGS.map((tagDef) => {
               const Icon = ATTRACTION_ICON_MAP[tagDef.icon];
@@ -415,15 +415,15 @@ const Rentals = () => {
                 <button
                   key={tagDef.tag}
                   onClick={() => toggleAttraction(tagDef.tag)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all border shadow-sm ${
                     isSelected
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-primary text-primary-foreground border-primary shadow-md"
+                      : "bg-card text-foreground border-border hover:border-primary/40 hover:shadow-md"
                   }`}
                   aria-pressed={isSelected}
                   aria-label={`Filter by ${tagDef.label}`}
                 >
-                  {Icon && <Icon className="w-4 h-4" />}
+                  {Icon && <Icon className={`w-4 h-4 ${isSelected ? "" : "text-primary"}`} />}
                   {tagDef.label}
                 </button>
               );
@@ -431,7 +431,7 @@ const Rentals = () => {
             {selectedAttractions.size > 0 && (
               <button
                 onClick={() => setSelectedAttractions(new Set())}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="Clear activity filters"
               >
                 <X className="w-3.5 h-3.5" />
@@ -446,7 +446,7 @@ const Rentals = () => {
       {upcomingEvents.length > 0 && (
         <section className="pt-4 pb-0">
           <div className="container mx-auto px-4">
-            <h3 className="text-sm font-medium text-muted-foreground mb-3">Search by Event</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">Search by Event</h3>
             <div className="flex flex-wrap gap-2">
               {upcomingEvents.map((event) => {
                 const Icon = EVENT_ICON_MAP[event.icon];
@@ -455,15 +455,15 @@ const Rentals = () => {
                   <button
                     key={event.slug}
                     onClick={() => setSelectedEvent(isSelected ? null : event.slug)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all border shadow-sm ${
                       isSelected
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-card text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                        ? "bg-primary text-primary-foreground border-primary shadow-md"
+                        : "bg-card text-foreground border-border hover:border-primary/40 hover:shadow-md"
                     }`}
                     aria-pressed={isSelected}
                     aria-label={`Filter by ${event.name}`}
                   >
-                    {Icon && <Icon className="w-4 h-4" />}
+                    {Icon && <Icon className={`w-4 h-4 ${isSelected ? "" : "text-accent"}`} />}
                     <span>{event.name}</span>
                     <span className={`text-xs ${isSelected ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                       {formatEventDateRange(event)}
@@ -474,7 +474,7 @@ const Rentals = () => {
               {selectedEvent && (
                 <button
                   onClick={() => setSelectedEvent(null)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Clear event filter"
                 >
                   <X className="w-3.5 h-3.5" />

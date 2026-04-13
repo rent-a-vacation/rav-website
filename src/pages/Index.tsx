@@ -15,14 +15,14 @@ const WelcomeBanner = () => {
   const firstName = profile?.full_name?.split(" ")[0] || "there";
 
   return (
-    <div className="bg-primary/5 border-b border-primary/10">
-      <div className="container mx-auto px-4 py-4">
+    <div className="bg-card border-b border-border shadow-sm">
+      <div className="container mx-auto px-4 py-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-lg font-bold text-foreground">
               Welcome back, {firstName}!
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground font-medium">
               Where to next? Pick up where you left off.
             </p>
           </div>
