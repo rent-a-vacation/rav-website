@@ -79,17 +79,17 @@ describe('Header — role-based navigation', () => {
     resetAuth();
   });
 
-  it('renders unauthenticated nav with Explore, How It Works, Name Your Price, List Your Property, Free Tools', () => {
+  it('renders unauthenticated nav with Browse Rentals, How It Works, Name Your Price, List Your Property, Free Tools', () => {
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
-    expect(nav).toHaveTextContent('Explore');
+    expect(nav).toHaveTextContent('Browse Rentals');
     expect(nav).toHaveTextContent('How It Works');
     expect(nav).toHaveTextContent('Name Your Price');
     expect(nav).toHaveTextContent('List Your Property');
     expect(nav).toHaveTextContent('Free Tools');
   });
 
-  it('renders traveler nav with Explore, Name Your Price, RAV Wishes, My Trips', () => {
+  it('renders traveler nav with Browse Rentals, Name Your Price, Make a Wish, My Trips', () => {
     setAuth({
       user: { id: 'user-1', email: 'traveler@example.com' },
       profile: { full_name: 'Traveler' },
@@ -97,9 +97,9 @@ describe('Header — role-based navigation', () => {
     });
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
-    expect(nav).toHaveTextContent('Explore');
+    expect(nav).toHaveTextContent('Browse Rentals');
     expect(nav).toHaveTextContent('Name Your Price');
-    expect(nav).toHaveTextContent('RAV Wishes');
+    expect(nav).toHaveTextContent('Make a Wish');
     expect(nav).toHaveTextContent('My Trips');
   });
 
@@ -115,7 +115,7 @@ describe('Header — role-based navigation', () => {
     expect(nav).not.toHaveTextContent('List Your Property');
   });
 
-  it('renders owner nav with Owner\'s Edge, My Listings, RAV Wishes', () => {
+  it('renders owner nav with My Rentals, My Listings, Make a Wish', () => {
     setAuth({
       user: { id: 'user-2', email: 'owner@example.com' },
       profile: { full_name: 'Owner Alex' },
@@ -123,12 +123,12 @@ describe('Header — role-based navigation', () => {
     });
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
-    expect(nav).toHaveTextContent("RAV Edge");
+    expect(nav).toHaveTextContent("My Rentals");
     expect(nav).toHaveTextContent('My Listings');
-    expect(nav).toHaveTextContent('RAV Wishes');
+    expect(nav).toHaveTextContent('Make a Wish');
   });
 
-  it('owner nav does NOT show Explore, Name Your Price, or List Your Property in top nav', () => {
+  it('owner nav does NOT show Browse Rentals, Name Your Price, or List Your Property in top nav', () => {
     setAuth({
       user: { id: 'user-2', email: 'owner@example.com' },
       profile: { full_name: 'Owner Alex' },
@@ -136,7 +136,7 @@ describe('Header — role-based navigation', () => {
     });
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
-    expect(nav).not.toHaveTextContent('Explore');
+    expect(nav).not.toHaveTextContent('Browse Rentals');
     expect(nav).not.toHaveTextContent('Name Your Price');
   });
 
@@ -147,7 +147,7 @@ describe('Header — role-based navigation', () => {
       isPropertyOwner: vi.fn(() => true),
     });
     renderHeader();
-    const link = screen.getByRole('link', { name: "RAV Edge" });
+    const link = screen.getByRole('link', { name: "My Rentals" });
     expect(link).toHaveAttribute('href', '/owner-dashboard');
   });
 
@@ -162,14 +162,14 @@ describe('Header — role-based navigation', () => {
     expect(link).toHaveAttribute('href', '/owner-dashboard?tab=my-listings');
   });
 
-  it('RAV Wishes link routes to /bidding?tab=requests', () => {
+  it('Make a Wish link routes to /bidding?tab=requests', () => {
     setAuth({
       user: { id: 'user-2', email: 'owner@example.com' },
       profile: { full_name: 'Owner Alex' },
       isPropertyOwner: vi.fn(() => true),
     });
     renderHeader();
-    const link = screen.getByRole('link', { name: 'RAV Wishes' });
+    const link = screen.getByRole('link', { name: 'Make a Wish' });
     expect(link).toHaveAttribute('href', '/bidding?tab=requests');
   });
 

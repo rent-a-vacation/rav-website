@@ -147,7 +147,7 @@ describe('WelcomePage', () => {
       expect(screen.getByText(/You're set up as a Property Owner/)).toBeInTheDocument();
     });
     expect(screen.getByText('List Your First Property')).toBeInTheDocument();
-    expect(screen.getAllByText(/Go to RAV Edge/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Go to My Rentals/).length).toBeGreaterThan(0);
     expect(screen.getByText('Browse RAV Wishes')).toBeInTheDocument();
   });
 
