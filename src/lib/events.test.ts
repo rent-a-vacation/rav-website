@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import {
-  CURATED_EVENTS,
   dateRangesOverlap,
   doesListingMatchEvent,
   filterByEvent,
@@ -72,42 +71,50 @@ function makeListing(
   };
 }
 
-describe("CURATED_EVENTS data integrity", () => {
-  it("has 14 curated events", () => {
-    expect(CURATED_EVENTS.length).toBe(14);
-  });
+// Sample event fixtures used across tests (replicate DB-shape events).
+const springBreakEast: CuratedEvent = {
+  slug: "spring-break-east",
+  name: "Spring Break (East Coast)",
+  category: "school_break",
+  dateRange: { start: "2026-03-07", end: "2026-03-21" },
+  year: 2026,
+  destinations: ["Orlando", "Miami", "Tampa", "Myrtle Beach", "Daytona Beach"],
+  nationwide: false,
+  icon: "Sun",
+};
 
-  it("all events have unique slugs", () => {
-    const slugs = CURATED_EVENTS.map((e) => e.slug);
-    expect(new Set(slugs).size).toBe(slugs.length);
-  });
+const fourthOfJuly: CuratedEvent = {
+  slug: "fourth-of-july-2026",
+  name: "Fourth of July",
+  category: "major_holiday",
+  dateRange: { start: "2026-06-27", end: "2026-07-06" },
+  year: 2026,
+  destinations: [],
+  nationwide: true,
+  icon: "Sparkles",
+};
 
-  it("all events have valid date ranges (start <= end)", () => {
-    for (const event of CURATED_EVENTS) {
-      expect(event.dateRange.start <= event.dateRange.end).toBe(true);
-    }
-  });
+const superBowl: CuratedEvent = {
+  slug: "super-bowl-lx",
+  name: "Super Bowl LX",
+  category: "sports",
+  dateRange: { start: "2026-02-04", end: "2026-02-10" },
+  year: 2026,
+  destinations: ["Santa Clara"],
+  nationwide: false,
+  icon: "Trophy",
+};
 
-  it("nationwide events have empty destinations array", () => {
-    const nationwide = CURATED_EVENTS.filter((e) => e.nationwide);
-    for (const event of nationwide) {
-      expect(event.destinations).toEqual([]);
-    }
-  });
-
-  it("non-nationwide events have at least one destination", () => {
-    const local = CURATED_EVENTS.filter((e) => !e.nationwide);
-    for (const event of local) {
-      expect(event.destinations.length).toBeGreaterThan(0);
-    }
-  });
-
-  it("all events have an icon defined", () => {
-    for (const event of CURATED_EVENTS) {
-      expect(event.icon).toBeTruthy();
-    }
-  });
-});
+const mardiGras: CuratedEvent = {
+  slug: "mardi-gras-2026",
+  name: "Mardi Gras",
+  category: "cultural",
+  dateRange: { start: "2026-02-12", end: "2026-02-18" },
+  year: 2026,
+  destinations: ["New Orleans", "Orlando"],
+  nationwide: false,
+  icon: "PartyPopper",
+};
 
 describe("dateRangesOverlap", () => {
   it("returns true for overlapping ranges", () => {
@@ -132,9 +139,6 @@ describe("dateRangesOverlap", () => {
 });
 
 describe("doesListingMatchEvent", () => {
-  const springBreakEast: CuratedEvent = CURATED_EVENTS.find((e) => e.slug === "spring-break-east")!;
-  const fourthOfJuly: CuratedEvent = CURATED_EVENTS.find((e) => e.slug === "fourth-of-july-2026")!;
-
   it("matches listing with date overlap + destination match", () => {
     const listing = makeListing("1", "2026-03-10", "2026-03-17", "Orlando", "FL");
     expect(doesListingMatchEvent(listing, springBreakEast)).toBe(true);
@@ -168,68 +172,72 @@ describe("filterByEvent", () => {
     makeListing("3", "2026-03-10", "2026-03-17", "Las Vegas", "NV"),
     makeListing("4", "2026-06-01", "2026-06-08", "Orlando", "FL"),
   ];
+  const events = [springBreakEast, fourthOfJuly, superBowl, mardiGras];
 
   it("returns all listings when no event selected", () => {
-    expect(filterByEvent(listings, null)).toHaveLength(4);
+    expect(filterByEvent(listings, null, events)).toHaveLength(4);
   });
 
   it("filters by spring break east (date + destination)", () => {
-    const result = filterByEvent(listings, "spring-break-east");
+    const result = filterByEvent(listings, "spring-break-east", events);
     expect(result).toHaveLength(2);
     expect(result.map((l) => l.id).sort()).toEqual(["1", "2"]);
   });
 
   it("returns all listings for unknown event slug", () => {
-    expect(filterByEvent(listings, "nonexistent")).toHaveLength(4);
+    expect(filterByEvent(listings, "nonexistent", events)).toHaveLength(4);
+  });
+
+  it("returns all listings when events list is empty", () => {
+    expect(filterByEvent(listings, "spring-break-east", [])).toHaveLength(4);
   });
 });
 
 describe("getUpcomingEvents", () => {
+  const events = [springBreakEast, fourthOfJuly, superBowl, mardiGras];
+
   it("returns events with end date >= reference date", () => {
-    const upcoming = getUpcomingEvents("2026-06-01");
+    const upcoming = getUpcomingEvents(events, "2026-06-01");
     expect(upcoming.every((e) => e.dateRange.end >= "2026-06-01")).toBe(true);
   });
 
   it("returns events sorted by start date", () => {
-    const upcoming = getUpcomingEvents("2026-01-01");
+    const upcoming = getUpcomingEvents(events, "2026-01-01");
     for (let i = 1; i < upcoming.length; i++) {
       expect(upcoming[i].dateRange.start >= upcoming[i - 1].dateRange.start).toBe(true);
     }
   });
 
   it("respects limit parameter", () => {
-    const upcoming = getUpcomingEvents("2026-01-01", 3);
-    expect(upcoming).toHaveLength(3);
+    const upcoming = getUpcomingEvents(events, "2026-01-01", 2);
+    expect(upcoming).toHaveLength(2);
   });
 
   it("filters out past events", () => {
-    const upcoming = getUpcomingEvents("2027-12-01");
+    const upcoming = getUpcomingEvents(events, "2027-12-01");
     expect(upcoming).toHaveLength(0);
   });
 });
 
 describe("findEventsByQuery", () => {
+  const events = [springBreakEast, fourthOfJuly, superBowl, mardiGras];
+
   it("finds events by partial name match", () => {
-    const results = findEventsByQuery("super bowl");
+    const results = findEventsByQuery(events, "super bowl");
     expect(results).toHaveLength(1);
     expect(results[0].slug).toBe("super-bowl-lx");
   });
 
-  it("finds multiple matches", () => {
-    const results = findEventsByQuery("spring");
-    expect(results).toHaveLength(2);
-  });
-
   it("returns empty for no match", () => {
-    expect(findEventsByQuery("olympics")).toHaveLength(0);
+    expect(findEventsByQuery(events, "olympics")).toHaveLength(0);
   });
 
   it("returns empty for empty query", () => {
-    expect(findEventsByQuery("")).toHaveLength(0);
+    expect(findEventsByQuery(events, "")).toHaveLength(0);
   });
 
   it("is case insensitive", () => {
-    expect(findEventsByQuery("MARDI GRAS")).toHaveLength(1);
+    expect(findEventsByQuery(events, "MARDI GRAS")).toHaveLength(1);
   });
 });
 

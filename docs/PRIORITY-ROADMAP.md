@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-13T21:55:14"
-change_ref: "94c5739"
-change_type: "session-48"
+last_updated: "2026-04-14T10:45:32"
+change_ref: "e45e7fb"
+change_type: "session-50"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -16,11 +16,7 @@ status: "active"
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-These are the highest-value items we can build RIGHT NOW. No blockers, no decisions needed.
-
-| Order | Issue | Title | Why it's here |
-|-------|-------|-------|---------------|
-| **A1** | #259 | Testimonials collection + display | Social proof for launch credibility. |
+**Tier A is EMPTY** — all items completed in Session 49. Promote from Tier B/C as needed.
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -31,8 +27,8 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #187 | Pre-launch manual verification | Needs systematic walkthrough. Partially done. |
 | #257 | Resort data compliance audit | Legal review of seed data sources. |
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
-| #338 | Admin Event Management UI | Move events from static code to DB-driven admin. Depends on staff workflow. |
-| #339 | Multi-year event support | Recurring templates + 2027+ dates. Depends on #338. |
+| #339 | Multi-year event support | Recurring templates + 2027+ dates. Depends on #338 (now unblocked). |
+| #349 | UI polish audit — spacing, sections, visual hierarchy | Aggressive site-wide pass. Can run in parallel with feature work. |
 
 ### Tier C: Tier Feature Differentiation (Bundle as Sprint)
 
@@ -99,7 +95,8 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
-| Apr 13, 2026 | 49 | #283, #285, #286, #327, #328, #337 completed. Logos updated. Discovery bar. Tax form. 1047 tests. PRs #334-#347. |
+| Apr 14, 2026 | 50 | #338 completed. Events unified: static `lib/events.ts` migrated to DB (seasonal_events + event_instances). Migration 055 (slug/icon/is_nationwide/search_destinations columns, end_date, nullable destination, 14 events backfilled, get_curated_events RPC). Admin Templates tab + Add/Edit instance dialogs. `useCuratedEvents` hook. 1046 tests. #339 now unblocked. |
+| Apr 13, 2026 | 49 | Tier A cleared: #259, #283, #285, #286, #327, #328, #337. Logos. Discovery bar. Tax form. Social proof. 1047 tests. PRs #334-#348. |
 | Apr 13, 2026 | 48 | #326 RAV Deals completed + closed. #273 Homepage completed (Session 47). Header nav consistency fix. Renumbered Tier A. |
 | Apr 12, 2026 | 47 | Initial creation. Brand rebrand completed. Search & Discovery epic created (#325-#328). Full 5-tier prioritization. |
 

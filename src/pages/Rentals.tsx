@@ -74,6 +74,7 @@ import { SaveSearchButton } from "@/components/SaveSearchButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ATTRACTION_TAGS, filterByAttractions, type AttractionTag } from "@/lib/attractionTags";
 import { getUpcomingEvents, filterByEvent, formatEventDateRange, type CuratedEvent } from "@/lib/events";
+import { useCuratedEvents } from "@/hooks/useCuratedEvents";
 const ITEMS_PER_PAGE = 6;
 
 // Icon map for attraction tags (keyed by AttractionTagDef.icon)
@@ -128,8 +129,9 @@ const Rentals = () => {
   const [discoveryTab, setDiscoveryTab] = useState<"activity" | "events">("activity");
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
-  // Upcoming events for pill bar
-  const upcomingEvents = getUpcomingEvents(undefined, 8);
+  // Curated events (DB-backed) for filter pill bar + event banner
+  const { data: curatedEvents = [] } = useCuratedEvents();
+  const upcomingEvents = getUpcomingEvents(curatedEvents, undefined, 8);
 
   // Compare mode
   const [compareMode, setCompareMode] = useState(false);
@@ -245,7 +247,8 @@ const Rentals = () => {
   // Apply attraction + event filters
   const filteredListings = filterByEvent(
     filterByAttractions(baseFiltered, selectedAttractions),
-    selectedEvent
+    selectedEvent,
+    curatedEvents
   );
 
   // Sort
