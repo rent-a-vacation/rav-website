@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-11T04:04:36"
-change_ref: "902990b"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-14T11:02:20"
+change_ref: "44cd934"
+change_type: "session-50"
 status: "active"
 ---
 # Rent-A-Vacation — Architecture & Developer Guide
@@ -575,6 +575,10 @@ auth.users (Supabase managed)
 | 050 | `subscription_metrics_rpc.sql` | `get_subscription_metrics` RPC for admin MRR dashboard |
 | 051 | `unified_conversations.sql` | `conversations`, `conversation_messages`, `conversation_events` + 4 RPCs + 12-step backfill |
 | 052 | `terms_acceptance_audit.sql` | `terms_acceptance_log` + 3 profile columns (onboarding_completed_at, current_terms_version, current_privacy_version) + backfill of 60 approved users |
+| 053 | `attraction_tags.sql` | Attraction tag taxonomy on resorts |
+| 054 | `price_drop_alerts.sql` | Saved-search price drop notification tracking |
+| 055 | `event_unification.sql` | `seasonal_events` gains slug/icon/is_nationwide/search_destinations; `event_instances` gains end_date + nullable destination; backfill of 14 curated events; `get_curated_events(p_year)` RPC |
+| 056 | `multi_year_event_generation.sql` | `generate_event_instances_for_year(p_year, p_source_year)` RPC — copies annual_fixed/annual_floating instances forward |
 
 Additional non-numbered migrations:
 - `20260211_resort_master_data.sql` — Resort master data seed

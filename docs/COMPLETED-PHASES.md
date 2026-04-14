@@ -1,13 +1,69 @@
 ---
-last_updated: "2026-04-12T22:57:23"
-change_ref: "a521368"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-14T11:02:20"
+change_ref: "44cd934"
+change_type: "session-50"
 status: "active"
 ---
 # Completed Phases Archive
 
 > Detailed records of completed project phases, moved from [PROJECT-HUB.md](PROJECT-HUB.md) to keep the hub concise.
 > **Last Archived:** March 10, 2026
+
+---
+
+## Session 50: Event Unification + Multi-Year Generation (#338, #339)
+
+**Completed:** April 14, 2026
+**PR:** #350 (#338), follow-up PR (#339)
+
+### Problem closed
+The 14 curated vacation events that power the Rentals page filter lived in a static file (`src/lib/events.ts`), requiring a code deploy and release to add, edit, or retire an event. A parallel DB schema (`seasonal_events` + `event_instances` from migration 046) existed for SMS reminders but used a different shape and could not serve the renter search filter.
+
+### What was built
+
+**Migration 055 — schema unification**
+- `seasonal_events` extended with `slug` (unique), `icon`, `is_nationwide`, `search_destinations TEXT[]`.
+- `event_instances` extended with `end_date` (nullable). `destination` made nullable for search-only events (e.g. Sundance at Park City — no SMS destination_bucket).
+- UNIQUE constraint replaced with two partial unique indexes (`event_id, destination, year` WHERE destination IS NOT NULL; `event_id, year` WHERE destination IS NULL).
+- Backfilled 14 curated events + 2026 instances.
+- New RPC `get_curated_events(p_year INT)` aggregates templates + instances for the renter filter.
+
+**Frontend**
+- `useCuratedEvents` hook (React Query against `get_curated_events`) replaces the static `CURATED_EVENTS` const.
+- `src/lib/events.ts` now contains only pure utilities. `filterByEvent`, `getUpcomingEvents`, and `findEventsByQuery` take events as a parameter.
+- `Rentals.tsx` reads curated events from DB.
+
+**Admin (RAV Ops → Notification Center)**
+- New **Templates** tab (`AdminEventTemplates` + `EventTemplateDialog`) — CRUD on `seasonal_events` with add/edit/retire flows.
+- **Event Calendar** tab gains an "Add Instance" button and an Edit dialog (`EventInstanceDialog`). Staff can create instances with or without an SMS destination.
+
+**SMS scheduler safety**
+- Scheduled mode filters `destination IS NOT NULL` so search-only events do not trip SMS dispatch.
+- Admin-override mode rejects instances with no destination (returns 400).
+
+**Migration 056 — multi-year generation (#339)**
+- New RPC `generate_event_instances_for_year(p_year INT, p_source_year INT)` — for each active template that has at least one instance in the source year but none in the target year, copies the instances forward. `annual_fixed` instances keep `date_confirmed = true`; `annual_floating` instances copy structure but reset `date_confirmed = false` and set `auto_generated = true` so staff can confirm the new dates.
+- Admin "Generate {year}" button on the Event Calendar tab triggers the RPC and reports how many instances were created.
+
+### Tests
+- 1046 tests pre-#339 (up from 1041).
+- `useCuratedEvents.test.ts` (5 tests) covers DB→FE row mapping, category translation, null handling, and error surfacing.
+- `events.test.ts` refactored for parameterized signatures (24 tests).
+
+### Files created
+- `supabase/migrations/055_event_unification.sql`
+- `supabase/migrations/056_multi_year_event_generation.sql`
+- `src/hooks/useCuratedEvents.ts` + `.test.ts`
+- `src/components/admin/AdminEventTemplates.tsx`
+- `src/components/admin/EventTemplateDialog.tsx`
+- `src/components/admin/EventInstanceDialog.tsx`
+
+### Files modified
+- `src/lib/events.ts`, `src/lib/events.test.ts`
+- `src/pages/Rentals.tsx`
+- `src/components/admin/AdminNotificationCenter.tsx`
+- `supabase/functions/sms-scheduler/index.ts`
+- `.github/workflows/docs-audit.yml` (permissions fix for PR comment)
 
 ---
 
