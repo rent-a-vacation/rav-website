@@ -58,6 +58,7 @@ import {
   MessageSquare,
   Plus,
   LayoutTemplate,
+  CalendarPlus,
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { AdminEventTemplates } from "./AdminEventTemplates";
@@ -342,6 +343,8 @@ function EventCalendarTab() {
   const [instanceDialogOpen, setInstanceDialogOpen] = useState(false);
   const [editingInstance, setEditingInstance] = useState<EventInstance | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [generating, setGenerating] = useState(false);
+  const [confirmGenerate, setConfirmGenerate] = useState<{ target: number; source: number } | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -400,6 +403,32 @@ function EventCalendarTab() {
     setSendingId(null);
   };
 
+  const handleGenerateYear = async (targetYear: number, sourceYear: number) => {
+    setConfirmGenerate(null);
+    setGenerating(true);
+    try {
+      const { data, error } = await supabase.rpc("generate_event_instances_for_year", {
+        p_year: targetYear,
+        p_source_year: sourceYear,
+      });
+      if (error) throw error;
+      const row = Array.isArray(data) ? data[0] : data;
+      toast({
+        title: `Generated ${targetYear} instances`,
+        description: `Created ${row?.created_count ?? 0} (${row?.confirmed_count ?? 0} confirmed, ${row?.unconfirmed_count ?? 0} need date confirmation). Skipped ${row?.skipped_count ?? 0} existing.`,
+      });
+      setYearFilter(String(targetYear));
+      setReloadKey((k) => k + 1);
+    } catch (e) {
+      toast({
+        title: "Generation failed",
+        description: e instanceof Error ? e.message : "Unknown error",
+        variant: "destructive",
+      });
+    }
+    setGenerating(false);
+  };
+
   const handleCancelInstance = async (instanceId: string) => {
     const { error } = await supabase
       .from("event_instances")
@@ -442,17 +471,34 @@ function EventCalendarTab() {
             ))}
           </SelectContent>
         </Select>
-        <Button
-          size="sm"
-          className="ml-auto"
-          onClick={() => {
-            setEditingInstance(null);
-            setInstanceDialogOpen(true);
-          }}
-        >
-          <Plus className="h-4 w-4 mr-1.5" />
-          Add Instance
-        </Button>
+        <div className="ml-auto flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={generating}
+            onClick={() => {
+              const target = parseInt(yearFilter) + 1;
+              setConfirmGenerate({ target, source: parseInt(yearFilter) });
+            }}
+          >
+            {generating ? (
+              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+            ) : (
+              <CalendarPlus className="h-4 w-4 mr-1.5" />
+            )}
+            Generate {parseInt(yearFilter) + 1}
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => {
+              setEditingInstance(null);
+              setInstanceDialogOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4 mr-1.5" />
+            Add Instance
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -572,6 +618,32 @@ function EventCalendarTab() {
           </Table>
         </div>
       )}
+
+      {/* Generate year confirm dialog */}
+      <AlertDialog open={!!confirmGenerate} onOpenChange={() => setConfirmGenerate(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Generate {confirmGenerate?.target} event instances?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This copies every active annual_fixed and annual_floating event from{" "}
+              {confirmGenerate?.source} to {confirmGenerate?.target}. Existing{" "}
+              {confirmGenerate?.target} instances are preserved. Floating events will need date
+              confirmation before SMS reminders fire.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() =>
+                confirmGenerate &&
+                handleGenerateYear(confirmGenerate.target, confirmGenerate.source)
+              }
+            >
+              Generate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Add / Edit instance dialog */}
       <EventInstanceDialog
