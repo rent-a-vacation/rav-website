@@ -69,6 +69,15 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
+      if (!instance.destination) {
+        return new Response(
+          JSON.stringify({
+            error: "Instance has no destination (search-only event) — cannot send SMS",
+          }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } },
+        );
+      }
+
       // Determine which reminder type to use based on proximity
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -102,12 +111,15 @@ const handler = async (req: Request): Promise<Response> => {
 
       const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-      // Find all event instances where any reminder date matches today
+      // Find all event instances where any reminder date matches today.
+      // Filter out instances with NULL destination — those are search-only
+      // events (e.g. Park City / Sundance) that have no SMS destination_bucket.
       const { data: instances, error } = await supabase
         .from("event_instances")
         .select("*, seasonal_events(name)")
         .eq("status", "active")
         .eq("date_confirmed", true)
+        .not("destination", "is", null)
         .or(`reminder_12wk.eq.${today},reminder_6wk.eq.${today},reminder_2wk.eq.${today}`);
 
       if (error) {

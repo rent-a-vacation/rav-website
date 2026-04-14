@@ -56,8 +56,12 @@ import {
   CheckCircle2,
   Clock,
   MessageSquare,
+  Plus,
+  LayoutTemplate,
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
+import { AdminEventTemplates } from "./AdminEventTemplates";
+import { EventInstanceDialog, type EventInstance } from "./EventInstanceDialog";
 
 const DESTINATION_LABELS: Record<string, string> = {
   orlando: "Orlando",
@@ -335,6 +339,9 @@ function EventCalendarTab() {
   const [yearFilter, setYearFilter] = useState("2026");
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [confirmSend, setConfirmSend] = useState<Record<string, unknown> | null>(null);
+  const [instanceDialogOpen, setInstanceDialogOpen] = useState(false);
+  const [editingInstance, setEditingInstance] = useState<EventInstance | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -354,7 +361,7 @@ function EventCalendarTab() {
       setLoading(false);
     }
     load();
-  }, [destFilter, yearFilter]);
+  }, [destFilter, yearFilter, reloadKey]);
 
   const handleConfirmDate = async (instanceId: string) => {
     const { error } = await supabase
@@ -411,7 +418,7 @@ function EventCalendarTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <Select value={yearFilter} onValueChange={setYearFilter}>
           <SelectTrigger className="w-24">
             <SelectValue />
@@ -435,6 +442,17 @@ function EventCalendarTab() {
             ))}
           </SelectContent>
         </Select>
+        <Button
+          size="sm"
+          className="ml-auto"
+          onClick={() => {
+            setEditingInstance(null);
+            setInstanceDialogOpen(true);
+          }}
+        >
+          <Plus className="h-4 w-4 mr-1.5" />
+          Add Instance
+        </Button>
       </div>
 
       {loading ? (
@@ -500,8 +518,31 @@ function EventCalendarTab() {
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7"
-                            title="Manual send"
-                            disabled={ev.status !== "active" || sendingId === ev.id}
+                            title="Edit"
+                            onClick={() => {
+                              setEditingInstance({
+                                id: ev.id as string,
+                                event_id: ev.event_id as string,
+                                destination: (ev.destination as string | null) ?? null,
+                                year: ev.year as number,
+                                event_date: ev.event_date as string,
+                                end_date: (ev.end_date as string | null) ?? null,
+                                priority: ev.priority as string,
+                                status: ev.status as string,
+                                date_confirmed: ev.date_confirmed as boolean,
+                                notes: (ev.notes as string | null) ?? null,
+                              });
+                              setInstanceDialogOpen(true);
+                            }}
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            title={ev.destination ? "Manual send" : "No SMS destination"}
+                            disabled={ev.status !== "active" || sendingId === ev.id || !ev.destination}
                             onClick={() => setConfirmSend(ev)}
                           >
                             {sendingId === ev.id ? (
@@ -531,6 +572,15 @@ function EventCalendarTab() {
           </Table>
         </div>
       )}
+
+      {/* Add / Edit instance dialog */}
+      <EventInstanceDialog
+        open={instanceDialogOpen}
+        onOpenChange={setInstanceDialogOpen}
+        initial={editingInstance}
+        defaultYear={parseInt(yearFilter)}
+        onSaved={() => setReloadKey((k) => k + 1)}
+      />
 
       {/* Manual send confirm dialog */}
       <AlertDialog open={!!confirmSend} onOpenChange={() => setConfirmSend(null)}>
@@ -755,6 +805,10 @@ export default function AdminNotificationCenter() {
             <MessageSquare className="h-3.5 w-3.5" />
             Types
           </TabsTrigger>
+          <TabsTrigger value="templates" className="gap-1.5">
+            <LayoutTemplate className="h-3.5 w-3.5" />
+            Templates
+          </TabsTrigger>
           <TabsTrigger value="calendar" className="gap-1.5">
             <Calendar className="h-3.5 w-3.5" />
             Event Calendar
@@ -770,6 +824,9 @@ export default function AdminNotificationCenter() {
         </TabsContent>
         <TabsContent value="types">
           <NotificationTypesTab />
+        </TabsContent>
+        <TabsContent value="templates">
+          <AdminEventTemplates />
         </TabsContent>
         <TabsContent value="calendar">
           <EventCalendarTab />
