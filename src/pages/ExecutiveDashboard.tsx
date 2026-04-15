@@ -43,12 +43,12 @@ const ExecutiveDashboard = () => {
       <div className="hidden lg:block pt-16 md:pt-20">
         <HeadlineBar />
 
-        <main className="container mx-auto px-6 py-8 space-y-0">
+        <main className="container mx-auto px-6 py-8 md:py-10 space-y-0">
           {/* Page header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-start justify-between mb-8 md:mb-10 gap-6">
             <div>
-              <h1 className="text-2xl font-bold text-white">RAV Insights</h1>
-              <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">RAV Insights</h1>
+              <p className="text-sm text-slate-400 mt-2 max-w-2xl">
                 Boardroom-grade intelligence. Real-time marketplace performance, proprietary metrics like Liquidity Score and Bid Spread Index,
                 competitive benchmarking, and industry intelligence — all in one boardroom-ready view.
               </p>
