@@ -300,14 +300,15 @@ const Rentals = () => {
       <Header />
 
       {/* Search Header */}
-      <section id="main-content" className="pt-24 pb-8 bg-muted/50">
+      <section id="main-content" className="pt-20 md:pt-24 pb-6 md:pb-8 bg-muted/40 border-b border-border/60">
         <div className="container mx-auto px-4">
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-6">
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-1">
             Browse Vacation Rentals
           </h1>
+          <p className="text-muted-foreground mb-5 md:mb-6">Find your next stay across 117 resorts.</p>
 
           {/* Search Bar */}
-          <div className="bg-card rounded-xl shadow-card p-4">
+          <div className="bg-card rounded-xl shadow-card p-4 border border-border/60">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-2 relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -408,7 +409,7 @@ const Rentals = () => {
       </section>
 
       {/* Unified Discovery Bar — Airbnb-style horizontal scroll */}
-      <section className="pt-4 pb-0 border-b border-border">
+      <section className="py-3 border-b border-border/60 bg-background">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4">
             {/* Tab toggle */}
@@ -539,10 +540,10 @@ const Rentals = () => {
       })()}
 
       {/* Filters & Results */}
-      <section className="py-8">
+      <section className="py-6 md:py-8">
         <div className="container mx-auto px-4">
           {/* Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"

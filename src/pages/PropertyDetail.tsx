@@ -281,10 +281,10 @@ const PropertyDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main id="main-content" className="pt-20">
+      <main id="main-content" className="pt-16 md:pt-20">
         {/* Breadcrumb */}
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
             <Link to="/" className="hover:text-foreground">Home</Link>
             <span>/</span>
             <Link to="/rentals" className="hover:text-foreground">Rentals</Link>
@@ -294,8 +294,8 @@ const PropertyDetail = () => {
         </div>
 
         {/* Image Gallery */}
-        <section className="container mx-auto px-4 mb-8">
-          <div className="relative rounded-2xl overflow-hidden">
+        <section className="container mx-auto px-4 mb-6 md:mb-8">
+          <div className="relative rounded-2xl overflow-hidden shadow-card">
             <div className="aspect-[16/9] md:aspect-[21/9]">
               {images.length > 0 ? (
                 <img
@@ -358,8 +358,8 @@ const PropertyDetail = () => {
         </section>
 
         {/* Content */}
-        <section className="container mx-auto px-4 pb-20">
-          <div className="grid lg:grid-cols-3 gap-8">
+        <section className="container mx-auto px-4 pb-16 md:pb-20">
+          <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
             {/* Main Content */}
             <div className="lg:col-span-2">
               {/* Header */}
@@ -368,7 +368,7 @@ const PropertyDetail = () => {
                   <MapPin className="w-4 h-4" />
                   {location} {brandLabel && `• ${brandLabel}`}
                 </div>
-                <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+                <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-3">
                   {displayName}
                 </h1>
                 {/* Social proof badges */}

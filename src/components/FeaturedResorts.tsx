@@ -32,7 +32,7 @@ const FeaturedResorts = () => {
 
   if (isLoading) {
     return (
-      <section className="py-12 bg-background">
+      <section className="py-12 md:py-16 bg-background border-t border-border/60">
         <div className="container mx-auto px-4 text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
         </div>
@@ -42,7 +42,7 @@ const FeaturedResorts = () => {
 
   if (featured.length === 0) {
     return (
-      <section className="py-12 bg-background">
+      <section className="py-12 md:py-16 bg-background border-t border-border/60">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-3">
@@ -70,16 +70,16 @@ const FeaturedResorts = () => {
     <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
-          <div>
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-1">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-8 md:mb-10">
+          <div className="max-w-2xl">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight">
               Explore vacation rentals
             </h2>
-            <p className="text-muted-foreground">
+            <p className="mt-2 text-muted-foreground">
               117 resorts from 9 brands — verified owners, protected payments
             </p>
           </div>
-          <Link to="/rentals" className="mt-3 md:mt-0">
+          <Link to="/rentals" className="shrink-0">
             <Button variant="outline" size="sm">
               View all rentals
               <ChevronRight className="w-4 h-4 ml-1" />
