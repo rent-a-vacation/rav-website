@@ -200,13 +200,13 @@ const FAQ = () => {
       <Header />
 
       {/* Hero */}
-      <section className="pt-32 pb-16 bg-gradient-warm">
+      <section className="pt-28 md:pt-32 pb-12 md:pb-16 bg-gradient-warm border-b border-border/60">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
             Frequently Asked Questions
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Find answers to common questions about renting and listing vacation properties
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            Find answers to common questions about renting and listing vacation properties.
           </p>
           <div className="max-w-md mx-auto relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -221,7 +221,7 @@ const FAQ = () => {
       </section>
 
       {/* FAQ Content */}
-      <section className="py-16">
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-4 gap-8">
             {/* Category Sidebar */}
@@ -295,10 +295,10 @@ const FAQ = () => {
       </section>
 
       {/* Contact CTA */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-12 md:py-16 bg-muted/40 border-t border-border/60">
         <div className="container mx-auto px-4 text-center">
           <MessageSquare className="w-12 h-12 mx-auto text-primary mb-4" />
-          <h2 className="font-display text-2xl font-bold text-foreground mb-4">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-3">
             Still Have Questions?
           </h2>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">

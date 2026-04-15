@@ -154,20 +154,20 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-background">
       <Header />
       {/* Page Header */}
-      <header className="border-b bg-card mt-16 md:mt-20">
-        <div className="container mx-auto px-4 py-4">
+      <header className="border-b border-border/60 bg-card mt-16 md:mt-20">
+        <div className="container mx-auto px-4 py-5 md:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="flex-shrink-0">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-bold">RAV Ops</h1>
+                  <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight">RAV Ops</h1>
                   <ShieldCheck className="h-5 w-5 text-primary" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Platform management and oversight
+                  Platform management and oversight.
                 </p>
               </div>
             </div>
@@ -188,9 +188,9 @@ const AdminDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 md:py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="flex flex-wrap gap-1 h-auto w-full mb-6">
+          <TabsList className="flex flex-wrap gap-1 h-auto w-full mb-6 md:mb-8">
             <TabsTrigger value="overview" className="gap-2">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Overview</span>

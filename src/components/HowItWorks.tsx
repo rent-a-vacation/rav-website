@@ -54,14 +54,14 @@ const HowItWorks = () => {
   const steps = activeTab === "renters" ? renterSteps : ownerSteps;
 
   return (
-    <section className="py-20 bg-gradient-warm">
+    <section className="py-14 md:py-20 bg-gradient-warm border-t border-border/60">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+        <div className="text-center mb-10 md:mb-12 max-w-2xl mx-auto">
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-3">
             How Direct-from-Owner Rentals Work
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-muted-foreground text-lg mb-8">
             Skip the resort markup. Rent directly from verified owners, bid on listings, 
             or post your travel needs and let owners compete for your booking.
           </p>

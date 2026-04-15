@@ -17,14 +17,14 @@ const WelcomeBanner = () => {
   const firstName = profile?.full_name?.split(" ")[0] || "there";
 
   return (
-    <div className="bg-card border-b border-border shadow-sm">
-      <div className="container mx-auto px-4 py-5">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold text-foreground">
-              Welcome back, {firstName}!
+    <div className="bg-card border-b border-border/60">
+      <div className="container mx-auto px-4 py-3.5">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+          <div className="leading-tight">
+            <h2 className="text-base font-semibold text-foreground">
+              Welcome back, {firstName}
             </h2>
-            <p className="text-sm text-muted-foreground font-medium">
+            <p className="text-xs text-muted-foreground">
               Where to next? Pick up where you left off.
             </p>
           </div>

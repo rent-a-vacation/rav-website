@@ -166,7 +166,7 @@ const Documentation = () => {
     <div className="min-h-screen bg-background">
       <Header />
       {/* Page Header */}
-      <header className="sticky top-16 md:top-20 z-40 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 print:hidden">
+      <header className="sticky top-16 md:top-20 z-40 border-b border-border/60 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 print:hidden">
         <div className="flex h-16 items-center px-4 md:px-6">
           <Button
             variant="ghost"
@@ -241,7 +241,7 @@ const Documentation = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 min-w-0 p-6 md:p-8 lg:p-12">
+        <main className="flex-1 min-w-0 p-5 md:p-8 lg:p-10">
           <div className="max-w-4xl mx-auto">
             
             {/* Print Cover Page */}

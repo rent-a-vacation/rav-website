@@ -82,17 +82,17 @@ const BiddingMarketplace = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-24 pb-12 bg-gradient-warm">
+      <section className="pt-20 md:pt-24 pb-10 md:pb-12 bg-gradient-warm border-b border-border/60">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge className="mb-4 bg-accent text-accent-foreground">
+            <Badge className="mb-3 bg-accent text-accent-foreground">
               <Store className="h-3 w-3 mr-1" />
               Direct from Owners
             </Badge>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
+            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
               Name Your Price
             </h1>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               The flexible pricing marketplace for vacation rentals. Make an offer on owner-listed properties
               or post your travel plans and let verified owners compete for your booking.
             </p>
@@ -124,9 +124,9 @@ const BiddingMarketplace = () => {
       </section>
 
       {/* Main Content */}
-      <section className="py-12">
+      <section className="py-10 md:py-12">
         <div className="container mx-auto px-4">
-          <Tabs defaultValue={defaultTab} className="space-y-8">
+          <Tabs defaultValue={defaultTab} className="space-y-6 md:space-y-8">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
               <TabsTrigger value="listings" className="gap-2">
                 <Gavel className="h-4 w-4" />
@@ -251,9 +251,9 @@ const BiddingMarketplace = () => {
       </section>
 
       {/* How the Marketplace Works */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-14 md:py-16 bg-muted/40 border-t border-border/60">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-12">How the Marketplace Works</h2>
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight text-center mb-10 md:mb-12">How the Marketplace Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
             {/* Renter Flow */}
             <div className="space-y-6">

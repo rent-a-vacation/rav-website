@@ -260,23 +260,23 @@ const TravelerCheckin = () => {
     <div className="min-h-screen bg-background">
       <Header />
       {/* Page Header */}
-      <header className="border-b bg-card mt-16 md:mt-20">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+      <header className="border-b border-border/60 bg-card mt-16 md:mt-20">
+        <div className="container mx-auto px-4 py-5 md:py-6">
+          <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">Check-in Confirmation</h1>
+              <h1 className="font-display text-xl md:text-2xl font-bold tracking-tight">Check-in Confirmation</h1>
               <p className="text-sm text-muted-foreground">
-                Confirm your arrival within 24 hours of check-in
+                Confirm your arrival within 24 hours of check-in.
               </p>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 max-w-3xl">
+      <main className="container mx-auto px-4 py-6 md:py-8 max-w-3xl">
         {/* Pending Checkins */}
         {pendingCheckins.length > 0 && (
           <div className="space-y-4 mb-8">

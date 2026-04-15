@@ -108,13 +108,13 @@ const RenterDashboard = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <div className="pt-24 pb-12">
+      <div className="pt-20 md:pt-24 pb-12">
         <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h1 className="font-display text-3xl font-bold text-foreground">
+          <div className="mb-8 md:mb-10">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight">
               My Trips
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-2">
               Your bookings, offers, and saved properties in one place.
             </p>
           </div>

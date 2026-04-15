@@ -129,13 +129,13 @@ const RavDeals = () => {
       <Header />
 
       {/* Hero Section */}
-      <section id="main-content" className="pt-24 pb-8 bg-muted/50">
+      <section id="main-content" className="pt-20 md:pt-24 pb-6 md:pb-8 bg-muted/40 border-b border-border/60">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl">
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-2">
               RAV Deals
             </h1>
-            <p className="text-lg text-muted-foreground mb-2">
+            <p className="text-lg text-muted-foreground mb-1">
               Expiring Weeks. Motivated Owners. Your Best Price.
             </p>
             <p className="text-sm text-muted-foreground">

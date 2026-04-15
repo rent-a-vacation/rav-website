@@ -434,9 +434,9 @@ const MyBookings = ({ embedded }: { embedded?: boolean }) => {
   const content = (
     <>
           {!embedded && (
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold">My Bookings</h1>
-            <p className="text-muted-foreground mt-1">
+          <div className="mb-6 md:mb-8">
+            <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">My Bookings</h1>
+            <p className="text-muted-foreground mt-2">
               View and manage your vacation reservations.
             </p>
           </div>

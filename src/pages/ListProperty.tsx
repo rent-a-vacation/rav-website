@@ -356,12 +356,12 @@ const ListProperty = () => {
       <Header />
 
       {/* Hero */}
-      <section className="pt-32 pb-16 hero-gradient text-white">
+      <section className="pt-28 md:pt-32 pb-12 md:pb-16 hero-gradient text-white">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-4">
             Turn Your Timeshare Into Income
           </h1>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto mb-8">
+          <p className="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-8">
             List your vacation ownership for free. Rent out your unused weeks and
             offset your maintenance fees or earn extra income.
           </p>
@@ -379,9 +379,9 @@ const ListProperty = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-12 md:py-14 bg-muted/40 border-b border-border/60">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {benefits.map((benefit, index) => (
               <div key={index} className="bg-card rounded-xl p-6 shadow-card text-center">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -398,10 +398,10 @@ const ListProperty = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-20">
+      <section className="py-14 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="text-center mb-10 md:mb-12 max-w-2xl mx-auto">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-3">
               How to List Your Property
             </h2>
             <p className="text-muted-foreground text-lg">
@@ -444,11 +444,11 @@ const ListProperty = () => {
       </section>
 
       {/* Listing Form */}
-      <section id="listing-form" className="py-20 bg-muted/50">
+      <section id="listing-form" className="py-14 md:py-20 bg-muted/40 border-t border-border/60">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
-              <h2 className="font-display text-3xl font-bold text-foreground mb-4">
+              <h2 className="font-display text-3xl font-bold text-foreground tracking-tight mb-3">
                 Start Your Listing
               </h2>
               <p className="text-muted-foreground">
@@ -950,9 +950,9 @@ const ListProperty = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20">
+      <section className="py-14 md:py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="font-display text-3xl font-bold text-foreground mb-12">
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-10 md:mb-12">
             What Owners Are Saying
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">

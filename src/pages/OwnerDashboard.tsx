@@ -303,17 +303,17 @@ const OwnerDashboard = () => {
     <div className="min-h-screen bg-background">
       <Header />
       {/* Page Header */}
-      <header className="border-b bg-card mt-16 md:mt-20">
-        <div className="container mx-auto px-4 py-4">
+      <header className="border-b border-border/60 bg-card mt-16 md:mt-20">
+        <div className="container mx-auto px-4 py-5 md:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="flex-shrink-0">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold">My Rentals</h1>
+                <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight">My Rentals</h1>
                 <p className="text-sm text-muted-foreground">
-                  Your command center — manage listings, bookings, earnings, and more
+                  Manage listings, bookings, earnings, and more.
                 </p>
               </div>
             </div>
@@ -326,7 +326,7 @@ const OwnerDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 md:py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4 h-auto">
             <TabsTrigger value="dashboard" className="gap-2">

@@ -13,10 +13,10 @@ const Privacy = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="pt-32 pb-20">
+      <main className="pt-24 md:pt-28 pb-16 md:pb-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="font-display text-4xl font-bold text-foreground mb-4">
+            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
               Privacy Policy
             </h1>
             <p className="text-muted-foreground mb-8">Last updated: February 2025</p>

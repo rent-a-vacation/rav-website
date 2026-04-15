@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-14T10:45:32"
-change_ref: "e45e7fb"
+last_updated: "2026-04-15T01:20:24"
+change_ref: "fc6f491"
 change_type: "session-50"
 status: "active"
 ---
@@ -27,8 +27,6 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #187 | Pre-launch manual verification | Needs systematic walkthrough. Partially done. |
 | #257 | Resort data compliance audit | Legal review of seed data sources. |
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
-| #339 | Multi-year event support | Recurring templates + 2027+ dates. Depends on #338 (now unblocked). |
-| #349 | UI polish audit — spacing, sections, visual hierarchy | Aggressive site-wide pass. Can run in parallel with feature work. |
 
 ### Tier C: Tier Feature Differentiation (Bundle as Sprint)
 
@@ -95,7 +93,8 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
-| Apr 14, 2026 | 50 | #338 completed. Events unified: static `lib/events.ts` migrated to DB (seasonal_events + event_instances). Migration 055 (slug/icon/is_nationwide/search_destinations columns, end_date, nullable destination, 14 events backfilled, get_curated_events RPC). Admin Templates tab + Add/Edit instance dialogs. `useCuratedEvents` hook. 1046 tests. #339 now unblocked. |
+| Apr 14, 2026 | 51 | #349 UI polish audit completed. New `Section` + `SectionHeader` layout primitives. Tightened vertical rhythm, headings, and section demarcation across Homepage, PropertyDetail, Rentals, BiddingMarketplace, OwnerDashboard, MyBookings, ListProperty. Build clean, P0 tests passing. |
+| Apr 14, 2026 | 50 | #338 + #339 completed. Events unified into DB (migration 055) + multi-year generator RPC (migration 056). Admin Templates tab + Add/Edit Instance dialogs + "Generate {next year}" button. `useCuratedEvents` hook. docs-audit CI permissions fix. ARCHITECTURE + COMPLETED-PHASES refreshed. PRs #350, #351. 1046 tests. |
 | Apr 13, 2026 | 49 | Tier A cleared: #259, #283, #285, #286, #327, #328, #337. Logos. Discovery bar. Tax form. Social proof. 1047 tests. PRs #334-#348. |
 | Apr 13, 2026 | 48 | #326 RAV Deals completed + closed. #273 Homepage completed (Session 47). Header nav consistency fix. Renumbered Tier A. |
 | Apr 12, 2026 | 47 | Initial creation. Brand rebrand completed. Search & Discovery epic created (#325-#328). Full 5-tier prioritization. |

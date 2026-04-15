@@ -18,13 +18,16 @@ const destinations = [
 
 const TopDestinations = () => {
   return (
-    <section className="py-8 md:py-12 bg-background">
+    <section className="py-12 md:py-16 bg-background border-t border-border/60">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-display text-xl md:text-2xl font-bold text-foreground">
-            Popular destinations
-          </h2>
+        <div className="flex items-end justify-between mb-6 md:mb-8">
+          <div>
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+              Popular destinations
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">Find your next stay by location.</p>
+          </div>
           <Link
             to="/destinations"
             className="text-sm text-primary hover:underline flex items-center gap-1"
@@ -42,7 +45,7 @@ const TopDestinations = () => {
               to={`/rentals?location=${encodeURIComponent(dest.name)}`}
               className="flex-shrink-0 snap-start group"
             >
-              <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl overflow-hidden mb-2 shadow-card group-hover:shadow-card-hover transition-shadow">
+              <div className="w-32 h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden mb-2 shadow-card group-hover:shadow-card-hover transition-shadow">
                 <img
                   src={dest.image}
                   alt={dest.name}

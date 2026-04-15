@@ -198,12 +198,12 @@ const HowItWorksPage = () => {
       <Header />
 
       {/* Hero */}
-      <section className="pt-32 pb-16 bg-gradient-warm">
+      <section className="pt-28 md:pt-32 pb-12 md:pb-16 bg-gradient-warm border-b border-border/60">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
             How Rent-A-Vacation Works
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
             Whether you're looking to book an amazing vacation or earn from your
             timeshare, we make it simple, secure, and rewarding.
           </p>
@@ -217,7 +217,7 @@ const HowItWorksPage = () => {
       </section>
 
       {/* For Renters */}
-      <section id="for-travelers" className="py-20">
+      <section id="for-travelers" className="py-14 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
@@ -263,7 +263,7 @@ const HowItWorksPage = () => {
       </section>
 
       {/* For Owners */}
-      <section id="for-owners" className="py-20 bg-muted/50">
+      <section id="for-owners" className="py-14 md:py-20 bg-muted/40 border-t border-border/60">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-2 bg-accent/20 text-accent-foreground rounded-full text-sm font-medium mb-4">
@@ -309,7 +309,7 @@ const HowItWorksPage = () => {
       </section>
 
       {/* Pricing & Fees */}
-      <section id="pricing" className="py-20">
+      <section id="pricing" className="py-14 md:py-20 border-t border-border/60">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">

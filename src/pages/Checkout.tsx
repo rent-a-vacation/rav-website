@@ -162,24 +162,24 @@ const Checkout = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="pt-24 pb-16">
+      <main className="pt-20 md:pt-24 pb-12 md:pb-16">
         <div className="container mx-auto px-4">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground mb-6">
             <Link to="/" className="hover:text-foreground">Home</Link>
             <span>/</span>
             <Link to="/rentals" className="hover:text-foreground">Rentals</Link>
             <span>/</span>
-            <Link to={`/property/${listing.id}`} className="hover:text-foreground">{displayName}</Link>
+            <Link to={`/property/${listing.id}`} className="hover:text-foreground truncate max-w-[200px]">{displayName}</Link>
             <span>/</span>
             <span className="text-foreground">Checkout</span>
           </div>
 
-          <h1 className="font-display text-3xl font-bold text-foreground mb-8">
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-8">
             Confirm Your Booking
           </h1>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
             {/* Booking Details Form */}
             <div className="lg:col-span-2 space-y-6">
               {/* Property Summary */}

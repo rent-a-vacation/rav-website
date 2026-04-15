@@ -103,19 +103,19 @@ const Login = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main id="main-content" className="pt-32 pb-20">
+      <main id="main-content" className="pt-24 md:pt-28 pb-16 md:pb-20">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="font-display text-3xl font-bold text-foreground mb-2">
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-2">
                 Welcome Back
               </h1>
               <p className="text-muted-foreground">
-                Log in to access your bookings and saved properties
+                Log in to access your bookings and saved properties.
               </p>
             </div>
 
-            <div className="bg-card rounded-2xl shadow-card-hover p-4 sm:p-6 md:p-8">
+            <div className="bg-card rounded-2xl shadow-card-hover p-6 sm:p-8 border border-border/60">
               {/* Social Login */}
               <div className="space-y-3 mb-6">
                 <Button
