@@ -62,9 +62,9 @@ export default function Developers() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 pt-16 md:pt-20">
-        <div className="max-w-screen-xl mx-auto px-4 py-8">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">
+        <div className="max-w-screen-xl mx-auto px-4 py-8 md:py-10">
+          <div className="mb-6 md:mb-8">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight">
               Developer API
             </h1>
             <p className="text-muted-foreground mt-2">

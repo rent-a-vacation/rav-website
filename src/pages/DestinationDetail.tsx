@@ -85,7 +85,7 @@ const DestinationDetail = () => {
       <Header />
 
       {/* Hero */}
-      <section className="pt-32 pb-12 bg-gradient-warm">
+      <section className="pt-24 md:pt-28 pb-10 md:pb-12 bg-gradient-warm border-b border-border/60">
         <div className="container mx-auto px-4">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6">

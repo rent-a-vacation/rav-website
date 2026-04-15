@@ -129,11 +129,11 @@ const BookingSuccess = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="pt-16 md:pt-20 py-12 px-4">
+      <div className="pt-20 md:pt-24 pb-12 md:pb-16 px-4">
       <div className="container max-w-2xl mx-auto">
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 md:mb-10">
           <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold mb-2">Booking Confirmed!</h1>
+          <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-2">Booking Confirmed!</h1>
           <p className="text-muted-foreground">
             Your vacation is booked. You'll receive a confirmation email shortly.
           </p>

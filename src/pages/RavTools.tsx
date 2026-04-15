@@ -116,16 +116,16 @@ const RavTools = () => {
       <Header />
 
       {/* Hero */}
-      <section className="pt-32 pb-16 bg-gradient-warm">
+      <section className="pt-28 md:pt-32 pb-12 md:pb-16 bg-gradient-warm border-b border-border/60">
         <div className="container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-            <Wrench className="h-4 w-4" />
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+            <Wrench className="h-3.5 w-3.5" />
             RAV Tools
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
             Free Tools for Smarter Vacations
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Whether you own a timeshare or you're planning your next getaway,
             these tools help you make better decisions — all free, no account required.
           </p>
@@ -133,9 +133,9 @@ const RavTools = () => {
       </section>
 
       {/* Tool Cards */}
-      <section className="py-16">
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
             {TOOLS.map((tool) => {
               const Icon = tool.icon;
               const isBuilt = tool.status === 'built';
@@ -143,9 +143,9 @@ const RavTools = () => {
               return (
                 <div
                   key={tool.id}
-                  className={`bg-card rounded-xl shadow-card p-6 flex flex-col ${
+                  className={`bg-card rounded-xl shadow-card p-6 flex flex-col border border-border/60 ${
                     isBuilt
-                      ? 'hover:shadow-card-hover transition-shadow'
+                      ? 'hover:shadow-card-hover hover:-translate-y-0.5 transition-all'
                       : 'opacity-60'
                   }`}
                 >
@@ -185,9 +185,9 @@ const RavTools = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-12 md:py-16 bg-muted/40 border-t border-border/60">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="font-display text-2xl font-bold text-foreground mb-4">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-3">
             Have a Tool Idea?
           </h2>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">

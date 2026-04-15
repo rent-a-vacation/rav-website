@@ -58,12 +58,12 @@ const Destinations = () => {
       <Header />
 
       {/* Hero */}
-      <section className="pt-32 pb-16 bg-gradient-warm">
+      <section className="pt-28 md:pt-32 pb-12 md:pb-16 bg-gradient-warm border-b border-border/60">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
             Explore Destinations
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Discover amazing vacation spots worldwide. From tropical beaches to mountain
             retreats, find your perfect getaway.
           </p>
@@ -71,9 +71,9 @@ const Destinations = () => {
       </section>
 
       {/* Featured Destinations */}
-      <section className="py-16">
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="font-display text-2xl font-bold text-foreground mb-8">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-6 md:mb-8">
             Featured Destinations
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -126,9 +126,9 @@ const Destinations = () => {
       </section>
 
       {/* All Destinations */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-12 md:py-16 bg-muted/40 border-t border-border/60">
         <div className="container mx-auto px-4">
-          <h2 className="font-display text-2xl font-bold text-foreground mb-8">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-6 md:mb-8">
             All Destinations
           </h2>
           <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -177,9 +177,9 @@ const Destinations = () => {
       </section>
 
       {/* Popular Resort Brands */}
-      <section className="py-16">
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="font-display text-2xl font-bold text-foreground mb-8">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-6 md:mb-8">
             Browse by Resort Brand
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">

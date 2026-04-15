@@ -99,16 +99,16 @@ export default function CostComparator() {
           </Link>
 
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-              <BarChart3 className="h-4 w-4" />
+          <div className="text-center mb-8 md:mb-10 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+              <BarChart3 className="h-3.5 w-3.5" />
               RAV SmartCompare
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-3">
               How much can you save with a timeshare rental?
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Compare RAV timeshare rentals against hotels and Airbnb — same destination, same dates
+            <p className="text-muted-foreground text-lg">
+              Compare RAV timeshare rentals against hotels and Airbnb — same destination, same dates.
             </p>
           </div>
 

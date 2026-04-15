@@ -184,8 +184,8 @@ const AccountSettings = () => {
       <main className="pt-20 md:pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-3xl">
           {/* Page heading */}
-          <div className="mb-8">
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
+          <div className="mb-8 md:mb-10">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight">
               Account Settings
             </h1>
             <p className="text-muted-foreground mt-2">

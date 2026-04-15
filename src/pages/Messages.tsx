@@ -30,15 +30,15 @@ export default function Messages() {
       <Header />
 
       <main id="main-content" className="flex-1 pt-16 md:pt-20">
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="container mx-auto px-4 py-6 md:py-8 max-w-7xl">
           {/* Page heading */}
-          <div className="mb-4">
-            <h1 className="text-2xl font-bold flex items-center gap-2">
+          <div className="mb-5 md:mb-6">
+            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
               <MessageSquare className="h-6 w-6 text-primary" />
               Messages
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Your conversations with owners and travelers
+            <p className="text-sm text-muted-foreground mt-1.5">
+              Your conversations with owners and travelers.
             </p>
           </div>
 

@@ -121,12 +121,12 @@ export default function ResortQuiz() {
           </Link>
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-              <Compass className="h-4 w-4" />
+          <div className="text-center mb-8 md:mb-10">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+              <Compass className="h-3.5 w-3.5" />
               RAV SmartMatch
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3">
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-3">
               {results ? 'Your Perfect Destinations' : 'Find Your Perfect Resort'}
             </h1>
             <p className="text-muted-foreground text-lg">
