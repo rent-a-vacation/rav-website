@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-15T11:10:55"
+change_ref: "bc1bafd"
+change_type: "session-48-docs-refresh"
 status: "active"
 ---
 # Rent-A-Vacation Marketing Playbook
@@ -44,11 +44,11 @@ The vacation ownership industry is a $10.5 billion market *[PROJECTED — ARDA i
 
 We've built the first platform purpose-built for this market, with three structural advantages no competitor can replicate quickly:
 
-1. **A two-sided bidding engine** *[BUILT]* — travelers bid on listings AND post Vacation Wishes for owners to compete over, creating true price discovery
+1. **A two-sided Marketplace** *[BUILT]* — renters make Offers on Listings AND post Wishes for owners to send Offers against, creating true price discovery in both directions
 2. **A curated resort data layer** *[BUILT]* — 117 resorts, 351 unit types, auto-populated listing forms designed to cut owner onboarding time dramatically
 3. **AI-powered discovery** *[BUILT]* — voice and text search that understands "Find me a 2-bedroom in Maui under $2,000 next March" and returns results in seconds
 
-The platform is fully built, end-to-end tested with 771 automated tests across 99 test files, and operating at 99.97% uptime in our staging environment. Owners list for free — no upfront fees. We take a configurable 15% default commission on successful bookings only (Pro −2%, Business −5%). The technology is ready — we're now preparing for our public launch.
+The platform is fully built, end-to-end tested with 956 automated tests across 121 test files, and operating at 99.97% uptime in our staging environment. Owners list for free — no upfront fees. We take a configurable 15% default commission on successful bookings only (Pro −2%, Business −5%). The technology is ready — we're now preparing for our public launch.
 
 ---
 
@@ -63,7 +63,7 @@ This is the heart of our story. Every item below is **BUILT**, deployed, and dem
 | **AI Voice Search (Ask RAVIO)** | BUILT | Say "Find me a 2-bedroom in Maui" — watch results appear with voice narration |
 | **AI Text Chat (Chat with RAVIO)** | BUILT | Type conversational queries, get streaming AI responses with property cards |
 | **Two-Sided Bidding** | BUILT | Traveler bids on listings; owner accepts/counters. Full negotiation workflow |
-| **Vacation Wishes (Travel Requests)** | BUILT | Traveler posts wish; owners send proposals; traveler picks best offer |
+| **Wishes (Travel Requests)** | BUILT | Renter posts a Wish; owners send Offers; renter picks the best one |
 | **Resort Directory (ResortIQ)** | BUILT | 117 resorts, 351 unit types — curated data that auto-populates listing forms |
 | **Owner Verification (TrustShield)** | BUILT | Multi-step identity + ownership verification workflow |
 | **Escrow Payments (PaySafe)** | BUILT | Stripe-powered, funds held until check-in confirmed |
@@ -99,21 +99,24 @@ This is the heart of our story. Every item below is **BUILT**, deployed, and dem
 | **Renter Dashboard (/my-trips)** | BUILT | 4-tab dashboard: Overview, Bookings, Offers, Favorites |
 | **Role Upgrade Notifications** | BUILT | Email + in-app notification on role approval with realtime detection |
 | **IP Allowlisting for API Keys** | BUILT | Optional CIDR-based IP restriction for API keys |
+| **Notification Center** | BUILT | Multi-channel routing (in-app, email, SMS), per-type preferences, TCPA-compliant SMS opt-in, seasonal event reminders, delivery log |
+| **RAV Deals (Distressed Inventory)** | BUILT | Curated last-minute / expiring weeks surface — feeds bidding |
 
 ### Engineering Quality (These are real, verified numbers)
 
 | Metric | Value | Verification |
 |--------|-------|-------------|
-| Automated tests | 771 passing (99 test files) | `npm test` — run anytime |
+| Automated tests | 956 passing (121 test files) | `npm test` — run anytime |
+| P0 critical-path tests | 97 (`@p0` tagged) | `npm run test:p0` — ~2s |
 | TypeScript errors | 0 | `npx tsc --noEmit` — strict mode |
 | Lint errors | 0 | `npm run lint` — ESLint |
 | Build status | Clean | `npm run build` — production-ready |
-| Database migrations | 45 deployed | Supabase CLI tracked |
-| Edge functions | 27 deployed | Serverless, auto-scaling |
+| Database migrations | 046 deployed | Supabase CLI tracked |
+| Edge functions | 30 deployed | Serverless, auto-scaling |
 | CI/CD pipeline | 5-job GitHub Actions | Lint, typecheck, unit, E2E, visual regression |
 | Platform uptime (staging) | 99.97% | Supabase + Vercel infrastructure |
 | Resort database | 117 resorts, 351 unit types | Queryable, auto-populated |
-| Phases shipped | 39+ in 18 months | Documented in PROJECT-HUB.md |
+| Sessions shipped | 48+ in 19 months | Documented in PROJECT-HUB.md |
 
 ### Demo Environment (dev.rent-a-vacation.com)
 
@@ -212,10 +215,10 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 
 **Key Messages (all accurately labeled):**
 - "The $10.5B vacation ownership market has no tech-first leader" *[Industry data]*
-- "We've built a complete, production-ready platform with 771 automated tests across 99 test files" *[BUILT]*
+- "We've built a complete, production-ready platform with 956 automated tests across 121 test files" *[BUILT]*
 - "AI voice search is an industry first — no competitor offers this" *[BUILT]*
 - "117-resort curated data layer creates compounding network effects" *[BUILT]*
-- "39 phases shipped in 18 months — execution velocity is our proof" *[BUILT]*
+- "48+ sessions shipped in 19 months — execution velocity is our proof" *[BUILT]*
 - "Unit economics model targets 12:1 LTV:CAC ratio and 85%+ contribution margin" *[PROJECTED]*
 
 ---
@@ -228,7 +231,7 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 |--------------|----------------|------------|--------|
 | Voice Search | **Ask RAVIO** | AI voice concierge — say what you want, get results | BUILT |
 | Text Chat | **Chat with RAVIO** | Text-based AI assistant for property discovery | BUILT |
-| Travel Requests | **Vacation Wishes** | Post your dream trip; owners compete to fulfill it | BUILT |
+| Travel Requests | **Wishes** | Post a Wish; owners send Offers (formerly "Vacation Wishes" → "RAV Wishes" → **Wishes** — Session 52 lock) | BUILT |
 | Bidding System | **Name Your Price** | Bid on any open listing | BUILT |
 | Fair Value Score | **RAV SmartPrice** | AI-powered pricing recommendations for owners | BUILT |
 | Maintenance Calculator | **RAV SmartEarn** | Break-even tool — how many weeks to cover fees | BUILT |
@@ -244,7 +247,11 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 | Dynamic Pricing | **Dynamic Pricing** | Urgency, seasonal, and demand-based price adjustments | BUILT |
 | Referral System | **Referral Program** | Unique codes, tracking dashboard, signup attribution | BUILT |
 | Public API | **Developer Portal** | RESTful API at `/developers` with Swagger UI | BUILT |
-| Owner Tools Suite | **Owner's Edge** | Dashboard, earnings, analytics, pricing tools | BUILT |
+| Owner Tools Suite | **My Rentals** | Dashboard, earnings, analytics, pricing tools (formerly "Owner's Edge" / "RAV Edge" — Session 47 rebrand) | BUILT |
+| Distressed Inventory | **RAV Deals** | Curated expiring weeks from motivated sellers (feeds bidding) | BUILT |
+| Notification Center | **Notification Center** | Multi-channel routing (in-app/email/SMS) with TCPA-compliant opt-in | BUILT |
+| Executive Dashboard | **RAV Insights** | Investor-grade BI (formerly "RAV Command" — Session 47 rebrand) | BUILT |
+| Admin Dashboard | **RAV Ops** | Operations management (formerly "Admin Dashboard" — Session 47 rebrand) | BUILT |
 
 ### Brand Hierarchy
 
@@ -253,7 +260,8 @@ RENT-A-VACATION (Master Brand)
 │
 ├── For Travelers (Primary — lead with these)
 │   ├── Name Your Price (bidding — primary differentiator)
-│   ├── Vacation Wishes (reverse auction — primary differentiator)
+│   ├── Wishes (renter open call; owners send Offers — primary differentiator)
+│   ├── RAV Deals (distressed inventory — discovery)
 │   └── PaySafe (escrow protection)
 │
 ├── Trust & Safety
@@ -265,7 +273,7 @@ RENT-A-VACATION (Master Brand)
 │   └── Chat with RAVIO (text search)
 │
 ├── For Owners
-│   ├── Owner's Edge (dashboard & tools suite)
+│   ├── My Rentals (dashboard & tools suite — formerly "Owner's Edge")
 │   ├── RAV Smart Suite (5-tool hub at /tools)
 │   │   ├── RAV SmartEarn (maintenance fee + yield estimator)
 │   │   ├── RAV SmartPrice (pricing AI)
@@ -275,8 +283,10 @@ RENT-A-VACATION (Master Brand)
 │   └── TrustShield (verification program)
 │
 └── Infrastructure / Business
-    ├── RAV Command (executive dashboard)
+    ├── RAV Insights (executive dashboard — formerly "RAV Command")
+    ├── RAV Ops (admin operations — formerly "Admin Dashboard")
     ├── ResortIQ (curated resort directory)
+    ├── Notification Center (multi-channel: in-app, email, SMS)
     ├── Liquidity Score (marketplace health metric)
     └── Bid Spread Index (price discovery metric)
 ```
@@ -306,10 +316,10 @@ RENT-A-VACATION (Master Brand)
 ### Value Proposition Pillars
 
 **Pillar 1: True Price Discovery** *[BUILT]*
-> "Name Your Price isn't a slogan — it's a feature. Bid on any open listing, or post a Vacation Wish and let verified owners compete for your booking. For the first time in travel, the traveler sets the terms."
+> "Name Your Price isn't a slogan — it's the mechanic. Make an Offer on any open Listing, or post a Wish and let verified owners send you Offers. For the first time in travel, the traveler sets the terms."
 
 **Pillar 2: Purpose-Built for Vacation Clubs** *[BUILT]*
-> "We don't dabble in timeshares — we're built for them. 117 resorts. 351 unit types. Curated resort data that auto-populates listing forms. Owner verification that builds real trust. Resort confirmation workflows that match how vacation clubs actually work."
+> "We don't dabble in timeshares — we're built for them. 117 resorts. 351 unit types. Curated resort data that auto-populates listing forms. Owner verification that builds real trust. Resort confirmation workflows that match how vacation clubs actually work. Multi-channel reminders (in-app, email, TCPA-compliant SMS) keep both sides in sync from booking to check-in."
 
 **Pillar 3: Ironclad Trust** *[BUILT]*
 > "Every owner goes through TrustShield verification. Every payment is protected through PaySafe escrow. Every stay is backed by our satisfaction guarantee. We've removed the risk so you can focus on the vacation."
@@ -342,9 +352,9 @@ RENT-A-VACATION (Master Brand)
 
 ---
 
-### Campaign 2: "Vacation Wishes" (Traveler Acquisition)
+### Campaign 2: "Post a Wish" (Traveler Acquisition)
 
-**Concept:** Reframe travel requests as wishes. "Make a Wish. Owners Make It Real." Emotional, aspirational, shareable.
+**Concept:** Reframe travel requests as wishes. "Post a Wish. Owners Make It Real." Emotional, aspirational, shareable.
 
 **Why This Works Pre-Launch:** The feature is built and demonstrable. The concept is emotionally resonant and sharable even before we have mass adoption.
 
@@ -432,7 +442,7 @@ RENT-A-VACATION (Master Brand)
 | 2 | "Hilton Grand Vacations: The Complete Rental Guide" | Both | Resort data is BUILT |
 | 3 | "How Voice Search is Changing Travel" | Press | RAVIO is BUILT |
 | 4 | "Timeshare Rentals vs. Hotel Direct: Price Comparison" | Travelers | Industry data |
-| 5 | "What Is a Vacation Wish? The New Way to Book" | Travelers | Feature is BUILT |
+| 5 | "What Is a Wish? The New Way to Book" | Travelers | Feature is BUILT |
 | 6 | "Disney Vacation Club Rentals: What You Need to Know" | Travelers | Resort data is BUILT |
 
 ### Email Sequences
@@ -440,9 +450,9 @@ RENT-A-VACATION (Master Brand)
 **Traveler Welcome (5 emails):**
 1. Welcome + how it works (Day 0)
 2. "Try Ask RAVIO" — voice search demo (Day 1)
-3. "Your First Vacation Wish" — post a travel request (Day 3)
+3. "Post Your First Wish" — submit a Wish to the Marketplace (Day 3)
 4. "Featured Listings This Week" — curated highlights (Day 7)
-5. "Name Your Price" — bidding tutorial (Day 14)
+5. "Make an Offer" — Marketplace tutorial (Day 14)
 
 **Owner Welcome (5 emails):**
 1. Welcome + verification steps (Day 0)
@@ -525,7 +535,7 @@ RENT-A-VACATION (Master Brand)
 ### Phase 4: Scale (Target: Q4 2026)
 - Mobile app launch (iOS + Android via Capacitor)
 - Partnership outreach to vacation club brands
-- "Vacation Wishes" campaign
+- "Post a Wish" campaign
 - Content marketing engine (blog, email, social)
 - Referral program launch
 
@@ -537,18 +547,19 @@ RENT-A-VACATION (Master Brand)
 
 | Metric | Value | How to Verify |
 |--------|-------|---------------|
-| Automated tests passing | 771 (99 test files) | Run `npm test` |
+| Automated tests passing | 956 (121 test files) | Run `npm test` |
+| P0 critical-path tests | 97 (`@p0` tagged) | Run `npm run test:p0` |
 | TypeScript errors | 0 | Run `npx tsc --noEmit` |
 | Lint errors | 0 | Run `npm run lint` |
 | Production build | Clean | Run `npm run build` |
-| Database migrations deployed | 45 | Supabase dashboard |
-| Edge functions deployed | 27 | Supabase dashboard |
+| Database migrations deployed | 046 | Supabase dashboard |
+| Edge functions deployed | 30 | Supabase dashboard |
 | CI/CD pipeline jobs | 5 (all green) | GitHub Actions |
 | Resorts in database | 117 | Query `resorts` table |
 | Unit types in database | 351 | Query `resort_unit_types` table |
 | Countries covered | 10+ | Query resort locations |
-| Phases shipped | 39+ | PROJECT-HUB.md |
-| Development timeline | 18 months | Git history |
+| Sessions shipped | 48+ | PROJECT-HUB.md |
+| Development timeline | 19 months | Git history |
 
 ### Projected Business Metrics (Post-Launch Targets)
 
@@ -587,7 +598,12 @@ RENT-A-VACATION (Master Brand)
 | **RAVIO** | AI Brand | The AI concierge powering voice and text search | BUILT |
 | **Ask RAVIO** | Feature | Voice-activated property search | BUILT |
 | **Chat with RAVIO** | Feature | Text-based AI property search | BUILT |
-| **Vacation Wishes** | Feature | Post travel requests; owners compete | BUILT |
+| **Wishes** | Feature | Renters post Wishes; owners send Offers (formerly "Vacation Wishes" → "RAV Wishes" → **Wishes** in Session 52) | BUILT |
+| **RAV Deals** | Feature | Curated distressed inventory — expiring weeks from motivated sellers | BUILT |
+| **My Rentals** | Suite | Owner dashboard — formerly "Owner's Edge" / "RAV Edge" | BUILT |
+| **RAV Insights** | Dashboard | Executive BI — formerly "RAV Command" | BUILT |
+| **RAV Ops** | Dashboard | Admin operations — formerly "Admin Dashboard" | BUILT |
+| **Notification Center** | Platform | Multi-channel routing (in-app, email, SMS) + TCPA opt-in | BUILT |
 | **Name Your Price** | Feature | Bid on open listings | BUILT |
 | **RAV SmartPrice** | Feature | AI-powered pricing recommendations | BUILT |
 | **RAV SmartEarn** | Tool | Maintenance fee break-even calculator | BUILT |
@@ -597,7 +613,6 @@ RENT-A-VACATION (Master Brand)
 | **RAV Command** | Dashboard | Executive business intelligence | BUILT |
 | **Liquidity Score** | Metric | Proprietary marketplace health index | BUILT |
 | **Bid Spread Index** | Metric | Proprietary price discovery efficiency | BUILT |
-| **Owner's Edge** | Suite | Owner dashboard and business tools | BUILT |
 | **RAV SmartCompare** | Tool | Side-by-side cost comparison across platforms | BUILT |
 | **RAV SmartMatch** | Tool | Resort quiz — find your ideal vacation club | BUILT |
 | **RAV SmartBudget** | Tool | Budget planner for vacation planning | BUILT |
@@ -619,7 +634,8 @@ RENT-A-VACATION (Master Brand)
 
 | Category | Metric | Value | Type |
 |----------|--------|-------|------|
-| **Technology** | Automated tests | 771 (99 test files) | BUILT |
+| **Technology** | Automated tests | 956 (121 test files) | BUILT |
+| **Technology** | P0 critical-path tests | 97 | BUILT |
 | **Technology** | Type errors | 0 | BUILT |
 | **Technology** | Platform uptime (staging) | 99.97% | BUILT |
 | **Technology** | CI/CD pipeline | 5 jobs, all green | BUILT |
@@ -632,7 +648,7 @@ RENT-A-VACATION (Master Brand)
 | **Market** | Avg maintenance fee | $1,120/yr | INDUSTRY DATA |
 | **Business** | Commission model | 15% (default; Pro −2%, Business −5%) | BUILT (configurable) |
 | **Business** | Membership tiers | 6 (3+3) | BUILT |
-| **Business** | Phases shipped | 39+ | BUILT |
+| **Business** | Sessions shipped | 48+ | BUILT |
 
 ---
 

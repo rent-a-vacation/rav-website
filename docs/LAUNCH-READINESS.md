@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-15T11:10:55"
+change_ref: "bc1bafd"
+change_type: "session-48-docs-refresh"
 status: "active"
 ---
 # Launch Readiness Checklist
@@ -18,9 +18,9 @@ Admin Dashboard > **Launch** tab — runs automated checks and provides Go Live 
 
 ---
 
-## Platform Completeness (Sessions 33-39)
+## Platform Completeness (Sessions 33-48)
 
-The following major features were completed in Sessions 33-39 and are deployed:
+The following major features were completed in Sessions 33-48 and are deployed:
 
 | Area | What was built | Session |
 |------|---------------|---------|
@@ -40,15 +40,20 @@ The following major features were completed in Sessions 33-39 and are deployed:
 | Referral Program | Referral codes, tracking, signup capture | 37 |
 | Public API | API key infrastructure (migrations 044-045), `api-gateway` edge function, `/developers` Swagger UI, IP allowlisting with CIDR support | 38 |
 | RAV Smart Suite | 5 tools on `/tools` hub (SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget) | 38-39 |
+| Notification Center | Multi-channel routing (in-app/email/SMS), TCPA opt-in, seasonal events, delivery log; 3 SMS edge functions deployed (DEV) — `notification-dispatcher`, `sms-scheduler`, `twilio-webhook`. `SMS_TEST_MODE=true` until A2P 10DLC clears (#127) | 40 |
+| Brand Architecture Rebrand | Owner's Edge → **My Rentals**; RAV Command → **RAV Insights**; Admin Dashboard → **RAV Ops**; new **RAV Deals** discovery surface | 47 |
+| Multi-Year Event Generation | Curated events unified into DB with admin CRUD UI + multi-year generator | 48 |
+| Marketplace Terminology Lock | Three nouns locked: **Listing · Wish · Offer**. "Offer" replaces "Bid" + "Proposal" in all UI. RAV prefix dropped from transactional CTAs (Make an Offer, Post a Wish). Single **Marketplace** nav link replaces "Name Your Price" + "Make a Wish". `/bidding` → `/marketplace` with redirect. Owner dashboard gains top-level **Offers** tab (Sent + Received). Notifications categories renamed (Offers / Wishes). (DEC-031) | 52 |
+| Site-wide UI Polish | 30 pages tightened — `Section` + `SectionHeader` layout primitives, standardised vertical rhythm (`py-12 md:py-16`), `tracking-tight` headings, soft border separators, off-brand tool badges unified to brand primary. No brand-color changes. | 52 |
 
 ### By the Numbers
 
 | Metric | Count |
 |--------|-------|
-| Automated tests | 771 (99 test files) |
-| P0 critical-path tests | 97 |
-| SQL migrations | 45 (001-043 deployed to DEV + PROD; 044-045 pending deploy) |
-| Edge functions | 27 |
+| Automated tests | 956 (121 test files) |
+| P0 critical-path tests | 97 (`npm run test:p0` ~2s) |
+| SQL migrations | 046 (all deployed to DEV + PROD) |
+| Edge functions | 30 (27 deployed to PROD; 3 SMS functions deployed to DEV only — blocked on A2P 10DLC / #127) |
 | Type errors | 0 |
 | Lint errors | 0 |
 | Build status | Clean |
@@ -64,7 +69,8 @@ The following major features were completed in Sessions 33-39 and are deployed:
 | 2 | Supabase points to PROD | Auto | `VITE_SUPABASE_URL` contains `xzfllqndrlmhclqfybew` | Ready |
 | 3 | DNS & SSL valid | Manual | Visit https://rent-a-vacation.com — no certificate errors | Ready |
 | 4 | Email sender verified (Resend) | Manual | Resend dashboard: `updates.rent-a-vacation.com` domain verified, `RESEND_API_KEY` set in Supabase secrets | Ready |
-| 5 | API key infrastructure | Auto | Migrations 044-045 deployed, `api-gateway` edge function active | Pending deploy |
+| 5 | API key infrastructure | Auto | Migrations 044-045 deployed, `api-gateway` edge function active | Ready |
+| 5b | Notification Center | Auto | Migration 046 deployed (DEV + PROD); `notification-dispatcher` deployed; SMS functions deployed to DEV with `SMS_TEST_MODE=true` | Ready (SMS gated on #127) |
 
 ### Payments
 | # | Check | Type | How to Verify |
@@ -152,8 +158,10 @@ The following checks cannot pass until external blockers are resolved:
 | Check | Blocker | Issue |
 |-------|---------|-------|
 | Stripe live mode | LLC/EIN required for Stripe activation | #127 |
+| Stripe Tax activation | LLC/EIN required (code ready, `automatic_tax: { enabled: true }`) | #127 |
 | Legal pages reviewed | Need legal counsel review | #80 |
-| Accounting integration | Blocked on LLC/EIN | #127, #63 |
+| Accounting integration (Puzzle.io) | Blocked on LLC/EIN — onboarding paused at step 7 | #127, #63 |
+| SMS production traffic | A2P 10DLC registration pending — flip `SMS_TEST_MODE=false` once cleared | #127 |
 
 ---
 
