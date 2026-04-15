@@ -155,7 +155,7 @@ export const ownerLifecycle: FlowDefinition = {
       route: '/rentals',
       label: 'Listing Live',
       component: 'Rentals',
-      description: 'Listing visible to renters on the marketplace. Auto-matches open RAV Wishes.',
+      description: 'Listing visible to renters on the marketplace. Auto-matches open Wishes.',
       tables: ['listings', 'notifications'],
       edgeFunctions: ['match-travel-requests'],
       branches: [
@@ -222,7 +222,7 @@ export const ownerLifecycle: FlowDefinition = {
       route: '/messages',
       label: 'Messages',
       component: 'Messages',
-      description: 'Unified inbox — all conversations with travelers across bookings, bids, inquiries, and RAV Wishes',
+      description: 'Unified inbox — all conversations with travelers across bookings, Offers, inquiries, and Wishes',
       tables: ['conversations', 'conversation_messages'],
       branches: [
         { condition: 'Open thread', targetStepId: 'conversation_thread', label: 'View Thread' },

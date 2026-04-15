@@ -148,7 +148,7 @@ describe('WelcomePage', () => {
     });
     expect(screen.getByText('List Your First Property')).toBeInTheDocument();
     expect(screen.getAllByText(/Go to My Rentals/).length).toBeGreaterThan(0);
-    expect(screen.getByText('Browse RAV Wishes')).toBeInTheDocument();
+    expect(screen.getByText('Browse Wishes')).toBeInTheDocument();
   });
 
   it('Step 2 shows traveler-specific CTAs for renters', async () => {
@@ -160,8 +160,8 @@ describe('WelcomePage', () => {
     await waitFor(() => {
       expect(screen.getByText('Start Exploring')).toBeInTheDocument();
     });
-    expect(screen.getByText('Name Your Price')).toBeInTheDocument();
-    expect(screen.getByText('Post a RAV Wish')).toBeInTheDocument();
+    expect(screen.getByText('Open the Marketplace')).toBeInTheDocument();
+    expect(screen.getByText('Post a Wish')).toBeInTheDocument();
   });
 
   it('redirects to /pending-approval if user is not yet approved', () => {

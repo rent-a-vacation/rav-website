@@ -14,14 +14,14 @@ interface FairValueCardProps {
 
 const OWNER_MESSAGES = {
   below_market: 'Your price is below the typical range. Consider raising your ask to maximize earnings.',
-  fair_value: 'Your price is well-aligned with current demand. Good positioning for strong bid activity.',
-  above_market: 'Your price is above the typical range for similar listings. You may receive fewer bids.',
+  fair_value: 'Your price is well-aligned with current demand. Good positioning for strong Offer activity.',
+  above_market: 'Your price is above the typical range for similar listings. You may receive fewer Offers.',
 } as const;
 
 const TRAVELER_MESSAGES = {
   below_market: 'This listing is priced below comparable properties. Strong value at this price.',
   fair_value: 'This listing is priced within the normal range for comparable properties.',
-  above_market: 'This listing is priced above comparable properties. Bids may be accepted below the asking price.',
+  above_market: 'This listing is priced above comparable properties. Offers may be accepted below the asking price.',
 } as const;
 
 export function FairValueCard({ listingId, viewerRole }: FairValueCardProps) {
@@ -54,7 +54,7 @@ export function FairValueCard({ listingId, viewerRole }: FairValueCardProps) {
           </TooltipTrigger>
           <TooltipContent side="top" className="max-w-xs">
             <p className="text-xs leading-relaxed">
-              Calculated from accepted bid prices for comparable listings — same destination, bedroom count, and similar dates — over the past 90 days.
+              Calculated from accepted Offer prices for comparable listings — same destination, bedroom count, and similar dates — over the past 90 days.
             </p>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               Why it matters: Helps owners price competitively and gives travelers confidence they're seeing a fair price.
@@ -82,7 +82,7 @@ export function FairValueCard({ listingId, viewerRole }: FairValueCardProps) {
 
       {data.tier !== 'fair_value' && data.avg_accepted_bid != null && (
         <p className="text-xs text-muted-foreground">
-          Average accepted bid: ${data.avg_accepted_bid.toLocaleString()}
+          Average accepted Offer: ${data.avg_accepted_bid.toLocaleString()}
         </p>
       )}
     </div>

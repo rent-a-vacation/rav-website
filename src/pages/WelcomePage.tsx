@@ -225,15 +225,15 @@ export default function WelcomePage() {
                     </Link>
 
                     <Link
-                      to="/bidding?tab=requests"
+                      to="/marketplace?tab=wishes"
                       className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
                     >
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <Send className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">Browse RAV Wishes</p>
-                        <p className="text-xs text-muted-foreground">See what travelers are looking for</p>
+                        <p className="font-medium text-sm">Browse Wishes</p>
+                        <p className="text-xs text-muted-foreground">See what travelers are looking for.</p>
                       </div>
                       <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
                     </Link>
@@ -255,29 +255,29 @@ export default function WelcomePage() {
                     </Link>
 
                     <Link
-                      to="/bidding"
+                      to="/marketplace"
                       className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
                     >
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <Gavel className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">Name Your Price</p>
-                        <p className="text-xs text-muted-foreground">Bid on any open listing</p>
+                        <p className="font-medium text-sm">Open the Marketplace</p>
+                        <p className="text-xs text-muted-foreground">Make an Offer on any Listing.</p>
                       </div>
                       <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
                     </Link>
 
                     <Link
-                      to="/bidding?tab=requests"
+                      to="/marketplace?tab=wishes"
                       className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
                     >
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <Send className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">Post a RAV Wish</p>
-                        <p className="text-xs text-muted-foreground">Tell owners what you want</p>
+                        <p className="font-medium text-sm">Post a Wish</p>
+                        <p className="text-xs text-muted-foreground">Tell owners what you want.</p>
                       </div>
                       <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
                     </Link>

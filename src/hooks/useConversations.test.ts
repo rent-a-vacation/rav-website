@@ -109,7 +109,7 @@ describe('getContextBadge', () => {
 describe('formatConversationEvent', () => {
   it('formats bid_accepted with amount', () => {
     expect(formatConversationEvent('bid_accepted', { amount: 950 }))
-      .toBe('Bid accepted · $950');
+      .toBe('Offer accepted · $950');
   });
 
   it('formats booking_requested with total and date range', () => {
@@ -121,15 +121,15 @@ describe('formatConversationEvent', () => {
   });
 
   it('formats proposal events without data', () => {
-    expect(formatConversationEvent('proposal_accepted')).toBe('Proposal accepted');
-    expect(formatConversationEvent('proposal_rejected')).toBe('Proposal rejected');
+    expect(formatConversationEvent('proposal_accepted')).toBe('Offer accepted');
+    expect(formatConversationEvent('proposal_rejected')).toBe('Offer declined');
   });
 });
 
 describe('getConversationTitle', () => {
   it('combines context label with resort name', () => {
     expect(getConversationTitle('bid', 'Hilton Orlando'))
-      .toBe('Bid · Hilton Orlando');
+      .toBe('Offer · Hilton Orlando');
   });
 });
 

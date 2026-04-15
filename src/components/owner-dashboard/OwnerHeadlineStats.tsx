@@ -61,7 +61,7 @@ export function OwnerHeadlineStats({ stats, isLoading }: OwnerHeadlineStatsProps
       {/* Active Bids */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Active Bids</CardTitle>
+          <CardTitle className="text-sm font-medium">Active Offers</CardTitle>
           <TrendingUp className="h-4 w-4 text-blue-500" />
         </CardHeader>
         <CardContent>
@@ -70,7 +70,7 @@ export function OwnerHeadlineStats({ stats, isLoading }: OwnerHeadlineStatsProps
           ) : (
             <div className="text-2xl font-bold">{stats?.active_bids ?? 0}</div>
           )}
-          <p className="text-xs text-muted-foreground">bids awaiting response</p>
+          <p className="text-xs text-muted-foreground">Offers awaiting response</p>
         </CardContent>
       </Card>
 

@@ -129,10 +129,10 @@ export function ProposalFormDialog({ request, open, onOpenChange }: ProposalForm
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-primary" />
-            Submit Proposal
+            Send an Offer
           </DialogTitle>
           <DialogDescription>
-            Propose your property for this travel request
+            Pitch your property for this Wish.
           </DialogDescription>
         </DialogHeader>
 
@@ -259,7 +259,7 @@ export function ProposalFormDialog({ request, open, onOpenChange }: ProposalForm
 
           {/* Valid Until */}
           <div className="space-y-2">
-            <Label htmlFor="validUntil">Proposal Valid Until *</Label>
+            <Label htmlFor="validUntil">Offer Valid Until *</Label>
             <Input
               id="validUntil"
               type="date"
@@ -281,7 +281,7 @@ export function ProposalFormDialog({ request, open, onOpenChange }: ProposalForm
               type="submit" 
               disabled={createProposal.isPending || !selectedPropertyId || proposedPrice <= 0}
             >
-              {createProposal.isPending ? 'Submitting...' : 'Submit Proposal'}
+              {createProposal.isPending ? 'Sending...' : 'Send Offer'}
             </Button>
           </DialogFooter>
         </form>

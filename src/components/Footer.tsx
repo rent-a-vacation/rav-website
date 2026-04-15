@@ -18,7 +18,7 @@ const Footer = () => {
             <span className="font-display font-bold text-xl text-white">Rent-A-Vacation</span>
           </Link>
             <p className="text-white/60 mb-6 max-w-sm leading-relaxed">
-              The open marketplace for vacation rentals. Rent directly from verified timeshare owners, bid on properties, or post your travel plans and let owners compete for your booking.
+              The open marketplace for vacation rentals. Rent directly from verified timeshare owners, make an offer on any listing, or post a wish and let owners send you offers.
             </p>
           </div>
 
@@ -26,8 +26,8 @@ const Footer = () => {
           <div>
             <h4 className="font-display font-semibold text-white mb-6">For Renters</h4>
             <ul className="space-y-3">
-              <li><Link to="/bidding" className="hover:text-white transition-colors">Name Your Price</Link></li>
-              <li><Link to="/bidding?tab=requests" className="hover:text-white transition-colors">Make a Wish</Link></li>
+              <li><Link to="/marketplace" className="hover:text-white transition-colors">Marketplace</Link></li>
+              <li><Link to="/marketplace?tab=wishes" className="hover:text-white transition-colors">Post a Wish</Link></li>
               <li><Link to="/rentals" className="hover:text-white transition-colors">Browse Rentals</Link></li>
               <li><Link to="/destinations" className="hover:text-white transition-colors">Destinations</Link></li>
               <li><Link to="/user-guide" className="hover:text-white transition-colors">User Guide</Link></li>

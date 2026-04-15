@@ -77,7 +77,7 @@ export function BidsManagerDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Gavel className="h-5 w-5 text-primary" />
-            Manage Bids
+            Manage Offers
           </DialogTitle>
           <DialogDescription>
             {listingTitle}
@@ -96,7 +96,7 @@ export function BidsManagerDialog({
             {pendingBids.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                  Pending Bids ({pendingBids.length})
+                  Pending Offers ({pendingBids.length})
                 </h4>
                 {pendingBids.map((bid) => (
                   <BidCard
@@ -118,7 +118,7 @@ export function BidsManagerDialog({
             {otherBids.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                  Past Bids ({otherBids.length})
+                  Past Offers ({otherBids.length})
                 </h4>
                 {otherBids.map((bid) => (
                   <BidCard key={bid.id} bid={bid} showActions={false} />

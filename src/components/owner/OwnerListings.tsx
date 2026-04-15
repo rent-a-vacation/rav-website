@@ -751,7 +751,7 @@ const OwnerListings = () => {
                           }}
                         >
                           <Eye className="mr-2 h-3 w-3" />
-                          View Bids
+                          View Offers
                         </Button>
                       ) : (
                         <Button

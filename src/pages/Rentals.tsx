@@ -829,9 +829,9 @@ const Rentals = () => {
                     </Button>
                   </Link>
                 )}
-                <Link to="/bidding">
+                <Link to="/marketplace">
                   <Button variant="outline" size="lg">
-                    Browse Name Your Price
+                    Browse Marketplace
                   </Button>
                 </Link>
               </div>

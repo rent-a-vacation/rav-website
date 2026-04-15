@@ -128,8 +128,8 @@ describe('NOTIFICATION_CATEGORIES', () => {
   it('covers booking, bidding, travel, and marketing', () => {
     const labels = NOTIFICATION_CATEGORIES.map((c) => c.label);
     expect(labels).toContain('Booking Updates');
-    expect(labels).toContain('Bidding & Proposals');
-    expect(labels).toContain('Travel Requests');
+    expect(labels).toContain('Offers');
+    expect(labels).toContain('Wishes');
     expect(labels).toContain('Marketing & Updates');
   });
 

@@ -139,8 +139,8 @@ const Notifications = () => {
   const categories: Array<{ value: CategoryFilter; label: string }> = [
     { value: "all", label: "All" },
     { value: "bookings", label: "Bookings" },
-    { value: "bids", label: "Bids" },
-    { value: "travel_requests", label: "RAV Wishes" },
+    { value: "bids", label: "Offers" },
+    { value: "travel_requests", label: "Wishes" },
     { value: "reminders", label: "Reminders" },
     { value: "system", label: "System" },
   ];

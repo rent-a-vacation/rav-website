@@ -3,7 +3,7 @@ import type { FlowDefinition } from './types';
 export const travelerLifecycle: FlowDefinition = {
   id: 'traveler-lifecycle',
   label: 'Renter Journey',
-  description: 'End-to-end lifecycle from browsing to check-in. Renters can book directly, bid on listings, or post RAV Wishes for owners to propose against.',
+  description: 'End-to-end lifecycle from browsing to check-in. Renters can book directly, make Offers on listings, or post Wishes for owners to send Offers against.',
   primaryRole: 'renter',
   roleEmoji: '🧳',
   direction: 'TD',
@@ -78,7 +78,7 @@ export const travelerLifecycle: FlowDefinition = {
       edgeFunctions: ['voice-search', 'text-chat'],
       branches: [
         { condition: 'Found listing', targetStepId: 'view_property', label: 'View listing' },
-        { condition: 'Post vacation wish', targetStepId: 'post_travel_request', label: 'Post RAV Wish' },
+        { condition: 'Post vacation wish', targetStepId: 'post_travel_request', label: 'Post a Wish' },
         { condition: 'Browse deals', targetStepId: 'rav_deals', label: 'Browse RAV Deals' },
       ],
     },
@@ -91,7 +91,7 @@ export const travelerLifecycle: FlowDefinition = {
       tables: ['listings', 'properties'],
       branches: [
         { condition: 'Found deal', targetStepId: 'view_property', label: 'View listing' },
-        { condition: 'Make offer', targetStepId: 'place_bid', label: 'Make a RAV Offer' },
+        { condition: 'Make offer', targetStepId: 'place_bid', label: 'Make an Offer' },
       ],
     },
     {
@@ -111,7 +111,7 @@ export const travelerLifecycle: FlowDefinition = {
     {
       id: 'place_bid',
       route: '/property/:id',
-      label: 'Make a RAV Offer',
+      label: 'Make an Offer',
       component: 'BidFormDialog',
       description: 'Submit an offer or date request on a listing. After submission, renter tracks the response on My Offers page.',
       tables: ['listing_bids', 'notifications'],
@@ -121,8 +121,8 @@ export const travelerLifecycle: FlowDefinition = {
     },
     {
       id: 'post_travel_request',
-      route: '/bidding?tab=requests',
-      label: 'Post RAV Wish',
+      route: '/marketplace?tab=wishes',
+      label: 'Post a Wish',
       component: 'TravelRequestForm',
       description: 'Renter posts a vacation wish (reverse auction) specifying destination, dates, budget — owners respond with proposals',
       tables: ['travel_requests'],
@@ -135,7 +135,7 @@ export const travelerLifecycle: FlowDefinition = {
       route: '/my-bids',
       label: 'My Offers & Requests',
       component: 'MyBidsDashboard',
-      description: 'Renter tracks all offers and reviews owner proposals on RAV Wishes. Counter-offers appear here for review and re-negotiation before accepting.',
+      description: 'Renter tracks all Offers sent and reviews owner Offers on their Wishes. Counter-offers appear here for review and re-negotiation before accepting.',
       tables: ['listing_bids', 'travel_proposals'],
       branches: [
         { condition: 'Offer or proposal accepted', targetStepId: 'checkout', label: 'Pay now' },
@@ -273,7 +273,7 @@ export const travelerLifecycle: FlowDefinition = {
       route: '/messages',
       label: 'Messages',
       component: 'Messages',
-      description: 'Unified inbox — all conversations with owners across inquiries, bookings, bids, and RAV Wishes',
+      description: 'Unified inbox — all conversations with owners across inquiries, bookings, Offers, and Wishes',
       tables: ['conversations', 'conversation_messages'],
       branches: [
         { condition: 'Open thread', targetStepId: 'conversation_thread', label: 'View Thread' },

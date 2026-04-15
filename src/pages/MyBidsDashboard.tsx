@@ -109,7 +109,7 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
               </TabsTrigger>
               <TabsTrigger value="requests" className="gap-2">
                 <Send className="h-4 w-4" />
-                My RAV Wishes
+                My Wishes
                 {myRequests && myRequests.length > 0 && (
                   <Badge variant="secondary" className="ml-1">{myRequests.length}</Badge>
                 )}
@@ -297,7 +297,7 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
                       Start making offers on properties to get great deals
                     </p>
                     <Button asChild>
-                      <Link to="/bidding">Browse Flexible Pricing Listings</Link>
+                      <Link to="/marketplace">Browse Listings Open for Offers</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -363,7 +363,7 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
                               }}
                             >
                               <Eye className="h-4 w-4 mr-1" />
-                              View Proposals
+                              View Offers
                             </Button>
                           </div>
                         </div>
@@ -380,7 +380,7 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
                       Post your vacation needs and let verified owners come to you
                     </p>
                     <Button asChild>
-                      <Link to="/bidding">Explore Name Your Price</Link>
+                      <Link to="/marketplace">Explore the Marketplace</Link>
                     </Button>
                   </CardContent>
                 </Card>

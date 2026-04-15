@@ -33,6 +33,7 @@ import {
   ChevronDown,
   Share2,
   ChevronRight,
+  Gavel,
 } from "lucide-react";
 import { usePublishDraft, loadDraft, clearDraft, type ListPropertyDraft } from "@/hooks/usePublishDraft";
 import { useToast } from "@/hooks/use-toast";
@@ -70,7 +71,9 @@ const TAB_REDIRECTS: Record<string, string> = {
   overview: "dashboard",
   properties: "my-listings",
   listings: "my-listings",
-  proposals: "my-listings",
+  proposals: "offers",
+  "offers-sent": "offers",
+  "offers-received": "offers",
   bookings: "bookings-earnings",
   confirmations: "bookings-earnings",
   earnings: "bookings-earnings",
@@ -80,7 +83,7 @@ const TAB_REDIRECTS: Record<string, string> = {
   membership: "account",
 };
 
-const VALID_TABS = new Set(["dashboard", "my-listings", "bookings-earnings", "account"]);
+const VALID_TABS = new Set(["dashboard", "my-listings", "offers", "bookings-earnings", "account"]);
 
 interface DashboardStats {
   totalProperties: number;
@@ -328,7 +331,7 @@ const OwnerDashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 md:py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsList className="grid w-full grid-cols-5 h-auto">
             <TabsTrigger value="dashboard" className="gap-2">
               <Home className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
@@ -336,6 +339,10 @@ const OwnerDashboard = () => {
             <TabsTrigger value="my-listings" className="gap-2">
               <Building2 className="h-4 w-4" />
               <span className="hidden sm:inline">My Listings</span>
+            </TabsTrigger>
+            <TabsTrigger value="offers" className="gap-2">
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden sm:inline">Offers</span>
             </TabsTrigger>
             <TabsTrigger value="bookings-earnings" className="gap-2">
               <DollarSign className="h-4 w-4" />
@@ -570,16 +577,55 @@ const OwnerDashboard = () => {
               </CollapsibleContent>
             </Collapsible>
 
-            <Collapsible>
-              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5 text-primary" />
-                  Proposals
-                </h3>
+          </TabsContent>
+
+          {/* ========== Offers Tab (Sent + Received) ========== */}
+          <TabsContent value="offers" className="mt-6 space-y-8">
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left">
+                <div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    Offers I Sent
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Offers you've sent on renter Wishes.
+                  </p>
+                </div>
                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <OwnerProposals />
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-3 text-left border-t pt-6">
+                <div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Gavel className="h-5 w-5 text-primary" />
+                    Offers on My Listings
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Offers renters have placed on your Listings.
+                  </p>
+                </div>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <Card className="border-dashed mt-4">
+                  <CardContent className="flex flex-col items-center justify-center py-10 text-center">
+                    <Gavel className="h-10 w-10 text-muted-foreground mb-3" />
+                    <p className="font-medium mb-1">Review offers on each Listing</p>
+                    <p className="text-sm text-muted-foreground mb-4 max-w-md">
+                      Open a Listing in <strong>My Listings</strong> to see and manage the Offers on it.
+                    </p>
+                    <Button variant="outline" onClick={() => setActiveTab("my-listings")}>
+                      <Building2 className="w-4 h-4 mr-2" />
+                      Go to My Listings
+                    </Button>
+                  </CardContent>
+                </Card>
               </CollapsibleContent>
             </Collapsible>
           </TabsContent>

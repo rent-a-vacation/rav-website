@@ -131,10 +131,10 @@ describe('BidFormDialog @p0', () => {
       />
     );
 
-    expect(screen.getByText('Submit Proposal')).toBeInTheDocument();
+    expect(screen.getByText('Send Offer')).toBeInTheDocument();
   });
 
-  it('shows submit bid button in standard mode', () => {
+  it('shows send offer button in standard mode', () => {
     render(
       <BidFormDialog
         listing={mockListing}
@@ -143,6 +143,6 @@ describe('BidFormDialog @p0', () => {
       />
     );
 
-    expect(screen.getByText('Submit Offer')).toBeInTheDocument();
+    expect(screen.getByText('Send Offer')).toBeInTheDocument();
   });
 });

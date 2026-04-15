@@ -176,7 +176,7 @@ export function TravelRequestCard({ request, showProposalButton = true }: Travel
           {showProposalButton && isPropertyOwner() && user?.id !== request.traveler_id && (
             <Button onClick={() => setProposalOpen(true)}>
               <MessageSquare className="h-4 w-4 mr-2" />
-              Submit Proposal
+              Send Offer
             </Button>
           )}
         </CardFooter>

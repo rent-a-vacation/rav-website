@@ -25,7 +25,7 @@ export function BidActivityFeed({ events, isLoading }: BidActivityFeedProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Bid Activity</CardTitle>
+          <CardTitle className="text-base font-semibold">Offer Activity</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (

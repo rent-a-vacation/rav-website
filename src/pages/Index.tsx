@@ -38,7 +38,7 @@ const WelcomeBanner = () => {
             <Link to="/my-bids">
               <Button variant="outline" size="sm" className="gap-1.5">
                 <Gavel className="h-3.5 w-3.5" />
-                My Bids
+                My Offers
               </Button>
             </Link>
             {isPropertyOwner() && (

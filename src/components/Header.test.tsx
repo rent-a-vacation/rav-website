@@ -79,17 +79,17 @@ describe('Header — role-based navigation', () => {
     resetAuth();
   });
 
-  it('renders unauthenticated nav with Browse Rentals, How It Works, Name Your Price, List Your Property, Free Tools', () => {
+  it('renders unauthenticated nav with Browse Rentals, How It Works, Marketplace, List Your Property, Free Tools', () => {
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
     expect(nav).toHaveTextContent('Browse Rentals');
     expect(nav).toHaveTextContent('How It Works');
-    expect(nav).toHaveTextContent('Name Your Price');
+    expect(nav).toHaveTextContent('Marketplace');
     expect(nav).toHaveTextContent('List Your Property');
     expect(nav).toHaveTextContent('Free Tools');
   });
 
-  it('renders traveler nav with Browse Rentals, Name Your Price, Make a Wish, My Trips', () => {
+  it('renders traveler nav with Browse Rentals, Marketplace, My Trips', () => {
     setAuth({
       user: { id: 'user-1', email: 'traveler@example.com' },
       profile: { full_name: 'Traveler' },
@@ -98,8 +98,7 @@ describe('Header — role-based navigation', () => {
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
     expect(nav).toHaveTextContent('Browse Rentals');
-    expect(nav).toHaveTextContent('Name Your Price');
-    expect(nav).toHaveTextContent('Make a Wish');
+    expect(nav).toHaveTextContent('Marketplace');
     expect(nav).toHaveTextContent('My Trips');
   });
 
@@ -124,8 +123,7 @@ describe('Header — role-based navigation', () => {
     renderHeader();
     const nav = screen.getByTestId('desktop-nav');
     expect(nav).toHaveTextContent('Browse Rentals');
-    expect(nav).toHaveTextContent('Name Your Price');
-    expect(nav).toHaveTextContent('Make a Wish');
+    expect(nav).toHaveTextContent('Marketplace');
     expect(nav).toHaveTextContent('My Rentals');
     expect(nav).toHaveTextContent('My Trips');
   });
@@ -153,15 +151,15 @@ describe('Header — role-based navigation', () => {
     expect(link).toHaveAttribute('href', '/owner-dashboard');
   });
 
-  it('Make a Wish link routes to /bidding?tab=requests', () => {
+  it('Marketplace link routes to /marketplace', () => {
     setAuth({
       user: { id: 'user-2', email: 'owner@example.com' },
       profile: { full_name: 'Owner Alex' },
       isPropertyOwner: vi.fn(() => true),
     });
     renderHeader();
-    const link = screen.getByRole('link', { name: 'Make a Wish' });
-    expect(link).toHaveAttribute('href', '/bidding?tab=requests');
+    const link = screen.getAllByRole('link', { name: 'Marketplace' })[0];
+    expect(link).toHaveAttribute('href', '/marketplace');
   });
 
   it('Messages badge shows unread count when count > 0', () => {
