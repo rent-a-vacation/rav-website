@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-12T22:57:23"
-change_ref: "a521368"
+last_updated: "2026-04-15T04:06:53"
+change_ref: "5fb0c20"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -104,7 +104,21 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **dev and main:** in sync (PRs #287-#292 merged Apr 5)
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-46)
+### Session Handoff (Sessions 25-52)
+
+**Session 52 — Marketplace Terminology Lock + Site-wide UI Polish (Apr 14-15, 2026):**
+- **DEC-031 (Terminology Lock):** Locked user-facing marketplace vocabulary to three nouns — **Listing**, **Wish**, **Offer**. "Offer" replaces both "Bid" and "Proposal" in all UI. Dropped "RAV" prefix from all transactional nouns/CTAs. PR #355 merged.
+- **Header redesign:** Single "Marketplace" nav link replaces two links ("Name Your Price" + "Make a Wish"). Role-aware user dropdown adds My Offers / My Wishes for renters, Offers I Sent / Offers on My Listings for owners. Mobile mirrors.
+- **Route rename:** `/bidding` → `/marketplace` with redirect. `BiddingMarketplace` page defaults to Listings tab for renter/anon and Wishes tab for owners. Tabs renamed "Listings" / "Wishes" (was "Listings" / "RAV Wishes").
+- **Owner dashboard:** New top-level "Offers" tab (was buried in a collapsible inside My Listings). Two sections: Offers I Sent, Offers on My Listings. Legacy `?tab=proposals` redirects to `?tab=offers`.
+- **Notifications:** Category labels "Bids" → "Offers", "RAV Wishes" → "Wishes". Email preference groups renamed "Offers" and "Wishes".
+- **UI polish (PR #352, 3 commits):** Site-wide CSS/Tailwind polish across 30 pages — Homepage, PropertyDetail, Rentals, BiddingMarketplace, OwnerDashboard, MyBookings, ListProperty, Auth flow, Tools suite, Destinations, RavDeals, FAQ, AccountSettings, RenterDashboard, MyBidsDashboard, Notifications, Messages, Checkout, BookingSuccess, TravelerCheckin, Contact, Privacy, Terms, HowItWorksPage, Developers, AdminDashboard, ExecutiveDashboard, Documentation, UserGuide. New `<Section>` + `<SectionHeader>` layout primitives. Standardised vertical rhythm (`py-12 md:py-16`), `tracking-tight` headings, `border-border/60` separators, off-brand tool badges unified to brand primary. No brand-color changes.
+- **Logo update:** `public/ravio-v2.png` replaced (used on Marketplace "Ask RAVIO" button; header/footer continue to use `rav-logo.svg`). PR #356 merged.
+- **BRAND-LOCK.md:** Fully rewritten Section 9 Terminology Context Map + updated Sections 1, 3, 4, 6, 8. Session 52 retirement rows added. Phase B (remaining brand docs — BRAND-STYLE-GUIDE, MARKETING-PLAYBOOK, PITCH-DECK-SCRIPT, BRAND-CONCEPTS, LAUNCH-READINESS, COMPLETE-USER-JOURNEY-MAP) deferred pending user's in-progress local edits.
+
+**End state:** 1046 tests passing, 0 type errors, build clean. PRs #352, #355, #356 merged to main. `main` and `dev` in sync.
+
+---
 
 **Session 46 — WS2 Registration T&C Audit + WS3 Navigation + Messages Polish (Apr 10-11, 2026):**
 
@@ -735,6 +749,49 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-031: Marketplace Terminology Lock — Listing / Wish / Offer
+**Date:** April 15, 2026 (Session 52)
+**Decision:** Lock user-facing marketplace vocabulary to three nouns: **Listing**, **Wish**, **Offer**. "Offer" replaces both "Bid" and "Proposal" in all UI copy. "RAV" prefix dropped from all transactional nouns/CTAs (no more "RAV Offer", "RAV Wish", "Make a RAV Offer", "Make a RAV Wish"). Header nav collapses "Name Your Price" + "Make a Wish" into a single **Marketplace** link with role-aware default tab. Route `/bidding` renamed to `/marketplace` with redirect. Owner dashboard gains a top-level **Offers** tab with "Offers I Sent" and "Offers on My Listings" sections.
+**Status:** Active — shipped PR #355 (merged to main)
+
+**Context:** Product audit surfaced terminology drift: three separate nouns (Bid / Proposal / RAV Offer) for what users experience as the same action ("propose a deal at a price"), plus fragmented Wish vocabulary (RAV Wish / Make a Wish / Vacation Wish / Request). Header showed the same two marketplace links to every role, burying role-specific flows. Owner "Proposals" were nested inside a collapsible inside a tab — not discoverable.
+
+**Rationale for "Offer" over "Bid":**
+- "Bid" carries auction baggage (ascending auction, competitive, buyer-only) — inaccurate for a negotiation marketplace
+- "Offer" is bidirectional: a renter offers $200 on a listing; an owner offers their property for $180 on a wish. Both read naturally.
+- Real-world precedent: Zillow "Make an Offer", CarMax "Offer", real estate offers — users already understand the mental model
+
+**Rationale for dropping RAV prefix on transactional CTAs:**
+- Users already know they're on RAV — the prefix adds friction without adding identity
+- Platform-branded surfaces (RAV Deals, RAV Insights, RAV Ops, RAV Smart[X], RAVIO) retain the prefix — they identify platform tools, not user actions
+- Brand slogan "Name Your Price. Book Your Paradise." retained as hero tagline (it describes the *mechanic*)
+
+**DB impact:** None. `listing_bids` and `travel_proposals` tables, hooks (`useBidding`, `useMyProposals`), edge functions, and column names are unchanged. Only user-facing UI strings changed.
+
+**Header & navigation:**
+- Single "Marketplace" link replaces two links; accent-styled, all roles
+- User dropdown adds role-aware activity items:
+  - Renter: My Trips · My Offers · My Wishes
+  - Owner: My Listings · Offers I Sent · Offers on My Listings
+- Mobile menu mirrors the same structure
+
+**Marketplace page (formerly BiddingMarketplace):**
+- Role-aware default tab: renter/anon → Listings; owner → Wishes
+- Tabs renamed "Listings" / "Wishes" (dropped "RAV Wishes")
+- Hero copy split per role
+
+**Owner dashboard:** new top-level **Offers** tab (promoted from buried collapsible). Two sections: Offers I Sent (proposals made on Wishes), Offers on My Listings (bids received). Legacy `?tab=proposals` / `?tab=offers-sent` / `?tab=offers-received` map to the unified Offers tab.
+
+**Notifications:** category filters renamed — "Bids" → **Offers**, "RAV Wishes" → **Wishes**.
+
+**Tests:** 1046/1046 passing after vocabulary updates across Header.test.tsx, BidFormDialog.test.tsx, PostRequestCTA.test.tsx, FairValueCard.test.tsx, Messages.test.tsx, WelcomePage.test.tsx, ConversationInbox.test.tsx, conversations.test.ts, useConversations.test.ts, useNotificationPreferences.test.ts, conversations-integration.test.ts.
+
+**Canonical reference:** See `docs/brand-assets/BRAND-LOCK.md` Section 9 (Terminology Context Map) for the complete word-by-word mapping of nav labels, CTAs, notification categories, and internal-vs-external naming.
+
+**Follow-up:** Phase B (deferred) — scrub remaining brand docs (BRAND-STYLE-GUIDE, MARKETING-PLAYBOOK, PITCH-DECK-SCRIPT, BRAND-CONCEPTS, LAUNCH-READINESS, COMPLETE-USER-JOURNEY-MAP) in a separate doc-only PR once user's in-progress local edits to those files are resolved.
 
 ---
 
