@@ -133,17 +133,17 @@ export function TravelRequestForm({ onSuccess, defaultValues }: TravelRequestFor
       <DialogTrigger asChild>
         <Button size="lg" className="gap-2">
           <Sparkles className="h-4 w-4" />
-          Make a RAV Wish
+          Post a Wish
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-accent" />
-            RAV Wishes
+            Post a Wish
           </DialogTitle>
           <DialogDescription>
-            Tell us your dream trip — verified owners compete with personalized proposals!
+            Tell us your dream trip — verified owners will send you Offers.
           </DialogDescription>
         </DialogHeader>
 
@@ -368,7 +368,7 @@ export function TravelRequestForm({ onSuccess, defaultValues }: TravelRequestFor
 
           {/* Deadline */}
           <div className="space-y-2">
-            <Label htmlFor="deadline">Accept Proposals Until *</Label>
+            <Label htmlFor="deadline">Accept Offers Until *</Label>
             <Input
               id="deadline"
               type="date"

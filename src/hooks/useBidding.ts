@@ -212,16 +212,16 @@ export function useUpdateBidStatus() {
       }
 
       const message = variables.status === 'accepted'
-        ? 'Bid accepted!'
+        ? 'Offer accepted!'
         : variables.status === 'rejected'
-          ? 'Bid declined'
+          ? 'Offer declined'
           : variables.status === 'withdrawn'
-            ? 'Bid withdrawn'
-            : 'Bid updated';
+            ? 'Offer withdrawn'
+            : 'Offer updated';
       toast.success(message);
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update bid');
+      toast.error(error.message || 'Failed to update Offer');
     },
   });
 }
@@ -477,7 +477,7 @@ export function useCreateProposal() {
           });
       }
 
-      toast.success('Proposal submitted!');
+      toast.success('Offer sent!');
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to submit proposal');
@@ -587,8 +587,8 @@ export function useUpdateProposalStatus() {
       }
 
       const message = variables.status === 'accepted'
-        ? 'Proposal accepted! You can now proceed to checkout.'
-        : 'Proposal updated';
+        ? 'Offer accepted! You can now proceed to checkout.'
+        : 'Offer updated';
       toast.success(message);
     },
     onError: (error: Error) => {

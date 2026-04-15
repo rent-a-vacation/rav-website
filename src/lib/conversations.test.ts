@@ -49,8 +49,8 @@ describe('conversations utilities', () => {
     it('returns correct badge for each context type', () => {
       expect(getContextBadge('inquiry')).toEqual({ label: 'Inquiry', variant: 'secondary' });
       expect(getContextBadge('booking')).toEqual({ label: 'Booking', variant: 'default' });
-      expect(getContextBadge('bid')).toEqual({ label: 'Bid', variant: 'outline' });
-      expect(getContextBadge('travel_request')).toEqual({ label: 'Request', variant: 'secondary' });
+      expect(getContextBadge('bid')).toEqual({ label: 'Offer', variant: 'outline' });
+      expect(getContextBadge('travel_request')).toEqual({ label: 'Wish', variant: 'secondary' });
     });
 
     it('returns fallback for unknown context type', () => {
@@ -69,7 +69,7 @@ describe('conversations utilities', () => {
         check_in: '2026-06-01',
         check_out: '2026-06-08',
       });
-      expect(result).toBe('Bid of $890 placed for 2026-06-01 – 2026-06-08');
+      expect(result).toBe('Offer of $890 placed for 2026-06-01 – 2026-06-08');
     });
 
     it('formats booking_confirmed with total', () => {
@@ -92,7 +92,7 @@ describe('conversations utilities', () => {
     it('formats simple events without data', () => {
       expect(formatConversationEvent('inquiry_started')).toBe('Inquiry started');
       expect(formatConversationEvent('booking_cancelled')).toBe('Booking cancelled');
-      expect(formatConversationEvent('proposal_sent')).toBe('Proposal sent');
+      expect(formatConversationEvent('proposal_sent')).toBe('Offer sent');
       expect(formatConversationEvent('review_left')).toBe('Review posted');
     });
 
@@ -110,8 +110,8 @@ describe('conversations utilities', () => {
     });
 
     it('returns just the label without property name', () => {
-      expect(getConversationTitle('bid')).toBe('Bid');
-      expect(getConversationTitle('travel_request')).toBe('Request');
+      expect(getConversationTitle('bid')).toBe('Offer');
+      expect(getConversationTitle('travel_request')).toBe('Wish');
     });
   });
 });

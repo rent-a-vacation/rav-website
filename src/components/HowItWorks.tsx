@@ -6,8 +6,8 @@ import { useState } from "react";
 const renterSteps = [
   {
     icon: Search,
-    title: "Browse or Bid",
-    description: "Search owner-listed timeshare rentals across 117+ resorts, or place bids on properties open for competitive pricing.",
+    title: "Browse or Make an Offer",
+    description: "Search owner-listed timeshare rentals across 117+ resorts, or send an Offer on properties open for flexible pricing.",
   },
   {
     icon: Send,
@@ -34,8 +34,8 @@ const ownerSteps = [
   },
   {
     icon: Gavel,
-    title: "Accept Bids & Proposals",
-    description: "Open your listing for competitive bidding, or respond to renter requests with personalized proposals.",
+    title: "Accept or Send Offers",
+    description: "Open your listing for flexible pricing, or send Offers on renter Wishes with your property.",
   },
   {
     icon: Shield,

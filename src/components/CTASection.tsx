@@ -20,19 +20,19 @@ const CTASection = () => {
           </div>
 
           <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-6">
-            Why Pay Resort Prices When You Can Bid?
+            Why Pay Resort Prices When You Can Name Your Own?
           </h2>
-          
+
           <p className="text-lg text-white/80 mb-10 max-w-xl mx-auto">
-            Rent directly from timeshare owners and save 20-40% vs resort-direct rates. Place bids on open listings
-            or post your travel plans and let owners come to you with offers.
+            Rent directly from timeshare owners and save 20-40% vs resort-direct rates. Make an Offer on open Listings
+            or post a Wish and let owners come to you with Offers.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/bidding">
+            <Link to="/marketplace">
               <Button variant="hero" size="xl">
                 <Gavel className="w-5 h-5" />
-                Start Bidding
+                Open the Marketplace
               </Button>
             </Link>
             <Link to="/rentals">

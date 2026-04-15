@@ -114,8 +114,8 @@ export function InspiredTravelRequestDialog({ listing, open, onOpenChange }: Ins
           <ActionSuccessCard
             icon={Sparkles}
             iconClassName="text-accent"
-            title="RAV Wish Posted!"
-            description="Property owners will be notified and can send you proposals. You'll receive a notification when proposals come in."
+            title="Wish Posted!"
+            description="Property owners will be notified and can send you Offers. You'll receive a notification when Offers come in."
             actions={[{ label: "Done", onClick: () => handleOpenChange(false) }]}
           />
         ) : (

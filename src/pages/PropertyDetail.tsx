@@ -621,7 +621,7 @@ const PropertyDetail = () => {
                               >
                                 <DollarSign className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
                                 <div>
-                                  <p className="text-sm font-medium">Make a RAV Offer</p>
+                                  <p className="text-sm font-medium">Make an Offer</p>
                                   <p className="text-xs text-muted-foreground">Suggest a different price for this listing</p>
                                 </div>
                               </button>

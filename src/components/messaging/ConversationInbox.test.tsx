@@ -89,9 +89,9 @@ describe('ConversationInbox', () => {
     renderInbox();
     expect(screen.getByText('All')).toBeInTheDocument();
     expect(screen.getByText('Bookings')).toBeInTheDocument();
-    expect(screen.getByText('Bids')).toBeInTheDocument();
+    expect(screen.getByText('Offers')).toBeInTheDocument();
     expect(screen.getByText('Inquiries')).toBeInTheDocument();
-    expect(screen.getByText('Requests')).toBeInTheDocument();
+    expect(screen.getByText('Wishes')).toBeInTheDocument();
   });
 
   it('displays conversation items with participant names', () => {
@@ -109,7 +109,7 @@ describe('ConversationInbox', () => {
   it('displays context badges', () => {
     renderInbox();
     expect(screen.getByText('Booking')).toBeInTheDocument();
-    expect(screen.getByText('Bid')).toBeInTheDocument();
+    expect(screen.getByText('Offer')).toBeInTheDocument();
   });
 
   it('calls onSelect when clicking a conversation', () => {

@@ -35,9 +35,9 @@ import type { ListingWithBidding } from '@/types/bidding';
 
 const BiddingMarketplace = () => {
   usePageMeta({
-    title: 'Name Your Price Marketplace',
-    description: 'Bid on vacation rentals and negotiate directly with verified owners. Place offers at your price.',
-    canonicalPath: '/bidding',
+    title: 'Marketplace — Listings & Wishes',
+    description: 'Make an offer on any listing, or post a Wish and let owners send you offers. Negotiate directly with verified owners.',
+    canonicalPath: '/marketplace',
   });
 
   const { user, isRenter, isPropertyOwner } = useAuth();
@@ -51,7 +51,12 @@ const BiddingMarketplace = () => {
   const prefillDestination = searchParams.get('destination') ?? '';
   const prefillCheckin = searchParams.get('checkin') ?? '';
   const prefillCheckout = searchParams.get('checkout') ?? '';
-  const defaultTab = searchParams.get('tab') || 'listings';
+  // Role-aware default: owners → Wishes (find renters who want me); renter/anon → Listings
+  // Legacy tab values ("requests") map to new "wishes" tab
+  const tabParam = searchParams.get('tab');
+  const normalizedTab = tabParam === 'requests' ? 'wishes' : tabParam;
+  const roleDefault = isPropertyOwner() ? 'wishes' : 'listings';
+  const defaultTab = normalizedTab || roleDefault;
 
   const [selectedListing, setSelectedListing] = useState<ListingWithBidding | null>(null);
   const [bidDialogOpen, setBidDialogOpen] = useState(false);
@@ -90,11 +95,12 @@ const BiddingMarketplace = () => {
               Direct from Owners
             </Badge>
             <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
-              Name Your Price
+              Marketplace
             </h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              The flexible pricing marketplace for vacation rentals. Make an offer on owner-listed properties
-              or post your travel plans and let verified owners compete for your booking.
+              {isPropertyOwner()
+                ? 'Send Offers on renter Wishes, or review Offers on your Listings. Deal direct — no middlemen.'
+                : 'Make an Offer on any Listing, or post a Wish and let owners send you Offers. Deal direct — no middlemen.'}
             </p>
             {user && isRenter() && (
               <TravelRequestForm defaultValues={prefill ? { destination: prefillDestination, checkIn: prefillCheckin, checkOut: prefillCheckout } : undefined} />
@@ -132,9 +138,9 @@ const BiddingMarketplace = () => {
                 <Gavel className="h-4 w-4" />
                 Listings
               </TabsTrigger>
-              <TabsTrigger value="requests" className="gap-2">
+              <TabsTrigger value="wishes" className="gap-2">
                 <Send className="h-4 w-4" />
-                RAV Wishes
+                Wishes
               </TabsTrigger>
             </TabsList>
 
@@ -142,9 +148,9 @@ const BiddingMarketplace = () => {
             <TabsContent value="listings" className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold">Flexible Pricing Listings</h2>
+                  <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight">Listings Open for Offers</h2>
                   <p className="text-muted-foreground">
-                    Submit your best offer directly to verified property owners
+                    Make an Offer directly to verified property owners.
                   </p>
                 </div>
                 <Badge variant="secondary" className="text-lg px-4 py-2 flex-shrink-0">
@@ -181,9 +187,9 @@ const BiddingMarketplace = () => {
                 <Card className="border-dashed">
                   <CardContent className="flex flex-col items-center justify-center py-16">
                     <Gavel className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No flexible pricing listings yet</h3>
+                    <h3 className="text-lg font-semibold mb-2">No open-offer listings yet</h3>
                     <p className="text-muted-foreground text-center mb-4">
-                      Check back soon or browse our regular listings
+                      Check back soon or browse our regular listings.
                     </p>
                     <Button asChild variant="outline">
                       <Link to="/rentals">Browse All Rentals</Link>
@@ -193,13 +199,15 @@ const BiddingMarketplace = () => {
               )}
             </TabsContent>
 
-            {/* Travel Requests */}
-            <TabsContent value="requests" className="space-y-6">
+            {/* Wishes (open renter calls) */}
+            <TabsContent value="wishes" className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold">Open RAV Wishes</h2>
+                  <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight">Open Wishes</h2>
                   <p className="text-muted-foreground">
-                    Renters looking for vacation rentals - submit your proposal!
+                    {isPropertyOwner()
+                      ? 'Renters looking for their next stay — send an Offer with your property.'
+                      : 'See what other travelers are wishing for, or post your own.'}
                   </p>
                 </div>
                 <Badge variant="secondary" className="text-lg px-4 py-2 flex-shrink-0">
@@ -231,15 +239,15 @@ const BiddingMarketplace = () => {
                 <Card className="border-dashed">
                   <CardContent className="flex flex-col items-center justify-center py-16">
                     <Send className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No vacation wishes yet</h3>
+                    <h3 className="text-lg font-semibold mb-2">No open Wishes yet</h3>
                     <p className="text-muted-foreground text-center mb-4">
-                      Be the first to post your travel needs and get offers from owners!
+                      Be the first to post a Wish and let owners send you offers.
                     </p>
                     {user ? (
                       <TravelRequestForm defaultValues={prefill ? { destination: prefillDestination, checkIn: prefillCheckin, checkOut: prefillCheckout } : undefined} />
                     ) : (
                       <Button asChild>
-                        <Link to="/login">Sign in to post a request</Link>
+                        <Link to="/login">Sign in to post a Wish</Link>
                       </Button>
                     )}
                   </CardContent>
@@ -267,22 +275,22 @@ const BiddingMarketplace = () => {
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">1</div>
                   <div>
-                    <p className="font-medium">Make a RAV Offer</p>
-                    <p className="text-sm text-muted-foreground">Browse flexible pricing listings and submit your best offer</p>
+                    <p className="font-medium">Make an Offer</p>
+                    <p className="text-sm text-muted-foreground">Browse Listings open for offers and submit your price.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">2</div>
                   <div>
-                    <p className="font-medium">Or Post Your Needs</p>
-                    <p className="text-sm text-muted-foreground">Describe your ideal vacation and let owners come to you</p>
+                    <p className="font-medium">Or Post a Wish</p>
+                    <p className="text-sm text-muted-foreground">Tell us your dream trip and let owners send you Offers.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">3</div>
                   <div>
                     <p className="font-medium">Compare & Book</p>
-                    <p className="text-sm text-muted-foreground">Review offers, accept the best one, and book your stay</p>
+                    <p className="text-sm text-muted-foreground">Review Offers, accept the best one, and book your stay.</p>
                   </div>
                 </div>
               </div>
@@ -300,22 +308,22 @@ const BiddingMarketplace = () => {
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">1</div>
                   <div>
-                    <p className="font-medium">Enable Flexible Pricing</p>
-                    <p className="text-sm text-muted-foreground">Allow offers on your listings to attract more interest</p>
+                    <p className="font-medium">Enable Offers on Your Listing</p>
+                    <p className="text-sm text-muted-foreground">Allow Offers on your Listings to attract more interest.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">2</div>
                   <div>
-                    <p className="font-medium">Browse RAV Wishes</p>
-                    <p className="text-sm text-muted-foreground">Find renters looking for properties like yours</p>
+                    <p className="font-medium">Browse Wishes</p>
+                    <p className="text-sm text-muted-foreground">Find renters looking for properties like yours.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">3</div>
                   <div>
-                    <p className="font-medium">Submit Proposals</p>
-                    <p className="text-sm text-muted-foreground">Send competitive offers directly to interested renters</p>
+                    <p className="font-medium">Send an Offer</p>
+                    <p className="text-sm text-muted-foreground">Pitch your property at a competitive price.</p>
                   </div>
                 </div>
               </div>
@@ -465,7 +473,7 @@ function BiddableListingCard({ listing, onBidClick, canBid }: BiddableListingCar
         {canBid ? (
           <Button onClick={onBidClick} className="w-full group-hover:bg-accent group-hover:text-accent-foreground">
             <Gavel className="h-4 w-4 mr-2" />
-            Make a RAV Offer
+            Make an Offer
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         ) : (

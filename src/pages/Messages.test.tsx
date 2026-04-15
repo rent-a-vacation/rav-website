@@ -78,7 +78,7 @@ describe('Messages page', () => {
     renderPage();
     expect(screen.getByText('All')).toBeInTheDocument();
     expect(screen.getByText('Bookings')).toBeInTheDocument();
-    expect(screen.getByText('Bids')).toBeInTheDocument();
+    expect(screen.getByText('Offers')).toBeInTheDocument();
   });
 
   it('renders inbox component', () => {

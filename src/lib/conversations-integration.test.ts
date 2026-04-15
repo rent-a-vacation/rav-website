@@ -69,7 +69,7 @@ describe('conversation layer integration', () => {
 
     it('conversation title works without property name', () => {
       const title = getConversationTitle('bid');
-      expect(title).toBe('Bid');
+      expect(title).toBe('Offer');
     });
   });
 

@@ -17,9 +17,9 @@ interface ConversationInboxProps {
 const FILTER_TABS = [
   { value: 'all', label: 'All' },
   { value: 'booking', label: 'Bookings' },
-  { value: 'bid', label: 'Bids' },
+  { value: 'bid', label: 'Offers' },
   { value: 'inquiry', label: 'Inquiries' },
-  { value: 'travel_request', label: 'Requests' },
+  { value: 'travel_request', label: 'Wishes' },
 ] as const;
 
 function formatRelativeTime(dateStr: string | null): string {

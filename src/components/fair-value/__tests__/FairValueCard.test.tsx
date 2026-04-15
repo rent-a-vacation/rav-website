@@ -91,7 +91,7 @@ describe('FairValueCard', () => {
     } as ReturnType<typeof hook.useFairValueScore>);
 
     render(<FairValueCard listingId="abc" viewerRole="traveler" />, { wrapper: Wrapper });
-    expect(screen.getByText(/Average accepted bid: \$3,500/)).toBeInTheDocument();
+    expect(screen.getByText(/Average accepted Offer: \$3,500/)).toBeInTheDocument();
   });
 
   it('shows average accepted bid for above_market tier', () => {
@@ -102,7 +102,7 @@ describe('FairValueCard', () => {
 
     render(<FairValueCard listingId="abc" viewerRole="owner" />, { wrapper: Wrapper });
     expect(screen.getByText(/above the typical range/)).toBeInTheDocument();
-    expect(screen.getByText(/Average accepted bid/)).toBeInTheDocument();
+    expect(screen.getByText(/Average accepted Offer/)).toBeInTheDocument();
   });
 
   it('does not show avg bid for fair_value tier', () => {
@@ -112,7 +112,7 @@ describe('FairValueCard', () => {
     } as ReturnType<typeof hook.useFairValueScore>);
 
     render(<FairValueCard listingId="abc" viewerRole="traveler" />, { wrapper: Wrapper });
-    expect(screen.queryByText(/Average accepted bid/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Average accepted Offer/)).not.toBeInTheDocument();
   });
 
   it('shows loading skeleton when loading', () => {

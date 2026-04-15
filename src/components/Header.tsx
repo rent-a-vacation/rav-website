@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, ShieldCheck, BarChart3, Settings, GitBranch, Plane, Sparkles, MessageSquare, FileText } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, ShieldCheck, BarChart3, Settings, GitBranch, Plane, Sparkles, MessageSquare, FileText, Gavel, Send, Building2 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBell } from "@/components/bidding/NotificationBell";
@@ -114,24 +114,16 @@ const Header = () => {
               )}
             </div>
 
-            {/* CORE: Name Your Price — hero item, accent color, all roles */}
+            {/* CORE: Marketplace — single entry for listings + wishes + offers, all roles */}
             <Link
-              to="/bidding"
+              to="/marketplace"
               className={`px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
-                isActive("/bidding") && !location.search.includes("tab=requests")
+                isActive("/marketplace") || isActive("/bidding")
                   ? "text-accent bg-accent/10"
                   : "text-accent hover:text-accent hover:bg-accent/10"
               }`}
             >
-              Name Your Price
-            </Link>
-
-            {/* CORE: Make a Wish — all roles */}
-            <Link
-              to="/bidding?tab=requests"
-              className="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/30"
-            >
-              Make a Wish
+              Marketplace
             </Link>
 
             {/* ROLE: Owner — My Rentals */}
@@ -242,13 +234,63 @@ const Header = () => {
                     </div>
                     <DropdownMenuSeparator />
                     
-                    <DropdownMenuItem asChild>
-                      <Link to="/my-trips" className="flex items-center gap-2 cursor-pointer">
-                        <Plane className="h-4 w-4" />
-                        My Trips
-                      </Link>
-                    </DropdownMenuItem>
+                    {/* Renter activity — everyone non-team sees this */}
+                    {!isRavTeam() && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/my-trips" className="flex items-center gap-2 cursor-pointer">
+                            <Plane className="h-4 w-4" />
+                            My Trips
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/my-trips?tab=offers" className="flex items-center gap-2 cursor-pointer">
+                            <Gavel className="h-4 w-4" />
+                            My Offers
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/my-trips?tab=offers&sub=wishes" className="flex items-center gap-2 cursor-pointer">
+                            <Send className="h-4 w-4" />
+                            My Wishes
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
 
+                    {/* Owner activity — property owners see their inventory + offer flows */}
+                    {isPropertyOwner() && !isRavTeam() && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <Link to="/owner-dashboard?tab=my-listings" className="flex items-center gap-2 cursor-pointer">
+                            <Building2 className="h-4 w-4" />
+                            My Listings
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/owner-dashboard?tab=offers-sent" className="flex items-center gap-2 cursor-pointer">
+                            <Send className="h-4 w-4" />
+                            Offers I Sent
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/owner-dashboard?tab=offers-received" className="flex items-center gap-2 cursor-pointer">
+                            <Gavel className="h-4 w-4" />
+                            Offers on My Listings
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+
+                    {isRavTeam() && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/my-trips" className="flex items-center gap-2 cursor-pointer">
+                          <Plane className="h-4 w-4" />
+                          My Trips
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     {isRavTeam() && (
                       <DropdownMenuItem asChild>
                         <Link to="/admin" className="flex items-center gap-2 cursor-pointer">
@@ -407,40 +449,69 @@ const Header = () => {
               RAV Deals
             </Link>
             <Link
-              to="/bidding"
-              className={`py-2.5 text-sm font-bold transition-colors ${isActive("/bidding") && !location.search.includes("tab=requests") ? "text-accent" : "text-accent/80"}`}
+              to="/marketplace"
+              className={`py-2.5 text-sm font-bold transition-colors ${isActive("/marketplace") || isActive("/bidding") ? "text-accent" : "text-accent/80"}`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Name Your Price
-            </Link>
-            <Link
-              to="/bidding?tab=requests"
-              className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Make a Wish
+              Marketplace
             </Link>
 
-            {/* ROLE: Owner — My Rentals */}
+            {/* ROLE: Owner — My Rentals + owner-specific activity */}
             {user && isPropertyOwner() && (
-              <Link
-                to="/owner-dashboard"
-                className={`py-2.5 text-sm font-medium transition-colors ${isActive("/owner-dashboard") ? "text-foreground" : "text-muted-foreground"}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                My Rentals
-              </Link>
+              <>
+                <Link
+                  to="/owner-dashboard"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/owner-dashboard") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  My Listings
+                </Link>
+                <Link
+                  to="/owner-dashboard?tab=offers-sent"
+                  className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Offers I Sent
+                </Link>
+                <Link
+                  to="/owner-dashboard?tab=offers-received"
+                  className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Offers on My Listings
+                </Link>
+              </>
             )}
 
-            {/* ROLE: Renter or Owner (not team) — My Trips */}
+            {/* ROLE: Renter or Owner (not team) — My Trips + My Offers + My Wishes */}
             {user && !isRavTeam() && (
-              <Link
-                to="/my-trips"
-                className={`py-2.5 text-sm font-medium transition-colors ${isActive("/my-trips") ? "text-foreground" : "text-muted-foreground"}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                My Trips
-              </Link>
+              <>
+                <Link
+                  to="/my-trips"
+                  className={`py-2.5 text-sm font-medium transition-colors ${isActive("/my-trips") ? "text-foreground" : "text-muted-foreground"}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  My Trips
+                </Link>
+                {!isPropertyOwner() && (
+                  <>
+                    <Link
+                      to="/my-trips?tab=offers"
+                      className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Offers
+                    </Link>
+                    <Link
+                      to="/my-trips?tab=offers&sub=wishes"
+                      className="py-2.5 text-sm font-medium transition-colors text-muted-foreground"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Wishes
+                    </Link>
+                  </>
+                )}
+              </>
             )}
 
             {/* UNAUTHENTICATED: How It Works + List Your Property */}

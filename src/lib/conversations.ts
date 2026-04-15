@@ -58,8 +58,8 @@ export interface ContextBadge {
 const CONTEXT_BADGES: Record<ConversationContextType, ContextBadge> = {
   inquiry: { label: 'Inquiry', variant: 'secondary' },
   booking: { label: 'Booking', variant: 'default' },
-  bid: { label: 'Bid', variant: 'outline' },
-  travel_request: { label: 'Request', variant: 'secondary' },
+  bid: { label: 'Offer', variant: 'outline' },
+  travel_request: { label: 'Wish', variant: 'secondary' },
 };
 
 export function getContextBadge(contextType: string): ContextBadge {
@@ -89,21 +89,21 @@ export function formatConversationEvent(eventType: string, eventData: Record<str
     case 'booking_cancelled':
       return 'Booking cancelled';
     case 'bid_placed':
-      return `Bid of ${amount} placed${dateRange}`;
+      return `Offer of ${amount} placed${dateRange}`;
     case 'bid_countered':
       return `Counter-offer: ${counter} (original: ${original})`;
     case 'bid_accepted':
-      return `Bid accepted${amount ? ` · ${amount}` : ''}`;
+      return `Offer accepted${amount ? ` · ${amount}` : ''}`;
     case 'bid_rejected':
-      return 'Bid rejected';
+      return 'Offer rejected';
     case 'bid_expired':
-      return 'Bid expired';
+      return 'Offer expired';
     case 'proposal_sent':
-      return 'Proposal sent';
+      return 'Offer sent';
     case 'proposal_accepted':
-      return 'Proposal accepted';
+      return 'Offer accepted';
     case 'proposal_rejected':
-      return 'Proposal rejected';
+      return 'Offer declined';
     case 'check_in_confirmed':
       return 'Check-in confirmed';
     case 'review_left':

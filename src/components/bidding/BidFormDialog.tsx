@@ -351,7 +351,7 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
                 || (isDateProposal && (!proposedCheckIn || !proposedCheckOut || proposedNights <= 0))
               }
             >
-              {createBid.isPending ? 'Submitting...' : isDateProposal ? 'Submit Proposal' : 'Submit Offer'}
+              {createBid.isPending ? 'Sending...' : 'Send Offer'}
             </Button>
           </DialogFooter>
         </form>

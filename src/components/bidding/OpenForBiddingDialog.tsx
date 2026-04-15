@@ -92,15 +92,15 @@ export function OpenForBiddingDialog({
               required
             />
             <p className="text-xs text-muted-foreground">
-              Set when bidding will close
+              Set when Offers will close
             </p>
           </div>
 
-          {/* Minimum Bid */}
+          {/* Minimum Offer */}
           <div className="space-y-2">
             <Label htmlFor="minBid" className="flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              Minimum Bid (Optional)
+              Minimum Offer (Optional)
             </Label>
             <Input
               id="minBid"
@@ -111,7 +111,7 @@ export function OpenForBiddingDialog({
               placeholder={`e.g., ${Math.round(listingPrice * 0.7)}`}
             />
             <p className="text-xs text-muted-foreground">
-              Bids below this amount won't be accepted
+              Offers below this amount won't be accepted.
             </p>
           </div>
 

@@ -224,7 +224,9 @@ const App = () => (
             <Route path="/executive-dashboard" element={<ProtectedRoute><ExecutiveDashboard /></ProtectedRoute>} />
             <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/booking-success" element={<ProtectedRoute><BookingSuccess /></ProtectedRoute>} />
-            <Route path="/bidding" element={<ProtectedRoute><BiddingMarketplace /></ProtectedRoute>} />
+            <Route path="/marketplace" element={<ProtectedRoute><BiddingMarketplace /></ProtectedRoute>} />
+            <Route path="/bidding" element={<Navigate to="/marketplace" replace />} />
+            <Route path="/bidding/*" element={<Navigate to="/marketplace" replace />} />
             <Route path="/my-trips" element={<ProtectedRoute><RenterDashboard /></ProtectedRoute>} />
             <Route path="/my-bids" element={<Navigate to="/my-trips?tab=offers" replace />} />
             <Route path="/my-bookings" element={<Navigate to="/my-trips?tab=bookings" replace />} />

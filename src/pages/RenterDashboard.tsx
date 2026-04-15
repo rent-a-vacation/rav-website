@@ -216,13 +216,13 @@ const RenterDashboard = () => {
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base flex items-center gap-2">
                       <CalendarDays className="h-4 w-4" />
-                      RAV Wishes
+                      My Wishes
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-2xl font-bold">{overview.openRequestCount}</p>
                     <p className="text-sm text-muted-foreground">
-                      {overview.openRequestCount === 1 ? 'request open' : 'requests open'}
+                      {overview.openRequestCount === 1 ? 'Wish open' : 'Wishes open'}
                     </p>
                   </CardContent>
                 </Card>
@@ -243,9 +243,9 @@ const RenterDashboard = () => {
                       </Link>
                     </Button>
                     <Button asChild variant="outline" className="justify-start h-auto py-3">
-                      <Link to="/bidding">
+                      <Link to="/marketplace">
                         <Gavel className="h-4 w-4 mr-2" />
-                        Name Your Price
+                        Marketplace
                       </Link>
                     </Button>
                     <Button asChild variant="outline" className="justify-start h-auto py-3">
