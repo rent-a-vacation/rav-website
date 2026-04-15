@@ -31,3 +31,8 @@ coverage/
 playwright-report/
 test-results/
 nul
+
+# Python bytecode (used by docs/exports/ scripts)
+__pycache__/
+*.pyc
+*.pyo
