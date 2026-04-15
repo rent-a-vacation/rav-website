@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-13T03:22:39"
-change_ref: "4d55707"
-change_type: "session-47-brand-rebrand"
+last_updated: "2026-04-15T04:06:53"
+change_ref: "5fb0c20"
+change_type: "session-52-terminology-lock"
 status: "active"
 ---
 # BRAND LOCK — Rent-A-Vacation
@@ -10,34 +10,52 @@ status: "active"
 >
 > **Rule:** If this document and another document disagree, this document wins. Update the other document.
 >
-> **Last reviewed:** April 12, 2026 (Session 47 — Brand Architecture Rebrand)
+> **Last reviewed:** April 15, 2026 (Session 52 — Marketplace Terminology Lock: Listing / Wish / Offer)
+
+## 🔒 VOCABULARY LOCK (Session 52)
+
+The user-facing marketplace uses **three nouns only**:
+
+| Noun | Meaning | DB table (internal) |
+|---|---|---|
+| **Listing** | An owner posts a property + dates for rent | `listings` |
+| **Wish** | A renter posts a dream trip (open call — destination, dates, budget) | `travel_requests` |
+| **Offer** | A proposed transaction at a price — works in both directions | `listing_bids` (renter→listing) OR `travel_proposals` (owner→Wish) |
+
+**"Offer" replaces "Bid" AND "Proposal" in all UI.** "Bid" and "Proposal" remain only in DB column names, hook names, and internal code.
+
+**"RAV" prefix is dropped from all transactional nouns and CTAs:** "RAV Offer" → Offer, "RAV Wish" → Wish, "Make a RAV Offer" → Make an Offer, "Make a RAV Wish" → Post a Wish.
+
+**Header nav** shows a single **Marketplace** link (not separate "Name Your Price" + "Make a Wish" links). "Name Your Price. Book Your Paradise." remains as the brand tagline/hero slogan but is not a nav label.
+
+See Section 9 for the complete Terminology Context Map.
 
 ---
 
 ## 1. MESSAGING HIERARCHY
 
-Features are presented in this order across all materials. Lead with marketplace mechanics — the bidding system is the product. AI is a supporting differentiator.
+Features are presented in this order across all materials. Lead with the **Marketplace** — a two-sided negotiation platform with Listings, Wishes, and Offers flowing in both directions. AI is a supporting differentiator.
 
 | Tier | Feature | Role | Lead With |
 |------|---------|------|-----------|
-| **Primary** | **Name Your Price** (bidding) | Core product — travelers set terms | Always first in any feature list |
-| **Primary** | **RAV Wishes** (reverse auction) | Core product — owners compete | Always second |
-| **Primary** | **RAV Deals** (distressed inventory) | Discovery — motivated sellers, urgent deals | Third in discovery contexts |
+| **Primary** | **The Marketplace** (Listings · Wishes · Offers) | Core product — two-sided negotiation platform | Always first in any feature list |
+| **Primary** | **RAV Deals** (distressed inventory) | Discovery surface — motivated sellers, urgent deals | Third in discovery contexts |
 | **Supporting** | **TrustShield + PaySafe** (trust) | Removes risk, enables transactions | After marketplace features — builds confidence |
 | **Supporting** | **Ask RAVIO / Chat with RAVIO** (AI) | Discovery tool — voice and text search | Supporting — nice-to-have, not the headline |
 | **Supporting** | **RAV Smart Suite** (5 tools) | Owner acquisition + lead generation | Supporting — owner onboarding |
-| **Supporting** | **My Rentals** (owner dashboard) | Owner tools — earnings, listings, bookings | Nav: "My Rentals" (mirrors "My Trips") |
-| **Infrastructure** | **RAV Insights** (executive dashboard) | Business intelligence for leadership | Formerly "RAV Command" |
-| **Infrastructure** | **RAV Ops** (admin operations) | User/listing/verification management | Formerly "Admin Dashboard" |
+| **Supporting** | **My Rentals** (owner dashboard) | Owner tools — listings, Offers sent/received, bookings, earnings | Nav: "My Rentals" |
+| **Infrastructure** | **RAV Insights** (executive dashboard) | Business intelligence for leadership | |
+| **Infrastructure** | **RAV Ops** (admin operations) | User/listing/verification management | |
 | **Infrastructure** | **ResortIQ** (resort directory) | Data layer — auto-fill, consistency | Mention when relevant, don't feature-lead |
 
 ### Hierarchy rules
 
-- In any bio, headline, or opening sentence: **Name Your Price** or **RAV Wishes** appears first
+- In any bio, headline, or opening sentence: **the Marketplace concept (Listings, Wishes, Offers)** appears first
+- The brand slogan "**Name Your Price. Book Your Paradise.**" remains the hero tagline and opener — it describes the *mechanic* (you name the price via an Offer) even though the nav says "Marketplace"
 - RAVIO is mentioned as a feature, not as the brand identity or primary differentiator
 - Campaign launches lead with marketplace mechanics; AI campaigns are secondary/later
-- The master tagline "Name Your Price. Book Your Paradise." correctly reflects this hierarchy — keep it
-- All RAV-prefixed features (RAV Wishes, RAV Deals, RAV Edge, RAV Command, RAV Smart[X]) form a cohesive product family
+- Platform-internal features (RAV Deals, RAV Insights, RAV Ops, RAV Smart[X], RAVIO) retain the RAV prefix — it identifies them as ours
+- Transactional nouns and CTAs are NOT RAV-prefixed: Offer, Wish, Make an Offer, Post a Wish
 
 ---
 
@@ -83,7 +101,7 @@ Ranked by priority. Use the highest-applicable tagline for the context.
 | **1** | **Name Your Price. Book Your Paradise.** | Master — use everywhere, default choice |
 | **2** | **Luxury Resorts. Owner Prices.** | Traveler acquisition — ads, landing pages |
 | **3** | **Your Timeshare. Your Income. Your Terms.** | Owner acquisition — ads, email |
-| **4** | **Make a RAV Wish. Owners Make It Happen.** | RAV Wishes feature — specific campaigns |
+| **4** | **Post a Wish. Owners Make It Happen.** | Wishes feature — specific campaigns |
 | **5** | **Just Say Where. RAVIO Does the Rest.** | AI/voice campaigns — secondary, not lead |
 
 ### Secondary taglines (approved for specific contexts)
@@ -101,9 +119,9 @@ Ranked by priority. Use the highest-applicable tagline for the context.
 
 | Hashtag | Usage |
 |---------|-------|
-| **#NameYourPrice** | Primary — marketplace moments, bidding highlights |
-| #RAVWishes | Reverse auction stories, owner proposals |
-| #RAVDeals | Last-minute deals, distressed inventory |
+| **#NameYourPrice** | Primary — marketplace moments, Offer highlights |
+| #PostAWish | Wish-centric stories, owner Offers on Wishes |
+| #RAVDeals | Last-minute deals, distressed inventory (platform-branded surface) |
 | #RentAVacation | General brand |
 | #AskRAVIO | Voice/text search demos only (not primary) |
 
@@ -115,9 +133,11 @@ Canonical names and descriptions. Use these exact names in all materials.
 
 | Canonical Name | One-Line Description | Tier | Notes |
 |----------------|---------------------|------|-------|
-| **Name Your Price** | Travelers bid on any open listing — the first bidding engine in vacation rentals | Primary | Lead feature in all messaging. Master tagline. |
-| **RAV Wishes** | Travelers post their dream trip; verified owners compete with proposals | Primary | Formerly "Vacation Wishes." Internal DB name: `travel_requests` |
-| **RAV Deals** | Curated distressed inventory — expiring weeks from motivated sellers | Primary | Feeds into Name Your Price (bidding). New feature. |
+| **Marketplace** | Two-sided negotiation platform where renters and owners exchange Offers on Listings and Wishes | Primary | Nav label: "Marketplace". Route: `/marketplace`. Tagline: "Name Your Price. Book Your Paradise." |
+| **Listing** | An owner's property + dates posted for rent (direct-book or open-to-Offers) | Primary | DB: `listings`. Users see it as the noun "Listing" everywhere |
+| **Wish** | A renter's open call — destination, dates, budget. Owners send Offers on Wishes | Primary | DB: `travel_requests`. UI term is "Wish" — never "Request" or "RAV Wish" in user-facing copy |
+| **Offer** | A proposed transaction at a price. Renters send Offers on Listings; owners send Offers on Wishes. Same noun, both directions | Primary | DB: `listing_bids` (renter→listing) OR `travel_proposals` (owner→Wish). UI term is "Offer" — never "Bid" or "Proposal" |
+| **RAV Deals** | Curated distressed inventory — expiring weeks from motivated sellers. Each Deal is a Listing with urgency signals | Primary | Feeds into the Marketplace. Platform-branded surface. |
 | **TrustShield** | Multi-step owner verification — identity, ownership, and property confirmation | Supporting | Always pair with PaySafe |
 | **PaySafe** | Stripe-powered escrow — funds held until check-in is confirmed | Supporting | Always pair with TrustShield |
 | **Ask RAVIO** | Voice-powered AI vacation search — say what you want, get results | Supporting | RAVIO = Rent-A-Vacation Intelligent Operator |
@@ -188,14 +208,20 @@ These claims, terms, and framings are retired. Do not use them in any material.
 | "The world's first AI vacation concierge" as opening line | Open with marketplace value, mention AI as feature | AI is a differentiator but not the headline |
 | "On average, our renters save X%" | "Designed to save you 20-40%" | We are pre-launch — no actual average exists |
 | "Proprietary metrics" (for Liquidity Score, etc.) | "Platform metrics" or "marketplace health metrics" | These are calculated from platform data, not proprietary research |
-| "Vacation Wishes" | **RAV Wishes** | Rebranded Session 47 for RAV brand family consistency |
-| "Owner's Edge" / "RAV Edge" | **My Rentals** | Rebranded Session 47 — nav mirrors "My Trips" for renters |
-| "RAV Command" | **RAV Insights** | Rebranded Session 47 — self-descriptive: "I get business insights here" |
-| "Admin Dashboard" | **RAV Ops** | Rebranded Session 47 — self-descriptive: "operations management" |
+| "Vacation Wishes" / "RAV Wishes" / "RAV Wish" | **Wish / Wishes** | Session 52 — user-facing terms drop the RAV prefix |
+| "Owner's Edge" / "RAV Edge" | **My Rentals** | Session 47 — nav mirrors "My Trips" for renters |
+| "RAV Command" | **RAV Insights** | Session 47 — self-descriptive: "I get business insights here" |
+| "Admin Dashboard" | **RAV Ops** | Session 47 — self-descriptive: "operations management" |
 | "Explore" (nav label) | **Browse Rentals** | Generic; replaced with descriptive action |
-| "Make an Offer" (as CTA button text) | **Make a RAV Offer** | All transactional CTAs carry RAV identity |
-| "Browse Deals" / "Last-Minute Deals" (as CTA) | **Browse RAV Deals** | Discovery CTAs carry RAV identity |
-| #VacationWishes (hashtag) | **#RAVWishes** | Aligns with rebrand |
+| "Make a RAV Offer" | **Make an Offer** | Session 52 — transactional CTAs drop RAV prefix |
+| "Make a RAV Wish" / "Make a Wish" | **Post a Wish** | Session 52 — consistent verb; drops RAV prefix |
+| "Bid" / "Bids" (as user-facing UI term) | **Offer / Offers** | Session 52 — single noun for both directions. "Bid" stays in DB only |
+| "Proposal" / "Submit Proposal" (as user-facing UI term) | **Offer / Send an Offer** | Session 52 — unified with "Offer" across directions |
+| "Name Your Price" / "Make a Wish" (as separate header nav links) | **Marketplace** (single link) | Session 52 — one entry point with role-aware default tab inside |
+| "/bidding" (route) | **/marketplace** | Session 52 — /bidding redirects to /marketplace |
+| "Browse Deals" / "Last-Minute Deals" (as CTA) | **Browse RAV Deals** | Discovery CTAs retain RAV identity for platform-branded surfaces |
+| #VacationWishes (hashtag) | **#PostAWish** | Session 52 — aligns with new CTA verb |
+| #RAVWishes (hashtag) | **#PostAWish** | Session 52 — drops RAV prefix from user-facing hashtags |
 
 ---
 
@@ -237,10 +263,11 @@ Every named feature follows one of three naming patterns. When adding a new feat
 
 | Pattern | When to Use | Examples |
 |---------|-------------|---------|
-| **RAV [Name]** | Platform features — tools, AI, internal dashboards | RAVIO, RAV Insights, RAV Ops, RAV Wishes, RAV Deals, RAV Smart[X] |
+| **RAV [Name]** | Platform-branded surfaces — internal tools, AI, dashboards, curated discovery surfaces | RAVIO, RAV Insights, RAV Ops, RAV Deals, RAV Smart[X] |
 | **[CompoundName]** | Trust & infrastructure — the "serious" layer where gravitas matters | TrustShield, PaySafe, ResortIQ |
-| **[Action Phrase]** | Verb-based CTAs — what users DO (all transactional CTAs carry RAV) | Name Your Price, Make a RAV Offer, Make a RAV Wish, Browse RAV Deals |
-| **[Plain Language]** | User-facing nav labels — self-explanatory, says what you GET | My Trips, My Rentals, Browse Rentals |
+| **[Plain Noun]** | Marketplace mechanics — user-facing nouns that describe the thing | Listing, Wish, Offer, Marketplace |
+| **[Action Phrase]** | Verb-based CTAs — what users DO. **Plain language, NO RAV prefix on transactional CTAs** (Session 52) | Make an Offer, Post a Wish, Browse RAV Deals (platform surface exception), List Your Property |
+| **[Plain Language Nav]** | Header/nav labels — self-explanatory, says what you GET or DO | Marketplace, My Trips, My Rentals, Browse Rentals |
 
 ### Nav Labels vs Brand Names (CRITICAL)
 
@@ -249,8 +276,7 @@ Every named feature follows one of three naming patterns. When adding a new feat
 
 | Nav Label | Page Title | Who sees it |
 |---|---|---|
-| **Name Your Price** | Name Your Price — The Vacation Bidding Marketplace | Everyone (hero item, accent color) |
-| **Make a Wish** | RAV Wishes — Tell us your dream trip. Owners compete. | Everyone |
+| **Marketplace** | Marketplace — Listings & Wishes | Everyone (hero item, accent color). Role-aware default tab inside. |
 | **Browse Rentals** | Vacation Rentals | Everyone |
 | **My Trips** | My Trips | Renters |
 | **My Rentals** | My Rentals | Owners |
@@ -261,22 +287,28 @@ Every named feature follows one of three naming patterns. When adding a new feat
 ### Naming Rules
 
 1. **Every nav label must pass the test: "does my customer instantly know what they get?"**
-2. **RAV prefix for internal/admin tools** (RAV Insights, RAV Ops, RAV Smart[X]) — staff know the brand
-3. **Plain language for customer-facing nav** (My Trips, My Rentals, Browse Rentals) — customers need clarity
-4. **Tools always use "RAV Smart[X]"** pattern — one compound word after Smart (SmartEarn, not Smart Earn)
-5. **Discovery filters are NOT branded** — "Search by Event," "Browse by Activity" are UI labels, not products
-6. **"Name Your Price" is the hero nav item** — accent color (coral), bolder weight. It visually dominates.
+2. **RAV prefix for platform-branded surfaces** (RAV Insights, RAV Ops, RAV Smart[X], RAV Deals, RAVIO) — these are ours
+3. **Plain nouns for marketplace mechanics** (Listing, Wish, Offer, Marketplace) — users need clarity, not branding
+4. **Plain language for customer-facing nav** (Marketplace, My Trips, My Rentals, Browse Rentals) — customers need clarity
+5. **Tools always use "RAV Smart[X]"** pattern — one compound word after Smart (SmartEarn, not Smart Earn)
+6. **Discovery filters are NOT branded** — "Search by Event," "Browse by Activity" are UI labels, not products
+7. **"Marketplace" is the hero nav item** — accent color (coral), bolder weight. It visually dominates.
 
-### CTA Naming Rules
+### CTA Naming Rules (Session 52 — UPDATED)
 
-1. **Every transactional CTA (where a user takes a marketplace action) carries "RAV"** in it
-2. **The master tagline "Name Your Price" is the exception** — it's above the CTAs as the brand promise
-3. **CTAs use verb form:** Make a RAV [X], Browse RAV [X]
-4. **Navigation labels use plain language, not CTA form:** "Make a Wish" (nav), "Make a RAV Wish" (button)
+1. **Transactional CTAs use plain language, NOT RAV-prefixed.** Session 52 removed the RAV prefix from action verbs to reduce user friction.
+   - ✅ Make an Offer · Post a Wish · List Your Property · Open the Marketplace
+   - ❌ Make a RAV Offer · Make a RAV Wish
+2. **Platform-branded surfaces keep "Browse RAV [X]" for discovery CTAs** when the destination is RAV-branded:
+   - ✅ Browse RAV Deals (takes you to the branded RAV Deals surface)
+3. **The brand slogan "Name Your Price. Book Your Paradise." is retained** as the master tagline — it lives in the hero, taglines, meta descriptions, pitch materials, emails. It is NOT a nav label.
+4. **CTAs use verb form:** Make an Offer, Post a Wish, Open the Marketplace, Browse Rentals.
 
 ### When NOT to Brand
 
-- **UI filters** (date pickers, location dropdowns, price sliders) — these are standard controls
+- **Marketplace nouns** (Listing, Wish, Offer) — plain nouns win every time
+- **Transactional CTAs** (Make an Offer, Post a Wish) — no RAV prefix
+- **UI filters** (date pickers, location dropdowns, price sliders) — standard controls
 - **Discovery lenses** (Search by Event, Browse by Activity) — they help you find listings, not transact
 - **Internal/technical terms** — database table names, hook names, edge function names stay descriptive
 
@@ -284,29 +316,44 @@ Every named feature follows one of three naming patterns. When adding a new feat
 
 | Date | Old Name | New Name | Reason |
 |------|----------|----------|--------|
-| Apr 12, 2026 | Vacation Wishes | **RAV Wishes** | RAV brand family consistency |
-| Apr 12, 2026 | Owner's Edge | **RAV Edge** | RAV brand family consistency |
-| Apr 12, 2026 | Make an Offer | **Make a RAV Offer** | Transactional CTAs carry RAV identity |
-| Apr 12, 2026 | *(new)* | **RAV Deals** | New feature — distressed inventory surface |
-| Apr 12, 2026 | *(new)* | **Browse RAV Deals** | CTA for RAV Deals page |
-| Apr 12, 2026 | RAV Edge | **My Rentals** | Nav mirrors "My Trips" — self-descriptive |
-| Apr 12, 2026 | RAV Command | **RAV Insights** | Self-descriptive: business intelligence |
-| Apr 12, 2026 | Admin Dashboard | **RAV Ops** | Self-descriptive: operations management |
-| Apr 12, 2026 | Explore (nav) | **Browse Rentals** | Generic → descriptive action |
-| Apr 12, 2026 | RAV Wishes (nav) | **Make a Wish** | Nav labels = plain language actions |
+| Apr 15, 2026 (S52) | RAV Wishes / RAV Wish | **Wish / Wishes** | User-facing terms drop RAV prefix |
+| Apr 15, 2026 (S52) | Make a RAV Offer | **Make an Offer** | Transactional CTAs drop RAV prefix |
+| Apr 15, 2026 (S52) | Make a Wish / Make a RAV Wish | **Post a Wish** | Consistent verb; no RAV prefix |
+| Apr 15, 2026 (S52) | Bid / Proposal (UI) | **Offer** | One noun for both directions; "Bid"/"Proposal" stay in DB only |
+| Apr 15, 2026 (S52) | Name Your Price + Make a Wish (nav links) | **Marketplace** (single link) | One entry point, role-aware default tab |
+| Apr 15, 2026 (S52) | /bidding (route) | **/marketplace** | Semantic alignment; /bidding redirects |
+| Apr 15, 2026 (S52) | #RAVWishes (hashtag) | **#PostAWish** | Aligns with new CTA verb |
+| Apr 12, 2026 (S47) | Vacation Wishes | RAV Wishes | Retired S52 — see above |
+| Apr 12, 2026 (S47) | Owner's Edge | RAV Edge | Retired same session — see next row |
+| Apr 12, 2026 (S47) | RAV Edge | **My Rentals** | Nav mirrors "My Trips" — self-descriptive |
+| Apr 12, 2026 (S47) | Make an Offer | Make a RAV Offer | Retired S52 — see top row |
+| Apr 12, 2026 (S47) | *(new)* | **RAV Deals** | New feature — distressed inventory surface |
+| Apr 12, 2026 (S47) | *(new)* | **Browse RAV Deals** | CTA for RAV Deals page |
+| Apr 12, 2026 (S47) | RAV Command | **RAV Insights** | Self-descriptive: business intelligence |
+| Apr 12, 2026 (S47) | Admin Dashboard | **RAV Ops** | Self-descriptive: operations management |
+| Apr 12, 2026 (S47) | Explore (nav) | **Browse Rentals** | Generic → descriptive action |
 
 ---
 
-## 9. TERMINOLOGY CONTEXT MAP
+## 9. TERMINOLOGY CONTEXT MAP (Session 52 — CANONICAL)
 
 > This is the definitive reference for what words appear on screen in each context. Check this before writing any user-facing text.
+
+### The three marketplace nouns
+
+| Noun | What it means | Who creates it | DB table |
+|---|---|---|---|
+| **Listing** | Owner posts a property + dates for rent | Owner | `listings` |
+| **Wish** | Renter posts a dream trip (destination, dates, budget) | Renter | `travel_requests` |
+| **Offer** | Proposed transaction at a price — works both directions | Renter (on a Listing) or Owner (on a Wish) | `listing_bids` (renter→listing) OR `travel_proposals` (owner→Wish) |
+
+**"Offer" replaces both "Bid" (old UI) and "Proposal" (old UI).** In the database, the two mechanics are still stored in separate tables (`listing_bids` vs `travel_proposals`) because they point at different parents — but end users see a single noun: "Offer."
 
 ### Navigation & Page Titles
 
 | Location | Nav Label | Page Title | Link |
 |----------|-----------|------------|------|
-| Header nav (everyone) | **Name Your Price** | Name Your Price — The Vacation Bidding Marketplace | /bidding |
-| Header nav (everyone) | **Make a Wish** | RAV Wishes | /bidding (wishes tab) |
+| Header nav (everyone) | **Marketplace** | Marketplace — Listings & Wishes | /marketplace |
 | Header nav (everyone) | **Browse Rentals** | Vacation Rentals | /rentals |
 | Header nav (owner) | **My Rentals** | My Rentals | /owner-dashboard |
 | Header nav (renter) | **My Trips** | My Trips | /my-trips |
@@ -314,26 +361,53 @@ Every named feature follows one of three naming patterns. When adding a new feat
 | Header nav (executive) | **RAV Insights** | RAV Insights — Business Intelligence | /executive-dashboard |
 | Header nav (tools) | **Free Tools** | RAV Tools | /tools |
 | Header nav (owner CTA) | **List Your Property** | List Your Property | /list-property |
-| Tab label — listings | Listings | — | Within /bidding |
-| Tab label — wishes | RAV Wishes | — | Within /bidding |
+| Tab label — listings (inside Marketplace) | **Listings** | — | /marketplace (default for renter/anon) |
+| Tab label — wishes (inside Marketplace) | **Wishes** | — | /marketplace?tab=wishes (default for owner) |
 
-### CTA Buttons
+### User dropdown (role-aware "My Activity")
+
+| Renter sees | Owner sees |
+|---|---|
+| My Trips | My Listings |
+| My Offers | Offers I Sent |
+| My Wishes | Offers on My Listings |
+| Account Settings | Account Settings |
+
+### CTA Buttons (plain language — no RAV prefix on transactional CTAs)
 
 | Context | Button Text | Action |
 |---------|-------------|--------|
-| PropertyDetail / ListingCard | **Make a RAV Offer** | Opens bid form dialog |
-| BiddingMarketplace / empty search | **Make a RAV Wish** | Opens wish creation form |
-| RAV Deals page | **Browse RAV Deals** | Page entry CTA |
-| RAV Deals listing card | **Make a RAV Offer** | Same as any listing bid |
-| Homepage hero | **Name Your Price** | Links to /bidding |
+| PropertyDetail / ListingCard | **Make an Offer** | Opens Offer form dialog |
+| Marketplace page (renter) | **Post a Wish** | Opens Wish creation form |
+| TravelRequestForm / InspiredTravelRequestDialog | **Post a Wish** | Submits a Wish |
+| TravelRequestCard (owner viewing a Wish) | **Send Offer** | Opens Offer-on-Wish form |
+| BidFormDialog | **Send Offer** | Submits the Offer |
+| BidsManagerDialog | **Manage Offers** | Title of dialog; "Pending Offers" / "Past Offers" sections |
+| RAV Deals page | **Browse RAV Deals** | Platform-branded surface CTA (keeps RAV) |
+| RAV Deals listing card | **Make an Offer** | Same as any Listing Offer |
+| Homepage hero | **Name Your Price** (slogan) | The brand tagline — not a button label; the hero CTA routes to /marketplace |
+| Homepage secondary CTA | **Open the Marketplace** | Links to /marketplace |
 | Owner onboarding | **List Your Property** | Links to /list-property |
 
-### Feature References in Copy
+### Notification category labels
+
+| Filter | Label shown |
+|---|---|
+| All | All |
+| Bookings | Bookings |
+| Bids (DB value) | **Offers** |
+| Travel Requests (DB value) | **Wishes** |
+| Reminders | Reminders |
+| System | System |
+
+### Feature references in copy
 
 | When referring to... | Brand Name | Nav Label |
 |---------------------|-----------|-----------|
-| The bidding marketplace (umbrella) | **Name Your Price** | Name Your Price |
-| The reverse auction feature | **RAV Wishes** | Make a Wish |
+| The two-sided negotiation platform (umbrella) | **the Marketplace** | Marketplace |
+| Renter's open call to the market | **Wish** | — (inside Marketplace) |
+| An owner's rentable property/dates | **Listing** | — (inside Marketplace) |
+| A proposed deal at a price | **Offer** | — (inside Marketplace) |
 | The distressed inventory page | **RAV Deals** | Browse RAV Deals |
 | The owner dashboard | **My Rentals** | My Rentals |
 | The executive dashboard | **RAV Insights** | RAV Insights |
@@ -347,12 +421,34 @@ Every named feature follows one of three naming patterns. When adding a new feat
 
 ### Internal vs. External Naming
 
-| Internal (code/DB) | External (UI/marketing) | Nav Label | Notes |
-|--------------------|------------------------|-----------|-------|
-| `travel_requests` table | RAV Wishes | Make a Wish | DB name stays; nav is plain language |
-| `travel_proposals` table | Proposals (within RAV Wishes) | — | Generic is fine for sub-concepts |
-| `listing_bids` table | Offers (within Name Your Price) | — | "Bid" internally, "Offer" in UI |
-| `owner-dashboard` route | My Rentals | My Rentals | Route can stay; display name changes |
-| `executive-dashboard` route | RAV Insights | RAV Insights | Route can stay; display name changes |
-| `admin` route | RAV Ops | RAV Ops | Route can stay; display name changes |
-| `useLastMinuteDeals` hook | RAV Deals | Browse RAV Deals | Hook names are internal; UI shows branded |
+| Internal (code/DB) | External (UI/marketing) | Notes |
+|--------------------|------------------------|-------|
+| `travel_requests` table | **Wish / Wishes** | DB name stays; UI drops RAV prefix |
+| `travel_proposals` table | **Offer** (when owner sends it on a Wish) | Proposal → Offer in all UI |
+| `listing_bids` table | **Offer** (when renter sends it on a Listing) | Bid → Offer in all UI |
+| `bidding` DB concept | **Marketplace** | Broader umbrella in UI |
+| `/marketplace` route | Marketplace | Route renamed; `/bidding` redirects |
+| `owner-dashboard` route | My Rentals | Route can stay; display name is plain |
+| `executive-dashboard` route | RAV Insights | Display name branded for platform |
+| `admin` route | RAV Ops | Display name branded for platform |
+| `useBidding` hook | (internal) | Name unchanged — internal code |
+| `useLastMinuteDeals` hook | RAV Deals | Hook names are internal; UI shows branded |
+
+### Marketplace role-aware defaults
+
+When a user lands on `/marketplace`:
+- **Renter or anonymous:** default tab = **Listings** (find a deal)
+- **Owner:** default tab = **Wishes** (find renters who want their property)
+- **?tab=listings** / **?tab=wishes** URL params override the default
+- Legacy **?tab=requests** maps to **?tab=wishes**
+
+### Brand slogan usage
+
+"**Name Your Price. Book Your Paradise.**" remains in:
+- Homepage hero H1
+- Page meta descriptions (default)
+- Email footer slogan (src/lib/email.ts)
+- Pitch deck / marketing materials
+- Documentation + UserGuide cover pages
+
+It does **not** appear as a nav label anymore.
