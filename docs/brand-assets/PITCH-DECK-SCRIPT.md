@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-15T11:03:04"
+change_ref: "3180738"
+change_type: "session-48-docs-refresh"
 status: "active"
 ---
 # Rent-A-Vacation Pitch Deck Script
@@ -146,16 +146,19 @@ RENT-A-VACATION
 The first marketplace purpose-built
 for vacation club owners and travelers.
 
-✓ Name Your Price — bid on any listing       [BUILT]
-✓ Vacation Wishes — reverse auction          [BUILT]
-✓ TrustShield + PaySafe — verified & secure  [BUILT]
-✓ Ask RAVIO — AI voice & text search         [BUILT]
-✓ ResortIQ — 117 resorts, 351 unit types     [BUILT]
-✓ RAV Smart Suite — 5 tools                  [BUILT]
+✓ Name Your Price — bid on any listing            [BUILT]
+✓ RAV Wishes — reverse auction                    [BUILT]
+✓ RAV Deals — distressed/expiring inventory       [BUILT]
+✓ TrustShield + PaySafe — verified & secure       [BUILT]
+✓ Ask RAVIO — AI voice & text search              [BUILT]
+✓ ResortIQ — 117 resorts, 351 unit types          [BUILT]
+✓ RAV Smart Suite — 5 tools                       [BUILT]
   (SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget)
-✓ Dynamic Pricing — urgency, seasonal, demand [BUILT]
-✓ Public API & Developer Portal              [BUILT]
-✓ Referral Program — owner growth engine      [BUILT]
+✓ Dynamic Pricing — urgency, seasonal, demand     [BUILT]
+✓ Notification Center — in-app, email, SMS        [BUILT]
+✓ Public API & Developer Portal (/developers)     [BUILT]
+✓ Referral Program — owner growth engine          [BUILT]
+✓ Renter Dashboard /my-trips + Saved Searches     [BUILT]
 
 Everything listed above is deployed and demonstrable today.
 ```
@@ -220,13 +223,13 @@ Features:
 
 ---
 
-## SLIDE 8: Deep Dive — Vacation Wishes (Reverse Auction)
+## SLIDE 8: Deep Dive — RAV Wishes (Reverse Auction)
 
 **Visual:** Flow diagram: Traveler posts wish -> Owners see demand signal -> Owners send proposals -> Traveler picks best offer.
 
 **Text:**
 ```
-VACATION WISHES — Let Owners Compete for You          [BUILT]
+RAV WISHES — Let Owners Compete for You               [BUILT]
 
 Traditional:  Traveler browses → picks a listing → pays the price
 RAV:          Traveler posts a wish → owners compete → traveler picks
@@ -243,7 +246,7 @@ How it works:
 ```
 
 **Speaker Notes:**
-> "This is the other side of our marketplace innovation. We call them Vacation Wishes. Instead of the traveler hunting through listings, they simply describe what they want — destination, dates, budget, requirements. We then surface that wish to relevant property owners, who can send personalized proposals. The traveler picks the best offer. This creates real price discovery — owners see actual demand, travelers get competitive offers, and the platform learns what the market really values. The entire workflow is built — wishes, proposals, matching, notifications."
+> "This is the other side of our marketplace innovation. We call them RAV Wishes. Instead of the traveler hunting through listings, they simply describe what they want — destination, dates, budget, requirements. We then surface that wish to relevant property owners, who can send personalized proposals. The traveler picks the best offer. This creates real price discovery — owners see actual demand, travelers get competitive offers, and the platform learns what the market really values. The entire workflow is built — wishes, proposals, matching, notifications."
 
 ---
 
@@ -338,13 +341,14 @@ Impact: Listing creation designed to take ~8 minutes vs. industry ~22 minutes
 
 ---
 
-## SLIDE 12: Deep Dive — Owner's Edge (RAV Smart Suite + Dynamic Pricing)
+## SLIDE 12: Deep Dive — My Rentals (Owner Suite: Smart Suite + Dynamic Pricing + Notification Center)
 
 **Visual:** Split screen. Left: SmartPrice badge on a listing. Right: Calculator results showing break-even.
 
 **Text:**
 ```
-OWNER'S EDGE — Empowering Owners to Earn More          [BUILT]
+MY RENTALS — Empowering Owners to Earn More            [BUILT]
+(formerly "Owner's Edge" / "RAV Edge" — Session 47 rebrand)
 
 RAV SMARTPRICE:
 • AI-powered pricing recommendation on every listing
@@ -365,7 +369,13 @@ DYNAMIC PRICING ENGINE:
 • Seasonal adjustment factors
 • Demand-based pricing (bids + search volume)
 
-OWNER DASHBOARD:
+NOTIFICATION CENTER:
+• Multi-channel routing (in-app, email, SMS)
+• Per-type, per-channel preferences
+• TCPA-compliant SMS opt-in + STOP keyword
+• Seasonal event reminders + cron-driven scheduling
+
+OWNER DASHBOARD ("My Rentals"):
 • Earnings tracking (lifetime, YTD, monthly)
 • Booking management with confirmation workflow
 • Bid activity feed (real-time)
@@ -386,13 +396,14 @@ OWNER DASHBOARD:
 ```
 ENGINEERING EXCELLENCE                                  [ALL BUILT & VERIFIABLE]
 
-771 automated tests (99 test files) — all passing
+956 automated tests (121 test files) — all passing
+ 97 P0 critical-path tests — `npm run test:p0` (~2s)
   0 TypeScript errors — strict mode
   0 lint errors — ESLint enforced
   5-job CI/CD pipeline — GitHub Actions
- 45 database migrations — deployed
- 27 edge functions — serverless, auto-scaling
- 39 sessions shipped
+ 46 database migrations — deployed
+ 30 edge functions — serverless, auto-scaling
+ 48 sessions shipped — 19 months
 
 Tech Stack:
 React 18 + TypeScript + Vite | Tailwind CSS + shadcn/ui
@@ -405,7 +416,7 @@ Vitest + Playwright + Percy (Testing)
 ```
 
 **Speaker Notes:**
-> "A few words about our engineering foundation, because execution matters. We have 771 automated tests across 99 test files — all passing. Zero type errors, zero lint errors, a 5-job CI/CD pipeline that runs on every commit. 45 database migrations, 27 serverless edge functions, row-level security on every table. We shipped 39 development sessions. Every number on this slide is real and verifiable right now. This isn't a prototype — it's a production-grade platform."
+> "A few words about our engineering foundation, because execution matters. We have 956 automated tests across 121 test files — all passing, including 97 P0 critical-path tests that run in about two seconds. Zero type errors, zero lint errors, a 5-job CI/CD pipeline that runs on every commit. 46 database migrations, 30 serverless edge functions, row-level security on every table. We've shipped 48 development sessions over 19 months. Every number on this slide is real and verifiable right now. This isn't a prototype — it's a production-grade platform."
 
 ---
 
@@ -513,28 +524,30 @@ Q4:   SCALE
 ```
 WHY WE WIN                                              [BUILT CAPABILITIES]
 
-                        RAV     VRBO    Airbnb  RedWeek  TUG
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Vacation Club Focus      ✓       —       —       ~        ~
-AI Voice Search          ✓       —       —       —        —
-AI Text Chat             ✓       —       —       —        —
-Bidding / Negotiation    ✓       —       —       —        —
-Reverse Auction (Wishes) ✓       —       —       —        —
-Resort Master Data       ✓       —       —       —        —
-Owner Verification       ✓       ~       ~       ~        —
-Escrow Protection        ✓       ✓       ✓       —        —
-Fair Value AI            ✓       —       —       —        —
-Smart Suite (5 tools)    ✓       —       —       —        —
-Dynamic Pricing          ✓       ~       ~       —        —
-Public API / Dev Portal  ✓       —       —       —        —
-Owner Dashboard          ✓       ✓       ✓       —        —
-Executive BI             ✓       —       —       —        —
+                              RAV     VRBO    Airbnb  RedWeek  TUG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Vacation Club Focus            ✓       —       —       ~        ~
+AI Voice Search                ✓       —       —       —        —
+AI Text Chat                   ✓       —       —       —        —
+Bidding / Negotiation          ✓       —       —       —        —
+Reverse Auction (RAV Wishes)   ✓       —       —       —        —
+Distressed Inventory (Deals)   ✓       —       —       ~        —
+Resort Master Data             ✓       —       —       —        —
+Owner Verification             ✓       ~       ~       ~        —
+Escrow Protection              ✓       ✓       ✓       —        —
+Fair Value AI                  ✓       —       —       —        —
+Smart Suite (5 tools)          ✓       —       —       —        —
+Dynamic Pricing                ✓       ~       ~       —        —
+Notification Ctr (in-app/email/SMS) ✓  ~       ~       —        —
+Public API / Dev Portal        ✓       —       —       —        —
+Owner Dashboard (My Rentals)   ✓       ✓       ✓       —        —
+Executive BI (RAV Insights)    ✓       —       —       —        —
 
-9 capabilities that no competitor offers today.
+11 capabilities that no competitor offers today.
 ```
 
 **Speaker Notes:**
-> "This is our competitive position. Nine of our core capabilities are industry firsts — AI voice search, AI text chat, bidding marketplace, reverse auction, resort master data, fair value scoring, a five-tool Smart Suite, dynamic pricing, and a public developer API. VRBO and Airbnb are horizontal platforms with hundreds of millions in engineering resources, but they're not purpose-built for vacation clubs. They don't understand resort confirmation workflows, maintenance fee economics, or owner verification needs. RedWeek and TUG are community sites, not technology platforms. Our moat is the combination of AI, data, and vacation-club-specific workflows — and it compounds over time."
+> "This is our competitive position. Eleven of our core capabilities are industry firsts — AI voice search, AI text chat, bidding marketplace, RAV Wishes reverse auction, RAV Deals distressed inventory surface, resort master data, fair value scoring, a five-tool Smart Suite, dynamic pricing, multi-channel notification center, and a public developer API. VRBO and Airbnb are horizontal platforms with hundreds of millions in engineering resources, but they're not purpose-built for vacation clubs. They don't understand resort confirmation workflows, maintenance fee economics, or owner verification needs. RedWeek and TUG are community sites, not technology platforms. Our moat is the combination of AI, data, and vacation-club-specific workflows — and it compounds over time."
 
 ---
 
@@ -555,6 +568,7 @@ MID TERM (Q3-Q4 2026):
 • Voice-assisted listing creation, booking, and bidding
 • iOS + Android app (Capacitor native shells)
 • Brand partnerships (Hilton, Marriott, Disney outreach)
+• A2P 10DLC SMS activation (post LLC/EIN — flips `SMS_TEST_MODE=false`)
 • Content marketing engine
 
 LONG TERM (2027):
@@ -592,7 +606,7 @@ Name Your Price. Book Your Paradise.
 **Speaker Notes (adjust based on audience):**
 
 *For investors:*
-> "We've built a complete, production-grade marketplace for a $10.5 billion industry with no tech-first leader. 39 sessions shipped, 771 automated tests, industry-first AI capabilities. We're looking for [investment amount] to fund our public launch, initial marketing, and first 12 months of operation. I'd love to walk you through the live demo and discuss how we can work together."
+> "We've built a complete, production-grade marketplace for a $10.5 billion industry with no tech-first leader. 48 sessions shipped, 956 automated tests, industry-first AI + bidding + multi-channel notification capabilities. We're looking for [investment amount] to fund our public launch, initial marketing, and first 12 months of operation. I'd love to walk you through the live demo and discuss how we can work together."
 
 *For partners:*
 > "We've built a platform that serves your owners better than anything on the market today. I'd love to discuss a pilot program where we can demonstrate value to your owner community — reduced churn, increased satisfaction, and a new revenue channel. Let's set up a demo with your team."
@@ -610,7 +624,8 @@ Name Your Price. Book Your Paradise.
 
 **Text:**
 ```
-RAV COMMAND — Investor-Grade Business Intelligence      [BUILT]
+RAV INSIGHTS — Investor-Grade Business Intelligence      [BUILT]
+(formerly "RAV Command" — Session 47 rebrand)
 
 6 Sections:
 1. HeadlineBar — 5 real-time KPI pills
@@ -628,7 +643,7 @@ Proprietary Metrics:
 ```
 
 **Speaker Notes:**
-> "For our leadership and investors, we built RAV Command — an executive dashboard with 6 sections covering business performance, marketplace health, market intelligence, industry news, and unit economics. It includes two platform-specific metrics: the Liquidity Score, a composite marketplace health index, and the Bid Spread Index, which measures how efficiently our bidding system discovers fair prices. The dashboard also supports a 'Bring Your Own Key' pattern for third-party data sources like AirDNA and STR — demo mode by default, connected when API keys are provided. This entire dashboard is built and live in our demo environment."
+> "For our leadership and investors, we built RAV Insights — an executive dashboard with 6 sections covering business performance, marketplace health, market intelligence, industry news, and unit economics. It includes two platform-specific metrics: the Liquidity Score, a composite marketplace health index, and the Bid Spread Index, which measures how efficiently our bidding system discovers fair prices. The dashboard also supports a 'Bring Your Own Key' pattern for third-party data sources like AirDNA and STR — demo mode by default, connected when API keys are provided. This entire dashboard is built and live in our demo environment."
 
 ---
 

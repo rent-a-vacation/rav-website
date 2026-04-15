@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-03T15:20:24"
-change_ref: "fd388ad"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-15T11:03:04"
+change_ref: "3180738"
+change_type: "session-48-docs-refresh"
 status: "active"
 ---
 # Rent-A-Vacation Brand Style Guide
@@ -201,8 +201,24 @@ Status/Error          → #E53E3E
 - "Rent-A-Vacation" — always hyphenated, title case
 - "RAV" — acceptable abbreviation in informal contexts
 
+### Session 47 Brand Architecture Rebrand (April 12, 2026)
+
+The RAV brand family follows three naming patterns. Use canonical names below in all materials — see `BRAND-LOCK.md` Section 8 for the full naming framework.
+
+| Old Name | Canonical Name | Notes |
+|----------|---------------|-------|
+| Vacation Wishes | **RAV Wishes** | Reverse auction feature; hashtag is `#RAVWishes` |
+| Owner's Edge / RAV Edge | **My Rentals** | Owner dashboard nav (mirrors "My Trips" for renters) |
+| RAV Command | **RAV Insights** | Executive dashboard — self-descriptive BI |
+| Admin Dashboard | **RAV Ops** | Admin operations — self-descriptive |
+| Make an Offer | **Make a RAV Offer** | Transactional CTAs carry RAV identity |
+| Browse Deals | **Browse RAV Deals** | New `RAV Deals` distressed-inventory surface |
+| Explore (nav) | **Browse Rentals** | Plain-language nav |
+
+**Naming rule:** RAV-prefix for tools/admin (RAV Insights, RAV Ops, RAV Smart[X]); plain language for customer nav (My Trips, My Rentals, Browse Rentals); CompoundName for trust layer (TrustShield, PaySafe, ResortIQ).
+
 ### Messaging Authority
-> **All messaging claims, feature ordering, and savings numbers must align with `docs/brand-assets/BRAND-LOCK.md`.** When in doubt, the Brand Lock is the source of truth.
+> **All messaging claims, feature ordering, savings numbers, and feature names must align with `docs/brand-assets/BRAND-LOCK.md`.** When in doubt, the Brand Lock is the source of truth.
 
 ---
 

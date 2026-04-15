@@ -1,36 +1,98 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-15T11:03:04"
+change_ref: "3180738"
+change_type: "session-48-docs-refresh"
 status: "active"
 ---
 # Complete User Journey Map - Rent-A-Vacation Platform
 
-**Document Version:** 2.0
-**Last Updated:** February 16, 2026
-**Status:** Post Phase 4 Track A (Voice Auth & Approval System complete)
+**Document Version:** 3.0
+**Last Updated:** April 14, 2026 (Session 48 refresh)
+**Status:** Post Session 48 — platform feature-complete pending A2P 10DLC + LLC/EIN blockers (#127)
 
 ---
 
-## 🎯 Overview
+## 🔔 Session 48 Addendum — What's Current (April 2026)
+
+The detailed journey flows below were authored post-Phase 4 and remain structurally accurate. The platform has shipped substantial additional capability since. Reference this addendum for what's live as of April 2026; individual journeys below still describe the core mechanics correctly.
+
+### Canonical brand names (Session 47 rebrand — April 12, 2026)
+
+Replace older terms wherever they appear in this document with the canonical Session 47 names. See `docs/brand-assets/BRAND-LOCK.md` for the full naming framework.
+
+| Old term in this doc | Canonical name | Nav label |
+|----------------------|----------------|-----------|
+| Vacation Wishes / Travel Requests | **RAV Wishes** | "Make a Wish" |
+| Owner's Edge | **My Rentals** | "My Rentals" |
+| RAV Command | **RAV Insights** | "RAV Insights" |
+| Admin Dashboard | **RAV Ops** | "RAV Ops" |
+| Make an Offer (CTA) | **Make a RAV Offer** | — |
+| (new) | **RAV Deals** | "Browse RAV Deals" |
+
+### Major journeys added since v2.0
+
+| Journey / Feature | Route | Shipped | Notes |
+|-------------------|-------|---------|-------|
+| **Renter Dashboard** | `/my-trips` | Session 34 | 4 tabs: Overview, Bookings, Offers, Favorites + saved-search alerts |
+| **My Rentals (consolidated owner dashboard)** | `/owner-dashboard` | Session 33 | 11 tabs → 4 (Dashboard, My Listings, Bookings & Earnings, Account) |
+| **Pre-Booking Messaging ("Ask the Owner")** | PropertyDetail → Inquiry dialog | Session 34 | Inquiry threads before booking |
+| **Saved Searches + Price Drop Alerts** | `/rentals` → Save button | Session 34 | Notifies renter when matching listing drops in price |
+| **Destinations Explorer** | `/destinations`, `/destinations/:slug` | Session 34 | 10 destinations / 35 cities discovery |
+| **Cancellation Policy UI + Booking Timeline** | PropertyDetail, Checkout, MyBookings | Session 33 | 4-tier color-coded refund policy + 5-step timeline |
+| **Compare Properties** | `/rentals` → Compare toggle | Session 33 | Up to 3 listings side-by-side with "Best" badges |
+| **Dynamic Pricing** | Owner listing flow | Session 37 | Urgency/seasonal/demand adjustments on owner price suggestions |
+| **Referral Program** | `/owner-dashboard` → Account tab | Session 37 | Unique codes, signup attribution on `?ref=CODE` |
+| **Public API + Developer Portal** | `/developers` (public), `/admin` → API Keys | Session 38 | RESTful API, Swagger UI, IP allowlisting (CIDR) |
+| **RAV Smart Suite (5 free tools)** | `/tools` | Session 38-39 | SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget |
+| **RAV Insights (executive dashboard)** | `/executive-dashboard` | earlier | Rebranded from "RAV Command" in Session 47 |
+| **Notification Center** | `/notifications`, `/settings/notifications` | Session 40 | Multi-channel (in-app, email, SMS) with TCPA opt-in, per-type preferences, seasonal event reminders, delivery log |
+| **Admin Property/Listing Editing + Resort Import** | `/admin` → Properties/Resorts tabs | Session 36 | CSV import with validation, audit-trail editing |
+| **Dispute Evidence Upload** | MyBookings/OwnerBookings → Report Issue | Session 36 | Role-aware categories, evidence thumbnails in RAV Ops |
+| **iCal Export** | `/owner-dashboard` → Bookings | Session 35 | RFC 5545 calendar export |
+| **Realtime Subscriptions** | Platform-wide | Session 34 | `useRealtimeSubscription` replaced all polling (notifications, messages, unread counts) |
+| **Voice Admin Controls (Tracks C-D)** | `/admin` → Voice tab | Session 16 | Tier/user overrides, observability dashboard, search log |
+| **RAV Deals (distressed inventory)** | `/deals` (planned nav) | Session 47 | New discovery surface for expiring weeks; feeds bidding |
+| **Multi-Year Event Generation** | `/admin` → Events | Session 48 | Curated events unified into DB with admin CRUD + multi-year generator |
+
+### Voice quota (corrected)
+
+The legacy "10/day per user" note below is superseded. Current quota is **tier-based**:
+- Free: 5/day
+- Plus / Pro: 25/day
+- Premium / Business: unlimited
+- RAV team: unlimited
+
+### SMS status
+
+SMS infrastructure (Twilio + `notification-dispatcher`, `sms-scheduler`, `twilio-webhook`) is deployed to DEV with `SMS_TEST_MODE=true`. Production SMS traffic is gated on A2P 10DLC registration, which is blocked on LLC/EIN (#127).
+
+### Numbers as of Session 48
+
+956 automated tests (121 files) · 97 P0 tests · 46 migrations · 30 edge functions · 117 resorts / 351 unit types · 48 sessions shipped in 19 months · 0 type errors / 0 lint errors / clean build.
+
+---
+
+## 🎯 Overview (Original v2.0 — still accurate for core flows)
 
 This document maps the complete user experience across all user types, features, and touchpoints on the Rent-A-Vacation platform.
 
 ### User Types Covered
 1. **Traveler** - Searching and booking vacation properties
 2. **Property Owner** - Listing and managing their vacation club properties
-3. **RAV Admin** - Platform administration and oversight
+3. **RAV Admin** - Platform administration and oversight (nav label: "RAV Ops")
 4. **RAV Staff** - Customer support and operations
-5. **RAV Owner** - Business owner and strategic decision maker
+5. **RAV Owner** - Business owner and strategic decision maker (nav label: "RAV Insights")
 
-### Features Mapped
+### Features Mapped (expanded in Session 48 Addendum above)
 - ✅ **Phase 1:** Voice Search (DEPLOYED)
 - ✅ **Phase 2:** Resort Master Data (DEPLOYED)
 - ✅ **Phase 4 Track A:** Voice Auth & Approval System (DEPLOYED)
   - Authentication gate on voice search
   - User approval system (signup → pending → approved/rejected)
-  - Voice usage limits (10/day per user, RAV team unlimited)
-- 🚀 **Phase 3:** Voice Everywhere (PLANNED Q2 2026)
+  - Voice usage limits — **tier-based** (see Session 48 addendum for current quotas)
+- ✅ **Voice Tracks C-D:** Admin controls + observability (Session 16)
+- ✅ **Phase 20:** Notification Center (Session 40)
+- ✅ **Session 47:** Brand architecture rebrand (see addendum)
 - 📊 **Analytics & Reporting** (ONGOING)
 - 🛡️ **Trust & Safety** (ONGOING)
 
