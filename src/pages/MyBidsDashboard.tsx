@@ -49,6 +49,7 @@ import {
   ThumbsDown,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
+import { formatDateSafe } from '@/lib/formatDateSafe';
 import type { TravelRequest, TravelProposalWithDetails } from '@/types/bidding';
 
 const STATUS_COLORS = {
@@ -160,8 +161,14 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
                             <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-sm">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {format(new Date(bid.listing?.check_in_date || ''), 'MMM d')} -
-                                {format(new Date(bid.listing?.check_out_date || ''), 'MMM d, yyyy')}
+                                {bid.listing?.check_in_date && bid.listing?.check_out_date ? (
+                                  <>
+                                    {formatDateSafe(bid.listing.check_in_date, 'MMM d')} -{' '}
+                                    {formatDateSafe(bid.listing.check_out_date, 'MMM d, yyyy')}
+                                  </>
+                                ) : (
+                                  <span className="text-muted-foreground">Dates TBD</span>
+                                )}
                               </span>
                             </div>
                           </div>
@@ -332,8 +339,8 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
                             <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-sm text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {format(new Date(request.check_in_date), 'MMM d')} -
-                                {format(new Date(request.check_out_date), 'MMM d, yyyy')}
+                                {formatDateSafe(request.check_in_date, 'MMM d')} -{' '}
+                                {formatDateSafe(request.check_out_date, 'MMM d, yyyy')}
                               </span>
                               <span>{request.guest_count} guests</span>
                               <span>{request.bedrooms_needed} BR</span>
@@ -437,10 +444,10 @@ function ProposalsDialog({ request, open, onOpenChange }: ProposalsDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Proposals for {request.destination_location}</DialogTitle>
+          <DialogTitle>Offers for {request.destination_location}</DialogTitle>
           <DialogDescription>
-            {format(new Date(request.check_in_date), 'MMM d')} - 
-            {format(new Date(request.check_out_date), 'MMM d, yyyy')}
+            {formatDateSafe(request.check_in_date, 'MMM d')} -{' '}
+            {formatDateSafe(request.check_out_date, 'MMM d, yyyy')}
           </DialogDescription>
         </DialogHeader>
 
@@ -485,12 +492,12 @@ function ProposalsDialog({ request, open, onOpenChange }: ProposalsDialogProps) 
                       )}
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Proposed price</p>
+                      <p className="text-sm text-muted-foreground">Offer price</p>
                       <p className="text-2xl font-bold text-primary">
                         ${proposal.proposed_price.toLocaleString()}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Valid until {format(new Date(proposal.valid_until), 'MMM d')}
+                        Valid until {formatDateSafe(proposal.valid_until, 'MMM d')}
                       </p>
                     </div>
                   </div>

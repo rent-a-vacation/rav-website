@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { getRenterDisplayName } from '@/lib/displayName';
 import type { BidEvent } from '@/types/ownerDashboard';
 
 function mapBidStatus(status: string): BidEvent['event_type'] {
@@ -21,9 +22,9 @@ export function useOwnerBidActivity() {
       const { data, error } = await supabase
         .from('listing_bids')
         .select(`
-          id, listing_id, bid_amount, status, created_at,
+          id, listing_id, bidder_id, bid_amount, status, created_at,
           listing:listings!inner(owner_id, property:properties!inner(resort_name)),
-          bidder:profiles!listing_bids_bidder_id_fkey(full_name)
+          bidder:profiles!listing_bids_bidder_id_fkey(id, full_name, email)
         `)
         .eq('listing.owner_id', user!.id)
         .order('created_at', { ascending: false })
@@ -33,15 +34,26 @@ export function useOwnerBidActivity() {
       if (!data) return [];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return data.map((bid: any) => ({
-        id: bid.id,
-        listing_id: bid.listing_id,
-        property_name: bid.listing?.property?.resort_name || 'Unknown',
-        event_type: mapBidStatus(bid.status),
-        amount: bid.bid_amount,
-        traveler_initial: bid.bidder?.full_name?.[0]?.toUpperCase() || '?',
-        created_at: bid.created_at,
-      }));
+      return data.map((bid: any) => {
+        const name = getRenterDisplayName({
+          fullName: bid.bidder?.full_name,
+          email: bid.bidder?.email,
+          userId: bid.bidder?.id ?? bid.bidder_id,
+        });
+        return {
+          id: bid.id,
+          listing_id: bid.listing_id,
+          property_name: bid.listing?.property?.resort_name || 'Unknown',
+          event_type: mapBidStatus(bid.status),
+          amount: bid.bid_amount,
+          traveler_initial: name
+            .replace(/^(Renter|Owner|User)\s+/, '')
+            .replace(/^#/, '')
+            .charAt(0)
+            .toUpperCase() || '?',
+          created_at: bid.created_at,
+        };
+      });
     },
     enabled: !!user?.id,
     staleTime: 2 * 60 * 1000,
