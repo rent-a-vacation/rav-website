@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import type { BidOnListing } from '@/types/bidding';
+import { getRenterDisplayName } from '@/lib/displayName';
 
 interface BidsManagerDialogProps {
   listingId: string;
@@ -199,9 +200,18 @@ function BidCard({
   isUpdating,
   showActions = true 
 }: BidCardProps) {
-  const initials = bid.bidder?.full_name
-    ?.split(' ')
+  const bidderName = getRenterDisplayName({
+    fullName: bid.bidder?.full_name,
+    email: bid.bidder?.email,
+    userId: bid.bidder?.id ?? bid.bidder_id,
+  });
+  const initials = bidderName
+    .replace(/^(Renter|Owner|User)\s+/, '')
+    .replace(/^#/, '')
+    .split(/\s+/)
     .map((n) => n[0])
+    .filter(Boolean)
+    .slice(0, 2)
     .join('')
     .toUpperCase() || '?';
 
@@ -227,7 +237,7 @@ function BidCard({
 
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-medium">{bid.bidder?.full_name || 'Anonymous'}</span>
+              <span className="font-medium">{bidderName}</span>
               <Badge className={statusColors[bid.status]}>
                 {bid.status}
               </Badge>

@@ -138,7 +138,8 @@ describe('useOwnerBidActivity', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data![0].property_name).toBe('Unknown');
-    expect(result.current.data![0].traveler_initial).toBe('?');
+    // When bidder has no name/email/id, fallback is the role label "Renter" → initial "R"
+    expect(result.current.data![0].traveler_initial).toBe('R');
   });
 
   it('returns empty array when no bids', async () => {

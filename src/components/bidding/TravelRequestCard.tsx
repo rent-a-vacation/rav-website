@@ -20,6 +20,7 @@ import {
 import { format, formatDistanceToNow, differenceInDays } from 'date-fns';
 import { ProposalFormDialog } from './ProposalFormDialog';
 import type { TravelRequestWithDetails } from '@/types/bidding';
+import { getRenterDisplayName } from '@/lib/displayName';
 
 interface TravelRequestCardProps {
   request: TravelRequestWithDetails;
@@ -51,9 +52,18 @@ export function TravelRequestCard({ request, showProposalButton = true }: Travel
     }
   };
 
-  const initials = request.traveler?.full_name
-    ?.split(' ')
+  const travelerName = getRenterDisplayName({
+    fullName: request.traveler?.full_name,
+    email: request.traveler?.email,
+    userId: request.traveler?.id ?? request.traveler_id,
+  });
+  const initials = travelerName
+    .replace(/^(Renter|Owner|User)\s+/, '')
+    .replace(/^#/, '')
+    .split(/\s+/)
     .map((n) => n[0])
+    .filter(Boolean)
+    .slice(0, 2)
     .join('')
     .toUpperCase() || '?';
 
