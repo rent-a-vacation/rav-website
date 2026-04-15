@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T11:03:04"
-change_ref: "3180738"
+last_updated: "2026-04-15T11:10:55"
+change_ref: "bc1bafd"
 change_type: "session-48-docs-refresh"
 status: "active"
 ---
@@ -146,8 +146,8 @@ RENT-A-VACATION
 The first marketplace purpose-built
 for vacation club owners and travelers.
 
-✓ Name Your Price — bid on any listing            [BUILT]
-✓ RAV Wishes — reverse auction                    [BUILT]
+✓ Marketplace — Listings, Wishes, Offers          [BUILT]
+  (renters offer on Listings; owners offer on Wishes)
 ✓ RAV Deals — distressed/expiring inventory       [BUILT]
 ✓ TrustShield + PaySafe — verified & secure       [BUILT]
 ✓ Ask RAVIO — AI voice & text search              [BUILT]
@@ -180,12 +180,12 @@ FOR TRAVELERS                    FOR OWNERS
 ━━━━━━━━━━━━━━━                  ━━━━━━━━━━━━
 
 1. SEARCH or WISH               1. LIST
-   Ask RAVIO by voice/text,        Create a listing in minutes.
-   or post a Vacation Wish.        ResortIQ auto-fills details.
+   Ask RAVIO by voice/text,        Create a Listing in minutes.
+   or post a Wish.                 ResortIQ auto-fills details.
 
-2. BID or BOOK                   2. GET VERIFIED
-   Name your price on any           TrustShield confirms your
-   listing, or book instantly.      identity and ownership.
+2. OFFER or BOOK                 2. GET VERIFIED
+   Make an Offer at your price      TrustShield confirms your
+   on any Listing, or book direct.  identity and ownership.
 
 3. ENJOY                         3. EARN
    Check in at the resort.         Get paid via PaySafe escrow.
@@ -223,30 +223,30 @@ Features:
 
 ---
 
-## SLIDE 8: Deep Dive — RAV Wishes (Reverse Auction)
+## SLIDE 8: Deep Dive — Wishes (Renter Open Call)
 
 **Visual:** Flow diagram: Traveler posts wish -> Owners see demand signal -> Owners send proposals -> Traveler picks best offer.
 
 **Text:**
 ```
-RAV WISHES — Let Owners Compete for You               [BUILT]
+WISHES — Let Owners Compete for You                   [BUILT]
 
 Traditional:  Traveler browses → picks a listing → pays the price
-RAV:          Traveler posts a wish → owners compete → traveler picks
+RAV:          Renter posts a Wish → owners send Offers → renter picks
 
 How it works:
-1. Traveler says: "I want Maui, March 15-22, 2BR, under $1,800"
-2. Matching owners see the wish + demand signal
-3. Owners send proposals with their best price
-4. Traveler reviews all proposals and picks the winner
+1. Renter says: "I want Maui, March 15-22, 2BR, under $1,800"
+2. Matching owners see the Wish + demand signal
+3. Owners send Offers with their best price
+4. Renter reviews all Offers and picks the winner
 
 → Owners get demand intelligence (what travelers actually want)
-→ Travelers get personalized offers (not one-size-fits-all search)
+→ Renters get personalized Offers (not one-size-fits-all search)
 → The platform gets price discovery data
 ```
 
 **Speaker Notes:**
-> "This is the other side of our marketplace innovation. We call them RAV Wishes. Instead of the traveler hunting through listings, they simply describe what they want — destination, dates, budget, requirements. We then surface that wish to relevant property owners, who can send personalized proposals. The traveler picks the best offer. This creates real price discovery — owners see actual demand, travelers get competitive offers, and the platform learns what the market really values. The entire workflow is built — wishes, proposals, matching, notifications."
+> "This is the other side of our Marketplace. We call them Wishes. Instead of the renter hunting through listings, they describe what they want — destination, dates, budget, requirements. We surface the Wish to relevant property owners, who send Offers. The renter picks the best Offer. This creates real price discovery — owners see actual demand, renters get competitive Offers, and the platform learns what the market really values. The entire workflow is built — Wishes, Offers, matching, notifications."
 
 ---
 
@@ -507,7 +507,7 @@ Q3:   PUBLIC LAUNCH
 
 Q4:   SCALE
       iOS + Android app (Capacitor)
-      Brand partnerships | "Vacation Wishes" campaign
+      Brand partnerships | "Post a Wish" campaign
       Content marketing engine | Referral program
 ```
 
@@ -530,7 +530,7 @@ Vacation Club Focus            ✓       —       —       ~        ~
 AI Voice Search                ✓       —       —       —        —
 AI Text Chat                   ✓       —       —       —        —
 Bidding / Negotiation          ✓       —       —       —        —
-Reverse Auction (RAV Wishes)   ✓       —       —       —        —
+Wishes (renter open call)      ✓       —       —       —        —
 Distressed Inventory (Deals)   ✓       —       —       ~        —
 Resort Master Data             ✓       —       —       —        —
 Owner Verification             ✓       ~       ~       ~        —
@@ -547,7 +547,7 @@ Executive BI (RAV Insights)    ✓       —       —       —        —
 ```
 
 **Speaker Notes:**
-> "This is our competitive position. Eleven of our core capabilities are industry firsts — AI voice search, AI text chat, bidding marketplace, RAV Wishes reverse auction, RAV Deals distressed inventory surface, resort master data, fair value scoring, a five-tool Smart Suite, dynamic pricing, multi-channel notification center, and a public developer API. VRBO and Airbnb are horizontal platforms with hundreds of millions in engineering resources, but they're not purpose-built for vacation clubs. They don't understand resort confirmation workflows, maintenance fee economics, or owner verification needs. RedWeek and TUG are community sites, not technology platforms. Our moat is the combination of AI, data, and vacation-club-specific workflows — and it compounds over time."
+> "This is our competitive position. Eleven of our core capabilities are industry firsts — AI voice search, AI text chat, two-sided Marketplace, Wishes (renter open call), RAV Deals distressed inventory surface, resort master data, fair value scoring, a five-tool Smart Suite, dynamic pricing, multi-channel notification center, and a public developer API. VRBO and Airbnb are horizontal platforms with hundreds of millions in engineering resources, but they're not purpose-built for vacation clubs. They don't understand resort confirmation workflows, maintenance fee economics, or owner verification needs. RedWeek and TUG are community sites, not technology platforms. Our moat is the combination of AI, data, and vacation-club-specific workflows — and it compounds over time."
 
 ---
 

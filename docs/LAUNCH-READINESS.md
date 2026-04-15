@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T11:03:04"
-change_ref: "3180738"
+last_updated: "2026-04-15T11:10:55"
+change_ref: "bc1bafd"
 change_type: "session-48-docs-refresh"
 status: "active"
 ---
@@ -41,8 +41,10 @@ The following major features were completed in Sessions 33-48 and are deployed:
 | Public API | API key infrastructure (migrations 044-045), `api-gateway` edge function, `/developers` Swagger UI, IP allowlisting with CIDR support | 38 |
 | RAV Smart Suite | 5 tools on `/tools` hub (SmartEarn, SmartPrice, SmartCompare, SmartMatch, SmartBudget) | 38-39 |
 | Notification Center | Multi-channel routing (in-app/email/SMS), TCPA opt-in, seasonal events, delivery log; 3 SMS edge functions deployed (DEV) — `notification-dispatcher`, `sms-scheduler`, `twilio-webhook`. `SMS_TEST_MODE=true` until A2P 10DLC clears (#127) | 40 |
-| Brand Architecture Rebrand | Vacation Wishes → **RAV Wishes**; Owner's Edge → **My Rentals**; RAV Command → **RAV Insights**; Admin Dashboard → **RAV Ops**; Make an Offer → **Make a RAV Offer**; new **RAV Deals** discovery surface | 47 |
+| Brand Architecture Rebrand | Owner's Edge → **My Rentals**; RAV Command → **RAV Insights**; Admin Dashboard → **RAV Ops**; new **RAV Deals** discovery surface | 47 |
 | Multi-Year Event Generation | Curated events unified into DB with admin CRUD UI + multi-year generator | 48 |
+| Marketplace Terminology Lock | Three nouns locked: **Listing · Wish · Offer**. "Offer" replaces "Bid" + "Proposal" in all UI. RAV prefix dropped from transactional CTAs (Make an Offer, Post a Wish). Single **Marketplace** nav link replaces "Name Your Price" + "Make a Wish". `/bidding` → `/marketplace` with redirect. Owner dashboard gains top-level **Offers** tab (Sent + Received). Notifications categories renamed (Offers / Wishes). (DEC-031) | 52 |
+| Site-wide UI Polish | 30 pages tightened — `Section` + `SectionHeader` layout primitives, standardised vertical rhythm (`py-12 md:py-16`), `tracking-tight` headings, soft border separators, off-brand tool badges unified to brand primary. No brand-color changes. | 52 |
 
 ### By the Numbers
 

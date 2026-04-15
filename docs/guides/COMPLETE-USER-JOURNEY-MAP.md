@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T11:03:04"
-change_ref: "3180738"
+last_updated: "2026-04-15T11:10:55"
+change_ref: "bc1bafd"
 change_type: "session-48-docs-refresh"
 status: "active"
 ---
@@ -12,22 +12,28 @@ status: "active"
 
 ---
 
-## 🔔 Session 48 Addendum — What's Current (April 2026)
+## 🔔 Session 48-52 Addendum — What's Current (April 2026)
 
 The detailed journey flows below were authored post-Phase 4 and remain structurally accurate. The platform has shipped substantial additional capability since. Reference this addendum for what's live as of April 2026; individual journeys below still describe the core mechanics correctly.
 
-### Canonical brand names (Session 47 rebrand — April 12, 2026)
+### Canonical vocabulary (Session 52 Marketplace Terminology Lock — April 15, 2026)
 
-Replace older terms wherever they appear in this document with the canonical Session 47 names. See `docs/brand-assets/BRAND-LOCK.md` for the full naming framework.
+The marketplace uses **three nouns only** in all user-facing copy: **Listing**, **Wish**, **Offer**. "Offer" replaces both "Bid" and "Proposal" in UI. The "RAV" prefix is dropped from transactional nouns and CTAs. See `docs/brand-assets/BRAND-LOCK.md` Sections 8 + 9 for the full framework.
 
-| Old term in this doc | Canonical name | Nav label |
-|----------------------|----------------|-----------|
-| Vacation Wishes / Travel Requests | **RAV Wishes** | "Make a Wish" |
+| Old term in this doc | Canonical name (Session 52) | Nav label / route |
+|----------------------|-----------------------------|-------------------|
+| Vacation Wishes / RAV Wishes / Travel Requests | **Wish / Wishes** | Inside Marketplace (Wishes tab) |
+| Bid / Proposal (UI) | **Offer** | — (single noun for both directions) |
+| Make a RAV Offer / Make an Offer | **Make an Offer** | Button on every Listing |
+| Make a Wish / Make a RAV Wish | **Post a Wish** | Renter CTA |
+| Name Your Price + Make a Wish (separate nav) | **Marketplace** (single nav link) | `/marketplace` (renter default = Listings, owner default = Wishes) |
+| /bidding (route) | **/marketplace** (with redirect) | — |
 | Owner's Edge | **My Rentals** | "My Rentals" |
 | RAV Command | **RAV Insights** | "RAV Insights" |
 | Admin Dashboard | **RAV Ops** | "RAV Ops" |
-| Make an Offer (CTA) | **Make a RAV Offer** | — |
-| (new) | **RAV Deals** | "Browse RAV Deals" |
+| (new) | **RAV Deals** | "Browse RAV Deals" (platform-branded — keeps RAV) |
+
+The brand slogan **"Name Your Price. Book Your Paradise."** remains as the master hero tagline (it describes the *mechanic* — you name the price via an Offer). It is no longer a header nav label.
 
 ### Major journeys added since v2.0
 

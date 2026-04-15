@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T11:03:04"
-change_ref: "3180738"
+last_updated: "2026-04-15T11:10:55"
+change_ref: "bc1bafd"
 change_type: "session-48-docs-refresh"
 status: "active"
 ---
@@ -44,7 +44,7 @@ The vacation ownership industry is a $10.5 billion market *[PROJECTED — ARDA i
 
 We've built the first platform purpose-built for this market, with three structural advantages no competitor can replicate quickly:
 
-1. **A two-sided bidding engine** *[BUILT]* — travelers bid on listings AND post Vacation Wishes for owners to compete over, creating true price discovery
+1. **A two-sided Marketplace** *[BUILT]* — renters make Offers on Listings AND post Wishes for owners to send Offers against, creating true price discovery in both directions
 2. **A curated resort data layer** *[BUILT]* — 117 resorts, 351 unit types, auto-populated listing forms designed to cut owner onboarding time dramatically
 3. **AI-powered discovery** *[BUILT]* — voice and text search that understands "Find me a 2-bedroom in Maui under $2,000 next March" and returns results in seconds
 
@@ -63,7 +63,7 @@ This is the heart of our story. Every item below is **BUILT**, deployed, and dem
 | **AI Voice Search (Ask RAVIO)** | BUILT | Say "Find me a 2-bedroom in Maui" — watch results appear with voice narration |
 | **AI Text Chat (Chat with RAVIO)** | BUILT | Type conversational queries, get streaming AI responses with property cards |
 | **Two-Sided Bidding** | BUILT | Traveler bids on listings; owner accepts/counters. Full negotiation workflow |
-| **RAV Wishes (Travel Requests)** | BUILT | Traveler posts wish; owners send proposals; traveler picks best offer |
+| **Wishes (Travel Requests)** | BUILT | Renter posts a Wish; owners send Offers; renter picks the best one |
 | **Resort Directory (ResortIQ)** | BUILT | 117 resorts, 351 unit types — curated data that auto-populates listing forms |
 | **Owner Verification (TrustShield)** | BUILT | Multi-step identity + ownership verification workflow |
 | **Escrow Payments (PaySafe)** | BUILT | Stripe-powered, funds held until check-in confirmed |
@@ -231,7 +231,7 @@ The demo environment contains **seed data** — realistic but synthetic — to d
 |--------------|----------------|------------|--------|
 | Voice Search | **Ask RAVIO** | AI voice concierge — say what you want, get results | BUILT |
 | Text Chat | **Chat with RAVIO** | Text-based AI assistant for property discovery | BUILT |
-| Travel Requests | **RAV Wishes** | Post your dream trip; owners compete to fulfill it (formerly "Vacation Wishes" — Session 47 rebrand) | BUILT |
+| Travel Requests | **Wishes** | Post a Wish; owners send Offers (formerly "Vacation Wishes" → "RAV Wishes" → **Wishes** — Session 52 lock) | BUILT |
 | Bidding System | **Name Your Price** | Bid on any open listing | BUILT |
 | Fair Value Score | **RAV SmartPrice** | AI-powered pricing recommendations for owners | BUILT |
 | Maintenance Calculator | **RAV SmartEarn** | Break-even tool — how many weeks to cover fees | BUILT |
@@ -260,7 +260,7 @@ RENT-A-VACATION (Master Brand)
 │
 ├── For Travelers (Primary — lead with these)
 │   ├── Name Your Price (bidding — primary differentiator)
-│   ├── RAV Wishes (reverse auction — primary differentiator)
+│   ├── Wishes (renter open call; owners send Offers — primary differentiator)
 │   ├── RAV Deals (distressed inventory — discovery)
 │   └── PaySafe (escrow protection)
 │
@@ -316,7 +316,7 @@ RENT-A-VACATION (Master Brand)
 ### Value Proposition Pillars
 
 **Pillar 1: True Price Discovery** *[BUILT]*
-> "Name Your Price isn't a slogan — it's a feature. Bid on any open listing, or post a Vacation Wish and let verified owners compete for your booking. For the first time in travel, the traveler sets the terms."
+> "Name Your Price isn't a slogan — it's the mechanic. Make an Offer on any open Listing, or post a Wish and let verified owners send you Offers. For the first time in travel, the traveler sets the terms."
 
 **Pillar 2: Purpose-Built for Vacation Clubs** *[BUILT]*
 > "We don't dabble in timeshares — we're built for them. 117 resorts. 351 unit types. Curated resort data that auto-populates listing forms. Owner verification that builds real trust. Resort confirmation workflows that match how vacation clubs actually work. Multi-channel reminders (in-app, email, TCPA-compliant SMS) keep both sides in sync from booking to check-in."
@@ -352,9 +352,9 @@ RENT-A-VACATION (Master Brand)
 
 ---
 
-### Campaign 2: "RAV Wishes" (Traveler Acquisition)
+### Campaign 2: "Post a Wish" (Traveler Acquisition)
 
-**Concept:** Reframe travel requests as wishes. "Make a RAV Wish. Owners Make It Real." Emotional, aspirational, shareable.
+**Concept:** Reframe travel requests as wishes. "Post a Wish. Owners Make It Real." Emotional, aspirational, shareable.
 
 **Why This Works Pre-Launch:** The feature is built and demonstrable. The concept is emotionally resonant and sharable even before we have mass adoption.
 
@@ -442,7 +442,7 @@ RENT-A-VACATION (Master Brand)
 | 2 | "Hilton Grand Vacations: The Complete Rental Guide" | Both | Resort data is BUILT |
 | 3 | "How Voice Search is Changing Travel" | Press | RAVIO is BUILT |
 | 4 | "Timeshare Rentals vs. Hotel Direct: Price Comparison" | Travelers | Industry data |
-| 5 | "What Is a RAV Wish? The New Way to Book" | Travelers | Feature is BUILT |
+| 5 | "What Is a Wish? The New Way to Book" | Travelers | Feature is BUILT |
 | 6 | "Disney Vacation Club Rentals: What You Need to Know" | Travelers | Resort data is BUILT |
 
 ### Email Sequences
@@ -450,9 +450,9 @@ RENT-A-VACATION (Master Brand)
 **Traveler Welcome (5 emails):**
 1. Welcome + how it works (Day 0)
 2. "Try Ask RAVIO" — voice search demo (Day 1)
-3. "Your First RAV Wish" — post a travel request (Day 3)
+3. "Post Your First Wish" — submit a Wish to the Marketplace (Day 3)
 4. "Featured Listings This Week" — curated highlights (Day 7)
-5. "Name Your Price" — bidding tutorial (Day 14)
+5. "Make an Offer" — Marketplace tutorial (Day 14)
 
 **Owner Welcome (5 emails):**
 1. Welcome + verification steps (Day 0)
@@ -535,7 +535,7 @@ RENT-A-VACATION (Master Brand)
 ### Phase 4: Scale (Target: Q4 2026)
 - Mobile app launch (iOS + Android via Capacitor)
 - Partnership outreach to vacation club brands
-- "RAV Wishes" campaign
+- "Post a Wish" campaign
 - Content marketing engine (blog, email, social)
 - Referral program launch
 
@@ -598,7 +598,7 @@ RENT-A-VACATION (Master Brand)
 | **RAVIO** | AI Brand | The AI concierge powering voice and text search | BUILT |
 | **Ask RAVIO** | Feature | Voice-activated property search | BUILT |
 | **Chat with RAVIO** | Feature | Text-based AI property search | BUILT |
-| **RAV Wishes** | Feature | Post travel requests; owners compete (formerly "Vacation Wishes") | BUILT |
+| **Wishes** | Feature | Renters post Wishes; owners send Offers (formerly "Vacation Wishes" → "RAV Wishes" → **Wishes** in Session 52) | BUILT |
 | **RAV Deals** | Feature | Curated distressed inventory — expiring weeks from motivated sellers | BUILT |
 | **My Rentals** | Suite | Owner dashboard — formerly "Owner's Edge" / "RAV Edge" | BUILT |
 | **RAV Insights** | Dashboard | Executive BI — formerly "RAV Command" | BUILT |

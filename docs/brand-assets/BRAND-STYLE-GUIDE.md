@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T11:03:04"
-change_ref: "3180738"
+last_updated: "2026-04-15T11:10:55"
+change_ref: "bc1bafd"
 change_type: "session-48-docs-refresh"
 status: "active"
 ---
@@ -201,21 +201,27 @@ Status/Error          → #E53E3E
 - "Rent-A-Vacation" — always hyphenated, title case
 - "RAV" — acceptable abbreviation in informal contexts
 
-### Session 47 Brand Architecture Rebrand (April 12, 2026)
+### Session 52 Marketplace Terminology Lock (April 15, 2026)
 
-The RAV brand family follows three naming patterns. Use canonical names below in all materials — see `BRAND-LOCK.md` Section 8 for the full naming framework.
+The marketplace uses **three nouns only** in all user-facing copy: **Listing**, **Wish**, **Offer**. "Offer" replaces both "Bid" and "Proposal" in UI. The "RAV" prefix is dropped from transactional nouns and CTAs. See `BRAND-LOCK.md` Sections 8 + 9 for the full naming framework.
 
 | Old Name | Canonical Name | Notes |
 |----------|---------------|-------|
-| Vacation Wishes | **RAV Wishes** | Reverse auction feature; hashtag is `#RAVWishes` |
+| Vacation Wishes / RAV Wishes | **Wish / Wishes** | Drop "RAV" prefix; hashtag is `#PostAWish` |
+| Bid / Proposal (UI) | **Offer** | Single noun in UI for both directions; DB tables (`listing_bids`, `travel_proposals`) unchanged |
+| Make a RAV Offer | **Make an Offer** | Transactional CTAs use plain language |
+| Make a Wish / Make a RAV Wish | **Post a Wish** | Consistent verb; no RAV prefix |
+| Name Your Price + Make a Wish (separate nav links) | **Marketplace** (single nav link) | Role-aware default tab inside (renter→Listings, owner→Wishes) |
+| /bidding (route) | **/marketplace** | /bidding redirects |
 | Owner's Edge / RAV Edge | **My Rentals** | Owner dashboard nav (mirrors "My Trips" for renters) |
 | RAV Command | **RAV Insights** | Executive dashboard — self-descriptive BI |
 | Admin Dashboard | **RAV Ops** | Admin operations — self-descriptive |
-| Make an Offer | **Make a RAV Offer** | Transactional CTAs carry RAV identity |
-| Browse Deals | **Browse RAV Deals** | New `RAV Deals` distressed-inventory surface |
+| Browse Deals | **Browse RAV Deals** | New `RAV Deals` distressed-inventory surface (platform-branded — keeps RAV) |
 | Explore (nav) | **Browse Rentals** | Plain-language nav |
 
-**Naming rule:** RAV-prefix for tools/admin (RAV Insights, RAV Ops, RAV Smart[X]); plain language for customer nav (My Trips, My Rentals, Browse Rentals); CompoundName for trust layer (TrustShield, PaySafe, ResortIQ).
+**Naming rule:** RAV-prefix for platform-branded surfaces (RAV Insights, RAV Ops, RAV Smart[X], RAV Deals, RAVIO); plain nouns for marketplace mechanics (Listing, Wish, Offer, Marketplace); plain language for customer nav (Marketplace, My Trips, My Rentals, Browse Rentals); CompoundName for trust layer (TrustShield, PaySafe, ResortIQ).
+
+**The brand slogan "Name Your Price. Book Your Paradise."** remains the master hero tagline (it describes the *mechanic* — you name a price via an Offer). It is no longer a header nav label.
 
 ### Messaging Authority
 > **All messaging claims, feature ordering, savings numbers, and feature names must align with `docs/brand-assets/BRAND-LOCK.md`.** When in doubt, the Brand Lock is the source of truth.
