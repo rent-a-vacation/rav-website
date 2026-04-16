@@ -132,6 +132,89 @@ describe("findDuplicateResorts", () => {
   });
 });
 
+describe("validateResortJson — MDM fields (WS1)", () => {
+  it("accepts valid resort with MDM optional fields (lat, lng, postal_code, data_source)", () => {
+    const result = validateResortJson([
+      {
+        resort_name: "Geo Resort",
+        brand: "marriott_vacation_club",
+        location: { city: "Maui", state: "HI" },
+        latitude: 20.8985,
+        longitude: -156.4305,
+        postal_code: "96761",
+        data_source: "admin_entry",
+      },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.rows[0].latitude).toBe(20.8985);
+    expect(result.rows[0].postal_code).toBe("96761");
+  });
+
+  it("accepts resort without MDM fields (backward compat)", () => {
+    const result = validateResortJson([
+      {
+        resort_name: "Plain Resort",
+        brand: "disney_vacation_club",
+        location: { city: "Anaheim", state: "CA" },
+      },
+    ]);
+    expect(result.valid).toBe(true);
+    expect(result.rows[0].latitude).toBeUndefined();
+  });
+
+  it("rejects latitude out of range (-90 to 90)", () => {
+    const result = validateResortJson([
+      {
+        resort_name: "Bad Lat",
+        brand: "hilton_grand_vacations",
+        location: { city: "Orlando", state: "FL" },
+        latitude: 91,
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]).toContain("latitude");
+  });
+
+  it("rejects negative latitude below -90", () => {
+    const result = validateResortJson([
+      {
+        resort_name: "Bad Lat South",
+        brand: "hilton_grand_vacations",
+        location: { city: "Orlando", state: "FL" },
+        latitude: -91,
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]).toContain("latitude");
+  });
+
+  it("rejects longitude out of range (-180 to 180)", () => {
+    const result = validateResortJson([
+      {
+        resort_name: "Bad Lng",
+        brand: "hilton_grand_vacations",
+        location: { city: "Orlando", state: "FL" },
+        longitude: 200,
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]).toContain("longitude");
+  });
+
+  it("accepts boundary values for lat/lng", () => {
+    const result = validateResortJson([
+      {
+        resort_name: "Edge Resort",
+        brand: "hilton_grand_vacations",
+        location: { city: "Orlando", state: "FL" },
+        latitude: -90,
+        longitude: 180,
+      },
+    ]);
+    expect(result.valid).toBe(true);
+  });
+});
+
 describe("generateTemplateJson", () => {
   it("returns valid JSON with example resort", () => {
     const template = generateTemplateJson();
@@ -140,5 +223,13 @@ describe("generateTemplateJson", () => {
     expect(parsed[0].resort_name).toBeDefined();
     expect(parsed[0].brand).toBeDefined();
     expect(parsed[0].location.city).toBeDefined();
+  });
+
+  it("template includes MDM fields (latitude, longitude, postal_code, data_source)", () => {
+    const parsed = JSON.parse(generateTemplateJson());
+    expect(parsed[0].latitude).toBeDefined();
+    expect(parsed[0].longitude).toBeDefined();
+    expect(parsed[0].postal_code).toBeDefined();
+    expect(parsed[0].data_source).toBeDefined();
   });
 });
