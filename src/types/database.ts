@@ -2436,6 +2436,16 @@ export interface Resort {
   guest_rating: number | null;
   main_image_url: string | null;
   additional_images: string[];
+  // MDM governance fields (WS1 — migration 20260415)
+  is_active: boolean;
+  data_source: string | null;
+  data_quality_score: number | null;
+  verified_by: string | null;
+  verified_at: string | null;
+  // Geocoding (WS1)
+  latitude: number | null;
+  longitude: number | null;
+  postal_code: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -2457,6 +2467,18 @@ export interface ResortUnitType {
     accessible: boolean;
   } | null;
   unit_amenities: string[];
+  // OTA standard fields (WS1)
+  min_stay_nights: number;
+  smoking_policy: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ResortExternalId {
+  id: string;
+  resort_id: string;
+  system_name: string;
+  external_id: string;
   created_at: string;
   updated_at: string;
 }

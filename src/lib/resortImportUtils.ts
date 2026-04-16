@@ -14,6 +14,11 @@ export interface ResortImportRow {
   attraction_tags?: string[];
   guest_rating?: number;
   nearby_airports?: string[];
+  // MDM fields (WS1 — optional on import)
+  latitude?: number;
+  longitude?: number;
+  postal_code?: string;
+  data_source?: string;
 }
 
 export interface ValidationResult {
@@ -78,6 +83,14 @@ export function validateResortJson(input: unknown): ValidationResult {
       errors.push(`${prefix}: "guest_rating" must be a number between 0 and 5.`);
     }
 
+    if (item.latitude !== undefined && (typeof item.latitude !== "number" || item.latitude < -90 || item.latitude > 90)) {
+      errors.push(`${prefix}: "latitude" must be a number between -90 and 90.`);
+    }
+
+    if (item.longitude !== undefined && (typeof item.longitude !== "number" || item.longitude < -180 || item.longitude > 180)) {
+      errors.push(`${prefix}: "longitude" must be a number between -180 and 180.`);
+    }
+
     if (errors.length === 0 || !errors.some((e) => e.startsWith(prefix))) {
       rows.push(item as ResortImportRow);
     }
@@ -122,6 +135,10 @@ export function generateTemplateJson(): string {
       attraction_tags: ["Beach", "Spa"],
       guest_rating: 4.5,
       nearby_airports: ["MCO", "SFB"],
+      latitude: 28.3852,
+      longitude: -81.5639,
+      postal_code: "32821",
+      data_source: "admin_entry",
     },
   ];
 
