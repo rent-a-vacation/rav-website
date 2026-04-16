@@ -43,6 +43,11 @@ const routes: Record<string, RouteConfig> = {
     scope: "listings:read",
     handler: handleResorts,
   },
+  "GET /v1/resorts/by-external-id": {
+    method: "GET",
+    scope: "listings:read",
+    handler: handleResortByExternalId,
+  },
 };
 
 // ─── Main handler ───────────────────────────────────────────────────────────
@@ -180,6 +185,15 @@ function matchRoute(
   const exactKey = `${method} ${normalizedPath}`;
   if (routes[exactKey]) {
     return { handler: routes[exactKey].handler, scope: routes[exactKey].scope, matchedPath: normalizedPath };
+  }
+
+  // Try sub-path exact matches (e.g. /v1/resorts/by-external-id)
+  // These must be checked before parameterized matches
+  for (const [key, config] of Object.entries(routes)) {
+    const [routeMethod, routePath] = key.split(" ", 2);
+    if (routeMethod === method && routePath === normalizedPath) {
+      return { handler: config.handler, scope: config.scope, matchedPath: normalizedPath };
+    }
   }
 
   // Try parameterized match: /v1/listings/:id
@@ -418,8 +432,73 @@ async function handleDestinations(
   });
 }
 
+// ── Resort response transform (shared by /v1/resorts and /v1/resorts/by-external-id)
+
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function transformResort(r: any) {
+  return {
+    id: r.id,
+    name: r.resort_name,                        // OTA: HotelName
+    brand: r.brand,                              // OTA: ChainCode
+    description: r.description,                  // OTA: HotelDescriptiveText
+    is_active: r.is_active,
+    location: {
+      address: r.location?.full_address || null, // OTA: AddressLine
+      city: r.location?.city,                    // OTA: CityName
+      state: r.location?.state,                  // OTA: StateProv
+      country: r.location?.country,              // OTA: CountryName (ISO 3166-1 alpha-2)
+      postal_code: r.postal_code,                // OTA: PostalCode
+      latitude: r.latitude,                      // OTA: Latitude
+      longitude: r.longitude,                    // OTA: Longitude
+    },
+    amenities: r.resort_amenities || [],          // OTA: HotelAmenity
+    attraction_tags: r.attraction_tags || [],
+    policies: {
+      check_in: r.policies?.check_in || null,    // OTA: CheckInTime
+      check_out: r.policies?.check_out || null,  // OTA: CheckOutTime
+      pets: r.policies?.pets || null,            // OTA: PetPolicy
+      parking: r.policies?.parking || null,      // OTA: ParkingPolicy
+    },
+    nearby_airports: r.nearby_airports || [],
+    guest_rating: r.guest_rating,
+    data_quality_score: r.data_quality_score,
+    updated_at: r.updated_at,
+    // Backward compat: keep flat fields old clients may depend on
+    rating: r.guest_rating,
+    city: r.location?.city,
+    state: r.location?.state,
+    country: r.location?.country,
+    // Unit types
+    unit_types: (r.resort_unit_types || []).map((ut: Record<string, unknown>) => ({
+      id: ut.id,
+      name: ut.unit_type_name,                   // OTA: RoomType
+      bedrooms: ut.bedrooms,                     // OTA: Bedrooms
+      bathrooms: ut.bathrooms,
+      max_occupancy: ut.max_occupancy,           // OTA: MaxOccupancy
+      square_footage: ut.square_footage,         // OTA: Size
+      kitchen_type: ut.kitchen_type,             // OTA: KitchenType
+      amenities: ut.unit_amenities || [],
+      min_stay_nights: ut.min_stay_nights,       // OTA: MinimumStay
+      smoking_policy: ut.smoking_policy,         // OTA: SmokingPolicy
+    })),
+  };
+}
+
+const RESORT_SELECT = `
+  id, resort_name, brand, description, location,
+  latitude, longitude, postal_code,
+  resort_amenities, attraction_tags, policies, nearby_airports,
+  guest_rating, data_quality_score, is_active, updated_at,
+  resort_unit_types (
+    id, unit_type_name, bedrooms, bathrooms, max_occupancy,
+    square_footage, kitchen_type, unit_amenities, min_stay_nights, smoking_policy
+  )
+`;
+
 /**
- * GET /v1/resorts — Resort directory with pagination
+ * GET /v1/resorts — Resort directory with full MDM-enriched records
+ * Supports: ?brand=, ?updated_since=, ?include_inactive=true, pagination
  */
 async function handleResorts(
   _req: Request,
@@ -427,41 +506,78 @@ async function handleResorts(
   url: URL
 ): Promise<Response> {
   const { page, perPage, offset } = parsePagination(url);
+  const brand = url.searchParams.get("brand");
+  const updatedSince = url.searchParams.get("updated_since");
+  const includeInactive = url.searchParams.get("include_inactive") === "true";
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("resorts")
-    .select(`
-      id,
-      name,
-      brand,
-      rating,
-      amenities,
-      address,
-      city,
-      state,
-      country,
-      unit_types (
-        id,
-        name,
-        bedrooms,
-        bathrooms,
-        max_occupancy,
-        square_footage
-      )
-    `, { count: "exact" })
-    .order("name")
-    .range(offset, offset + perPage - 1);
+    .select(RESORT_SELECT, { count: "exact" });
+
+  if (!includeInactive) query = query.eq("is_active", true);
+  if (brand) query = query.eq("brand", brand);
+  if (updatedSince) query = query.gte("updated_at", updatedSince);
+
+  query = query.order("resort_name").range(offset, offset + perPage - 1);
+
+  const { data, error, count } = await query;
 
   if (error) {
     console.error("[API-GATEWAY] Resorts query error:", error);
     return apiError("query_error", error.message, 500);
   }
 
+  const transformed = (data || []).map(transformResort);
   const totalCount = count ?? 0;
-  return apiSuccess(data, {
+  return apiSuccess(transformed, {
     page,
     per_page: perPage,
     total_count: totalCount,
     total_pages: Math.ceil(totalCount / perPage),
   });
+}
+
+/**
+ * GET /v1/resorts/by-external-id?system=xpd&id=XPD-12345
+ * Maps an external partner resort ID to the RAV golden record.
+ */
+async function handleResortByExternalId(
+  _req: Request,
+  supabase: ReturnType<typeof createClient>,
+  url: URL
+): Promise<Response> {
+  const system = url.searchParams.get("system");
+  const externalId = url.searchParams.get("id");
+
+  if (!system || !externalId) {
+    return apiError("invalid_request", "Both 'system' and 'id' query parameters are required.", 400);
+  }
+
+  const { data: mapping, error: mapErr } = await supabase
+    .from("resort_external_ids")
+    .select("resort_id")
+    .eq("system_name", system)
+    .eq("external_id", externalId)
+    .maybeSingle();
+
+  if (mapErr) {
+    console.error("[API-GATEWAY] External ID lookup error:", mapErr);
+    return apiError("query_error", mapErr.message, 500);
+  }
+
+  if (!mapping) {
+    return apiError("not_found", `No resort found for ${system}:${externalId}`, 404);
+  }
+
+  const { data: resort, error: rErr } = await supabase
+    .from("resorts")
+    .select(RESORT_SELECT)
+    .eq("id", mapping.resort_id)
+    .single();
+
+  if (rErr || !resort) {
+    return apiError("not_found", "Resort record not found", 404);
+  }
+
+  return apiSuccess(transformResort(resort));
 }

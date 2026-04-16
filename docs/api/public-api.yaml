@@ -242,13 +242,51 @@ paths:
     get:
       operationId: listResorts
       tags: [Destinations]
-      summary: Browse resort directory
+      summary: Browse MDM-enriched resort directory
       description: |
-        Paginated resort listing with unit types.
+        Paginated resort directory with full MDM-enriched records including
+        location coordinates, data quality scores, policies, amenities,
+        attraction tags, and nested unit types with OTA-standard fields.
+
+        By default, only active resorts are returned. Use `include_inactive=true`
+        to include deprecated resorts.
+
+        Supports delta sync via `updated_since` for efficient polling.
       security:
         - ApiKeyAuth: []
         - BearerAuth: []
       parameters:
+        - name: brand
+          in: query
+          schema:
+            type: string
+            enum:
+              - hilton_grand_vacations
+              - marriott_vacation_club
+              - disney_vacation_club
+              - wyndham_destinations
+              - hyatt_residence_club
+              - bluegreen_vacations
+              - holiday_inn_club
+              - worldmark
+              - other
+          description: Filter by vacation club brand (OTA ChainCode equivalent)
+        - name: updated_since
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: |
+            Return only resorts updated after this ISO 8601 timestamp.
+            Use for delta sync — store the `updated_at` from your last sync
+            and pass it here on subsequent calls.
+          example: "2026-01-01T00:00:00Z"
+        - name: include_inactive
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Include inactive/deprecated resorts (default false)
         - name: page
           in: query
           schema:
@@ -262,11 +300,60 @@ paths:
             maximum: 50
       responses:
         '200':
-          description: Resort list
+          description: Resort list with full MDM-enriched records
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResortsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/resorts/by-external-id:
+    get:
+      operationId: getResortByExternalId
+      tags: [Destinations]
+      summary: Look up a RAV resort by partner system ID
+      description: |
+        Maps an external system's resort identifier to the RAV golden record.
+        Use this to integrate partner resort IDs (e.g. XPD, OTA aggregator codes)
+        without maintaining a local cross-reference table.
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: system
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Partner system name (e.g. 'xpd', 'expedia')
+          example: "xpd"
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The partner's resort ID
+          example: "XPD-12345"
+      responses:
+        '200':
+          description: Matching resort record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleResortResponse'
+        '400':
+          description: Missing system or id parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No resort found for this external ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -466,10 +553,99 @@ components:
         api_version:
           type: string
 
-    ResortsResponse:
+    ResortObject:
       type: object
       properties:
-        data:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: "OTA: HotelName"
+        brand:
+          type: string
+          description: "OTA: ChainCode"
+        description:
+          type: string
+          description: "OTA: HotelDescriptiveText"
+        is_active:
+          type: boolean
+        location:
+          type: object
+          properties:
+            address:
+              type: string
+              description: "OTA: AddressLine"
+            city:
+              type: string
+              description: "OTA: CityName"
+            state:
+              type: string
+              description: "OTA: StateProv (ISO 3166-2 subdivision)"
+            country:
+              type: string
+              description: "OTA: CountryName (ISO 3166-1 alpha-2)"
+            postal_code:
+              type: string
+              description: "OTA: PostalCode"
+            latitude:
+              type: number
+              format: double
+              description: "OTA: Latitude (WGS 84)"
+            longitude:
+              type: number
+              format: double
+              description: "OTA: Longitude (WGS 84)"
+        amenities:
+          type: array
+          items:
+            type: string
+          description: "OTA: HotelAmenity"
+        attraction_tags:
+          type: array
+          items:
+            type: string
+        policies:
+          type: object
+          properties:
+            check_in:
+              type: string
+              description: "OTA: CheckInTime (24h format)"
+            check_out:
+              type: string
+              description: "OTA: CheckOutTime (24h format)"
+            pets:
+              type: string
+              description: "OTA: PetPolicy"
+            parking:
+              type: string
+              description: "OTA: ParkingPolicy"
+        nearby_airports:
+          type: array
+          items:
+            type: string
+        guest_rating:
+          type: number
+          description: Guest satisfaction rating (0-5)
+        data_quality_score:
+          type: number
+          description: Data completeness score (0-100)
+        updated_at:
+          type: string
+          format: date-time
+        rating:
+          type: number
+          description: "Backward compat alias for guest_rating"
+          deprecated: true
+        city:
+          type: string
+          description: "Backward compat — use location.city instead"
+          deprecated: true
+        state:
+          type: string
+          description: "Backward compat — use location.state instead"
+          deprecated: true
+        unit_types:
           type: array
           items:
             type: object
@@ -479,27 +655,49 @@ components:
                 format: uuid
               name:
                 type: string
-              brand:
-                type: string
-              rating:
+                description: "OTA: RoomType"
+              bedrooms:
+                type: integer
+                description: "OTA: Bedrooms"
+              bathrooms:
                 type: number
-              city:
+              max_occupancy:
+                type: integer
+                description: "OTA: MaxOccupancy"
+              square_footage:
+                type: integer
+                description: "OTA: Size"
+              kitchen_type:
                 type: string
-              state:
-                type: string
-              unit_types:
+                description: "OTA: KitchenType"
+              amenities:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    bedrooms:
-                      type: integer
-                    max_occupancy:
-                      type: integer
+                  type: string
+              min_stay_nights:
+                type: integer
+                description: "OTA: MinimumStay"
+              smoking_policy:
+                type: string
+                description: "OTA: SmokingPolicy"
+
+    ResortsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResortObject'
         meta:
           $ref: '#/components/schemas/PaginationMeta'
+        api_version:
+          type: string
+
+    SingleResortResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ResortObject'
         api_version:
           type: string
 

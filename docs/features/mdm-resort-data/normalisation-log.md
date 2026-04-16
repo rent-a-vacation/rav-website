@@ -1,20 +1,20 @@
 ---
-last_updated: "2026-04-16T02:25:57"
-change_ref: "799fb78"
+last_updated: "2026-04-16T03:21:09"
+change_ref: "da92789"
 change_type: "manual-edit"
 status: "active"
 ---
 
 # Normalisation Log
 
-> Generated: 2026-04-16T02:21:48.088Z
-> Mode: DRY-RUN
+> Generated: 2026-04-16T03:06:52.366Z
+> Mode: APPLIED
 
 ## Summary
 
-- 439 field changes identified (dry-run)
-- 0 records with null data_source would be patched
-- 117 quality scores computed (dry-run)
+- 439 field changes applied
+- 0 records with null data_source patched
+- 117 quality scores written
 
 ## Changes
 
