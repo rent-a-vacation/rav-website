@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T04:06:53"
-change_ref: "5fb0c20"
+last_updated: "2026-04-16T04:05:13"
+change_ref: "7cba187"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -114,9 +114,15 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Notifications:** Category labels "Bids" → "Offers", "RAV Wishes" → "Wishes". Email preference groups renamed "Offers" and "Wishes".
 - **UI polish (PR #352, 3 commits):** Site-wide CSS/Tailwind polish across 30 pages — Homepage, PropertyDetail, Rentals, BiddingMarketplace, OwnerDashboard, MyBookings, ListProperty, Auth flow, Tools suite, Destinations, RavDeals, FAQ, AccountSettings, RenterDashboard, MyBidsDashboard, Notifications, Messages, Checkout, BookingSuccess, TravelerCheckin, Contact, Privacy, Terms, HowItWorksPage, Developers, AdminDashboard, ExecutiveDashboard, Documentation, UserGuide. New `<Section>` + `<SectionHeader>` layout primitives. Standardised vertical rhythm (`py-12 md:py-16`), `tracking-tight` headings, `border-border/60` separators, off-brand tool badges unified to brand primary. No brand-color changes.
 - **Logo update:** `public/ravio-v2.png` replaced (used on Marketplace "Ask RAVIO" button; header/footer continue to use `rav-logo.svg`). PR #356 merged.
-- **BRAND-LOCK.md:** Fully rewritten Section 9 Terminology Context Map + updated Sections 1, 3, 4, 6, 8. Session 52 retirement rows added. Phase B (remaining brand docs — BRAND-STYLE-GUIDE, MARKETING-PLAYBOOK, PITCH-DECK-SCRIPT, BRAND-CONCEPTS, LAUNCH-READINESS, COMPLETE-USER-JOURNEY-MAP) deferred pending user's in-progress local edits.
+- **BRAND-LOCK.md:** Fully rewritten Section 9 Terminology Context Map + updated Sections 1, 3, 4, 6, 8. All brand docs (BRAND-STYLE-GUIDE, MARKETING-PLAYBOOK, PITCH-DECK-SCRIPT, BRAND-CONCEPTS, LAUNCH-READINESS, COMPLETE-USER-JOURNEY-MAP) scrubbed to Listing/Wish/Offer vocabulary. PRs #357, #358.
+- **Bug fixes:** #353 (Anonymous bidder name → nicer fallback via `getRenterDisplayName`) + #354 (MyBidsDashboard crash on missing dates → `formatDateSafe`). PR #360.
+- **DEC-032 (MDM Resort Data — WS1/WS2/WS3):**
+  - **WS1 Schema Hardening (PR #362):** Migration `20260415_mdm_schema_hardening.sql` — 9 governance columns on `resorts` (`attraction_tags`, `is_active`, `data_source`, `data_quality_score`, `verified_by`, `verified_at`, `latitude`, `longitude`, `postal_code`), 2 on `resort_unit_types` (`min_stay_nights`, `smoking_policy`), new `resort_external_ids` table (MDM cross-reference), `calculate_resort_data_quality()` function, 5 indexes, RLS. TypeScript types + import validation updated.
+  - **WS2 Data Quality (PR #363):** 3 scripts — `audit-resort-data-quality.ts` (scored 117 resorts, all < 40), `generate-resort-descriptions.ts` (117 RAV-branded descriptions from structured data), `normalise-resort-data.ts` (439 field changes: country→ISO, state→abbr, times→24h). Normalisation + quality scores applied to DEV and PROD. Descriptions applied to DEV and PROD after owner approval (PR #365).
+  - **WS3 API Enhancement (PR #364):** GET `/v1/resorts` returns full MDM-enriched record with `?brand=`, `?updated_since=` (delta sync), `?include_inactive=` filters. New endpoint GET `/v1/resorts/by-external-id?system=xpd&id=XPD-12345` for partner ID lookup. OpenAPI spec updated with OTA field cross-references (`public-api.yaml` both copies).
+  - **Deployed:** Migration, api-gateway, normalisation, and descriptions all deployed to both DEV and PROD. All 117 resorts normalised, scored (55–65 avg 61), and described.
 
-**End state:** 1046 tests passing, 0 type errors, build clean. PRs #352, #355, #356 merged to main. `main` and `dev` in sync.
+**End state:** 1090 tests passing, 0 type errors, build clean. PRs #352, #355–#365 merged to main. `main` and `dev` in sync. Supabase CLI linked to DEV. All migrations through `20260415_mdm_schema_hardening.sql` deployed to both DEV and PROD. api-gateway edge function deployed to both.
 
 ---
 
@@ -749,6 +755,20 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-032: MDM Resort Data — Schema Hardening + Data Quality + API Enhancement
+**Date:** April 15-16, 2026 (Session 52 — WS1/WS2/WS3)
+**Decision:** Implement Master Data Management governance on the resort directory: schema hardening (WS1), data quality assessment and normalisation (WS2), and partner-ready API enhancement (WS3).
+**Status:** Active — all three workstreams complete and deployed to DEV + PROD.
+
+**What was built:**
+- **WS1 Schema:** Migration `20260415_mdm_schema_hardening.sql` — 9 columns on `resorts` (attraction_tags, is_active, data_source, data_quality_score, verified_by/at, lat/lng, postal_code), 2 on `resort_unit_types` (min_stay_nights, smoking_policy), `resort_external_ids` cross-ref table, `calculate_resort_data_quality()` function, 5 indexes, RLS.
+- **WS2 Data Quality:** Audit script (all 117 < 40 quality score initially), description generator (117 RAV-branded descriptions replacing template text), normalisation script (439 changes — country/state ISO, times 24h). All applied to DEV + PROD. Quality scores populated (55–65, avg 61).
+- **WS3 API:** GET `/v1/resorts` enhanced with full MDM record + `?brand=`, `?updated_since=`, `?include_inactive=` filters. New `/v1/resorts/by-external-id` endpoint for partner ID mapping. OpenAPI spec updated with OTA field cross-references.
+
+**Relationship to #257:** WS1 provides governance tools (`data_source`, `verified_by/at`, `data_quality_score`); #257 audit uses them. No duplication.
 
 ---
 
