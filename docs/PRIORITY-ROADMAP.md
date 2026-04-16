@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T01:20:24"
-change_ref: "fc6f491"
+last_updated: "2026-04-16T04:05:13"
+change_ref: "7cba187"
 change_type: "session-50"
 status: "active"
 ---
@@ -93,6 +93,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 15-16, 2026 | 52 | Terminology lock (Listing/Wish/Offer, DEC-031). UI polish (30 pages). Bug fixes #353+#354. MDM Resort Data complete (DEC-032): WS1 schema hardening, WS2 data quality + normalisation + descriptions, WS3 API enhancement. All deployed to DEV + PROD. Brand docs scrubbed. 1090 tests. PRs #352-#365. |
 | Apr 14, 2026 | 51 | #349 UI polish audit completed. New `Section` + `SectionHeader` layout primitives. Tightened vertical rhythm, headings, and section demarcation across Homepage, PropertyDetail, Rentals, BiddingMarketplace, OwnerDashboard, MyBookings, ListProperty. Build clean, P0 tests passing. |
 | Apr 14, 2026 | 50 | #338 + #339 completed. Events unified into DB (migration 055) + multi-year generator RPC (migration 056). Admin Templates tab + Add/Edit Instance dialogs + "Generate {next year}" button. `useCuratedEvents` hook. docs-audit CI permissions fix. ARCHITECTURE + COMPLETED-PHASES refreshed. PRs #350, #351. 1046 tests. |
 | Apr 13, 2026 | 49 | Tier A cleared: #259, #283, #285, #286, #327, #328, #337. Logos. Discovery bar. Tax form. Social proof. 1047 tests. PRs #334-#348. |

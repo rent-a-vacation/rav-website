@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T11:10:55"
-change_ref: "bc1bafd"
+last_updated: "2026-04-16T04:05:13"
+change_ref: "7cba187"
 change_type: "session-48-docs-refresh"
 status: "active"
 ---
@@ -50,7 +50,7 @@ The following major features were completed in Sessions 33-48 and are deployed:
 
 | Metric | Count |
 |--------|-------|
-| Automated tests | 956 (121 test files) |
+| Automated tests | 1090 (130 test files) |
 | P0 critical-path tests | 97 (`npm run test:p0` ~2s) |
 | SQL migrations | 046 (all deployed to DEV + PROD) |
 | Edge functions | 30 (27 deployed to PROD; 3 SMS functions deployed to DEV only — blocked on A2P 10DLC / #127) |
