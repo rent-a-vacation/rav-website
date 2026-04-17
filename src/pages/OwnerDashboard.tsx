@@ -65,6 +65,7 @@ import { PricingIntelligence } from "@/components/owner-dashboard/PricingIntelli
 import { MaintenanceFeeTracker } from "@/components/owner-dashboard/MaintenanceFeeTracker";
 import PortfolioOverview from "@/components/owner-dashboard/PortfolioOverview";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { AccountManagerCard } from "@/components/owner/AccountManagerCard";
 
 // Backwards-compatible redirect map: old tab values → new ones
 const TAB_REDIRECTS: Record<string, string> = {
@@ -425,6 +426,9 @@ const OwnerDashboard = () => {
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
             </Link>
+
+            {/* Account Manager — Business tier only (self-gating) */}
+            <AccountManagerCard />
 
             {/* Headline Stats */}
             <OwnerHeadlineStats stats={dashStats} isLoading={dashStatsLoading} />

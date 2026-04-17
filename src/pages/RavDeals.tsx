@@ -13,7 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Loader2, Clock, Tag, Flame, Bookmark, AlertCircle } from "lucide-react";
+import { Loader2, Clock, Tag, Flame, Bookmark, AlertCircle, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavoriteIds, useToggleFavorite } from "@/hooks/useFavorites";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +40,13 @@ function UrgencyBadges({ deal }: { deal: RavDeal }) {
 
   return (
     <div className="flex flex-wrap gap-1">
+      {/* Premium Exclusive badge */}
+      {deal.listing.is_exclusive_deal && (
+        <Badge variant="secondary" className="text-[10px] bg-amber-100 text-amber-700 border-amber-200">
+          <Crown className="w-3 h-3 mr-0.5" />
+          Premium Exclusive
+        </Badge>
+      )}
       {/* Days countdown */}
       <Badge variant="secondary" className={`text-[10px] ${countdownClass}`}>
         <Clock className="w-3 h-3 mr-0.5" />
@@ -101,8 +108,8 @@ const RavDeals = () => {
   const toggleFavoriteMutation = useToggleFavorite();
   const { favoritesCount } = useListingSocialProof();
 
-  // RAV Deals data
-  const { deals, isLoading, error, isEmpty } = useRavDeals();
+  // RAV Deals data (tier-filtered: hides exclusive deals from non-Premium)
+  const { deals, isLoading, error, isEmpty, showExclusive, hiddenExclusiveCount } = useRavDeals();
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -200,6 +207,28 @@ const RavDeals = () => {
                 </Link>
               </div>
               <PostRequestCTA />
+            </div>
+          )}
+
+          {/* Premium Exclusive Upsell */}
+          {!showExclusive && hiddenExclusiveCount > 0 && (
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Crown className="w-5 h-5 text-amber-600" />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {hiddenExclusiveCount} exclusive {hiddenExclusiveCount === 1 ? 'deal' : 'deals'} available for Premium members
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Upgrade to Premium for access to exclusive deals not available to other users.
+                  </p>
+                </div>
+              </div>
+              <Link to="/account?tab=subscription">
+                <Button size="sm" variant="outline" className="shrink-0">
+                  Upgrade
+                </Button>
+              </Link>
             </div>
           )}
 

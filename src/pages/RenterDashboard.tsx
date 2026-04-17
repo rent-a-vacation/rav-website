@@ -22,6 +22,10 @@ import {
 } from 'lucide-react';
 import { computeRenterOverview, getCheckInCountdown } from '@/lib/renterDashboard';
 import { SavedSearchesList } from '@/components/SavedSearchesList';
+import { useMyMembership } from '@/hooks/useMembership';
+import { canAccessConcierge } from '@/lib/tierGating';
+import { ConciergeRequestDialog } from '@/components/concierge/ConciergeRequestDialog';
+import { ConciergeRequestList } from '@/components/concierge/ConciergeRequestList';
 
 // Lazy-load heavy sub-pages
 const MyBookings = lazy(() => import('./MyBookings'));
@@ -35,6 +39,8 @@ const RenterDashboard = () => {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get('tab') as TabValue) || 'overview';
+  const { data: membership } = useMyMembership();
+  const showConcierge = canAccessConcierge(membership?.tier?.tier_level, membership?.tier?.role_category);
 
   // Import hooks conditionally from useBidding via lazy eval
   const [bidsData, setBidsData] = useState<{ bids: unknown[]; requests: unknown[] }>({ bids: [], requests: [] });
@@ -268,6 +274,24 @@ const RenterDashboard = () => {
                   <SavedSearchesList />
                 </CardContent>
               </Card>
+
+              {/* Concierge Support — Premium only */}
+              {showConcierge && (
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-base">Concierge Support</CardTitle>
+                        <CardDescription>Your dedicated support channel as a Premium member</CardDescription>
+                      </div>
+                      <ConciergeRequestDialog />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <ConciergeRequestList />
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             {/* Bookings Tab — reuse MyBookings page content */}

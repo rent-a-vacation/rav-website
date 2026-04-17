@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
@@ -48,6 +48,7 @@ import {
   Ghost,
   UtensilsCrossed,
   Gift,
+  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useVoiceSearch } from "@/hooks/useVoiceSearch";
@@ -60,7 +61,7 @@ import { TextChatPanel } from "@/components/TextChatPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavoriteIds, useToggleFavorite } from "@/hooks/useFavorites";
 import { useToast } from "@/hooks/use-toast";
-import { useActiveListings, type ActiveListing } from "@/hooks/useListings";
+import { useActiveListings, useTierFilteredListings, type ActiveListing } from "@/hooks/useListings";
 import { useListingSocialProof } from "@/hooks/useListingSocialProof";
 import { ListingCard, BRAND_LABELS, getDisplayName, getLocation, getBrandLabel } from "@/components/ListingCard";
 import { useVoiceFeatureFlags } from "@/hooks/useVoiceFeatureFlags";
@@ -73,6 +74,8 @@ import { trackEvent } from "@/lib/posthog";
 import { SaveSearchButton } from "@/components/SaveSearchButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ATTRACTION_TAGS, filterByAttractions, type AttractionTag } from "@/lib/attractionTags";
+import { isListingInEarlyAccess, isOwnerPriorityTier } from "@/lib/tierGating";
+import { useOwnerTierLevels } from "@/hooks/useOwnerTierLevels";
 import { getUpcomingEvents, filterByEvent, formatEventDateRange, type CuratedEvent } from "@/lib/events";
 import { useCuratedEvents } from "@/hooks/useCuratedEvents";
 const ITEMS_PER_PAGE = 6;
@@ -151,9 +154,13 @@ const Rentals = () => {
   const toggleFavoriteMutation = useToggleFavorite();
   const { toast } = useToast();
 
-  // Real listings from database
-  const { data: listings = [], isLoading, error: listingsError } = useActiveListings();
+  // Real listings from database (tier-filtered: hides early-access from Free users)
+  const { data: listings = [], isLoading, error: listingsError, earlyAccessCount, canSeeEarlyAccess: hasEarlyAccess } = useTierFilteredListings();
   const { favoritesCount } = useListingSocialProof();
+
+  // Owner tier levels for priority listing placement (#280)
+  const ownerIds = useMemo(() => [...new Set(listings.map((l) => l.owner_id))], [listings]);
+  const { data: ownerTierMap } = useOwnerTierLevels(ownerIds);
 
   // Text chat integration
   const [chatOpen, setChatOpen] = useState(false);
@@ -251,8 +258,8 @@ const Rentals = () => {
     curatedEvents
   );
 
-  // Sort
-  const sortedListings = sortListings(filteredListings, sortOption);
+  // Sort (ownerTierMap boosts Pro/Business listings in "newest" sort)
+  const sortedListings = sortListings(filteredListings, sortOption, ownerTierMap);
 
   // Pagination
   const totalPages = Math.max(1, Math.ceil(sortedListings.length / ITEMS_PER_PAGE));
@@ -786,6 +793,28 @@ const Rentals = () => {
             </div>
           )}
 
+          {/* Early Access Upsell — shown to Free-tier users when early-access listings exist */}
+          {!hasEarlyAccess && earlyAccessCount > 0 && (
+            <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Zap className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {earlyAccessCount} new {earlyAccessCount === 1 ? 'listing' : 'listings'} available with Early Access
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Upgrade to Plus to see new listings 48 hours before everyone else.
+                  </p>
+                </div>
+              </div>
+              <Link to="/account?tab=subscription">
+                <Button size="sm" variant="outline" className="shrink-0">
+                  Upgrade
+                </Button>
+              </Link>
+            </div>
+          )}
+
           {/* Loading State */}
           {isLoading && (
             <div className="text-center py-16">
@@ -886,6 +915,8 @@ const Rentals = () => {
                   viewMode={viewMode}
                   showDateRange
                   showBedrooms
+                  isEarlyAccess={hasEarlyAccess && isListingInEarlyAccess(listing.created_at)}
+                  isFeatured={isOwnerPriorityTier(ownerTierMap?.get(listing.owner_id))}
                   imageOverlay={
                     compareMode ? (
                       <div

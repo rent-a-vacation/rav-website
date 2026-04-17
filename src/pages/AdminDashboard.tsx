@@ -37,6 +37,7 @@ import {
   Rocket,
   Key,
   Bell,
+  Headphones,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminProperties from "@/components/admin/AdminProperties";
@@ -61,6 +62,7 @@ import AdminResortTagEditor from "@/components/admin/AdminResortTagEditor";
 import { LaunchReadinessChecklist } from "@/components/admin/LaunchReadinessChecklist";
 import AdminApiKeys from "@/components/admin/AdminApiKeys";
 import AdminNotificationCenter from "@/components/admin/AdminNotificationCenter";
+import AdminConcierge from "@/components/admin/AdminConcierge";
 
 const IS_DEV = import.meta.env.VITE_SUPABASE_URL?.includes("oukbxqnlxnkainnligfz");
 
@@ -290,6 +292,10 @@ const AdminDashboard = () => {
                 <span className="hidden sm:inline">Notifications</span>
               </TabsTrigger>
             )}
+            <TabsTrigger value="concierge" className="gap-2">
+              <Headphones className="h-4 w-4" />
+              <span className="hidden sm:inline">Concierge</span>
+            </TabsTrigger>
             {isRavAdmin() && (
               <TabsTrigger value="api-keys" className="gap-2">
                 <Key className="h-4 w-4" />
@@ -422,6 +428,10 @@ const AdminDashboard = () => {
               <AdminNotificationCenter />
             </TabsContent>
           )}
+
+          <TabsContent value="concierge">
+            <AdminConcierge />
+          </TabsContent>
 
           {isRavAdmin() && (
             <TabsContent value="api-keys">

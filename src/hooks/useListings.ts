@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type { Listing, Property, Resort, ResortUnitType } from '@/types/database';
+import { useMyMembership } from './useMembership';
+import { isListingInEarlyAccess, canSeeEarlyAccess } from '@/lib/tierGating';
 
 export interface ListingWithDetails extends Listing {
   property: Property & {
@@ -26,6 +29,7 @@ export interface ActiveListing {
   open_for_bidding: boolean;
   bidding_ends_at: string | null;
   min_bid_amount: number | null;
+  is_exclusive_deal: boolean;
   created_at: string;
   property: {
     id: string;
@@ -115,4 +119,37 @@ export function useActiveListingsCount() {
       return count || 0;
     },
   });
+}
+
+/**
+ * Tier-aware listing hook: hides early-access listings from Free-tier travelers.
+ * Returns { data, earlyAccessCount, ... } so callers can show upsell banners.
+ */
+export function useTierFilteredListings() {
+  const { data: listings = [], ...rest } = useActiveListings();
+  const { data: membership } = useMyMembership();
+
+  const tierLevel = membership?.tier?.tier_level;
+  const hasAccess = canSeeEarlyAccess(tierLevel);
+
+  const result = useMemo(() => {
+    let earlyAccessCount = 0;
+    const filtered: ActiveListing[] = [];
+
+    for (const listing of listings) {
+      const isEarly = isListingInEarlyAccess(listing.created_at);
+      if (isEarly) earlyAccessCount++;
+      if (isEarly && !hasAccess) continue;
+      filtered.push(listing);
+    }
+
+    return { filtered, earlyAccessCount };
+  }, [listings, hasAccess]);
+
+  return {
+    data: result.filtered,
+    earlyAccessCount: result.earlyAccessCount,
+    canSeeEarlyAccess: hasAccess,
+    ...rest,
+  };
 }

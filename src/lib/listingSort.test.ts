@@ -45,4 +45,39 @@ describe("sortListings @p0", () => {
     sortListings(original, "price_desc");
     expect(original[0].final_price).toBe(firstPrice);
   });
+
+  describe("priority placement with ownerTierMap", () => {
+    const makePriorityListings = () => [
+      { owner_id: "free-owner", created_at: "2026-02-15", final_price: 800, check_in_date: "2026-03-01", property: { resort: null } },
+      { owner_id: "pro-owner", created_at: "2026-02-01", final_price: 1500, check_in_date: "2026-04-10", property: { resort: null } },
+      { owner_id: "free-owner-2", created_at: "2026-02-20", final_price: 1000, check_in_date: "2026-05-01", property: { resort: null } },
+    ] as unknown as import("@/hooks/useListings").ActiveListing[];
+
+    const tierMap = new Map([
+      ["pro-owner", 1],
+      ["free-owner", 0],
+      ["free-owner-2", 0],
+    ]);
+
+    it("boosts Pro owner listings above Free in newest sort", () => {
+      const result = sortListings(makePriorityListings(), "newest", tierMap);
+      // Pro owner should be first despite older created_at
+      expect(result[0].owner_id).toBe("pro-owner");
+      // Free owners sorted by newest within their group
+      expect(result[1].owner_id).toBe("free-owner-2");
+      expect(result[2].owner_id).toBe("free-owner");
+    });
+
+    it("does NOT boost in price_asc sort (only affects newest)", () => {
+      const result = sortListings(makePriorityListings(), "price_asc", tierMap);
+      expect(result[0].final_price).toBe(800);
+      expect(result[2].final_price).toBe(1500);
+    });
+
+    it("works without ownerTierMap (backwards compatible)", () => {
+      const result = sortListings(makePriorityListings(), "newest");
+      // Without tier map, just sort by date
+      expect(result[0].owner_id).toBe("free-owner-2"); // Feb 20 newest
+    });
+  });
 });
