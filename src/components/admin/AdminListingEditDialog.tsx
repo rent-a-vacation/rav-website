@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
 import { calculateNights, computeListingPricing } from "@/lib/pricing";
 import type { Listing, Property, CancellationPolicy } from "@/types/database";
@@ -60,6 +61,7 @@ const AdminListingEditDialog = ({
   const [cancellationPolicy, setCancellationPolicy] = useState<CancellationPolicy>("moderate");
   const [notes, setNotes] = useState("");
   const [adminEditNotes, setAdminEditNotes] = useState("");
+  const [isExclusiveDeal, setIsExclusiveDeal] = useState(false);
 
   // Populate form when listing changes or dialog opens
   useEffect(() => {
@@ -71,6 +73,7 @@ const AdminListingEditDialog = ({
       setCancellationPolicy(listing.cancellation_policy);
       setNotes(listing.notes || "");
       setAdminEditNotes("");
+      setIsExclusiveDeal((listing as Record<string, unknown>).is_exclusive_deal === true);
     }
   }, [open, listing]);
 
@@ -100,6 +103,7 @@ const AdminListingEditDialog = ({
           final_price: updatedPricing.finalPrice,
           cleaning_fee: cleaningFee || null,
           cancellation_policy: cancellationPolicy,
+          is_exclusive_deal: isExclusiveDeal,
           notes: notes || null,
           admin_edit_notes: adminEditNotes || null,
           last_edited_by: user.id,
@@ -231,6 +235,21 @@ const AdminListingEditDialog = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border p-3">
+            <div className="space-y-0.5">
+              <Label htmlFor="exclusive-deal">Premium Exclusive Deal</Label>
+              <p className="text-xs text-muted-foreground">
+                Only visible to Premium-tier travelers on RAV Deals
+              </p>
+            </div>
+            <Switch
+              id="exclusive-deal"
+              checked={isExclusiveDeal}
+              onCheckedChange={setIsExclusiveDeal}
+              disabled={isDisabledStatus}
+            />
           </div>
 
           <div className="space-y-2">

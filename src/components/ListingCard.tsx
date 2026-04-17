@@ -8,6 +8,8 @@ import {
   Flame,
   Sparkles,
   Clock,
+  Crown,
+  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { type ActiveListing } from "@/hooks/useListings";
@@ -74,6 +76,10 @@ interface ListingCardProps {
   priceExtra?: React.ReactNode;
   /** Render slot for extra overlay content (e.g., compare checkbox) */
   imageOverlay?: React.ReactNode;
+  /** Show "Early Access" badge for new listings visible to Plus+ */
+  isEarlyAccess?: boolean;
+  /** Show "Featured" badge for Pro/Business owner listings */
+  isFeatured?: boolean;
 }
 
 export function ListingCard({
@@ -87,6 +93,8 @@ export function ListingCard({
   animationDelay,
   priceExtra,
   imageOverlay,
+  isEarlyAccess,
+  isFeatured,
 }: ListingCardProps) {
   const nights = calculateNights(listing.check_in_date, listing.check_out_date);
   const pricePerNight = listing.nightly_rate || (nights > 0 ? Math.round(listing.final_price / nights) : 0);
@@ -145,6 +153,23 @@ export function ListingCard({
             ) : (
               <><Sparkles className="w-3 h-3 mr-1" />{freshnessLabel}</>
             )}
+          </Badge>
+        )}
+        {/* Tier badges — Early Access / Featured */}
+        {isEarlyAccess && (
+          <Badge
+            variant="secondary"
+            className="absolute top-3 left-3 mt-8 text-xs font-medium bg-primary/90 text-primary-foreground border-0"
+          >
+            <Zap className="w-3 h-3 mr-1" />Early Access
+          </Badge>
+        )}
+        {isFeatured && !isEarlyAccess && (
+          <Badge
+            variant="secondary"
+            className="absolute top-3 left-3 mt-8 text-xs font-medium bg-amber-500/90 text-white border-0"
+          >
+            <Crown className="w-3 h-3 mr-1" />Featured
           </Badge>
         )}
         {/* Image overlay slot (compare checkbox, etc.) */}

@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useActiveListings, type ActiveListing } from '@/hooks/useListings';
+import { useMyMembership } from '@/hooks/useMembership';
 import { daysUntilDate, calculateUrgencyDiscount } from '@/lib/dynamicPricing';
 import { getUrgencyLevel, type UrgencyLevel } from '@/lib/idleListingAlerts';
+import { canSeeExclusiveDeals } from '@/lib/tierGating';
 
 /** Maximum days until check-in for a listing to qualify as a RAV Deal */
 export const RAV_DEALS_THRESHOLD_DAYS = 45;
@@ -47,11 +49,15 @@ function useBidCounts() {
 export function computeRavDeals(
   listings: ActiveListing[],
   bidCounts: Map<string, number>,
-  now: Date = new Date()
+  now: Date = new Date(),
+  showExclusive = true,
 ): RavDeal[] {
   const deals: RavDeal[] = [];
 
   for (const listing of listings) {
+    // Filter exclusive deals for non-Premium users
+    if (listing.is_exclusive_deal && !showExclusive) continue;
+
     const days = daysUntilDate(listing.check_in_date);
 
     // Must be in the future and within threshold
@@ -84,19 +90,29 @@ export function computeRavDeals(
 export function useRavDeals() {
   const { data: listings = [], isLoading: listingsLoading, error: listingsError } = useActiveListings();
   const { data: bidCounts, isLoading: bidsLoading, error: bidsError } = useBidCounts();
+  const { data: membership } = useMyMembership();
 
   const isLoading = listingsLoading || bidsLoading;
   const error = listingsError || bidsError;
+  const showExclusive = canSeeExclusiveDeals(membership?.tier?.tier_level);
 
   const deals = useMemo(() => {
     if (!bidCounts || listings.length === 0) return [];
-    return computeRavDeals(listings, bidCounts);
-  }, [listings, bidCounts]);
+    return computeRavDeals(listings, bidCounts, new Date(), showExclusive);
+  }, [listings, bidCounts, showExclusive]);
+
+  // Count exclusive deals hidden from this user (for upsell)
+  const hiddenExclusiveCount = useMemo(() => {
+    if (showExclusive || !bidCounts) return 0;
+    return listings.filter((l) => l.is_exclusive_deal).length;
+  }, [listings, showExclusive, bidCounts]);
 
   return {
     deals,
     isLoading,
     error,
     isEmpty: !isLoading && !error && deals.length === 0,
+    showExclusive,
+    hiddenExclusiveCount,
   };
 }

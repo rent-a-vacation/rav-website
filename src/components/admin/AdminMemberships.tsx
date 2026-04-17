@@ -19,7 +19,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Crown, Users, DollarSign, TrendingDown, BarChart3, Settings2 } from "lucide-react";
+import { Crown, Users, DollarSign, TrendingDown, BarChart3, Settings2, UserCheck } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { MembershipBadge } from "@/components/MembershipBadge";
 import { AdminMembershipOverride } from "@/components/admin/AdminMembershipOverride";
 import { useMembershipTiers } from "@/hooks/useMembership";
@@ -61,6 +70,13 @@ export function AdminMemberships() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
   const [overrideTarget, setOverrideTarget] = useState<MembershipRow | null>(null);
+
+  // Account Manager assignment state
+  const [amTarget, setAmTarget] = useState<MembershipRow | null>(null);
+  const [staffUsers, setStaffUsers] = useState<Array<{ id: string; full_name: string; email: string }>>([]);
+  const [selectedStaffId, setSelectedStaffId] = useState<string>('');
+  const [amSaving, setAmSaving] = useState(false);
+  const { toast } = useToast();
 
   const fetchData = async () => {
     try {
@@ -326,13 +342,41 @@ export function AdminMemberships() {
                       {format(new Date(m.started_at), "MMM d, yyyy")}
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setOverrideTarget(m)}
-                      >
-                        <Settings2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setOverrideTarget(m)}
+                        >
+                          <Settings2 className="h-4 w-4" />
+                        </Button>
+                        {m.tier?.role_category === 'owner' && m.tier?.tier_level === 2 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            title="Assign Account Manager"
+                            onClick={async () => {
+                              setAmTarget(m);
+                              setSelectedStaffId('');
+                              // Fetch staff users
+                              const { data } = await supabase
+                                .from('user_roles')
+                                .select('user_id, profiles:profiles!user_roles_user_id_fkey(id, full_name, email)')
+                                .in('role', ['rav_admin', 'rav_staff', 'rav_owner']);
+                              if (data) {
+                                const staff = data
+                                  .map((r: Record<string, unknown>) => r.profiles as { id: string; full_name: string; email: string } | null)
+                                  .filter(Boolean) as Array<{ id: string; full_name: string; email: string }>;
+                                // Deduplicate by id
+                                const unique = [...new Map(staff.map((s) => [s.id, s])).values()];
+                                setStaffUsers(unique);
+                              }
+                            }}
+                          >
+                            <UserCheck className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -356,6 +400,57 @@ export function AdminMemberships() {
           }}
         />
       )}
+
+      {/* Account Manager Assignment Dialog */}
+      <Dialog open={!!amTarget} onOpenChange={(open) => { if (!open) setAmTarget(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Assign Account Manager</DialogTitle>
+            <DialogDescription>
+              {amTarget?.user_email} (Business owner)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-2">
+            <Select value={selectedStaffId} onValueChange={setSelectedStaffId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select staff member" />
+              </SelectTrigger>
+              <SelectContent>
+                {staffUsers.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.full_name || s.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAmTarget(null)}>Cancel</Button>
+            <Button
+              disabled={!selectedStaffId || amSaving}
+              onClick={async () => {
+                if (!amTarget || !selectedStaffId) return;
+                setAmSaving(true);
+                try {
+                  const { error } = await supabase
+                    .from('profiles')
+                    .update({ account_manager_id: selectedStaffId })
+                    .eq('id', amTarget.user_id);
+                  if (error) throw error;
+                  toast({ title: 'Account manager assigned' });
+                  setAmTarget(null);
+                } catch {
+                  toast({ title: 'Error', description: 'Failed to assign account manager.', variant: 'destructive' });
+                } finally {
+                  setAmSaving(false);
+                }
+              }}
+            >
+              Assign
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
