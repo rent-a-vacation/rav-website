@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-16T04:05:13"
-change_ref: "7cba187"
+last_updated: "2026-04-18T04:30:16"
+change_ref: "32dba33"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -104,7 +104,18 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **dev and main:** in sync (PRs #287-#292 merged Apr 5)
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-52)
+### Session Handoff (Sessions 25-53)
+
+**Session 53 — Tier Features, API Review, Sentry Guide (Apr 17-18, 2026):**
+- **5 tier-gated features (#278-#282):** Early Access for Plus travelers (48h window on new listings), Exclusive Deals for Premium (admin-toggled `is_exclusive_deal`), Priority Listing Placement for Pro/Business owners (sort boost + Featured badge), Concierge Support for Premium (request system + admin tab), Dedicated Account Manager for Business owners (admin assignment + dashboard card). Migration 057. Shared `tierGating.ts` utility (6 functions, 26 tests). PR #367 merged.
+- **Search & Discovery epic (#325) closed:** All 3 sub-issues (#326-#328) were already completed in prior sessions.
+- **Issue triage:** #100 (Apple Sign-In) → deferred to mobile app phase. #165 (Volume Discount) → needs Sujit + Ajumon discussion. #166 (Tier value prop) → closed, remaining items moved to #368. #226 (Sentry alerts) → closed (already configured). #228 (Sentry GitHub integration) → closed (already installed).
+- **Sentry.io guide:** Comprehensive `docs/SENTRY-GUIDE.md` — daily workflow, error triage, free tier budget, alert config, GitHub integration (free vs paid features), MCP integration, troubleshooting.
+- **Sentry MCP server:** Configured globally (`--scope user`) at `https://mcp.sentry.dev/mcp/rent-a-vacation-org`. Enables Claude Code to query Sentry issues directly. Reusable across all projects.
+- **API docs audit:** `public-api.yaml` is current (6 endpoints match gateway code). Internal `openapi.yaml` is outdated (missing 6-8 recent edge functions, says "27" should be ~30). README.md needs count update.
+- **Follow-up:** `jisujit/automation-utilities#2` created for machine setup script + Supabase keepalive tool.
+
+**End state:** 1125 tests passing (133 files), 0 type errors, build clean. PR #367 merged. `dev` and `main` in sync. Issues #278-#282, #325, #166, #226, #228 closed. Sentry MCP needs OAuth auth on next session start.
 
 **Session 52 — Marketplace Terminology Lock + Site-wide UI Polish (Apr 14-15, 2026):**
 - **DEC-031 (Terminology Lock):** Locked user-facing marketplace vocabulary to three nouns — **Listing**, **Wish**, **Offer**. "Offer" replaces both "Bid" and "Proposal" in all UI. Dropped "RAV" prefix from all transactional nouns/CTAs. PR #355 merged.
