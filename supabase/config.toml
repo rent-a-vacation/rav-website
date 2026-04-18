@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.fetch-str-data]
 verify_jwt = false
+
+[functions.create-booking-checkout]
+verify_jwt = false
