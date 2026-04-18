@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-16T04:05:13"
-change_ref: "7cba187"
-change_type: "session-48-docs-refresh"
+last_updated: "2026-04-18T18:06:32"
+change_ref: "8e90642"
+change_type: "session-54"
 status: "active"
 ---
 # Launch Readiness Checklist
@@ -77,6 +77,7 @@ The following major features were completed in Sessions 33-48 and are deployed:
 |---|-------|------|---------------|
 | 6 | Stripe live mode | Manual | Supabase Dashboard > Edge Functions > Secrets: `STRIPE_SECRET_KEY` starts with `sk_live_` |
 | 7 | Stripe webhook configured | Manual | Stripe Dashboard > Developers > Webhooks: endpoint points to PROD Supabase `stripe-webhook` function |
+| 7b | Stripe Tax enabled on PROD (only if #127 cleared) | Manual | After live Stripe Tax is fully activated (head office address set, registrations added), run `npx supabase secrets set STRIPE_TAX_ENABLED=true --project-ref xzfllqndrlmhclqfybew`. Leave unset on DEV. Default is `false` — bookings succeed without tax collection until this is flipped. |
 
 ### Security
 | # | Check | Type | How to Verify |
@@ -158,7 +159,7 @@ The following checks cannot pass until external blockers are resolved:
 | Check | Blocker | Issue |
 |-------|---------|-------|
 | Stripe live mode | LLC/EIN required for Stripe activation | #127 |
-| Stripe Tax activation | LLC/EIN required (code ready, `automatic_tax: { enabled: true }`) | #127 |
+| Stripe Tax activation | LLC/EIN required. Code is env-gated via `STRIPE_TAX_ENABLED` (Session 54). When unset, `automatic_tax` is disabled so checkout works in both DEV sandbox and pre-LLC PROD. Flip to `"true"` on PROD only after live Stripe Tax is fully activated. | #127 |
 | Legal pages reviewed | Need legal counsel review | #80 |
 | Accounting integration (Puzzle.io) | Blocked on LLC/EIN — onboarding paused at step 7 | #127, #63 |
 | SMS production traffic | A2P 10DLC registration pending — flip `SMS_TEST_MODE=false` once cleared | #127 |

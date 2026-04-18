@@ -128,6 +128,11 @@ serve(async (req) => {
     // Initialize Stripe
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
+    // Gate automatic tax behind env flag — requires valid head office address
+    // in the Stripe account (unavailable in sandbox and pre-#127 live account).
+    const taxEnabled = Deno.env.get("STRIPE_TAX_ENABLED") === "true";
+    logStep("Tax mode", { taxEnabled });
+
     // Check if customer exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId: string | undefined;
@@ -205,7 +210,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: lineItems,
       mode: "payment",
-      automatic_tax: { enabled: true },
+      automatic_tax: { enabled: taxEnabled },
       success_url: `${req.headers.get("origin")}/booking-success?booking_id=${booking.id}`,
       cancel_url: `${req.headers.get("origin")}/property/${listing.property_id}?cancelled=true`,
       metadata: {
