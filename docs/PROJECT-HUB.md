@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-18T04:30:16"
-change_ref: "32dba33"
+last_updated: "2026-04-19T16:25:58"
+change_ref: "d22b799"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -93,18 +93,31 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **848 automated tests** (108 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **1125+ automated tests** (133 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-050 (001-046 deployed to both DEV and PROD, 047-050 deployed to DEV only)
-- **Edge functions:** 34 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN)
+- **Migrations created:** 001-057 (all deployed to DEV and PROD) + 3 date-based MDM migrations
+- **Edge functions:** 34 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN). `create-booking-checkout` deployed to both DEV and PROD with `--no-verify-jwt` (Session 54).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
+- **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync (PRs #287-#292 merged Apr 5)
+- **dev and main:** dev ahead by 3 commits — PR #372 open (Stripe Tax gate + CI fix)
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-53)
+### Session Handoff (Sessions 25-54)
+
+**Session 54 — Stripe Tax Env-Flag Gate + DEC-033 Monitoring (Apr 18-19, 2026):**
+- **Stripe checkout unblocked on dev:** Booking confirmation on `dev.rent-a-vacation.com` was failing with `Edge Function returned a non-2xx status code`. Root cause: `automatic_tax: { enabled: true }` was hard-coded in `create-booking-checkout`, which Stripe rejects when no head office address is set on the account (DEV sandbox + pre-#127 live account both missing this). Gated behind `STRIPE_TAX_ENABLED` env var — default `false` → automatic_tax disabled → checkout succeeds. Live booking validated end-to-end.
+- **Edge function JWT gateway regression:** Redeploy via CLI v2.92.1 without the `--no-verify-jwt` flag caused 401 rejections at the Supabase gateway (function performs its own JWT validation in the body via `supabaseClient.auth.getUser`). Added explicit `[functions.create-booking-checkout] verify_jwt = false` entry to `supabase/config.toml` to prevent future regressions.
+- **CI fix — MDM resort scripts:** `scripts/generate-resort-descriptions.ts` and `scripts/normalise-resort-data.ts` had top-level side effects (Supabase client creation + `main()` invocation) that crashed the test runner when `resortDataQuality.test.ts` imported utility exports in CI (no Supabase creds → `process.exit(1)` at import time). Moved client setup into `main()` and guarded the `main().catch` block with a direct-execution check (`process.argv[1] === fileURLToPath(import.meta.url)`). Unblocks PR #372 CI.
+- **Deployed:** `create-booking-checkout` to both DEV and PROD with `--no-verify-jwt`. Migration 057 (tier features — Session 53 gap) caught up on both DEV and PROD.
+- **Cleanup:** Deleted 4 stale `pending` bookings on DEV from today's failed Stripe attempts (preserved the 10 seed-data pending bookings from 2026-04-05).
+- **DEC-033 (Platform Monitoring):** Chose Checkly (SaaS free tier) for synthetic uptime monitoring — see Key Decisions Log. Tracked as post-launch issue #370.
+- **Follow-up issues:** #371 (edge function test harness — shipped Stripe fix without tests; flagged per CLAUDE.md Tests-With-Features). #370 (Checkly monitoring implementation).
+- **Docs:** LAUNCH-READINESS.md documents `STRIPE_TAX_ENABLED` under Payments check 7b with explicit activation criteria. Blocked Items row updated for #127.
+
+**End state:** PR #372 open with 3 commits (Stripe Tax gate + JWT config + CI fix). Migration 057 deployed to DEV + PROD. `create-booking-checkout` redeployed to both environments. Supabase CLI relinked to DEV.
 
 **Session 53 — Tier Features, API Review, Sentry Guide (Apr 17-18, 2026):**
 - **5 tier-gated features (#278-#282):** Early Access for Plus travelers (48h window on new listings), Exclusive Deals for Premium (admin-toggled `is_exclusive_deal`), Priority Listing Placement for Pro/Business owners (sort boost + Featured badge), Concierge Support for Premium (request system + admin tab), Dedicated Account Manager for Business owners (admin assignment + dashboard card). Migration 057. Shared `tierGating.ts` utility (6 functions, 26 tests). PR #367 merged.
@@ -766,6 +779,30 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-033: Platform Monitoring — Checkly (SaaS) for Synthetic Uptime
+**Date:** April 18, 2026 (Session 54)
+**Decision:** Adopt Checkly (public SaaS, free tier) for synthetic uptime monitoring of critical user journeys and backend APIs. Complements Sentry (errors/APM) — does not replace it. Rejected self-hosted options (Zabbix, Uptime Kuma) to avoid homelab dependency in production monitoring.
+**Status:** Deferred — tracked as post-launch issue #370. Not yet implemented.
+
+**Context:** Sentry catches errors when users hit them, but won't proactively detect "Stripe checkout silently broke" or "bid submission fails after a deploy." Before launching web + mobile, we want 24/7 visibility into critical-path health on one dashboard.
+
+**Why Checkly over alternatives:**
+- Playwright-based synthetic browser checks reuse existing E2E test muscle (`e2e/smoke/`)
+- Free tier: 10k API runs + 1.5k browser runs per month, multi-location, public status page
+- API checks against Supabase edge functions cover backend health for web + mobile in one place
+- Better Stack / UptimeRobot only ping for HTTP 200 — won't catch broken user flows
+- Self-hosted tools rejected: user has Zabbix + Uptime Kuma in homelab but doesn't want production monitoring to depend on homelab uptime
+
+**Scope (4 phases in #370):**
+1. 3-5 browser checks for critical journeys (auth, browse, bid, checkout, voice)
+2. API/edge function health checks (api-gateway, stripe-webhook, notification-dispatcher)
+3. Alerting routing + severity definition
+4. Optional public status page (Checkly built-in vs. Better Stack — decide later)
+
+**Out of scope:** APM (Sentry), log aggregation (separate decision if needed), self-hosted monitoring.
 
 ---
 

@@ -14,14 +14,7 @@ dotenv.config();
 import { createClient } from '@supabase/supabase-js';
 import * as fs from 'fs';
 import * as path from 'path';
-
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase credentials.');
-  process.exit(1);
-}
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { fileURLToPath } from 'node:url';
 
 const BRAND_DISPLAY: Record<string, string> = {
   hilton_grand_vacations: 'Hilton Grand Vacations',
@@ -133,6 +126,14 @@ export function generateDescription(resort: {
 }
 
 async function main() {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase credentials.');
+    process.exit(1);
+  }
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
   console.log('Fetching resorts + unit types...');
   const { data: resorts, error } = await supabase
     .from('resorts')
@@ -179,7 +180,9 @@ async function main() {
   console.log(`${generated} descriptions generated, ${needsReview} need manual review`);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

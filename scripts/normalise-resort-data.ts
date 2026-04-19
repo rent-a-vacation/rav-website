@@ -15,14 +15,7 @@ dotenv.config();
 import { createClient } from '@supabase/supabase-js';
 import * as fs from 'fs';
 import * as path from 'path';
-
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase credentials.');
-  process.exit(1);
-}
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { fileURLToPath } from 'node:url';
 
 const args = process.argv.slice(2);
 const APPLY = args.includes('--apply');
@@ -74,6 +67,14 @@ interface ChangeEntry {
 }
 
 async function main() {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase credentials.');
+    process.exit(1);
+  }
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
   console.log(`Mode: ${APPLY ? 'APPLY (writing to DB)' : 'DRY-RUN (no writes)'}`);
   if (POPULATE_SCORES) console.log('Will also populate data_quality_score.');
 
@@ -207,7 +208,9 @@ async function main() {
   console.log(`${changes.length} changes ${APPLY ? 'applied' : 'identified (dry-run — pass --apply to write)'}`);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
