@@ -1,4 +1,4 @@
-import { format, isValid } from "date-fns";
+import { format, formatDistanceToNow, isValid } from "date-fns";
 
 /**
  * Safely format a date-like input. If the value is null/undefined, empty,
@@ -18,4 +18,20 @@ export function formatDateSafe(
   const date = value instanceof Date ? value : new Date(value);
   if (!isValid(date)) return fallback;
   return format(date, pattern);
+}
+
+/**
+ * Safely format a relative time (e.g. "3 hours ago"). Same guarantees as
+ * `formatDateSafe` — returns `fallback` instead of throwing "Invalid time
+ * value" when the input is null, undefined, empty, or unparseable.
+ */
+export function formatDistanceToNowSafe(
+  value: string | Date | null | undefined,
+  options?: Parameters<typeof formatDistanceToNow>[1],
+  fallback = "—",
+): string {
+  if (!value) return fallback;
+  const date = value instanceof Date ? value : new Date(value);
+  if (!isValid(date)) return fallback;
+  return formatDistanceToNow(date, options);
 }

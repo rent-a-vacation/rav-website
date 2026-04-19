@@ -48,8 +48,8 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
-import { formatDateSafe } from '@/lib/formatDateSafe';
+import { format } from 'date-fns';
+import { formatDateSafe, formatDistanceToNowSafe } from '@/lib/formatDateSafe';
 import type { TravelRequest, TravelProposalWithDetails } from '@/types/bidding';
 
 const STATUS_COLORS = {
@@ -176,7 +176,7 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
                             <p className="text-sm text-muted-foreground">My offer</p>
                             <p className="text-2xl font-bold">${bid.bid_amount.toLocaleString()}</p>
                             <p className="text-xs text-muted-foreground mt-1">
-                              {formatDistanceToNow(new Date(bid.created_at), { addSuffix: true })}
+                              {formatDistanceToNowSafe(bid.created_at, { addSuffix: true })}
                             </p>
                           </div>
                         </div>
@@ -358,7 +358,7 @@ const MyBidsDashboard = ({ embedded }: { embedded?: boolean }) => {
                           <div className="text-left sm:text-right flex-shrink-0">
                             <p className="text-sm text-muted-foreground flex items-center gap-1 sm:justify-end">
                               <Clock className="h-3 w-3" />
-                              Expires {formatDistanceToNow(new Date(request.proposals_deadline), { addSuffix: true })}
+                              Expires {formatDistanceToNowSafe(request.proposals_deadline, { addSuffix: true })}
                             </p>
                             <Button
                               variant="outline"

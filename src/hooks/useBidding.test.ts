@@ -142,8 +142,14 @@ describe("useMyBids", () => {
 
 describe("useCreateBid @p0", () => {
   it("creates a bid successfully", async () => {
-    const newBid = { id: "b-new", bid_amount: 450, listing_id: "l1" };
+    const newBid = {
+      id: "b-new",
+      bid_amount: 450,
+      listing_id: "l1",
+      listing: { owner_id: "owner-1", property: { resort_name: "Test Resort" } },
+    };
     mockFrom.mockReturnValue(chain({ data: newBid, error: null }));
+    mockInvoke.mockResolvedValue({ data: null, error: null });
 
     const { result } = renderHook(() => useCreateBid(), {
       wrapper: createHookWrapper(),
@@ -159,6 +165,60 @@ describe("useCreateBid @p0", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockFrom).toHaveBeenCalledWith("listing_bids");
+  });
+
+  it("dispatches new_bid_received notification to listing owner", async () => {
+    const newBid = {
+      id: "b-new",
+      bid_amount: 450,
+      listing_id: "l1",
+      listing: { owner_id: "owner-1", property: { resort_name: "Hilton Las Vegas" } },
+    };
+    mockFrom.mockReturnValue(chain({ data: newBid, error: null }));
+    mockInvoke.mockResolvedValue({ data: null, error: null });
+
+    const { result } = renderHook(() => useCreateBid(), {
+      wrapper: createHookWrapper(),
+    });
+
+    await act(async () => {
+      result.current.mutate({ listing_id: "l1", bid_amount: 450, guest_count: 2 });
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    await waitFor(() => {
+      expect(mockInvoke).toHaveBeenCalledWith(
+        "notification-dispatcher",
+        expect.objectContaining({
+          body: expect.objectContaining({
+            type_key: "new_bid_received",
+            user_id: "owner-1",
+          }),
+        }),
+      );
+    });
+  });
+
+  it("does not fail bid creation when notification dispatch errors", async () => {
+    const newBid = {
+      id: "b-new",
+      bid_amount: 450,
+      listing_id: "l1",
+      listing: { owner_id: "owner-1", property: { resort_name: "Test Resort" } },
+    };
+    mockFrom.mockReturnValue(chain({ data: newBid, error: null }));
+    mockInvoke.mockRejectedValue(new Error("dispatcher down"));
+
+    const { result } = renderHook(() => useCreateBid(), {
+      wrapper: createHookWrapper(),
+    });
+
+    await act(async () => {
+      result.current.mutate({ listing_id: "l1", bid_amount: 450, guest_count: 2 });
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
   });
 });
 

@@ -247,6 +247,32 @@ serve(async (req) => {
           logStep("Warning: Failed to send new booking notification", { error: String(emailError) });
         }
 
+        // Dispatch in-app notification to owner via unified notification-dispatcher
+        // (the email above was legacy; this populates the notification bell)
+        try {
+          const ownerId = (booking.listing as Record<string, unknown>)?.owner_id as string | undefined;
+          const resortName = ((booking.listing as Record<string, unknown>)?.property as Record<string, unknown>)?.resort_name as string | undefined;
+          if (ownerId) {
+            await supabaseClient.functions.invoke("notification-dispatcher", {
+              body: {
+                type_key: "booking_confirmed",
+                user_id: ownerId,
+                payload: {
+                  title: "New booking received",
+                  message: resortName
+                    ? `Booking confirmed for ${resortName}`
+                    : "A new booking has been confirmed on your listing",
+                  booking_id: booking.id,
+                  listing_id: booking.listing_id,
+                },
+              },
+            });
+            logStep("In-app notification dispatched to owner", { ownerId });
+          }
+        } catch (dispatchError) {
+          logStep("Warning: Failed to dispatch in-app notification", { error: String(dispatchError) });
+        }
+
         // Send owner confirmation request notification
         try {
           const notificationUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-booking-confirmation-reminder`;

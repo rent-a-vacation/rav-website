@@ -1,6 +1,6 @@
 // @p0
 import { describe, it, expect } from "vitest";
-import { formatDateSafe } from "./formatDateSafe";
+import { formatDateSafe, formatDistanceToNowSafe } from "./formatDateSafe";
 
 describe("formatDateSafe", () => {
   it("formats a valid ISO string", () => {
@@ -30,5 +30,32 @@ describe("formatDateSafe", () => {
 
   it("uses a custom fallback when provided", () => {
     expect(formatDateSafe(null, "MMM d", "Dates TBD")).toBe("Dates TBD");
+  });
+});
+
+describe("formatDistanceToNowSafe", () => {
+  it("returns a relative time string for a valid date", () => {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    expect(formatDistanceToNowSafe(oneHourAgo, { addSuffix: true })).toContain("ago");
+  });
+
+  it("returns fallback for null (does not throw Invalid time value)", () => {
+    expect(formatDistanceToNowSafe(null, { addSuffix: true })).toBe("—");
+  });
+
+  it("returns fallback for undefined", () => {
+    expect(formatDistanceToNowSafe(undefined)).toBe("—");
+  });
+
+  it("returns fallback for empty string", () => {
+    expect(formatDistanceToNowSafe("")).toBe("—");
+  });
+
+  it("returns fallback for unparseable string", () => {
+    expect(formatDistanceToNowSafe("not-a-date")).toBe("—");
+  });
+
+  it("uses a custom fallback when provided", () => {
+    expect(formatDistanceToNowSafe(null, { addSuffix: true }, "never")).toBe("never");
   });
 });

@@ -129,10 +129,33 @@ export function useCreateBid() {
           requested_check_in: input.requested_check_in || null,
           requested_check_out: input.requested_check_out || null,
         } as never)
-        .select()
+        .select('*, listing:listings(owner_id, property:properties(resort_name))')
         .single();
 
       if (error) throw error;
+
+      const owner_id = (data as { listing?: { owner_id?: string } } | null)?.listing?.owner_id;
+      const resort_name = (data as { listing?: { property?: { resort_name?: string } } } | null)
+        ?.listing?.property?.resort_name;
+      if (owner_id) {
+        supabase.functions.invoke('notification-dispatcher', {
+          body: {
+            type_key: 'new_bid_received',
+            user_id: owner_id,
+            payload: {
+              title: 'New offer received',
+              message: resort_name
+                ? `$${input.bid_amount.toLocaleString()} offer on ${resort_name}`
+                : `New $${input.bid_amount.toLocaleString()} offer on your listing`,
+              bid_id: (data as { id?: string } | null)?.id,
+              listing_id: input.listing_id,
+            },
+          },
+        }).catch(() => {
+          // Notification dispatch is best-effort; don't fail the bid creation
+        });
+      }
+
       return data;
     },
     onSuccess: () => {
