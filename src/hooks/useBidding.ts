@@ -558,6 +558,7 @@ export function useUpdateProposalStatus() {
             status: 'active',
             notes: `Auto-created from accepted travel request proposal`,
             cancellation_policy: 'moderate',
+            source_type: 'wish_matched',
           } as never)
           .select()
           .single();

@@ -306,6 +306,7 @@ export type Database = {
           rav_commission: number
           renter_id: string
           service_fee: number | null
+          source_type: Database["public"]["Enums"]["listing_source_type"]
           special_requests: string | null
           status: Database["public"]["Enums"]["booking_status"]
           stripe_tax_calculation_id: string | null
@@ -314,6 +315,7 @@ export type Database = {
           tax_jurisdiction: string | null
           tax_rate: number | null
           total_amount: number
+          travel_proposal_id: string | null
           updated_at: string
         }
         Insert: {
@@ -333,6 +335,7 @@ export type Database = {
           rav_commission: number
           renter_id: string
           service_fee?: number | null
+          source_type?: Database["public"]["Enums"]["listing_source_type"]
           special_requests?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           stripe_tax_calculation_id?: string | null
@@ -341,6 +344,7 @@ export type Database = {
           tax_jurisdiction?: string | null
           tax_rate?: number | null
           total_amount: number
+          travel_proposal_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -360,6 +364,7 @@ export type Database = {
           rav_commission?: number
           renter_id?: string
           service_fee?: number | null
+          source_type?: Database["public"]["Enums"]["listing_source_type"]
           special_requests?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           stripe_tax_calculation_id?: string | null
@@ -368,6 +373,7 @@ export type Database = {
           tax_jurisdiction?: string | null
           tax_rate?: number | null
           total_amount?: number
+          travel_proposal_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -746,6 +752,7 @@ export type Database = {
           rav_markup: number
           reserve_price: number | null
           resort_fee: number | null
+          source_type: Database["public"]["Enums"]["listing_source_type"]
           status: Database["public"]["Enums"]["listing_status"]
           updated_at: string
         }
@@ -771,6 +778,7 @@ export type Database = {
           rav_markup?: number
           reserve_price?: number | null
           resort_fee?: number | null
+          source_type?: Database["public"]["Enums"]["listing_source_type"]
           status?: Database["public"]["Enums"]["listing_status"]
           updated_at?: string
         }
@@ -796,6 +804,7 @@ export type Database = {
           rav_markup?: number
           reserve_price?: number | null
           resort_fee?: number | null
+          source_type?: Database["public"]["Enums"]["listing_source_type"]
           status?: Database["public"]["Enums"]["listing_status"]
           updated_at?: string
         }
@@ -2247,6 +2256,7 @@ export type Database = {
         | "released"
         | "refunded"
         | "disputed"
+      listing_source_type: "pre_booked" | "wish_matched"
       listing_status:
         | "draft"
         | "pending_approval"
@@ -2321,6 +2331,7 @@ export type Database = {
 
 export type AppRole = Database['public']['Enums']['app_role'];
 export type ListingStatus = Database['public']['Enums']['listing_status'];
+export type ListingSourceType = Database['public']['Enums']['listing_source_type'];
 export type BookingStatus = Database['public']['Enums']['booking_status'];
 export type PayoutStatus = Database['public']['Enums']['payout_status'];
 export type AgreementStatus = Database['public']['Enums']['agreement_status'];
