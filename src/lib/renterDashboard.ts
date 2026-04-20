@@ -74,3 +74,18 @@ export function getCheckInCountdown(checkInDate: string): string {
 
   return `${days} days`;
 }
+
+/**
+ * Is a check-in countdown text considered imminent (<= 7 days away)?
+ * Used for elevating visual priority on the booking card.
+ */
+export function isImminentCheckIn(countdownText: string): boolean {
+  if (countdownText === 'Today!' || countdownText === 'Tomorrow') return true;
+  // "N days" where N is a small integer (getCheckInCountdown returns "N days" only when N < 7)
+  const daysMatch = /^(\d+) days$/.exec(countdownText);
+  if (daysMatch) {
+    const n = parseInt(daysMatch[1], 10);
+    return n <= 7;
+  }
+  return false;
+}

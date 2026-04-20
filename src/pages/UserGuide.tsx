@@ -1947,7 +1947,7 @@ const UserGuide = () => {
                 <div className="space-y-4">
                   {[
                     { tab: "Overview", desc: "Quick stats — upcoming trips, active offers, saved searches. Check-in countdown shows days until your next trip." },
-                    { tab: "Bookings", desc: "All your bookings with status, timeline visualization, review buttons, and cancellation options." },
+                    { tab: "Bookings", desc: "All your bookings. Each card shows a check-in countdown badge for upcoming trips, the full payment breakdown (base rate, service fee, cleaning fee, tax, total), cancellation policy with refund windows, and the resort confirmation number once the owner provides it. Expand \"Booking details\" for the full timeline + payment + policy view." },
                     { tab: "Offers", desc: "Track all your active bids and offers. See which are pending, accepted, or expired." },
                     { tab: "Favorites", desc: "Properties you've saved, plus your saved searches with price drop alerts." },
                   ].map((item, i) => (

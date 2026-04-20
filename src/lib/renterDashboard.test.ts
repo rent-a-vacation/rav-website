@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { computeRenterOverview, getCheckInCountdown } from './renterDashboard';
+import { computeRenterOverview, getCheckInCountdown, isImminentCheckIn } from './renterDashboard';
 
 describe('computeRenterOverview', () => {
   beforeEach(() => {
@@ -79,5 +79,36 @@ describe('getCheckInCountdown', () => {
 
   it('returns "Already checked in" for past dates', () => {
     expect(getCheckInCountdown('2026-03-01')).toBe('Already checked in');
+  });
+});
+
+describe('isImminentCheckIn', () => {
+  it('is imminent for "Today!"', () => {
+    expect(isImminentCheckIn('Today!')).toBe(true);
+  });
+
+  it('is imminent for "Tomorrow"', () => {
+    expect(isImminentCheckIn('Tomorrow')).toBe(true);
+  });
+
+  it('is imminent for "3 days"', () => {
+    expect(isImminentCheckIn('3 days')).toBe(true);
+  });
+
+  it('is imminent at boundary "7 days"', () => {
+    expect(isImminentCheckIn('7 days')).toBe(true);
+  });
+
+  it('is not imminent for "2 weeks"', () => {
+    expect(isImminentCheckIn('2 weeks')).toBe(false);
+  });
+
+  it('is not imminent for "Already checked in"', () => {
+    expect(isImminentCheckIn('Already checked in')).toBe(false);
+  });
+
+  it('is not imminent for unexpected text', () => {
+    expect(isImminentCheckIn('')).toBe(false);
+    expect(isImminentCheckIn('soon')).toBe(false);
   });
 });
