@@ -20,19 +20,78 @@
 2. Read `docs/PROJECT-HUB.md` for architectural context and decisions
 3. Confirm with the user which issue to work on before starting any code
 
-### At the END of every session
-1. Close completed issues with a summary comment (this feeds the daily status email):
+### At the END of every session — MANDATORY DOCUMENTATION CHECKLIST
+
+After every merged PR, walk through this checklist. **No session ends with stale docs.** These checks apply whether the session started with `/sdlc`, a plain feature request, a bug fix, or anything else. `/sdlc status` in future sessions reads these files — if they lie, the next session starts with a distorted picture.
+
+1. **Close completed issues with a business-language summary:**
    ```bash
    gh issue close <number> --repo rent-a-vacation/rav-website --comment "Completed: [Business-language summary — what the user/owner/renter gains]
 
    Technical: [migration details, test counts, deployment notes]"
    ```
-   > **Important:** The daily status report auto-extracts the `Completed:` line for the Key Deliverables section.
-   > Write it in plain business language (what users gain), not technical language (no migration names, no jargon).
-   > The `Technical:` line is optional and only preserved in the GitHub issue comment.
-2. Create new issues for anything discovered during the session (bugs, ideas, follow-up work)
-3. Update `docs/PROJECT-HUB.md` with any architectural decisions made
-4. Do NOT update PROJECT-HUB.md priority queue — GitHub Issues is now the source for priorities
+   > **Important:** The daily status report auto-extracts the `Completed:` line for the Key Deliverables section. Plain business language only. The `Technical:` line is optional.
+
+2. **`docs/PRIORITY-ROADMAP.md`** — ALWAYS
+   - Remove completed items from their tier (or mark ✅ Done)
+   - Add revision-history entry (date + session + what changed)
+   - Add new follow-up issues to the appropriate tier (or note as "needs tier assignment")
+
+3. **`docs/PROJECT-HUB.md`** — ALWAYS
+   - Extend current Session handoff entry (or start a new one)
+   - Update "Platform Status" block (test count, migrations, edge functions, dev/main sync)
+   - Add DEC-### entry in Key Decisions Log if any architectural decision was made
+
+4. **`docs/testing/TESTING-STATUS.md`** — if tests were added/removed
+   - Update total test count, test-file count, run times
+   - Update QA manual-scenarios row if scenarios were added/updated
+
+5. **`docs/LAUNCH-READINESS.md`** — if pre-launch checks or blocked items changed
+   - Update checklist rows + blockers table
+   - Add new rows for env flags, infra gates, or deploy requirements introduced
+
+6. **`docs/ARCHITECTURE.md`** + **flow manifests (`src/flows/`)** — if routes, components, tables, or edge functions changed
+   - Update the relevant flow manifest (owner-lifecycle / traveler-lifecycle / admin-lifecycle)
+   - `/architecture` page auto-regenerates from manifests — no manual Mermaid edits
+   - Update ARCHITECTURE.md narrative if a new cross-cutting concern was introduced
+
+7. **`src/pages/UserGuide.tsx`** + **FAQ** — if user-facing behavior changed
+   - Traveler-facing changes → `renterSections` + FAQ
+   - Owner-facing changes → `ownerSections` + FAQ
+   - Admin-facing changes → admin section
+   - New workflow → add FAQ entry
+
+8. **`docs/testing/QA-PLAYBOOK.md`** + **QA Scenario Spreadsheet** — if user workflow changed
+   - If a flow differs per state/track, add scenario variants (e.g., S-##a, S-##b)
+   - Rename terminology in scenario steps to match latest UI labels
+   - Scenario spreadsheet lives in Google Drive — scenario numbers stay stable, content updates
+
+9. **`docs/brand-assets/BRAND-LOCK.md`** — if terminology or brand language changed
+   - Update the Terminology Context Map (Section 9)
+   - Add new DEC-### if it supersedes prior terminology lock
+
+10. **`docs/COMPLETED-PHASES.md`** — only at session close, for sessions aging out of PROJECT-HUB
+    - Move session-handoff entries older than ~5 sessions from PROJECT-HUB to this archive
+    - Keep PROJECT-HUB Session Handoff section lean (current + last 5 sessions)
+
+11. **Create follow-up issues** for anything discovered during implementation:
+    ```bash
+    gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." --milestone "Launch Readiness" --body "..."
+    ```
+
+12. **Update auto-memory** if session-persistent knowledge was learned (see `auto memory` in system prompt — feedback / project / user / reference memory types)
+
+13. **Do NOT update PROJECT-HUB.md priority queue** — GitHub Issues is now the source for priorities.
+
+### Before calling a session done, ask yourself:
+- [ ] Does `/sdlc status` (reads live docs) give an accurate picture?
+- [ ] Would a new collaborator reading PROJECT-HUB understand today's changes?
+- [ ] Do the testing docs claim the right test count + scenario state?
+- [ ] Did I change any user-facing behavior without telling USER-GUIDE + FAQ?
+- [ ] Did I introduce an env flag, infra gate, or deploy flag without updating LAUNCH-READINESS?
+- [ ] Did a route, table, or edge function change without a flow-manifest update?
+
+If the answer to any of these is "no", fix it before closing.
 
 ### Issue lifecycle
 - **New idea** → create issue with `idea` label, no milestone (Backlog)
