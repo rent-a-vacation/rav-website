@@ -75,6 +75,7 @@ import type {
 import { AdminEntityLink } from "./AdminEntityLink";
 import { DateRangeFilter } from "./DateRangeFilter";
 import { AgeBadge } from "./AgeBadge";
+import { ListingTypeBadge } from "@/components/marketplace/ListingTypeBadge";
 
 interface EscrowWithDetails extends BookingConfirmation {
   booking: Booking & {
@@ -131,6 +132,7 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedEscrow, setSelectedEscrow] = useState<EscrowWithDetails | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
@@ -424,12 +426,15 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
 
     const matchesStatus = statusFilter === "all" || e.escrow_status === statusFilter;
 
+    const matchesSource = sourceFilter === "all" ||
+      ((e.booking as Record<string, unknown> | undefined)?.source_type ?? "pre_booked") === sourceFilter;
+
     const matchesDateRange = !dateRange?.from || isWithinInterval(
       new Date(e.created_at),
       { start: startOfDay(dateRange.from), end: endOfDay(dateRange.to || dateRange.from) }
     );
 
-    return matchesSearch && matchesStatus && matchesDateRange;
+    return matchesSearch && matchesStatus && matchesSource && matchesDateRange;
   });
 
   // Stats
@@ -487,6 +492,16 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
               <SelectItem value="released">Released</SelectItem>
               <SelectItem value="refunded">Refunded</SelectItem>
               <SelectItem value="disputed">Disputed</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sourceFilter} onValueChange={setSourceFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter by type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="pre_booked">Pre-Booked Stay</SelectItem>
+              <SelectItem value="wish_matched">Wish-Matched Stay</SelectItem>
             </SelectContent>
           </Select>
           <DateRangeFilter value={dateRange} onChange={setDateRange} />
@@ -651,6 +666,10 @@ const AdminEscrow = ({ initialSearch = "", onNavigateToEntity }: { initialSearch
                             {ESCROW_STATUS_CONFIG[escrow.escrow_status].icon}
                             {ESCROW_STATUS_CONFIG[escrow.escrow_status].label}
                           </Badge>
+                          <ListingTypeBadge
+                            type={((escrow.booking as Record<string, unknown> | undefined)?.source_type as "pre_booked" | "wish_matched") ?? "pre_booked"}
+                            size="sm"
+                          />
                           {escrow.payout_held && (
                             <Badge variant="outline" className="text-orange-600 border-orange-600 w-fit text-xs">
                               <PauseCircle className="h-3 w-3 mr-1" />

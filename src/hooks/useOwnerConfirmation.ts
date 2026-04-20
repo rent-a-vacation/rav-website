@@ -130,6 +130,42 @@ export function useConfirmBooking() {
         .eq('id', bookingConfirmationId);
 
       if (error) throw error;
+
+      // DEC-034 Phase 4: for wish_matched bookings, dispatch the traveler
+      // notification that their Wish-Matched booking is now confirmed.
+      // Fire-and-forget — the confirmation already succeeded; the dispatch
+      // is a follow-up UX win.
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: conf } = await (supabase as any)
+          .from('booking_confirmations')
+          .select('booking_id, booking:bookings(id, renter_id, source_type, listing_id, listing:listings(property:properties(resort_name)))')
+          .eq('id', bookingConfirmationId)
+          .single();
+
+        const booking = conf?.booking;
+        if (booking?.source_type === 'wish_matched' && booking?.renter_id) {
+          const resortName = booking?.listing?.property?.resort_name;
+          supabase.functions.invoke('notification-dispatcher', {
+            body: {
+              type_key: 'wish_owner_confirmed',
+              user_id: booking.renter_id,
+              payload: {
+                title: 'Wish-Matched booking confirmed',
+                message: resortName
+                  ? `The owner has confirmed your stay at ${resortName}. You're all set.`
+                  : "The owner has confirmed your stay. You're all set.",
+                booking_id: booking.id,
+                listing_id: booking.listing_id,
+              },
+            },
+          }).catch(() => {
+            // Best-effort; confirmation already succeeded
+          });
+        }
+      } catch {
+        // Non-blocking — do not fail the confirmation
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['owner-confirmation'] });
