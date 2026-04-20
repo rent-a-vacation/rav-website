@@ -164,6 +164,9 @@ const AdminDashboard = () => {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
+                <div className="text-[10px] sm:text-xs font-medium tracking-widest uppercase text-muted-foreground mb-0.5">
+                  {isRavAdmin() ? "RAV Admin Dashboard" : "RAV Staff Dashboard"}
+                </div>
                 <div className="flex items-center gap-2">
                   <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight">RAV Ops</h1>
                   <ShieldCheck className="h-5 w-5 text-primary" />

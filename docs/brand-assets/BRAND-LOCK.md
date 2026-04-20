@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T04:06:53"
-change_ref: "5fb0c20"
+last_updated: "2026-04-20T04:52:26"
+change_ref: "824263c"
 change_type: "session-52-terminology-lock"
 status: "active"
 ---
@@ -349,29 +349,35 @@ Every named feature follows one of three naming patterns. When adding a new feat
 
 **"Offer" replaces both "Bid" (old UI) and "Proposal" (old UI).** In the database, the two mechanics are still stored in separate tables (`listing_bids` vs `travel_proposals`) because they point at different parents — but end users see a single noun: "Offer."
 
-### Navigation & Page Titles
+### Navigation & Page Titles — Path 3 Hybrid (Session 55)
 
-| Location | Nav Label | Page Title | Link |
-|----------|-----------|------------|------|
-| Header nav (everyone) | **Marketplace** | Marketplace — Listings & Wishes | /marketplace |
-| Header nav (everyone) | **Browse Rentals** | Vacation Rentals | /rentals |
-| Header nav (owner) | **My Rentals** | My Rentals | /owner-dashboard |
-| Header nav (renter) | **My Trips** | My Trips | /my-trips |
-| Header nav (admin) | **RAV Ops** | RAV Ops — Operations | /admin |
-| Header nav (executive) | **RAV Insights** | RAV Insights — Business Intelligence | /executive-dashboard |
-| Header nav (tools) | **Free Tools** | RAV Tools | /tools |
-| Header nav (owner CTA) | **List Your Property** | List Your Property | /list-property |
-| Tab label — listings (inside Marketplace) | **Listings** | — | /marketplace (default for renter/anon) |
-| Tab label — wishes (inside Marketplace) | **Wishes** | — | /marketplace?tab=wishes (default for owner) |
+**Pattern:** keep the short brand name as the dominant H1 + CTA label, add a small-caps **role-descriptive eyebrow** above it so users instantly understand what they're looking at.
+
+| Location | Nav Label | Page Eyebrow (small caps) | Page H1 | Link |
+|----------|-----------|---------------------------|---------|------|
+| Header nav (everyone) | **Marketplace** | — | Marketplace — Listings & Wishes | /marketplace |
+| Header nav (everyone) | **Browse Rentals** | — | Vacation Rentals | /rentals |
+| Header nav (owner) | **My Rentals** | Property Owner Dashboard | My Rentals | /owner-dashboard |
+| Header nav (renter) | **My Trips** | Traveler Dashboard | My Trips | /my-trips |
+| Header nav (admin) | **RAV Ops** | RAV Admin Dashboard (or RAV Staff Dashboard — dynamic by role) | RAV Ops | /admin |
+| Header nav (executive) | **RAV Insights** | Executive Dashboard — Business Intelligence | RAV Insights | /executive-dashboard |
+| Header nav (tools) | **Free Tools** | — | RAV Tools | /tools |
+| Header nav (owner CTA) | **List Your Property** | — | List Your Property | /list-property |
+| Tab label — listings (inside Marketplace) | **Listings** | — | — | /marketplace (default for renter/anon) |
+| Tab label — wishes (inside Marketplace) | **Wishes** | — | — | /marketplace?tab=wishes (default for owner) |
+
+**Rationale:** brand names like "My Rentals" / "My Trips" / "RAV Ops" remain the short, scannable CTAs in the header nav — preserving DEC-031. The descriptive eyebrow ("Property Owner Dashboard") tells a first-time user what the page represents in role terms — so the mapping between brand name and function is visually guided.
 
 ### User dropdown (role-aware "My Activity")
 
 | Renter sees | Owner sees |
 |---|---|
-| My Trips | My Listings |
+| My Trips | My Rentals |
 | My Offers | Offers I Sent |
 | My Wishes | Offers on My Listings |
 | Account Settings | Account Settings |
+
+**Note:** Owner dropdown previously showed "My Listings" as its top item; this was an inconsistency with the nav label "My Rentals" and was corrected in Session 55. Sub-tab labels inside the dashboard (e.g., the "My Listings" tab within My Rentals) remain as sub-labels — they name a tab, not the dashboard.
 
 ### CTA Buttons (plain language — no RAV prefix on transactional CTAs)
 
