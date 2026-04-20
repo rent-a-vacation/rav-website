@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-20T13:54:34"
-change_ref: "24ac5f1"
+last_updated: "2026-04-20T15:49:43"
+change_ref: "0df1dd8"
 change_type: "session-56"
 status: "active"
 ---
@@ -47,6 +47,7 @@ All unblocked follow-ups from Sessions 54-56 QA audit work. Pick in any order; t
 | **#381** | Role-relevant landing-view ordering | 6-8h | Surface most-time-sensitive items on each dashboard's Overview tab per "rooted in simplicity" principle. |
 | **#377** | Cancel-listing cascade (bulk bid rejection + booking cancellation + notifications) | 1d | Standalone, coordinates with DEC-034 wish-matched handling. New edge function + atomic cascade. |
 | **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up from Tests-With-Features shortfalls. Enables future edge-fn work to be properly tested. |
+| **#393** | PLATFORM-INVENTORY.md — one-page mental model of everything built | 2-3h | Session 56 meta-ask: a single doc cataloging product + platform + dev-tooling + governance layers so the user can explain what they've built to investors, new collaborators, and future sessions. |
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
