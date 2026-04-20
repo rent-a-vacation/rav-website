@@ -1,13 +1,13 @@
 ---
-last_updated: "2026-04-05T15:57:17"
-change_ref: "800bcfa"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-20T02:55:17"
+change_ref: "f82a427"
+change_type: "session-54"
 status: "active"
 ---
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** March 13, 2026 (Session 39)
+> **Last Updated:** April 19, 2026 (Session 54)
 
 ---
 
@@ -15,15 +15,16 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 848 |
-| **Test files** | 108 |
-| **P0 critical-path tests** | 97 (tagged `@p0`) |
+| **Total tests** | 1133 |
+| **Test files** | 133 |
+| **P0 critical-path tests** | 97 (tagged `@p0`) + 4 subscription P0s |
 | **E2E smoke tests** | 3 (Playwright) |
-| **Local run time** | ~65s |
+| **Local run time** | ~2.5 min (full), ~2s (P0 only) |
 | **CI run time** | <3 min |
 | **TypeScript errors** | 0 |
 | **Lint errors** | 0 |
 | **Build** | Clean |
+| **QA manual scenarios** | 30 total — S-01 through S-05 in progress (Apr 19). 3 bugs fixed via PR #373, retest pending |
 
 ## Coverage Thresholds (enforced in CI)
 

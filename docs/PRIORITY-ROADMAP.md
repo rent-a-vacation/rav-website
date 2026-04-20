@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-16T04:05:13"
-change_ref: "7cba187"
-change_type: "session-50"
+last_updated: "2026-04-20T02:55:17"
+change_ref: "f82a427"
+change_type: "session-54"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -9,6 +9,17 @@ status: "active"
 > **Purpose:** Single source of truth for what to work on next. Updated every session that includes a prioritization discussion.
 > **Rule:** Start every working session by reading this file + `gh issue list --state open`. This file captures the WHY and ORDER; GitHub Issues captures the WHAT and STATUS.
 > **Excluded permanently:** #127 (LLC/EIN), #63 (Accounting — blocked on #127), #65 (Tax Filing — blocked on #127), #80 (Legal — needs LLC)
+
+---
+
+## Changelog since last tier assignment (Sessions 50–54)
+
+- **Session 50-53 shipped:** Event unification (#338, #339), MDM WS1/WS2/WS3 (DEC-032), Brand/terminology lock (DEC-031), Site-wide UI polish, 5 tier-gated features (#278-#282 — all Tier C items now **DONE**), Sentry guide, API docs audit.
+- **Session 54 shipped:** Stripe Tax env-flag gate (`STRIPE_TAX_ENABLED`), edge function JWT config hardening, migration 057 catch-up to DEV + PROD, MDM script CI fix, and 3 QA-surfaced bug fixes (offers-tab crash, owner bid notification, owner booking notification).
+- **New follow-up issues opened in Session 54:**
+  - **#370** — Platform synthetic uptime monitoring (DEC-033 — Checkly SaaS). Post-launch, not Tier A.
+  - **#371** — Add edge function test harness (CLAUDE.md Tests-With-Features follow-up). Needs tier assignment.
+- **QA audit items surfaced from testing (need issues + tier assignment):** terminology sync, listing verification UX, cancel listing flow, "Open for bidding" indicator, MyTrips post-booking detail view, Track 1 vs Track 2 user mental model.
 
 ---
 
@@ -28,17 +39,17 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #257 | Resort data compliance audit | Legal review of seed data sources. |
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
 
-### Tier C: Tier Feature Differentiation (Bundle as Sprint)
+### Tier C: Tier Feature Differentiation — ✅ COMPLETED IN SESSION 53 (PR #367)
 
-These define what paid tiers actually GET. Can be built as a focused sprint.
+All 5 items shipped. Migration 057. Shared `tierGating.ts` utility with 26 tests.
 
-| Issue | Title |
-|-------|-------|
-| #278 | Early access to new listings (Traveler Plus) |
-| #279 | Exclusive deals for Premium travelers |
-| #280 | Priority listing placement for Owner Pro |
-| #281 | Concierge support for Premium travelers |
-| #282 | Dedicated account manager for Owner Business |
+| Issue | Title | Status |
+|-------|-------|--------|
+| #278 | Early access to new listings (Traveler Plus) | ✅ Done |
+| #279 | Exclusive deals for Premium travelers | ✅ Done |
+| #280 | Priority listing placement for Owner Pro | ✅ Done |
+| #281 | Concierge support for Premium travelers | ✅ Done |
+| #282 | Dedicated account manager for Owner Business | ✅ Done |
 
 ### Tier D: Marketing & Social (Non-Code, Human-Driven)
 
