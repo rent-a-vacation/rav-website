@@ -319,6 +319,31 @@ serve(async (req) => {
           } catch (emailError) {
             logStep("Warning: Failed to send owner confirmation request", { error: String(emailError) });
           }
+
+          // DEC-034 Phase 4: notify the traveler that their Wish-Matched
+          // booking is waiting on owner confirmation. Gives them visibility
+          // into the window (today they were silent after Offer acceptance).
+          try {
+            const resortName = ((booking.listing as Record<string, unknown>)?.property as Record<string, unknown>)?.resort_name as string | undefined;
+            await supabaseClient.functions.invoke("notification-dispatcher", {
+              body: {
+                type_key: "wish_owner_confirming",
+                user_id: booking.renter_id,
+                payload: {
+                  title: "Owner confirming your booking",
+                  message: resortName
+                    ? `Your Wish-Matched booking at ${resortName} is waiting on the owner's resort confirmation. We'll notify you as soon as they confirm.`
+                    : "Your Wish-Matched booking is waiting on the owner's resort confirmation. We'll notify you as soon as they confirm.",
+                  booking_id: booking.id,
+                  listing_id: booking.listing_id,
+                  deadline: ownerConfirmationDeadline.toISOString(),
+                },
+              },
+            });
+            logStep("Wish-Matched traveler notification dispatched", { renterId: booking.renter_id });
+          } catch (dispatchError) {
+            logStep("Warning: Failed to dispatch wish_owner_confirming", { error: String(dispatchError) });
+          }
         } else {
           logStep("Skipping owner-confirmation email — booking is pre_booked");
         }
