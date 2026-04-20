@@ -67,6 +67,10 @@ export function useActiveListings() {
           )
         `)
         .eq('status', 'active')
+        // DEC-034: wish_matched listings are auto-created for a specific
+        // accepting traveler and should never appear in generic search.
+        // They remain reachable via useListing() for that traveler's checkout.
+        .eq('source_type', 'pre_booked')
         .gte('check_out_date', today)
         .order('created_at', { ascending: false });
 
@@ -113,6 +117,7 @@ export function useActiveListingsCount() {
         .from('listings')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'active')
+        .eq('source_type', 'pre_booked')
         .gte('check_out_date', today);
 
       if (error) throw error;

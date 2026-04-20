@@ -22,6 +22,7 @@ import { BookingTimeline } from "@/components/booking/BookingTimeline";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { getCheckInCountdown, isImminentCheckIn } from "@/lib/renterDashboard";
+import { ListingTypeBadge } from "@/components/marketplace/ListingTypeBadge";
 
 interface DisputeInfo {
   id: string;
@@ -210,6 +211,7 @@ const MyBookings = ({ embedded }: { embedded?: boolean }) => {
               <Badge className={STATUS_COLORS[booking.status]}>
                 {STATUS_LABELS[booking.status]}
               </Badge>
+              <ListingTypeBadge type={booking.source_type ?? "pre_booked"} size="sm" />
               {countdownText && (
                 <Badge
                   variant="outline"

@@ -31,6 +31,7 @@ import {
   Shield,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ListingTypeBadge } from "@/components/marketplace/ListingTypeBadge";
 import { useListing, useActiveListings } from "@/hooks/useListings";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useJsonLd } from "@/hooks/useJsonLd";
@@ -371,8 +372,9 @@ const PropertyDetail = () => {
                 <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-3">
                   {displayName}
                 </h1>
-                {/* Social proof badges */}
+                {/* Social proof + type badges */}
                 <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <ListingTypeBadge type={(listing as { source_type?: "pre_booked" | "wish_matched" })?.source_type ?? "pre_booked"} />
                   {popularityLabel && (
                     <Badge className="bg-orange-500/90 text-white border-0">
                       <Flame className="w-3 h-3 mr-1" />

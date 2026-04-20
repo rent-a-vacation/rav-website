@@ -48,6 +48,7 @@ import { BidsManagerDialog } from "@/components/bidding/BidsManagerDialog";
 import { ActionSuccessCard } from "@/components/ActionSuccessCard";
 import { sendListingSubmittedEmail } from "@/lib/email";
 import { ListingFairValueBadge } from "@/components/fair-value/ListingFairValueBadge";
+import { ListingTypeBadge } from "@/components/marketplace/ListingTypeBadge";
 import { DemandSignal } from "@/components/bidding/DemandSignal";
 import { calculateNights, computeListingPricing } from "@/lib/pricing";
 
@@ -664,7 +665,7 @@ const OwnerListings = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <Badge className={
                         listing.status === 'active' && isPast(new Date(listing.check_out_date))
                           ? 'bg-orange-500'
@@ -674,6 +675,10 @@ const OwnerListings = () => {
                           ? 'Expired'
                           : STATUS_LABELS[listing.status]}
                       </Badge>
+                      <ListingTypeBadge
+                        type={(listing as { source_type?: "pre_booked" | "wish_matched" }).source_type ?? "pre_booked"}
+                        size="sm"
+                      />
                       {/* Bidding Status Badge */}
                       {listing.open_for_bidding && listing.bidding_ends_at && (
                         isPast(new Date(listing.bidding_ends_at)) ? (

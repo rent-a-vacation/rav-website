@@ -28,20 +28,28 @@ beforeEach(() => {
   resetListingCounter();
 });
 
+// Helper: build a two-eq chain for useActiveListings (status + source_type filters)
+// Returns .eq returning a chainable that itself has .eq -> same chain, then .gte -> terminal
+function buildTwoEqChain(terminal: unknown) {
+  const chain: Record<string, unknown> = { gte: mockGte.mockReturnValue(terminal) };
+  chain.eq = vi.fn().mockReturnValue(chain);
+  return chain;
+}
+
 describe("useActiveListings @p0", () => {
   it("returns active listings on success", async () => {
     const listings = mockListings(3);
 
     mockFrom.mockReturnValue({
       select: mockSelect.mockReturnValue({
-        eq: mockEq.mockReturnValue({
-          gte: mockGte.mockReturnValue({
+        eq: mockEq.mockReturnValue(
+          buildTwoEqChain({
             order: mockOrder.mockResolvedValue({
               data: listings,
               error: null,
             }),
           }),
-        }),
+        ),
       }),
     });
 
@@ -58,14 +66,14 @@ describe("useActiveListings @p0", () => {
   it("returns empty array when no listings exist", async () => {
     mockFrom.mockReturnValue({
       select: mockSelect.mockReturnValue({
-        eq: mockEq.mockReturnValue({
-          gte: mockGte.mockReturnValue({
+        eq: mockEq.mockReturnValue(
+          buildTwoEqChain({
             order: mockOrder.mockResolvedValue({
               data: [],
               error: null,
             }),
           }),
-        }),
+        ),
       }),
     });
 
@@ -80,14 +88,14 @@ describe("useActiveListings @p0", () => {
   it("handles database errors", async () => {
     mockFrom.mockReturnValue({
       select: mockSelect.mockReturnValue({
-        eq: mockEq.mockReturnValue({
-          gte: mockGte.mockReturnValue({
+        eq: mockEq.mockReturnValue(
+          buildTwoEqChain({
             order: mockOrder.mockResolvedValue({
               data: null,
               error: { message: "Database error" },
             }),
           }),
-        }),
+        ),
       }),
     });
 
@@ -135,14 +143,14 @@ describe("useListing", () => {
 
 describe("useActiveListingsCount", () => {
   it("returns count of active listings", async () => {
+    // Two .eq() calls (status, source_type) chained then .gte() resolves
+    const gteTerminal = mockGte.mockResolvedValue({ count: 5, error: null });
+    const countChain: Record<string, unknown> = { gte: gteTerminal };
+    countChain.eq = vi.fn().mockReturnValue(countChain);
+
     mockFrom.mockReturnValue({
       select: mockSelect.mockReturnValue({
-        eq: mockEq.mockReturnValue({
-          gte: mockGte.mockResolvedValue({
-            count: 5,
-            error: null,
-          }),
-        }),
+        eq: mockEq.mockReturnValue(countChain),
       }),
     });
 
