@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-19T16:25:58"
-change_ref: "d22b799"
+last_updated: "2026-04-20T02:55:17"
+change_ref: "f82a427"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -93,16 +93,16 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1125+ automated tests** (133 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **1133 automated tests** (133 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-057 (all deployed to DEV and PROD) + 3 date-based MDM migrations
-- **Edge functions:** 34 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN). `create-booking-checkout` deployed to both DEV and PROD with `--no-verify-jwt` (Session 54).
+- **Edge functions:** 34 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN). `create-booking-checkout` + `verify-booking-payment` deployed to both DEV and PROD with `--no-verify-jwt` (Session 54).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** dev ahead by 3 commits — PR #372 open (Stripe Tax gate + CI fix)
+- **dev and main:** in sync — PRs #372 + #373 merged (Session 54)
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
 ### Session Handoff (Sessions 25-54)
@@ -114,10 +114,16 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Deployed:** `create-booking-checkout` to both DEV and PROD with `--no-verify-jwt`. Migration 057 (tier features — Session 53 gap) caught up on both DEV and PROD.
 - **Cleanup:** Deleted 4 stale `pending` bookings on DEV from today's failed Stripe attempts (preserved the 10 seed-data pending bookings from 2026-04-05).
 - **DEC-033 (Platform Monitoring):** Chose Checkly (SaaS free tier) for synthetic uptime monitoring — see Key Decisions Log. Tracked as post-launch issue #370.
+- **QA scenario testing (S-01 to S-05) — 3 bugs fixed (PR #373):**
+  - **S-05 offers-tab crash** — `/my-trips?tab=offers` threw "Invalid time value" on `bid.created_at` + `request.proposals_deadline`. Regression of #354 (which only patched check-in/out dates). Added `formatDistanceToNowSafe` helper and applied at both crash sites.
+  - **S-05 bid notification missing** — `useCreateBid` inserted directly to `listing_bids` and never invoked `notification-dispatcher`. Added dispatch targeting listing owner with `type_key: new_bid_received` (non-blocking).
+  - **S-04 booking notification missing** — `verify-booking-payment` sent legacy email but never invoked `notification-dispatcher`. Added `booking_confirmed` dispatch after booking status flip (email unchanged).
+  - Also added `[functions.verify-booking-payment] verify_jwt = false` to `config.toml` to preempt the same gateway 401 regression.
+- **S-05 "Anonymous" bidder display** — investigated; source not found in code (`BidsManagerDialog` uses `getRenterDisplayName` correctly). Likely stale browser cache — hard-refresh + retest required to confirm.
 - **Follow-up issues:** #371 (edge function test harness — shipped Stripe fix without tests; flagged per CLAUDE.md Tests-With-Features). #370 (Checkly monitoring implementation).
 - **Docs:** LAUNCH-READINESS.md documents `STRIPE_TAX_ENABLED` under Payments check 7b with explicit activation criteria. Blocked Items row updated for #127.
 
-**End state:** PR #372 open with 3 commits (Stripe Tax gate + JWT config + CI fix). Migration 057 deployed to DEV + PROD. `create-booking-checkout` redeployed to both environments. Supabase CLI relinked to DEV.
+**End state:** PR #372 + #373 merged to main. All Session 54 code deployed to DEV + PROD: `create-booking-checkout`, `verify-booking-payment`, migration 057. Supabase CLI relinked to DEV. Dev and main in sync. Tests: 1133 passing (133 files), 0 type errors, build clean. QA tester to re-run S-02 / S-04 / S-05 on dev to confirm fixes.
 
 **Session 53 — Tier Features, API Review, Sentry Guide (Apr 17-18, 2026):**
 - **5 tier-gated features (#278-#282):** Early Access for Plus travelers (48h window on new listings), Exclusive Deals for Premium (admin-toggled `is_exclusive_deal`), Priority Listing Placement for Pro/Business owners (sort boost + Featured badge), Concierge Support for Premium (request system + admin tab), Dedicated Account Manager for Business owners (admin assignment + dashboard card). Migration 057. Shared `tierGating.ts` utility (6 functions, 26 tests). PR #367 merged.
