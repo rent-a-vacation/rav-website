@@ -14,12 +14,14 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, DollarSign, Ban, ExternalLink, AlertTriangle, MessageCircle, CheckCircle, Clock, RefreshCw, Star, ChevronDown } from "lucide-react";
+import { Calendar, MapPin, Users, DollarSign, Ban, ExternalLink, AlertTriangle, MessageCircle, CheckCircle, Clock, RefreshCw, Star, ChevronDown, Plane, KeyRound } from "lucide-react";
 import { format } from "date-fns";
 import type { Booking, BookingStatus, Listing, Property } from "@/types/database";
 import { computeBookingTimeline } from "@/lib/bookingTimeline";
 import { BookingTimeline } from "@/components/booking/BookingTimeline";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
+import { getCheckInCountdown, isImminentCheckIn } from "@/lib/renterDashboard";
 
 interface DisputeInfo {
   id: string;
@@ -32,9 +34,16 @@ interface DisputeInfo {
   resolved_at: string | null;
 }
 
+interface BookingConfirmationInfo {
+  resort_confirmation_number: string | null;
+  owner_confirmation_status: string | null;
+  owner_confirmation_deadline: string | null;
+}
+
 interface BookingWithListing extends Booking {
   listing: Listing & { property: Property };
   disputes?: DisputeInfo[];
+  booking_confirmations?: BookingConfirmationInfo[];
 }
 
 const DISPUTE_STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -96,6 +105,11 @@ const MyBookings = ({ embedded }: { embedded?: boolean }) => {
             refund_amount,
             created_at,
             resolved_at
+          ),
+          booking_confirmations(
+            resort_confirmation_number,
+            owner_confirmation_status,
+            owner_confirmation_deadline
           )
         `)
         .eq("renter_id", user.id)
@@ -166,6 +180,16 @@ const MyBookings = ({ embedded }: { embedded?: boolean }) => {
   const renderBookingCard = (booking: BookingWithListing) => {
     const listing = booking.listing;
     const property = listing?.property;
+    const confirmation = booking.booking_confirmations?.[0];
+
+    // Countdown only shown for upcoming bookings (confirmed/pending, check-in still in future)
+    const checkInDateStr = listing?.check_in_date;
+    const showCountdown =
+      checkInDateStr &&
+      (booking.status === "confirmed" || booking.status === "pending") &&
+      new Date(checkInDateStr + "T00:00:00") >= new Date();
+    const countdownText = showCountdown ? getCheckInCountdown(checkInDateStr!) : null;
+    const isImminent = countdownText ? isImminentCheckIn(countdownText) : false;
 
     return (
       <Card key={booking.id} className="overflow-hidden">
@@ -182,11 +206,20 @@ const MyBookings = ({ embedded }: { embedded?: boolean }) => {
                 </CardDescription>
               )}
             </div>
-            <Badge
-              className={`${STATUS_COLORS[booking.status]} shrink-0`}
-            >
-              {STATUS_LABELS[booking.status]}
-            </Badge>
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
+              <Badge className={STATUS_COLORS[booking.status]}>
+                {STATUS_LABELS[booking.status]}
+              </Badge>
+              {countdownText && (
+                <Badge
+                  variant="outline"
+                  className={`gap-1 ${isImminent ? "border-primary text-primary bg-primary/5" : "text-muted-foreground"}`}
+                >
+                  <Plane className="h-3 w-3" />
+                  {countdownText}
+                </Badge>
+              )}
+            </div>
           </div>
         </CardHeader>
 
@@ -270,14 +303,14 @@ const MyBookings = ({ embedded }: { embedded?: boolean }) => {
             </div>
           )}
 
-          {/* Expandable Full Timeline */}
+          {/* Expandable Booking Details — timeline + fees + cancellation policy */}
           {listing && (
             <Collapsible>
               <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                 <ChevronDown className="h-3 w-3" />
-                Timeline details
+                Booking details
               </CollapsibleTrigger>
-              <CollapsibleContent className="pt-2">
+              <CollapsibleContent className="pt-3 space-y-4">
                 <BookingTimeline
                   steps={computeBookingTimeline({
                     status: booking.status,
@@ -287,6 +320,52 @@ const MyBookings = ({ embedded }: { embedded?: boolean }) => {
                     hasReview: reviewedBookingIds.has(booking.id),
                   })}
                 />
+
+                {/* Fee breakdown */}
+                <div className="border-t pt-3">
+                  <h4 className="text-sm font-medium mb-2">Payment breakdown</h4>
+                  <div className="space-y-1 text-sm">
+                    {booking.base_amount != null && (
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Base rate</span>
+                        <span>${booking.base_amount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {booking.service_fee != null && booking.service_fee > 0 && (
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Service fee</span>
+                        <span>${booking.service_fee.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {booking.cleaning_fee != null && booking.cleaning_fee > 0 && (
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Cleaning fee</span>
+                        <span>${booking.cleaning_fee.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {booking.tax_amount != null && booking.tax_amount > 0 && (
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Tax</span>
+                        <span>${booking.tax_amount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between pt-1 border-t font-medium">
+                      <span>Total</span>
+                      <span>${booking.total_amount.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cancellation policy */}
+                {listing.cancellation_policy && (
+                  <div className="border-t pt-3">
+                    <CancellationPolicyDetail
+                      policy={listing.cancellation_policy}
+                      checkInDate={listing.check_in_date}
+                      compact
+                    />
+                  </div>
+                )}
               </CollapsibleContent>
             </Collapsible>
           )}
@@ -307,11 +386,22 @@ const MyBookings = ({ embedded }: { embedded?: boolean }) => {
             </div>
           </div>
 
-          {/* Booking Reference */}
-          <div className="flex items-center justify-between pt-3 border-t">
-            <span className="text-xs text-muted-foreground">
-              Ref: <span className="font-mono font-semibold tracking-wider">{booking.id.slice(0, 8).toUpperCase()}</span>
-            </span>
+          {/* Booking Reference + Resort Confirmation */}
+          <div className="flex items-center justify-between pt-3 border-t gap-2 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
+              <span>
+                Ref: <span className="font-mono font-semibold tracking-wider">{booking.id.slice(0, 8).toUpperCase()}</span>
+              </span>
+              {confirmation?.resort_confirmation_number && (
+                <span className="flex items-center gap-1">
+                  <KeyRound className="h-3 w-3" />
+                  Resort:{" "}
+                  <span className="font-mono font-semibold tracking-wider">
+                    {confirmation.resort_confirmation_number}
+                  </span>
+                </span>
+              )}
+            </div>
 
             <div className="flex items-center gap-2">
               {listing && (
