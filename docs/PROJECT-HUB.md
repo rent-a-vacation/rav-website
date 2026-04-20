@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-20T02:55:17"
-change_ref: "f82a427"
+last_updated: "2026-04-20T04:59:48"
+change_ref: "8a22d2d"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -93,7 +93,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1133 automated tests** (133 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **1140 automated tests** (133 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-057 (all deployed to DEV and PROD) + 3 date-based MDM migrations
@@ -102,10 +102,29 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync — PRs #372 + #373 merged (Session 54)
+- **dev and main:** in sync — Session 55 PRs #382 + #383 merged
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-54)
+### Session Handoff (Sessions 25-55)
+
+**Session 55 — QA Audit Response: /sdlc Phase 6, Phase A UX wins, Flow 1/2 scoped (Apr 20, 2026):**
+- **QA scenario spreadsheet read end-to-end** (S-01 to S-05) via xlsx download + Python parsing; tester notes catalogued. Full audit of 6 dimensions surfaced during testing: terminology, listing verification, cancel flow, open-for-bidding indicator, MyTrips booking details, and the Track 1/Track 2 mental model.
+- **6 GitHub issues opened** with full findings + acceptance criteria: #375 (terminology), #376 (pre-confirmed verification), #377 (cancel listing cascade), #378 (open-for-bidding indicator), #379 (MyTrips details), #380 (Flow 1/Flow 2 model). Plus #381 (role-relevant landing-view ordering spin-out from #375).
+- **DEC-034 — Marketplace Flow Distinction:** after user clarified "Track 1/Track 2" was never the right framing, established two flows end-to-end:
+  - **Flow 1 — Pre-Booked Stay:** owner has resort reservation; fixed dates; can be direct-book or bidding. Traveler books → instant confirm (no owner-confirmation countdown).
+  - **Flow 2 — Wish-Matched Stay:** traveler posts Wish → owner submits Offer → traveler accepts → owner has deadline to confirm at resort.
+  - Naming: **type labels** (Pre-Booked Stay / Wish-Matched Stay) + **status labels** (Confirmed / Pending Confirmation) used together in UI.
+  - #380 rewritten with full impact analysis: new `source_type` enum on bookings + listings, new `confirm-wish-booking` edge function, new admin wish-matched verification queue, 3 new notification types, 10 UI surfaces, 8 doc files, test coverage, QA scenario split. Blocks #376, #378, #381; coordinates with #377.
+- **DEC-035 — Path 3 Dashboard Naming:** keep brand-compliant short nav CTAs (My Trips, My Rentals, RAV Ops, RAV Insights) + add small-caps **role-descriptive eyebrow** above each dashboard H1 so the brand ↔ function mapping is visually guided.
+- **Phase A shipped (2 PRs merged):**
+  - **#382 (fix/feat MyTrips details):** itemized payment breakdown, cancellation-policy summary (reuses existing `CancellationPolicyDetail`), resort confirmation number (joined from `booking_confirmations`), check-in countdown badge with `isImminentCheckIn` helper (7 new tests). Closes #379.
+  - **#383 (Path 3 hybrid naming):** mobile nav "My Listings" → "My Rentals" fix + role-descriptive eyebrows on 4 dashboards + BRAND-LOCK Section 9 updated. Closes #375.
+- **`/sdlc` skill expanded** (Phase 6 mandatory checklist covering PROJECT-HUB, TESTING-STATUS, LAUNCH-READINESS, ARCHITECTURE + flow manifests, USER-GUIDE + FAQ, QA-PLAYBOOK, BRAND-LOCK, COMPLETED-PHASES, with 6-question self-check). Applied locally (`.claude/skills/sdlc/SKILL.md`); `.claude/` is gitignored so not version-controlled.
+- **QA scenario spreadsheet:** still read-only from this side (public share link); write-back requires Google Drive MCP auth next session.
+
+**End state:** 3 PRs merged (#382 MyTrips details, #383 Path 3 naming, plus the Session 55 docs commit). 7 open follow-up issues (#376, #377, #378, #380, #381 open; #375 + #379 closed). #380 is the foundational next step (Flow 1/Flow 2 model); pausing #376 / #378 until #380 ships as noted in its body.
+
+---
 
 **Session 54 — Stripe Tax Env-Flag Gate + DEC-033 Monitoring (Apr 18-19, 2026):**
 - **Stripe checkout unblocked on dev:** Booking confirmation on `dev.rent-a-vacation.com` was failing with `Edge Function returned a non-2xx status code`. Root cause: `automatic_tax: { enabled: true }` was hard-coded in `create-booking-checkout`, which Stripe rejects when no head office address is set on the account (DEV sandbox + pre-#127 live account both missing this). Gated behind `STRIPE_TAX_ENABLED` env var — default `false` → automatic_tax disabled → checkout succeeds. Live booking validated end-to-end.
@@ -785,6 +804,43 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-035: Path 3 Dashboard Naming — Brand CTA + Role-Descriptive Eyebrow
+**Date:** April 20, 2026 (Session 55)
+**Decision:** Keep the short brand-compliant nav CTAs per DEC-031 (**My Trips** / **My Rentals** / **RAV Ops** / **RAV Insights**) as the dominant dashboard labels. Add a small-caps, role-descriptive **eyebrow** above each dashboard H1 (**Traveler Dashboard** / **Property Owner Dashboard** / **RAV Admin Dashboard** or **RAV Staff Dashboard** / **Executive Dashboard — Business Intelligence**) so a first-time user instantly understands the mapping between the brand name and what the dashboard represents functionally.
+
+**Rationale:** Paths considered:
+- Path 1 (keep brand names, fix dropdown only) — compliant but doesn't clarify role
+- Path 2 (switch to uniform "[Role] Dashboard") — supersedes DEC-031, high churn
+- **Path 3 (hybrid)** ← chosen — preserves brand voice, adds visual role-guidance
+
+Sub-tab labels inside dashboards (e.g., the "My Listings" tab within My Rentals) name a **tab**, not the dashboard. Remain unchanged.
+
+**Status:** Shipped in PR #383. BRAND-LOCK Section 9 updated with Eyebrow column.
+
+**Follow-up:** #381 — role-relevant landing-view ordering (surface most time-sensitive items first on each dashboard).
+
+---
+
+### DEC-034: Marketplace Flow Distinction — Pre-Booked Stay vs Wish-Matched Stay
+**Date:** April 20, 2026 (Session 55)
+**Decision:** Model the two marketplace flows explicitly in code + UI. Previously referred to as "Track 1" / "Track 2" (techie, rejected).
+
+- **Flow 1 — Pre-Booked Stay:** Owner has the resort reservation already. Posts a Listing with fixed dates. Can optionally enable bidding. RAV staff verifies the reservation proof before listing goes active. Traveler books then instantly confirmed (no owner-confirmation countdown).
+- **Flow 2 — Wish-Matched Stay:** Traveler posts a Wish. Owner submits an Offer in response. Traveler accepts. Owner has a time window to go confirm the resort reservation. RAV staff verifies owner's post-acceptance confirmation. Only then does booking become active.
+
+**Naming convention:**
+- **Type labels (origin):** "Pre-Booked Stay" (Flow 1) · "Wish-Matched Stay" (Flow 2)
+- **Status labels (lifecycle):** "Confirmed" · "Pending Confirmation"
+- Both labels appear together in UI (type answers "where did this come from", status answers "where is it in its lifecycle")
+
+**Scope:** Foundational architectural change. New `source_type` enum on `bookings` + `listings` tables; new `confirm-wish-booking` edge function; new admin wish-matched verification queue; 3 new notification types; 10 UI surfaces updated; all docs (USER-GUIDE, FAQ, ARCHITECTURE, LAUNCH-READINESS, BRAND-LOCK, QA-PLAYBOOK) updated with parallel Flow 1 / Flow 2 sections; QA scenarios split into S-##a (Pre-Booked) and S-##b (Wish-Matched) variants.
+
+**Current state pre-decision:** Flow 2 exists implicitly — accepted Offers auto-create listings (`useBidding.ts:538-571`) with `status='active'` — bypassing admin review entirely. `booking_confirmations.owner_confirmation_deadline` fires for every booking regardless of flow, which is why Track 1 testers reported the countdown felt irrelevant (S-04 R15).
+
+**Status:** Scoped in #380 with full impact analysis. Blocks #376, #378, #381; coordinates with #377. Estimated 2-3 days of focused implementation work.
 
 ---
 
