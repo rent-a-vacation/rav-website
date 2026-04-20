@@ -21,6 +21,8 @@
     "prepare": "husky",
     "docs:audit": "npx tsx scripts/docs-audit.ts",
     "docs:audit:ci": "npx tsx scripts/docs-audit.ts --ci",
+    "docs:sync-check": "npx tsx scripts/docs-sync-check.ts",
+    "docs:sync-check:ci": "npx tsx scripts/docs-sync-check.ts --ci",
     "docs:stamp": "bash scripts/docs-stamp.sh",
     "docs:migrate": "npx tsx scripts/docs-migrate-frontmatter.ts"
   },

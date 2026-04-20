@@ -93,6 +93,23 @@ After every merged PR, walk through this checklist. **No session ends with stale
 
 If the answer to any of these is "no", fix it before closing.
 
+### Automated enforcement (run this before closing the session):
+
+```bash
+npm run docs:sync-check
+```
+
+This runs `scripts/docs-sync-check.ts` and programmatically verifies that the four docs `/sdlc status` depends on are current:
+
+- `docs/PROJECT-HUB.md` — Session Handoff header matches latest session in git
+- `docs/PRIORITY-ROADMAP.md` — "as of Session NN" header is within 1 session of git
+- `docs/testing/TESTING-STATUS.md` — claimed test count matches `test-results/junit.xml` within ±5%
+- `docs/LAUNCH-READINESS.md` — `change_type` frontmatter is within 3 sessions of git
+
+The same check runs in CI on every PR via `.github/workflows/docs-audit.yml` — PRs with stale docs fail the check and get a comment showing which files need updating. If the CI check fails, update the flagged files, then re-push.
+
+**This is the safety net for the self-discipline checklist above.** The checklist tells you what to update; `docs:sync-check` tells you if you actually did it.
+
 ### Issue lifecycle
 - **New idea** → create issue with `idea` label, no milestone (Backlog)
 - **Ready to work** → add milestone, move to `Ready`
