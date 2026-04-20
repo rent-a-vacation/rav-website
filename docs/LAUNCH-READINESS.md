@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-18T18:06:32"
-change_ref: "8e90642"
+last_updated: "2026-04-20T12:58:39"
+change_ref: "0a2ec90"
 change_type: "session-54"
 status: "active"
 ---
@@ -78,6 +78,9 @@ The following major features were completed in Sessions 33-48 and are deployed:
 | 6 | Stripe live mode | Manual | Supabase Dashboard > Edge Functions > Secrets: `STRIPE_SECRET_KEY` starts with `sk_live_` |
 | 7 | Stripe webhook configured | Manual | Stripe Dashboard > Developers > Webhooks: endpoint points to PROD Supabase `stripe-webhook` function |
 | 7b | Stripe Tax enabled on PROD (only if #127 cleared) | Manual | After live Stripe Tax is fully activated (head office address set, registrations added), run `npx supabase secrets set STRIPE_TAX_ENABLED=true --project-ref xzfllqndrlmhclqfybew`. Leave unset on DEV. Default is `false` — bookings succeed without tax collection until this is flipped. |
+| 7c | Marketplace flow distinction (DEC-034) | Auto | Migration 058 (source_type enum + bookings/listings columns + travel_proposal_id FK) and Migration 059 (3 wish_owner_* notification_catalog entries) deployed to DEV + PROD. `create-booking-checkout` and `verify-booking-payment` branch per source_type. Public search excludes wish_matched listings. |
+| 7d | Pre-Booked Stay E2E | Manual | Book a direct listing → `/booking-success` shows Confirmed immediately; MyBookings shows "Pre-Booked Stay" + "Confirmed" badges; no owner-confirmation countdown. |
+| 7e | Wish-Matched Stay E2E | Manual | Renter posts Wish → owner submits Offer → renter accepts + pays → renter receives `wish_owner_confirming` notification; MyBookings shows "Wish-Matched Stay" + "Pending Confirmation" badge + countdown; when owner confirms, renter receives `wish_owner_confirmed` and status flips to Confirmed. |
 
 ### Security
 | # | Check | Type | How to Verify |
