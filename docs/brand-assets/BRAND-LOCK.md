@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-20T04:52:26"
-change_ref: "824263c"
+last_updated: "2026-04-20T12:58:39"
+change_ref: "0a2ec90"
 change_type: "session-52-terminology-lock"
 status: "active"
 ---
@@ -348,6 +348,36 @@ Every named feature follows one of three naming patterns. When adding a new feat
 | **Offer** | Proposed transaction at a price — works both directions | Renter (on a Listing) or Owner (on a Wish) | `listing_bids` (renter→listing) OR `travel_proposals` (owner→Wish) |
 
 **"Offer" replaces both "Bid" (old UI) and "Proposal" (old UI).** In the database, the two mechanics are still stored in separate tables (`listing_bids` vs `travel_proposals`) because they point at different parents — but end users see a single noun: "Offer."
+
+### Marketplace Flow Types — DEC-034 (Session 55-56)
+
+Every booking originates from one of two flows. Both labels appear together in the UI (type answers "where did this come from", status answers "where is it in its lifecycle").
+
+| Type label (origin) | What it means | Status labels (lifecycle) | DB value |
+|---|---|---|---|
+| **Pre-Booked Stay** | Owner already has the resort reservation. Dates are fixed. Listing goes live after RAV staff verifies proof. Traveler books → **instantly confirmed**. | Just "Confirmed" — there is no pending owner step. | `listings.source_type = 'pre_booked'` · `bookings.source_type = 'pre_booked'` |
+| **Wish-Matched Stay** | Traveler posts a Wish, owner submits an Offer, traveler accepts. Owner does *not* yet have the resort reservation — they have a deadline to secure it. | "Pending Confirmation" (while owner confirms at resort) → "Confirmed" (after owner submits resort confirmation number). | `listings.source_type = 'wish_matched'` · `bookings.source_type = 'wish_matched'` |
+
+**Why two flows:** Pre-Booked stays are ready-to-book inventory. Wish-Matched stays are a traveler-driven request that the owner fulfills after acceptance. RAV staff verification and owner UX are different per flow (Pre-Booked owners prove the reservation once, at list time; Wish-Matched owners confirm after each accepted Offer).
+
+**Visual system:**
+- Pre-Booked Stay badge: emerald outline + `CalendarCheck` icon
+- Wish-Matched Stay badge: amber outline + `Sparkles` icon
+- Badge component: `src/components/marketplace/ListingTypeBadge.tsx`
+
+**Search visibility:** Wish-Matched listings are auto-created for a specific accepting traveler; they must never appear in generic public search. Search queries filter `source_type = 'pre_booked'`. Wish-Matched listings are only reachable via their direct `/property/:id` URL during the accepting traveler's checkout.
+
+**Where the badge renders:**
+- MyBookings (renter) · PropertyDetail · OwnerListings · AdminEscrow rows + filter select
+
+**Owner-confirmation countdown** (`OwnerConfirmationTimer.tsx`) renders only for Wish-Matched bookings. Pre-Booked bookings skip it entirely — their `booking_confirmations` row is created with `owner_confirmation_status='owner_confirmed'` at payment time.
+
+**Notifications (catalog `type_key`):**
+- `wish_owner_confirming` — traveler, right after payment on a Wish-Matched booking ("owner confirming by {deadline}")
+- `wish_owner_confirmed` — traveler, when owner confirms ("your stay is locked in")
+- `wish_owner_failed_to_confirm` — traveler, if owner times out (timeout cron is a parked follow-up)
+
+Pre-Booked bookings use the existing `booking_confirmed` notification — no wish-specific messaging.
 
 ### Navigation & Page Titles — Path 3 Hybrid (Session 55)
 

@@ -46,7 +46,8 @@ import {
   Share2,
   Compass,
   Crown,
-  Percent
+  Percent,
+  Sparkles,
 } from "lucide-react";
 
 const UserGuide = () => {
@@ -92,6 +93,7 @@ const UserGuide = () => {
 
   const renterSections = [
     { id: "getting-started", label: "Getting Started", icon: Home },
+    { id: "stay-types", label: "Types of Stays", icon: Sparkles },
     { id: "search-book", label: "Search & Book", icon: Search },
     { id: "travel-requests", label: "Submit RAV Wishes", icon: Plane },
     { id: "place-bids", label: "Make Offers on Listings", icon: Gavel },
@@ -1477,6 +1479,64 @@ const UserGuide = () => {
               </section>
             )}
 
+            {/* Types of Stays (Pre-Booked vs Wish-Matched) */}
+            {activeRole === "renter" && (isPrinting || activeSection === "stay-types") && (
+              <section className="space-y-8 print:break-after-page">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">Types of Stays</h1>
+                  <p className="text-xl text-muted-foreground">
+                    Every booking on RAV falls into one of two flows. The type badge on each listing or booking tells you which, so you know what to expect.
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="rounded-xl p-6 border-2 border-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-900/20">
+                    <div className="flex items-center gap-2 mb-3">
+                      <CalendarCheck className="h-6 w-6 text-emerald-600" />
+                      <h3 className="font-semibold text-xl text-emerald-900 dark:text-emerald-100">Pre-Booked Stay</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      The owner already has the resort reservation. The week and dates are locked in. When you book, you're confirmed immediately — no wait.
+                    </p>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" /><span>Appears in generic search and browse</span></li>
+                      <li className="flex items-start gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" /><span>"Confirmed" status right after payment</span></li>
+                      <li className="flex items-start gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" /><span>RAV staff verified the owner's resort confirmation at list time</span></li>
+                    </ul>
+                  </div>
+
+                  <div className="rounded-xl p-6 border-2 border-amber-500/40 bg-amber-50/40 dark:bg-amber-900/20">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="h-6 w-6 text-amber-600" />
+                      <h3 className="font-semibold text-xl text-amber-900 dark:text-amber-100">Wish-Matched Stay</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      You posted a Wish; an owner responded with an Offer and you accepted. The owner now has a short window to confirm the reservation with the resort.
+                    </p>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2"><Clock className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" /><span>Status starts as "Pending Confirmation" until the owner confirms at the resort</span></li>
+                      <li className="flex items-start gap-2"><Bell className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" /><span>You'll get a notification the moment the owner confirms (or if they can't)</span></li>
+                      <li className="flex items-start gap-2"><Shield className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" /><span>If the owner fails to confirm, you get a full refund automatically</span></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-card rounded-xl p-6 border">
+                  <h3 className="font-semibold text-lg mb-2">How to tell which is which</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Look for the small-coloured badge next to the status:
+                  </p>
+                  <ul className="text-sm space-y-2 text-muted-foreground">
+                    <li><strong className="text-emerald-700">Pre-Booked Stay</strong> — emerald with a calendar-check icon</li>
+                    <li><strong className="text-amber-700">Wish-Matched Stay</strong> — amber with a sparkles icon</li>
+                  </ul>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Hover the badge to see a tooltip summarizing what each type means.
+                  </p>
+                </div>
+              </section>
+            )}
+
             {/* Search & Book */}
             {activeRole === "renter" && (isPrinting || activeSection === "search-book") && (
               <section className="space-y-8 print:break-after-page">
@@ -2341,8 +2401,9 @@ const UserGuide = () => {
                     { q: "Why can't I use voice search?", a: "Voice search requires a logged-in, approved account. If you see a disabled microphone icon, sign in first. If your account is pending approval, wait for the approval email. If you've reached your daily quota (Free: 5, Plus/Pro: 25, Premium/Business: unlimited), try again tomorrow or use manual text search." },
                     { q: "How do I get my account approved?", a: "After signing up, your account is reviewed by our team. You'll receive an email notification once approved (typically within 24 hours). Until then, you'll see a 'Pending Approval' page." },
                     { q: "What is the daily voice search limit?", a: "Voice search quotas are tier-based: Free members get 5/day, Plus/Pro get 25/day, and Premium/Business members have unlimited searches. Quotas reset at midnight. A badge near the search bar shows your remaining searches. Manual text search has no limits." },
+                    { q: "What's the difference between a Pre-Booked Stay and a Wish-Matched Stay?", a: "Pre-Booked Stay: the owner already has the resort reservation — you're booking a ready-to-go week, confirmed the moment you pay. Wish-Matched Stay: you posted a Wish, an owner responded with an Offer, you accepted. The owner then has a short window to lock in the resort reservation; you'll see 'Pending Confirmation' until they confirm. If they can't, you get a full automatic refund. The small coloured badge (emerald = Pre-Booked, amber = Wish-Matched) appears next to every listing and booking so you always know which flow applies." },
                     { q: "Is my payment secure?", a: "Yes, all payments are processed through Stripe and held in escrow until your stay completes successfully." },
-                    { q: "What if the owner doesn't confirm?", a: "If the owner doesn't confirm within 48 hours, your booking is automatically cancelled with a full refund." },
+                    { q: "What if the owner doesn't confirm?", a: "For a Pre-Booked Stay this does not apply — the owner already had the reservation. For a Wish-Matched Stay, if the owner doesn't confirm within the deadline, your booking is automatically cancelled with a full refund, and you'll be notified." },
                     { q: "Can I cancel my booking?", a: "Yes — go to My Bookings, click 'Cancel' on the booking card, and confirm. Your refund depends on the listing's cancellation policy: Flexible (full refund 24h before), Moderate (full refund 5 days before), Strict (50% refund 7 days before), or Super Strict (no refund). See the My Bookings & Cancellations section for details." },
                     { q: "What if the property isn't as described?", a: "Report the issue during check-in. RAV support will work to resolve it, potentially including relocation or refund." },
                     { q: "How do I contact the owner?", a: "Owner contact information is provided after booking confirmation, 24 hours before check-in." },

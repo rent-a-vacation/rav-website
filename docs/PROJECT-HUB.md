@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-20T04:59:48"
-change_ref: "8a22d2d"
+last_updated: "2026-04-20T12:58:39"
+change_ref: "0a2ec90"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -93,19 +93,32 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1140 automated tests** (133 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s — run with `npm run test:p0`
+- **1146 automated tests** (134 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-057 (all deployed to DEV and PROD) + 3 date-based MDM migrations
-- **Edge functions:** 34 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN). `create-booking-checkout` + `verify-booking-payment` deployed to both DEV and PROD with `--no-verify-jwt` (Session 54).
+- **Migrations created:** 001-059 (all deployed to DEV and PROD) + 3 date-based MDM migrations
+- **Edge functions:** 34 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN). `create-booking-checkout` + `verify-booking-payment` deployed to both DEV and PROD with `--no-verify-jwt` (Session 54–56).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
+- **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync — Session 55 PRs #382 + #383 merged
+- **dev and main:** in sync — Session 55–56 PRs #382, #383, #384, #385, #386, #387, #388, #389 merged
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-55)
+### Session Handoff (Sessions 25-56)
+
+**Session 56 — DEC-034 shipped: Pre-Booked Stay / Wish-Matched Stay end-to-end (Apr 20, 2026):**
+- **#380 implemented in 5 incremental PRs** — schema + edge-function branching + UI badges + notifications + docs. Zero big-bang; each phase shipped to DEV + PROD independently.
+  - **Phase 1 — Schema (PR #385):** Migration 058 adds `listing_source_type` enum + `source_type` on listings + bookings + `travel_proposal_id` FK. Backfills auto-created wish-matched listings (based on their notes field) and their bookings (joined via travel_proposals.listing_id).
+  - **Phase 2 — Edge function branching (PR #386):** `create-booking-checkout` inherits `source_type` + `travel_proposal_id` from the listing when creating the booking. `verify-booking-payment` branches per `source_type`: pre_booked → `owner_confirmation_status='owner_confirmed'` immediately (no countdown, no "please confirm at resort" email); wish_matched → existing flow preserved (pending_owner with deadline + reminder email).
+  - **Phase 3 — UI badges + critical search filter (PR #387):** New `ListingTypeBadge` component (emerald Pre-Booked / amber Wish-Matched). Applied to MyBookings, PropertyDetail, OwnerListings. **Important bug fix:** `useActiveListings` previously returned wish_matched listings in public search, meaning Traveler B could see/book Traveler A's wish-matched listing. Filter now restricts search to `source_type='pre_booked'`. 6 P0 tests added.
+  - **Phase 4 — Notifications + admin filter (PR #388):** Migration 059 adds 3 new `notification_catalog` entries (`wish_owner_confirming`, `wish_owner_confirmed`, `wish_owner_failed_to_confirm`). `verify-booking-payment` dispatches `wish_owner_confirming` to the traveler after Wish-Matched payment. `useConfirmBooking` hook dispatches `wish_owner_confirmed` when the owner confirms a Wish-Matched booking. AdminEscrow gets a "Filter by type" select + inline `ListingTypeBadge` per row. Deferred: timeout cron for `wish_owner_failed_to_confirm`.
+  - **Phase 5 — Docs (PR #389):** BRAND-LOCK §9 adds Marketplace Flow Types table with full terminology map. USER-GUIDE adds a new "Types of Stays" renter section + FAQ entries explaining Pre-Booked vs Wish-Matched. LAUNCH-READINESS rows 7c–7e added (schema deployed + E2E smoke tests for each flow). TESTING-STATUS 1140 → 1146 tests. This handoff entry.
+
+**End state:** Both marketplace flows fully wired end-to-end on DEV + PROD. Traveler gets explicit notifications through the Wish-Matched lifecycle (previously they were silent after Offer acceptance). Pre-Booked travelers no longer see irrelevant owner-confirmation countdowns (S-04 R15 tester feedback closed). Search no longer leaks Wish-Matched listings. Badge visual system consistent across all user-facing surfaces. Next: #376 (pre-booked listing verification workflow — now unblocked), #378 (open-for-bidding indicator — now unblocked), #381 (role-relevant landing-view ordering), #377 (cancel-listing cascade — standalone).
+
+---
 
 **Session 55 — QA Audit Response: /sdlc Phase 6, Phase A UX wins, Flow 1/2 scoped (Apr 20, 2026):**
 - **QA scenario spreadsheet read end-to-end** (S-01 to S-05) via xlsx download + Python parsing; tester notes catalogued. Full audit of 6 dimensions surfaced during testing: terminology, listing verification, cancel flow, open-for-bidding indicator, MyTrips booking details, and the Track 1/Track 2 mental model.
@@ -825,7 +838,7 @@ Sub-tab labels inside dashboards (e.g., the "My Listings" tab within My Rentals)
 ---
 
 ### DEC-034: Marketplace Flow Distinction — Pre-Booked Stay vs Wish-Matched Stay
-**Date:** April 20, 2026 (Session 55)
+**Date:** April 20, 2026 (Session 55 — scoped, Session 56 — **SHIPPED** in #380 Phases 1-5, PRs #385-#389)
 **Decision:** Model the two marketplace flows explicitly in code + UI. Previously referred to as "Track 1" / "Track 2" (techie, rejected).
 
 - **Flow 1 — Pre-Booked Stay:** Owner has the resort reservation already. Posts a Listing with fixed dates. Can optionally enable bidding. RAV staff verifies the reservation proof before listing goes active. Traveler books then instantly confirmed (no owner-confirmation countdown).
