@@ -117,6 +117,9 @@ const RenterDashboard = () => {
       <div className="pt-20 md:pt-24 pb-12">
         <div className="container mx-auto px-4">
           <div className="mb-8 md:mb-10">
+            <div className="text-xs font-medium tracking-widest uppercase text-muted-foreground mb-1.5">
+              Traveler Dashboard
+            </div>
             <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground tracking-tight">
               My Trips
             </h1>

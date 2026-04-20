@@ -464,7 +464,7 @@ const Header = () => {
                   className={`py-2.5 text-sm font-medium transition-colors ${isActive("/owner-dashboard") ? "text-foreground" : "text-muted-foreground"}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  My Listings
+                  My Rentals
                 </Link>
                 <Link
                   to="/owner-dashboard?tab=offers-sent"

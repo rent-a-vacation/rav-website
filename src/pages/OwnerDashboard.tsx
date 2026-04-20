@@ -315,6 +315,9 @@ const OwnerDashboard = () => {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
+                <div className="text-[10px] sm:text-xs font-medium tracking-widest uppercase text-muted-foreground mb-0.5">
+                  Property Owner Dashboard
+                </div>
                 <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight">My Rentals</h1>
                 <p className="text-sm text-muted-foreground">
                   Manage listings, bookings, earnings, and more.

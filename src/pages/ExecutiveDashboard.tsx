@@ -15,7 +15,7 @@ import Footer from '@/components/Footer';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const ExecutiveDashboard = () => {
-  usePageMeta('RAV Insights', 'Executive dashboard for Rent-A-Vacation marketplace operations and business intelligence.');
+  usePageMeta('RAV Insights — Business Intelligence', 'Executive dashboard for Rent-A-Vacation marketplace operations and business intelligence.');
 
   const { user, isRavTeam, isLoading } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -47,6 +47,9 @@ const ExecutiveDashboard = () => {
           {/* Page header */}
           <div className="flex items-start justify-between mb-8 md:mb-10 gap-6">
             <div>
+              <div className="text-xs font-medium tracking-widest uppercase text-slate-400 mb-1.5">
+                Executive Dashboard — Business Intelligence
+              </div>
               <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">RAV Insights</h1>
               <p className="text-sm text-slate-400 mt-2 max-w-2xl">
                 Boardroom-grade intelligence. Real-time marketplace performance, proprietary metrics like Liquidity Score and Bid Spread Index,
