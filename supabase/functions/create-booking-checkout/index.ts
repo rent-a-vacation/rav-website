@@ -68,11 +68,28 @@ serve(async (req) => {
     if (listingError || !listing) {
       throw new Error("Listing not found or not available");
     }
-    logStep("Listing fetched", { 
-      listingId: listing.id, 
+    logStep("Listing fetched", {
+      listingId: listing.id,
       price: listing.final_price,
-      property: listing.property?.resort_name 
+      property: listing.property?.resort_name,
+      sourceType: listing.source_type,
     });
+
+    // DEC-034: Inherit source_type from listing; for wish_matched bookings
+    // also link back to the originating travel_proposal so the admin queue
+    // + reporting can reconcile the full flow.
+    const listingSourceType: "pre_booked" | "wish_matched" =
+      listing.source_type === "wish_matched" ? "wish_matched" : "pre_booked";
+    let travelProposalId: string | null = null;
+    if (listingSourceType === "wish_matched") {
+      const { data: proposal } = await supabaseClient
+        .from("travel_proposals")
+        .select("id")
+        .eq("listing_id", listing.id)
+        .eq("status", "accepted")
+        .maybeSingle();
+      travelProposalId = proposal?.id ?? null;
+    }
 
     // Determine commission rate:
     // 1. Check per-owner agreement override
@@ -156,6 +173,8 @@ serve(async (req) => {
         owner_payout: ownerPayout,
         guest_count: guestCount || 1,
         special_requests: specialRequests || null,
+        source_type: listingSourceType,
+        travel_proposal_id: travelProposalId,
       })
       .select()
       .single();

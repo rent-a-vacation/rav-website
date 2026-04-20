@@ -198,25 +198,50 @@ serve(async (req) => {
         logStep("Using default owner confirmation window", { minutes: ownerConfirmationWindowMinutes });
       }
 
-      // Calculate owner confirmation deadline
-      const ownerConfirmationDeadline = new Date();
-      ownerConfirmationDeadline.setMinutes(ownerConfirmationDeadline.getMinutes() + ownerConfirmationWindowMinutes);
+      // DEC-034: branch the owner-confirmation flow per listing source_type.
+      //   pre_booked   -> owner already has the resort reservation; skip the
+      //                   countdown, mark owner_confirmed immediately. The
+      //                   renter sees a Confirmed booking right away.
+      //   wish_matched -> owner has to go confirm at the resort; keep the
+      //                   existing deadline + reminder flow.
+      const sourceType: "pre_booked" | "wish_matched" =
+        booking.source_type === "wish_matched" ? "wish_matched" : "pre_booked";
+      logStep("Source type determined", { sourceType });
 
-      // Create booking_confirmations record with 48-hour deadline (escrow) + owner confirmation
       const confirmationDeadline = getConfirmationDeadline();
+      const ownerConfirmationDeadline = new Date();
+      ownerConfirmationDeadline.setMinutes(
+        ownerConfirmationDeadline.getMinutes() + ownerConfirmationWindowMinutes,
+      );
+
+      const confirmationInsertBody = sourceType === "pre_booked"
+        ? {
+            booking_id: bookingId,
+            listing_id: booking.listing_id,
+            owner_id: booking.listing?.owner_id,
+            confirmation_deadline: confirmationDeadline,
+            escrow_status: "pending_confirmation",
+            escrow_amount: booking.total_amount,
+            owner_confirmation_status: "owner_confirmed",
+            owner_confirmed_at: new Date().toISOString(),
+            owner_confirmation_deadline: null,
+            extensions_used: 0,
+          }
+        : {
+            booking_id: bookingId,
+            listing_id: booking.listing_id,
+            owner_id: booking.listing?.owner_id,
+            confirmation_deadline: confirmationDeadline,
+            escrow_status: "pending_confirmation",
+            escrow_amount: booking.total_amount,
+            owner_confirmation_status: "pending_owner",
+            owner_confirmation_deadline: ownerConfirmationDeadline.toISOString(),
+            extensions_used: 0,
+          };
+
       const { data: bookingConfirmation, error: confirmationError } = await supabaseClient
         .from("booking_confirmations")
-        .insert({
-          booking_id: bookingId,
-          listing_id: booking.listing_id,
-          owner_id: booking.listing?.owner_id,
-          confirmation_deadline: confirmationDeadline,
-          escrow_status: "pending_confirmation",
-          escrow_amount: booking.total_amount,
-          owner_confirmation_status: "pending_owner",
-          owner_confirmation_deadline: ownerConfirmationDeadline.toISOString(),
-          extensions_used: 0,
-        })
+        .insert(confirmationInsertBody)
         .select()
         .single();
 
@@ -273,23 +298,29 @@ serve(async (req) => {
           logStep("Warning: Failed to dispatch in-app notification", { error: String(dispatchError) });
         }
 
-        // Send owner confirmation request notification
-        try {
-          const notificationUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-booking-confirmation-reminder`;
-          await fetch(notificationUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
-            },
-            body: JSON.stringify({
-              type: "owner_confirmation_request",
-              bookingConfirmationId: bookingConfirmation.id,
-            }),
-          });
-          logStep("Owner confirmation request notification sent");
-        } catch (emailError) {
-          logStep("Warning: Failed to send owner confirmation request", { error: String(emailError) });
+        // DEC-034: only send the "please confirm at the resort" email for
+        // wish_matched bookings. Pre_booked listings already have the
+        // reservation, so the email would be confusing.
+        if (sourceType === "wish_matched") {
+          try {
+            const notificationUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-booking-confirmation-reminder`;
+            await fetch(notificationUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+              },
+              body: JSON.stringify({
+                type: "owner_confirmation_request",
+                bookingConfirmationId: bookingConfirmation.id,
+              }),
+            });
+            logStep("Owner confirmation request notification sent (wish_matched)");
+          } catch (emailError) {
+            logStep("Warning: Failed to send owner confirmation request", { error: String(emailError) });
+          }
+        } else {
+          logStep("Skipping owner-confirmation email — booking is pre_booked");
         }
       }
 
