@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-20T12:58:39"
-change_ref: "0a2ec90"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-21T11:05:47"
+change_ref: "469ee98"
+change_type: "session-57"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** March 10, 2026 (Session 38: #173, #174)
+> **Last Updated:** April 20, 2026 (Session 57: DEC-036, Phase 22 epic scoped)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -106,7 +106,24 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **dev and main:** in sync — Session 55–56 PRs #382, #383, #384, #385, #386, #387, #388, #389 merged
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-56)
+### Session Handoff (Sessions 25-57)
+
+**Session 57 — Phase 22 Customer Support Foundation scoped, DEC-036 logged (Apr 20, 2026):**
+- **Milestone #37 + Epic #395 + 22 child issues #396-#417 created.** Planning-only session; no code shipped.
+- **User brief reviewed** (`customer-support-crew-ai.md`): 3-agent CrewAI team + 13 support docs + support widget. Recommended **rejecting CrewAI** and extending existing RAVIO text chat (`supabase/functions/text-chat/index.ts`) with a `context: 'support'` branch + tool use (5 functions: `lookup_booking`, `check_refund_status`, `check_dispute_status`, `open_dispute`, `query_support_docs`). See DEC-036.
+- **VAPI voice stays discovery-only** — quota-metered, poor at auth-gated support queries. No voice-support build.
+- **Gap analysis vs brief:** added 7 docs beyond the original 13 (privacy, trust-safety, insurance-liability, subscription-terms — legal-blocked; account-security, emergency-safety, support-sla — not blocked). Total: **20 support docs** in `docs/support/{policies,faqs,processes}/`.
+- **Docs storage: markdown canonical → Supabase `support_docs` index (one-way sync).** Git diff audit trail for legal review; DB is a build-time cache for fast agent retrieval. GitHub Action on push to main invokes `ingest-support-docs` edge fn.
+- **RAVIO UI: route-based context detection + intent classifier fallback + "Switched to Support" chip.** No explicit user toggle — matches memory rule [Rooted in Simplicity].
+- **Escalation:** agent-opened disputes land in existing `AdminDisputes` with `source: 'ravio_support'` tag — no parallel admin dashboard. Reuses migration 041 + `ReportIssueDialog` infrastructure.
+- **Legal blocker narrowed:** only 6 public-facing policy drafts (#404) blocked by #80. Internal workflow + FAQs are not blocked.
+- **22 issues across 5 tracks:** A infrastructure (4), B content (5), C RAVIO extension (5), D observability (2), E architecture diagrams (6, incl. `CS-OVERVIEW.md` VC-ready one-pager).
+- **Ready-to-start entry points:** #400 (B1 gap analysis, 2-3h, gates content tracks) + #396 (A1 folder + frontmatter schema, independent of content).
+- **Script preserved:** `scripts/create-phase22-issues.sh` (idempotent — skips titles already present in milestone).
+
+**End state:** Phase 22 milestone scoped with full epic + 22 child issues. `docs/support/` not yet created (part of #396). No DB migrations. No code changes. Memory saved: `phase22_customer_support_architecture.md`.
+
+---
 
 **Session 56 — DEC-034 shipped: Pre-Booked Stay / Wish-Matched Stay end-to-end (Apr 20, 2026):**
 - **#380 implemented in 5 incremental PRs** — schema + edge-function branching + UI badges + notifications + docs. Zero big-bang; each phase shipped to DEV + PROD independently.
@@ -817,6 +834,33 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-036: RAVIO Support Architecture — Extend Text Chat, Not CrewAI; Voice Stays Discovery-Only
+**Date:** April 20, 2026 (Session 57)
+**Decision:** Build v1 customer support by extending the existing RAVIO text-chat edge function with a `context: 'support'` branch + Claude tool use. **Do not adopt CrewAI or any multi-agent orchestration framework.** VAPI voice remains discovery-only and is not extended into support.
+
+**Rationale:**
+1. **Shape of the problem.** Customer support is single-threaded — classify intent → fetch context → answer or escalate. CrewAI shines for collaborative multi-agent pipelines (researcher → writer → editor), which is not this shape. Added orchestration overhead with no payoff.
+2. **Reuse the existing stack.** `supabase/functions/text-chat/index.ts` already handles SSE streaming, rate limiting, multi-context system prompts, and auth. Adding a `'support'` context is ~10% of the cost of standing up a parallel CrewAI surface.
+3. **Voice is wrong for support.** VAPI is quota-metered (Free 5/day → Premium unlimited). Support queries burn quota and are poor fits for voice (auth-gated account lookups, evidence upload, screens showing charges). Keep voice as a premium discovery feature.
+4. **Escalation reuses existing dispute infrastructure** (migration 041, `ReportIssueDialog`, `AdminDisputes`). Agent's `open_dispute` tool creates a dispute row with `source: 'ravio_support'` so admins can distinguish agent-opened disputes.
+
+**UI pattern:**
+- **Route-based context detection** — no explicit toggle. Support contexts on `/my-trips`, `/my-bookings`, `/account`, `/owner-dashboard`, `/settings/*`; discovery on `/rentals`, `/property/*`, `/tools/*`, `/destinations/*`; ambiguous routes fall through to intent classifier.
+- **"Switched to Support — [back]" chip** for escape hatch when the classifier switches lanes against the user's will.
+- Matches memory rule [Rooted in Simplicity] — anticipate user flow, don't ask.
+
+**Docs storage model:** Markdown canonical in `docs/support/`, indexed to Supabase `support_docs` table via a GitHub-Action-triggered `ingest-support-docs` edge function. Git is source of truth (PR-reviewable, lawyer-friendly, diffable); DB is a runtime cache for fast agent retrieval. Shared frontmatter schema across 20 docs (policies / FAQs / processes), extending the existing frontmatter convention (`last_updated`, `change_ref`, `change_type`, `status`) with `title`, `doc_type`, `audience[]`, `version`, `legal_review_required`, `reviewed_by`, `reviewed_date`, `tags[]`.
+
+**Agent tool surface (5 functions, all auth-scoped):** `lookup_booking`, `check_refund_status`, `check_dispute_status`, `open_dispute`, `query_support_docs`. RLS enforced; sensitive fields never echoed.
+
+**Future expansion path:** If we ever need genuinely collaborative multi-agent workflows (e.g., complex dispute arbitration with a neutral compliance reviewer), revisit then. This foundation does not preclude that — agent + tool use is a strict subset of what a multi-agent framework needs.
+
+**Status:** Scoped in epic #395 (milestone #37, Phase 22: Customer Support Foundation). 22 child issues #396-#417 across 5 tracks. B5 public-policy drafts (#404) blocked by #80 (legal consult); all other tracks unblocked.
+
+**Supersedes:** DEC-020 (Text Chat Agent — Two-Tier Conversational Model) is retained for discovery; DEC-036 adds the support tier as a parallel `context` inside the same edge function.
 
 ---
 

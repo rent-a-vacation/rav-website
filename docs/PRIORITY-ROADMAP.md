@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-20T15:49:43"
-change_ref: "0df1dd8"
-change_type: "session-56"
+last_updated: "2026-04-21T11:05:47"
+change_ref: "469ee98"
+change_type: "session-57"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -12,7 +12,10 @@ status: "active"
 
 ---
 
-## Changelog since last tier assignment (Sessions 50–56)
+## Changelog since last tier assignment (Sessions 50–57)
+
+- **Session 57 scoped (planning-only, no code):** Phase 22 Customer Support Foundation milestone (#37) + epic #395 + 22 child issues #396-#417 created. DEC-036 logged: extend RAVIO text chat with `context: 'support'` + tool use (reject CrewAI; voice stays discovery-only). Gap analysis added 7 docs beyond original brief's 13 → 20 total support docs. Markdown canonical in `docs/support/` → synced to Supabase `support_docs` table. Escalation reuses existing `AdminDisputes` (no parallel admin surface). B5 public-policy drafts (#404) blocked by #80; all other tracks unblocked.
+
 
 - **Session 50-53 shipped:** Event unification (#338, #339), MDM WS1/WS2/WS3 (DEC-032), Brand/terminology lock (DEC-031), Site-wide UI polish, 5 tier-gated features (#278-#282 — all Tier C items now **DONE**), Sentry guide, API docs audit.
 - **Session 54 shipped:** Stripe Tax env-flag gate (`STRIPE_TAX_ENABLED`), edge function JWT config hardening, migration 057 catch-up to DEV + PROD, MDM script CI fix, and 3 QA-surfaced bug fixes (offers-tab crash, owner bid notification, owner booking notification). PRs #372-#374.
@@ -34,20 +37,24 @@ status: "active"
 
 ---
 
-## Current Priority Tiers (as of April 20, 2026 — Session 56)
+## Current Priority Tiers (as of April 20, 2026 — Session 57)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-All unblocked follow-ups from Sessions 54-56 QA audit work. Pick in any order; they're independent.
+All unblocked follow-ups from Sessions 54-57. Pick in any order; they're independent.
 
 | Issue | Title | Est. | Why now |
 |-------|-------|------|---------|
+| **#400** | Phase 22 B1: Gap analysis — 20 support docs × authoritative source mapping | 2-3h | **Gates all Phase 22 content tracks.** Deliverable is `docs/support/GAP-ANALYSIS.md` — table mapping each of 20 target docs to {derive from code, extract from FAQ/UserGuide, write new, legal-blocked}. Prevents drift and scope creep downstream. |
+| **#396** | Phase 22 A1: `docs/support/` folder + frontmatter schema + exemplar doc | 4-6h | **Foundational for Phase 22.** Independent of content — establishes the shared schema + body structure every one of the 20 docs will follow. Also unblocks A2 (migration) + A3 (ingest edge fn). |
 | **#376** | Pre-Booked listing verification (resort reservation proof) | 1-2d | Unblocked by DEC-034 — proof-collection UX only meaningful after the flow distinction exists (which it now does). New schema fields + admin verify dialog + email templates. |
 | **#378** | "Open for Bidding" indicator everywhere (create-time toggle + consistent badge) | 3-4h | Unblocked by DEC-034 — integrates with the ListingTypeBadge visual system. |
 | **#381** | Role-relevant landing-view ordering | 6-8h | Surface most-time-sensitive items on each dashboard's Overview tab per "rooted in simplicity" principle. |
 | **#377** | Cancel-listing cascade (bulk bid rejection + booking cancellation + notifications) | 1d | Standalone, coordinates with DEC-034 wish-matched handling. New edge function + atomic cascade. |
 | **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up from Tests-With-Features shortfalls. Enables future edge-fn work to be properly tested. |
 | **#393** | PLATFORM-INVENTORY.md — one-page mental model of everything built | 2-3h | Session 56 meta-ask: a single doc cataloging product + platform + dev-tooling + governance layers so the user can explain what they've built to investors, new collaborators, and future sessions. |
+
+> **Phase 22 epic (#395)** umbrella for 22 child issues #396-#417 — pick entry points #400 or #396 from this tier. Remaining tracks (A2-A4, B2-B4, C1-C5, D1-D2, E1-E6) unlock as their dependencies ship; see epic body for the full DAG. B5 (#404) is legal-blocked — see Tier B.
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -58,6 +65,7 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #187 | Pre-launch manual verification | Needs systematic walkthrough. Partially done. |
 | #257 | Resort data compliance audit | Legal review of seed data sources. |
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
+| **#404** | Phase 22 B5: Legal-blocked public policy docs (privacy, booking-terms, payment-policy, trust-safety, insurance-liability, subscription-terms) | Blocked by #80 (legal consult — timeshare lawyer). 6 drafts production-ready, held with `status: 'draft'` pending lawyer sign-off. Not blocking launch of the support agent itself. |
 
 ### Tier C: Tier Feature Differentiation — ✅ COMPLETED IN SESSION 53 (PR #367)
 
@@ -125,6 +133,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 20, 2026 | 57 | **Phase 22 Customer Support Foundation SCOPED (planning-only; no code shipped).** Milestone #37 + epic #395 + 22 child issues #396-#417. DEC-036 logged: reject CrewAI, extend RAVIO text chat with `context: 'support'` + tool use; voice stays discovery-only. 20 support docs (13 from brief + 7 gap adds: privacy, trust-safety, insurance-liability, subscription-terms, account-security, emergency-safety, support-sla). Markdown canonical → Supabase `support_docs` sync. Escalation reuses `AdminDisputes`. B5 (#404) → blocked by #80. Tier A entry points: #400 (B1 gap analysis) + #396 (A1 schema). |
 | Apr 20, 2026 | 56 | **DEC-034 Marketplace Flow Distinction SHIPPED end-to-end (#380 CLOSED)** via 5 incremental PRs (#385-#389). Migrations 058 + 059. `listing_source_type` enum + `ListingTypeBadge` everywhere. Critical search-filter fix. 3 new notification types. `/sdlc` doc-update checklist promoted to root `CLAUDE.md` (PR #390) so it applies to every session. 1146 tests. Issues unblocked: #376, #378, #381. |
 | Apr 20, 2026 | 55 | QA audit response: read S-01..S-05 from scenario spreadsheet, opened 7 new issues (#375-#381) with full findings. Shipped Phase A UX wins: #379 MyTrips booking detail (PR #382), #375 Path 3 hybrid dashboard naming (PR #383). Expanded `/sdlc` Phase 6 into 13-item doc-update checklist. 1140 tests. DEC-035 (dashboard naming) logged. |
 | Apr 18-19, 2026 | 54 | Stripe Tax env-flag gate (`STRIPE_TAX_ENABLED`) fixes dev + PROD checkout blocker. Edge function JWT regression fixed via `config.toml` + `--no-verify-jwt`. Migration 057 deployed. MDM script CI fix. 3 bug fixes surfaced by QA testing (offers crash, owner bid/booking notifications). PRs #372-#374. Opened #370, #371. DEC-033 (Checkly monitoring). 1133 tests. |
