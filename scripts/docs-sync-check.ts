@@ -9,6 +9,9 @@
  *   3. docs/testing/TESTING-STATUS.md — total test count
  *   4. docs/LAUNCH-READINESS.md    — change_type frontmatter
  *
+ * Also validates docs/support/**\/*.md frontmatter + legal-review freshness
+ * (Phase 22 — DEC-036).
+ *
  * Complements scripts/docs-audit.ts (which checks frontmatter + orphans).
  *
  * Usage:
@@ -16,11 +19,12 @@
  *   npx tsx scripts/docs-sync-check.ts --ci       # fails with exit 1 on drift
  *
  * Exit codes:
- *   0 — all four docs current (no drift detected)
+ *   0 — all checks pass (no drift detected)
  *   1 — drift detected (only in --ci mode)
  */
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { join, relative } from 'path';
 import { execSync } from 'child_process';
 import matter from 'gray-matter';
 
@@ -47,6 +51,20 @@ const ROADMAP_MAX_DRIFT = 1;
 const TEST_COUNT_DRIFT_PCT = 0.05;
 // LAUNCH-READINESS change_type must have been bumped within the last N sessions
 const LAUNCH_MAX_SESSION_DRIFT = 3;
+
+// Support docs (Phase 22)
+const SUPPORT_DOCS_ROOT = 'docs/support';
+const SUPPORT_DOC_REQUIRED_FIELDS = [
+  'title',
+  'doc_type',
+  'audience',
+  'version',
+  'legal_review_required',
+  'status',
+] as const;
+const SUPPORT_DOC_TYPES = ['policy', 'faq', 'process', 'guide'] as const;
+const SUPPORT_DOC_STATUSES = ['active', 'draft', 'archived'] as const;
+const SUPPORT_LEGAL_STALENESS_DAYS = 90;
 
 const isCi = process.argv.includes('--ci');
 
@@ -230,6 +248,155 @@ function checkLaunchReadiness(latestSession: number): CheckResult {
   };
 }
 
+function checkSupportDocs(): CheckResult[] {
+  if (!existsSync(SUPPORT_DOCS_ROOT)) {
+    return [
+      {
+        doc: SUPPORT_DOCS_ROOT,
+        status: 'ok',
+        message: 'Not present yet — Phase 22 A1 not shipped',
+      },
+    ];
+  }
+
+  const files = walkMarkdown(SUPPORT_DOCS_ROOT);
+  if (files.length === 0) {
+    return [
+      {
+        doc: SUPPORT_DOCS_ROOT,
+        status: 'warn',
+        message: 'Folder exists but contains no markdown files',
+      },
+    ];
+  }
+
+  const issues: CheckResult[] = [];
+  let ok = 0;
+
+  for (const file of files) {
+    const fm = readFrontmatter(file);
+    if (!fm) {
+      issues.push({
+        doc: file,
+        status: 'error',
+        message: 'Missing frontmatter',
+      });
+      continue;
+    }
+
+    const missing = SUPPORT_DOC_REQUIRED_FIELDS.filter(
+      (f) => fm[f] === undefined || fm[f] === null,
+    );
+    if (missing.length > 0) {
+      issues.push({
+        doc: file,
+        status: 'error',
+        message: `Missing required frontmatter fields: ${missing.join(', ')}`,
+      });
+      continue;
+    }
+
+    if (!SUPPORT_DOC_TYPES.includes(fm.doc_type as (typeof SUPPORT_DOC_TYPES)[number])) {
+      issues.push({
+        doc: file,
+        status: 'error',
+        message: `Invalid doc_type "${fm.doc_type}" — must be one of: ${SUPPORT_DOC_TYPES.join(', ')}`,
+      });
+      continue;
+    }
+
+    if (!SUPPORT_DOC_STATUSES.includes(fm.status as (typeof SUPPORT_DOC_STATUSES)[number])) {
+      issues.push({
+        doc: file,
+        status: 'error',
+        message: `Invalid status "${fm.status}" — must be one of: ${SUPPORT_DOC_STATUSES.join(', ')}`,
+      });
+      continue;
+    }
+
+    if (!Array.isArray(fm.audience) || fm.audience.length === 0) {
+      issues.push({
+        doc: file,
+        status: 'error',
+        message: 'audience must be a non-empty array',
+      });
+      continue;
+    }
+
+    // Archived docs skip remaining semantic checks
+    if (fm.status === 'archived') {
+      ok++;
+      continue;
+    }
+
+    // Legal-review rules
+    if (fm.legal_review_required === true && fm.status === 'active') {
+      if (!fm.reviewed_by || !fm.reviewed_date) {
+        issues.push({
+          doc: file,
+          status: 'error',
+          message:
+            'legal_review_required + status=active but reviewed_by/reviewed_date is null — cannot publish without lawyer sign-off',
+        });
+        continue;
+      }
+      // Staleness check
+      const lastUpdated = fm.last_updated;
+      if (typeof lastUpdated === 'string') {
+        const updated = new Date(lastUpdated);
+        const ageDays = (Date.now() - updated.getTime()) / (1000 * 60 * 60 * 24);
+        if (ageDays > SUPPORT_LEGAL_STALENESS_DAYS) {
+          issues.push({
+            doc: file,
+            status: 'warn',
+            message: `Legal-reviewed doc is ${Math.round(ageDays)} days old (threshold ${SUPPORT_LEGAL_STALENESS_DAYS}). Consider review refresh.`,
+          });
+          continue;
+        }
+      }
+    }
+
+    ok++;
+  }
+
+  if (issues.length === 0) {
+    return [
+      {
+        doc: SUPPORT_DOCS_ROOT,
+        status: 'ok',
+        message: `${ok} support docs validated — all frontmatter compliant`,
+      },
+    ];
+  }
+
+  return [
+    {
+      doc: SUPPORT_DOCS_ROOT,
+      status: 'ok',
+      message: `${ok}/${files.length} valid (${issues.length} flagged below)`,
+    },
+    ...issues,
+  ];
+}
+
+function walkMarkdown(root: string): string[] {
+  const out: string[] = [];
+  const stack = [root];
+  while (stack.length > 0) {
+    const dir = stack.pop()!;
+    for (const entry of readdirSync(dir)) {
+      const full = join(dir, entry);
+      const stats = statSync(full);
+      if (stats.isDirectory()) {
+        stack.push(full);
+      } else if (entry.endsWith('.md')) {
+        out.push(relative(process.cwd(), full).replace(/\\/g, '/'));
+      }
+    }
+  }
+  return out.sort();
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 function main(): void {
@@ -245,6 +412,7 @@ function main(): void {
     checkPriorityRoadmap(latestSession),
     checkTestingStatus(),
     checkLaunchReadiness(latestSession),
+    ...checkSupportDocs(),
   ];
 
   const errors = results.filter((r) => r.status === 'error');
