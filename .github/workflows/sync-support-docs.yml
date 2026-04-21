@@ -1,0 +1,87 @@
+name: Sync Support Docs
+
+# Phase 22 A3 (#398) — DEC-036
+# On every push to main that touches docs/support/**, collect all markdown
+# files and invoke the ingest-support-docs Supabase edge function to refresh
+# the support_docs table (see migration 060).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/support/**'
+  workflow_dispatch:
+    # Manual re-sync without requiring a docs commit
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Sync docs/support → support_docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Collect support docs into payload
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import path from "node:path";
+            function walk(dir) {
+              const out = [];
+              if (!fs.existsSync(dir)) return out;
+              for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+                const full = path.join(dir, e.name);
+                if (e.isDirectory()) out.push(...walk(full));
+                else if (e.name.endsWith(".md")) {
+                  out.push({
+                    path: full.replace(/\\\\/g, "/"),
+                    content: fs.readFileSync(full, "utf-8"),
+                  });
+                }
+              }
+              return out;
+            }
+            const files = walk("docs/support");
+            fs.writeFileSync("payload.json", JSON.stringify({
+              source_sha: process.env.GITHUB_SHA,
+              files,
+            }));
+            console.log(`Collected ${files.length} support doc(s)`);
+          '
+
+      - name: Invoke ingest-support-docs edge function
+        env:
+          SUPABASE_FN_URL: ${{ secrets.SUPABASE_FN_URL }}
+          INGEST_SECRET: ${{ secrets.INGEST_SUPPORT_DOCS_SECRET }}
+        run: |
+          if [ -z "$SUPABASE_FN_URL" ] || [ -z "$INGEST_SECRET" ]; then
+            echo "::error::Missing SUPABASE_FN_URL or INGEST_SUPPORT_DOCS_SECRET secret"
+            exit 1
+          fi
+
+          response=$(curl -sS -w "\n%{http_code}" -X POST \
+            "${SUPABASE_FN_URL}/ingest-support-docs" \
+            -H "Authorization: Bearer ${INGEST_SECRET}" \
+            -H "Content-Type: application/json" \
+            --data @payload.json)
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "Response: $body"
+
+          if [ "$http_code" -ge 400 ]; then
+            echo "::error::Ingest failed with HTTP $http_code"
+            exit 1
+          fi
+
+          ingested=$(echo "$body" | jq -r '.ingested // 0')
+          deleted=$(echo "$body" | jq -r '.deleted // 0')
+          errors=$(echo "$body" | jq -r '.errors // [] | length')
+          echo "::notice::Synced support_docs — ingested=$ingested, deleted=$deleted, errors=$errors"
