@@ -73,10 +73,12 @@ const CORS_HEADERS = {
 
 /**
  * Derive slug from repo path: docs/support/<folder>/<name>.md → <folder>/<name>
+ * Returns null for top-level meta docs (README.md, GAP-ANALYSIS.md, CS-OVERVIEW.md)
+ * which should be skipped, not ingested as content.
  */
-function slugFromPath(path: string): string {
+function slugFromPath(path: string): string | null {
   const match = path.match(/^docs\/support\/([^/]+)\/([^/]+)\.md$/);
-  if (!match) throw new Error(`Invalid support doc path: ${path}`);
+  if (!match) return null;
   return `${match[1]}/${match[2]}`;
 }
 
@@ -148,8 +150,9 @@ function validateFrontmatter(fm: Record<string, unknown>, path: string): string[
   return errors;
 }
 
-function parseDoc(file: IngestFile): ParsedDoc {
+function parseDoc(file: IngestFile): ParsedDoc | null {
   const slug = slugFromPath(file.path);
+  if (slug === null) return null; // Top-level meta doc; intentionally skipped.
   const parsed = matter(file.content);
   const fm = (parsed.data ?? {}) as Record<string, unknown>;
   const body = parsed.content ?? "";
@@ -220,10 +223,15 @@ const handler = async (req: Request): Promise<Response> => {
 
   const parsedDocs: ParsedDoc[] = [];
   const errors: string[] = [];
+  let skipped = 0;
 
   for (const file of payload.files) {
     try {
       const doc = parseDoc(file);
+      if (doc === null) {
+        skipped++;
+        continue;
+      }
       if (doc.errors.length > 0) {
         errors.push(...doc.errors);
         continue;
@@ -237,7 +245,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   if (errors.length > 0 && parsedDocs.length === 0) {
     return new Response(
-      JSON.stringify({ ingested: 0, deleted: 0, errors }),
+      JSON.stringify({ ingested: 0, deleted: 0, skipped, errors }),
       {
         status: 400,
         headers: { ...CORS_HEADERS, "content-type": "application/json" },
@@ -301,6 +309,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({
         ingested: rows.length,
         deleted: 0,
+        skipped,
         errors: [...errors, `delete failed: ${deleteError.message}`],
       }),
       {
@@ -314,6 +323,7 @@ const handler = async (req: Request): Promise<Response> => {
     JSON.stringify({
       ingested: rows.length,
       deleted: deletedRows?.length ?? 0,
+      skipped,
       errors,
     }),
     {

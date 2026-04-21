@@ -83,5 +83,6 @@ jobs:
 
           ingested=$(echo "$body" | jq -r '.ingested // 0')
           deleted=$(echo "$body" | jq -r '.deleted // 0')
+          skipped=$(echo "$body" | jq -r '.skipped // 0')
           errors=$(echo "$body" | jq -r '.errors // [] | length')
-          echo "::notice::Synced support_docs — ingested=$ingested, deleted=$deleted, errors=$errors"
+          echo "::notice::Synced support_docs — ingested=$ingested, deleted=$deleted, skipped=$skipped, errors=$errors"
