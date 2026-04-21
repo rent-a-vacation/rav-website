@@ -83,3 +83,6 @@ verify_jwt = false
 
 [functions.verify-booking-payment]
 verify_jwt = false
+
+[functions.ingest-support-docs]
+verify_jwt = false
