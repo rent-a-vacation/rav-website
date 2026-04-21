@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-21T11:05:47"
-change_ref: "469ee98"
+last_updated: "2026-04-21T23:23:19"
+change_ref: "3905aa8"
 change_type: "session-57"
 status: "active"
 ---
@@ -96,20 +96,42 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **1146 automated tests** (134 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-059 (all deployed to DEV and PROD) + 3 date-based MDM migrations
-- **Edge functions:** 34 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN). `create-booking-checkout` + `verify-booking-payment` deployed to both DEV and PROD with `--no-verify-jwt` (Session 54–56).
+- **Migrations created:** 001-060 (001-059 deployed to DEV + PROD; 060 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
+- **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `create-booking-checkout` + `verify-booking-payment` deployed to both DEV and PROD with `--no-verify-jwt` (Session 54–56).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync — Session 55–56 PRs #382, #383, #384, #385, #386, #387, #388, #389 merged
+- **dev and main:** in sync — Session 57 PRs #418, #419, #420, #421, #422, #423, #424, #425 merged (Phase 22 Tracks A, B, E complete)
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
 ### Session Handoff (Sessions 25-57)
 
-**Session 57 — Phase 22 Customer Support Foundation scoped, DEC-036 logged (Apr 20, 2026):**
-- **Milestone #37 + Epic #395 + 22 child issues #396-#417 created.** Planning-only session; no code shipped.
+**Session 57 — Phase 22 Customer Support Foundation: 15 of 22 tickets SHIPPED across 8 PRs (Apr 20-21, 2026):**
+- **Tracks A, B, E complete.** Tracks C + D (code work) deferred to next session. 68% of Phase 22 complete.
+- **8 PRs merged:** #418 (planning), #419 (A1+B1+A4 — scaffold + gap analysis + sync-check), #420 (A2+A3 — migration 060 + ingest pipeline deployed to DEV), #421 (B2 — 3 code-derived docs), #422 (B3 — 5 FAQ consolidations), #423 (B4 — 5 internal workflow docs), #424 (B5 — 6 legal-blocked drafts at status:draft), #425 (E1-E6 — 5 Mermaid diagrams + CS-OVERVIEW.md).
+- **Documentation infrastructure shipped end-to-end on DEV:** `docs/support/` with 22 markdown files (README + GAP-ANALYSIS + 20 content docs + CS-OVERVIEW + 5 diagrams). Migration 060 (support_docs table + RLS). `ingest-support-docs` edge function + GitHub Action `sync-support-docs.yml` triggering on push to main. GitHub Secrets configured: `INGEST_SUPPORT_DOCS_SECRET` + `SUPABASE_FN_URL` (pointing at DEV).
+- **`scripts/docs-sync-check.ts`** extended with `checkSupportDocs()` — validates frontmatter schema + enforces legal-review gate (`legal_review_required: true` + `status: active` requires non-null `reviewed_by` + `reviewed_date`).
+- **6 legal-blocked drafts held at `status: draft`** pending lawyer review on #80: privacy-policy, booking-terms, payment-policy, trust-safety-policy, insurance-liability-policy, subscription-terms. Never surfaced to end users until review completes.
+- **PROD deploys HELD** per CLAUDE.md human-confirmation rule. Checklist in `docs/support/diagrams/doc-pipeline.md`:
+  1. Deploy migration 060 to PROD
+  2. Deploy `ingest-support-docs` function to PROD
+  3. Set `INGEST_SUPPORT_DOCS_SECRET` on PROD Supabase
+  4. Update GH secret `SUPABASE_FN_URL` to PROD functions URL
+  5. Relink Supabase CLI to DEV
+- **Remaining (7 tickets, Track C + D):**
+  - C1 #405: `context: 'support'` branch in text-chat edge fn
+  - C2 #406: Route-based context detection in useTextChat
+  - C3 #407: Intent classifier + "Switched to Support" chip
+  - C4 #408: 5 agent tools (lookup_booking, check_refund_status, check_dispute_status, open_dispute, query_support_docs)
+  - C5 #409: Agent-opened disputes with `source: 'ravio_support'` tag
+  - D1 #410: Support conversation logging (conversations table extension)
+  - D2 #411: Admin "Support Interactions" tab + deflection/escalation/SLA metrics
+- **Recommended next-session starting point:** C1 + C4 together (edge function context + tool implementations — tightly coupled). Then C2 → C3 → C5 naturally follow. D1/D2 as final observability PR.
+
+**Original Session 57 planning context (Apr 20):**
+- **Milestone #37 + Epic #395 + 22 child issues #396-#417 created.** Initial planning session.
 - **User brief reviewed** (`customer-support-crew-ai.md`): 3-agent CrewAI team + 13 support docs + support widget. Recommended **rejecting CrewAI** and extending existing RAVIO text chat (`supabase/functions/text-chat/index.ts`) with a `context: 'support'` branch + tool use (5 functions: `lookup_booking`, `check_refund_status`, `check_dispute_status`, `open_dispute`, `query_support_docs`). See DEC-036.
 - **VAPI voice stays discovery-only** — quota-metered, poor at auth-gated support queries. No voice-support build.
 - **Gap analysis vs brief:** added 7 docs beyond the original 13 (privacy, trust-safety, insurance-liability, subscription-terms — legal-blocked; account-security, emergency-safety, support-sla — not blocked). Total: **20 support docs** in `docs/support/{policies,faqs,processes}/`.
