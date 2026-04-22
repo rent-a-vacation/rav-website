@@ -1,13 +1,13 @@
 ---
-last_updated: "2026-04-20T12:58:39"
-change_ref: "0a2ec90"
-change_type: "session-54"
+last_updated: "2026-04-22T23:47:09"
+change_ref: "c820f23"
+change_type: "session-58"
 status: "active"
 ---
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** April 20, 2026 (Session 56)
+> **Last Updated:** April 22, 2026 (Session 58)
 
 ---
 
@@ -15,9 +15,9 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1146 |
-| **Test files** | 134 |
-| **P0 critical-path tests** | 97 (tagged `@p0`) + 4 subscription P0s |
+| **Total tests** | 1166 |
+| **Test files** | 135 |
+| **P0 critical-path tests** | 97 (tagged `@p0`) + 4 subscription P0s + 1 support-tool P0 |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
 | **CI run time** | <3 min |

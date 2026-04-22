@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-21T23:23:19"
-change_ref: "3905aa8"
-change_type: "session-57"
+last_updated: "2026-04-22T23:47:09"
+change_ref: "c820f23"
+change_type: "session-58"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -37,19 +37,19 @@ status: "active"
 
 ---
 
-## Current Priority Tiers (as of April 20, 2026 — Session 57)
+## Current Priority Tiers (as of April 22, 2026 — Session 58)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-All unblocked follow-ups from Sessions 54-57. Pick in any order; they're independent.
+All unblocked follow-ups from Sessions 54-58. Pick in any order; they're independent.
 
 | Issue | Title | Est. | Why now |
 |-------|-------|------|---------|
-| **#405** | Phase 22 C1: `context: 'support'` branch in text-chat edge fn | 4-6h | **Phase 22 next step.** Add support context to `supabase/functions/text-chat/` with auth check + support system prompt + tool-use schema. Pairs tightly with #408 (C4 — 5 agent tools). Do together. |
-| **#408** | Phase 22 C4: 5 agent tools (lookup_booking, check_refund_status, check_dispute_status, open_dispute, query_support_docs) | 1d | **Pair with #405.** All RLS-enforced, auth-scoped. Each has unit tests (happy + auth fail). `query_support_docs` queries the `support_docs` table (shipped in PR #420). Unit tests mandatory per CLAUDE.md Tests-With-Features. |
-| **#406** | Phase 22 C2: Route-based context detection in `useTextChat` | 4-6h | Depends on #405. Auto-switch support vs discovery by route. Suggested prompts swap per context. |
+| **#406** | Phase 22 C2: Route-based context detection in `useTextChat` | 4-6h | Unblocked by Session 58 (#405 + #408 shipped). Auto-switch support vs discovery by route. Suggested prompts swap per context. Small frontend-only PR. |
 | **#407** | Phase 22 C3: Intent classifier + "Switched to Support" chip | 4-6h | Depends on #406. Fallback for ambiguous routes. Keyword classifier + model fallback. Chip UI + session override. |
-| **#409** | Phase 22 C5: Agent-opened disputes with `source: 'ravio_support'` tag | 4h | Depends on #408. Migration adds `source` enum to disputes table. AdminDisputes UI shows badge. |
+| **#409** | Phase 22 C5: Agent-opened disputes with `source: 'ravio_support'` tag | 4h | Unblocked by Session 58. Migration adds `source` enum to disputes table; `open_dispute` tool updated to set it; AdminDisputes UI shows badge + filter. |
+| **#410** | Phase 22 D1: Support conversation logging | 6-8h | Unblocked by Session 58. Extend `conversations` table so support turns are captured for metrics + replay. |
+| **#411** | Phase 22 D2: Admin "Support Interactions" tab + metrics | 1d | Depends on #410. Deflection rate, escalation rate, SLA. |
 | **#376** | Pre-Booked listing verification (resort reservation proof) | 1-2d | Unblocked by DEC-034 — proof-collection UX only meaningful after the flow distinction exists (which it now does). New schema fields + admin verify dialog + email templates. |
 | **#378** | "Open for Bidding" indicator everywhere (create-time toggle + consistent badge) | 3-4h | Unblocked by DEC-034 — integrates with the ListingTypeBadge visual system. |
 | **#381** | Role-relevant landing-view ordering | 6-8h | Surface most-time-sensitive items on each dashboard's Overview tab per "rooted in simplicity" principle. |
@@ -57,7 +57,7 @@ All unblocked follow-ups from Sessions 54-57. Pick in any order; they're indepen
 | **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up from Tests-With-Features shortfalls. Enables future edge-fn work to be properly tested. |
 | **#393** | PLATFORM-INVENTORY.md — one-page mental model of everything built | 2-3h | Session 56 meta-ask: a single doc cataloging product + platform + dev-tooling + governance layers so the user can explain what they've built to investors, new collaborators, and future sessions. |
 
-> **Phase 22 epic (#395)** — Tracks A, B, E complete in Session 57 (#396-#404, #412-#417 all CLOSED). Track C (#405-#409) + Track D (#410, #411) remain — all code work. Best next-session start: #405 + #408 together.
+> **Phase 22 epic (#395)** — Tracks A, B, E complete in Session 57; C1 + C4 (#405 + #408) shipped in Session 58. Remaining: #406, #407, #409 (Track C finale) + #410, #411 (Track D observability). Recommended next: #406 (small frontend-only) or #409 (completes the escalation loop end-to-end).
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -136,6 +136,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 22, 2026 | 58 | **Phase 22 C1 + C4 SHIPPED (#405 + #408).** `text-chat` edge fn gains `context:'support'` branch + 5 agent tools (lookup_booking, check_refund_status, check_dispute_status, open_dispute, query_support_docs). `check_refund_status` uses DB-first with live Stripe reconcile; fails closed. 20 new unit tests. Phase 22 now 77% complete (17 of 22). Remaining Tier A: #406, #407, #409, #410, #411. |
 | Apr 21, 2026 | 57 | **Phase 22 SHIPPED Tracks A + B + E (15 of 22 tickets, 8 PRs #418-#425).** Full documentation infrastructure end-to-end on DEV: 22 markdown files in `docs/support/`, migration 060 (support_docs), `ingest-support-docs` edge fn + GitHub Action, `docs-sync-check` extension, 6 legal-blocked drafts at status:draft pending #80. Issues closed: #396-#404, #412-#417. Remaining: Track C (#405-#409 RAVIO agent code) + Track D (#410, #411 observability) — next session. PROD deploys held per CLAUDE.md. |
 | Apr 20, 2026 | 57 (planning) | Phase 22 Customer Support Foundation SCOPED. Milestone #37 + epic #395 + 22 child issues #396-#417. DEC-036 logged: reject CrewAI, extend RAVIO text chat with `context: 'support'` + tool use; voice stays discovery-only. 20 support docs planned. Markdown canonical → Supabase `support_docs` sync. PR #418. |
 | Apr 20, 2026 | 56 | **DEC-034 Marketplace Flow Distinction SHIPPED end-to-end (#380 CLOSED)** via 5 incremental PRs (#385-#389). Migrations 058 + 059. `listing_source_type` enum + `ListingTypeBadge` everywhere. Critical search-filter fix. 3 new notification types. `/sdlc` doc-update checklist promoted to root `CLAUDE.md` (PR #390) so it applies to every session. 1146 tests. Issues unblocked: #376, #378, #381. |

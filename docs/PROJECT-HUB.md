@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-21T23:23:19"
-change_ref: "3905aa8"
-change_type: "session-57"
+last_updated: "2026-04-22T23:47:09"
+change_ref: "c820f23"
+change_type: "session-58"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -93,20 +93,35 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1146 automated tests** (134 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s — run with `npm run test:p0`
+- **1166 automated tests** (135 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-060 (001-059 deployed to DEV + PROD; 060 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
-- **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `create-booking-checkout` + `verify-booking-payment` deployed to both DEV and PROD with `--no-verify-jwt` (Session 54–56).
+- **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync — Session 57 PRs #418, #419, #420, #421, #422, #423, #424, #425 merged (Phase 22 Tracks A, B, E complete)
+- **dev and main:** in sync at Session 57 end; Session 58 PR for Phase 22 C1 + C4 (#405 + #408) open at time of writing
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-57)
+### Session Handoff (Sessions 25-58)
+
+**Session 58 — Phase 22 Track C: RAVIO support agent wired up (#405 + #408, Apr 22, 2026):**
+- **Paired PR for C1 (#405) + C4 (#408).** `supabase/functions/text-chat/index.ts` gains a `context: 'support'` branch with a dedicated empathetic system prompt. All 5 agent tools implemented as pure-logic handlers in a new `support-tools.ts` module and wired into the edge function's tool-call loop.
+- **5 tools:** `lookup_booking` (booking_id or own-email lookup, RLS-scoped), `check_refund_status` (**DB-first with live Stripe reconcile** when the DB has a refund_reference but no processed timestamp; fails closed with a note on Stripe errors), `check_dispute_status`, `open_dispute` (validates 13 categories + min description length; enforces reporter_id via RLS), `query_support_docs` (keyword tsvector search against the `support_docs` table, status='active' only).
+- **Tool call loop generalised:** the edge function now iterates ALL tool_calls (parallel), dispatches by name (`search_properties` for rentals / any of the 5 support tools / graceful fallback for unknown), and feeds all results back in one follow-up streaming call. Rentals behaviour preserved.
+- **RLS enforcement via user-scoped client.** A second Supabase client is built with `Authorization: Bearer <jwt>` on every request, so `auth.uid()` resolves correctly inside Postgres policies. Never uses service-role for tool queries.
+- **Sensitive-field redaction:** safe column projections defined in `support-tools.ts` — tools never return `payment_intent_id`, `stripe_transfer_id`, payout details, or admin-internal fields.
+- **20 new unit tests** in `support-tools.test.ts` — 5 tools × happy path + auth/RLS failure + domain-rule rejection, plus registry/dispatcher coverage. Vitest `include` extended to `supabase/functions/**/*.test.ts`. Pattern mirrors `_shared/rate-limit.ts` — pure-logic module with a minimal structural Supabase interface so tests run under Vitest without Deno.
+- **Scope boundaries held:** #406 (route-based detection in `useTextChat`), #407 (intent classifier + chip), #409 (`source: 'ravio_support'` enum on disputes) deliberately deferred to their own PRs. This PR is edge-fn + tests only; no frontend changes, no new migrations.
+- **New feedback memory captured:** "CS and UX as business differentiators" — user direction that when picking between cheap and robust implementations for support surfaces, bias toward the robust one even at latency/complexity cost. Drove the choice of DB+Stripe fallback over DB-only for `check_refund_status`.
+- **Tests:** 1146 → 1166 (+20). 134 → 135 files. 0 type errors, build clean (1m 5s).
+
+**End state:** Phase 22 at 17 of 22 tickets (77%). Remaining: #406, #407, #409 (Track C), #410, #411 (Track D). Next session should start with either #406 (frontend route detection — small, independent) or #409 (disputes.source enum + AdminDisputes filter — unblocks CS telemetry). PROD deploy of `text-chat` still held per CLAUDE.md — gets the support prompt + 5 tools on next deploy. `STRIPE_SECRET_KEY` env var is already set on both DEV and PROD (webhook + cancellation fns use it), so the live-Stripe reconcile path is ready on first deploy.
+
+---
 
 **Session 57 — Phase 22 Customer Support Foundation: 15 of 22 tickets SHIPPED across 8 PRs (Apr 20-21, 2026):**
 - **Tracks A, B, E complete.** Tracks C + D (code work) deferred to next session. 68% of Phase 22 complete.
