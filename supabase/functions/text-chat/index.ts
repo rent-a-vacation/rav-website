@@ -1,8 +1,17 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import Stripe from "npm:stripe@14.21.0";
 import { searchProperties } from "../_shared/property-search.ts";
 import type { SearchParams, SearchResult } from "../_shared/property-search.ts";
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "../_shared/rate-limit.ts";
+import {
+  dispatchSupportTool,
+  isSupportTool,
+  SUPPORT_TOOL_SCHEMAS,
+  type StripeLike,
+  type SupabaseLike,
+  type UserContext,
+} from "./support-tools.ts";
 
 // --- CORS: Same allowlist pattern as voice-search ---
 function isAllowedOrigin(origin: string): boolean {
@@ -106,6 +115,24 @@ Your role as a general platform assistant:
 - Help with navigation — point users to the right pages
 - Answer questions about the platform's trust and safety features
 - Be warm, welcoming, and concise`,
+
+  support: `You are RAVIO, the Rent-A-Vacation customer support agent helping an authenticated user with their account, bookings, refunds, and disputes.
+
+Ground rules:
+- Always be empathetic, clear, and concise. The user is often stressed.
+- Ground policy answers in the support knowledge base — call query_support_docs BEFORE answering questions about cancellation policy, refunds, fees, payouts, or platform rules.
+- For account/booking questions, call lookup_booking to confirm details before answering.
+- For refund questions, call check_refund_status — the tool reconciles our records with Stripe and will tell you the current state and any expected arrival date.
+- Never promise a specific refund amount or arrival date from memory — always cite the value returned by a tool.
+- Never ask for or echo full card numbers, CVV, or passwords. Stripe handles those.
+- Use platform terminology correctly: "Listing", "Wish", "Offer", "Pre-Booked Stay", "Wish-Matched Stay". Say "Rent-A-Vacation" (not "RAV") when talking to users.
+
+Escalation rules:
+- If the user explicitly asks to file a dispute, or if their issue involves damage, no-show, safety, payment failure, or property-not-as-described, offer to open a dispute on their behalf.
+- Only call open_dispute AFTER the user explicitly confirms they want to escalate. Summarize category + description back to them and wait for a "yes" before calling the tool.
+- After opening a dispute, tell the user the dispute ID and that the RAV team has been notified.
+
+If the user asks something outside support scope (finding new properties, pricing strategy), acknowledge and point them back to the search or bidding experience rather than trying to search here.`,
 };
 
 // --- OpenRouter tool definitions ---
@@ -235,11 +262,13 @@ serve(async (req) => {
       );
     }
 
-    // Determine if this context supports search tool
-    const tools = context === "rentals" ? [SEARCH_TOOL] : undefined;
+    // Determine which tools this context exposes to the model
+    let tools: unknown[] | undefined;
+    if (context === "rentals") tools = [SEARCH_TOOL];
+    else if (context === "support") tools = SUPPORT_TOOL_SCHEMAS;
 
     // First OpenRouter call (may trigger tool call)
-    logStep("Calling OpenRouter", { model: OPENROUTER_MODEL, toolsEnabled: !!tools });
+    logStep("Calling OpenRouter", { model: OPENROUTER_MODEL, toolsEnabled: !!tools, context });
     let openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -271,69 +300,130 @@ serve(async (req) => {
     const assistantMessage = result.choices?.[0]?.message;
     let searchResults: SearchResult[] | undefined;
 
-    // Handle tool calls
+    // Handle tool calls — support any number of parallel calls across both
+    // the rentals search tool and the 5 support tools.
     if (assistantMessage?.tool_calls?.length > 0) {
-      const toolCall = assistantMessage.tool_calls[0];
-      if (toolCall.function?.name === "search_properties") {
-        logStep("Tool call: search_properties", { args: toolCall.function.arguments });
+      const toolCalls = assistantMessage.tool_calls as Array<{
+        id: string;
+        function: { name: string; arguments: string | Record<string, unknown> };
+      }>;
 
-        const searchParams: SearchParams = typeof toolCall.function.arguments === "string"
-          ? JSON.parse(toolCall.function.arguments)
-          : toolCall.function.arguments;
+      // Lazily built when a support tool is called.
+      let userScopedClient: ReturnType<typeof createClient> | null = null;
+      let stripeClient: StripeLike | undefined;
+      const ensureSupportDeps = () => {
+        if (!userScopedClient) {
+          userScopedClient = createClient(supabaseUrl, supabaseAnonKey, {
+            auth: { persistSession: false },
+            global: { headers: { Authorization: `Bearer ${jwt}` } },
+          });
+        }
+        if (!stripeClient) {
+          const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+          if (stripeKey) {
+            stripeClient = new Stripe(stripeKey, {
+              apiVersion: "2023-10-16",
+              httpClient: Stripe.createFetchHttpClient(),
+            }) as unknown as StripeLike;
+          }
+        }
+      };
 
-        // Use service role client for search (bypasses RLS)
-        const serviceClient = createClient(supabaseUrl, supabaseServiceKey, {
-          auth: { persistSession: false },
-        });
+      const toolResultMessages: Array<{ role: "tool"; tool_call_id: string; content: string }> = [];
 
-        const searchResponse = await searchProperties(serviceClient, searchParams, "TEXT-CHAT");
-        searchResults = searchResponse.results;
+      for (const call of toolCalls) {
+        const name = call.function?.name;
+        const rawArgs = call.function?.arguments;
+        const args: Record<string, unknown> = typeof rawArgs === "string"
+          ? (rawArgs ? JSON.parse(rawArgs) : {})
+          : (rawArgs ?? {});
 
-        logStep("Search completed", { resultCount: searchResults.length });
-
-        // Feed results back to LLM for natural language summary
-        const toolResultMessages = [
-          ...messages,
-          assistantMessage,
-          {
-            role: "tool" as const,
-            tool_call_id: toolCall.id,
+        if (name === "search_properties") {
+          logStep("Tool call: search_properties", { args });
+          const serviceClient = createClient(supabaseUrl, supabaseServiceKey, {
+            auth: { persistSession: false },
+          });
+          const searchResponse = await searchProperties(
+            serviceClient,
+            args as SearchParams,
+            "TEXT-CHAT",
+          );
+          searchResults = searchResponse.results;
+          toolResultMessages.push({
+            role: "tool",
+            tool_call_id: call.id,
             content: JSON.stringify({
               success: true,
               results: searchResults,
               total_count: searchResults.length,
             }),
-          },
-        ];
-
-        openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${openRouterKey}`,
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://rent-a-vacation.com",
-            "X-Title": "Rent-A-Vacation Text Chat",
-          },
-          body: JSON.stringify({
-            model: OPENROUTER_MODEL,
-            messages: toolResultMessages,
-            stream: true,
-            max_tokens: 1024,
-          }),
-        });
-
-        if (!openRouterResponse.ok) {
-          const errBody = await openRouterResponse.text();
-          logStep("OpenRouter follow-up error", { status: openRouterResponse.status, body: errBody });
-          return new Response(
-            JSON.stringify({ error: "Chat service temporarily unavailable" }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 502 },
-          );
+          });
+          continue;
         }
 
-        // Stream the follow-up response as SSE
-        return streamSSEResponse(openRouterResponse, corsHeaders, searchResults);
+        if (isSupportTool(name)) {
+          ensureSupportDeps();
+          const userCtx: UserContext = {
+            userId: user.id,
+            userEmail: user.email ?? "",
+          };
+          logStep("Tool call: support", { name });
+          const toolResult = await dispatchSupportTool(
+            name,
+            userScopedClient as unknown as SupabaseLike,
+            userCtx,
+            args,
+            stripeClient,
+          );
+          toolResultMessages.push({
+            role: "tool",
+            tool_call_id: call.id,
+            content: JSON.stringify(toolResult),
+          });
+          continue;
+        }
+
+        // Unknown tool — tell the model so it can recover gracefully.
+        logStep("Tool call: unknown", { name });
+        toolResultMessages.push({
+          role: "tool",
+          tool_call_id: call.id,
+          content: JSON.stringify({ success: false, error: `Unknown tool: ${name}` }),
+        });
       }
+
+      // Feed all tool results back, stream the final response.
+      const followUpMessages = [...messages, assistantMessage, ...toolResultMessages];
+
+      openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${openRouterKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://rent-a-vacation.com",
+          "X-Title": "Rent-A-Vacation Text Chat",
+        },
+        body: JSON.stringify({
+          model: OPENROUTER_MODEL,
+          messages: followUpMessages,
+          stream: true,
+          max_tokens: 1024,
+        }),
+      });
+
+      if (!openRouterResponse.ok) {
+        const errBody = await openRouterResponse.text();
+        logStep("OpenRouter follow-up error", {
+          status: openRouterResponse.status,
+          body: errBody,
+        });
+        return new Response(
+          JSON.stringify({ error: "Chat service temporarily unavailable" }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 502 },
+        );
+      }
+
+      return streamSSEResponse(openRouterResponse, corsHeaders, searchResults);
     }
 
     // No tool call — check if we already have content, otherwise stream
