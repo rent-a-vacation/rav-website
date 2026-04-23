@@ -13,6 +13,15 @@ import {
   type UserContext,
 } from "./support-tools.ts";
 import { classifyIntent, type ClassifiedContext } from "./intent-classifier.ts";
+import {
+  openConversation,
+  appendTurn,
+  bumpConversationCounters,
+  markEscalated,
+  closeConversation,
+  getNextTurnIndex,
+  type ChatContext as LogChatContext,
+} from "./conversation-logger.ts";
 
 // --- CORS: Same allowlist pattern as voice-search ---
 function isAllowedOrigin(origin: string): boolean {
@@ -173,6 +182,14 @@ interface TextChatRequest {
    *  classifier chip — tells the edge fn to skip the classifier even if
    *  history is empty. See useTextChat.dismissClassification. */
   disableClassifier?: boolean;
+  /** On non-first messages, frontend sends the id it captured from the first
+   *  turn's SSE event so subsequent turns bind to the same conversation row
+   *  (Phase 22 D1 / #410). First messages omit this. */
+  conversationId?: string;
+  /** Frontend signal to close the current conversation (ended_at stamp) —
+   *  sent when the user hits "Clear chat" or navigates away. Request body
+   *  carries no message in that case; the edge fn just closes + returns. */
+  closeConversation?: boolean;
 }
 
 // OpenRouter model — Gemini 3 Flash: fast, cheap ($0.50/M tokens), supports tool calling
@@ -240,7 +257,32 @@ serve(async (req) => {
     }
 
     // Parse request
-    const { message, conversationHistory, context, disableClassifier }: TextChatRequest = await req.json();
+    const {
+      message,
+      conversationHistory,
+      context,
+      disableClassifier,
+      conversationId: incomingConversationId,
+      closeConversation: shouldCloseConversation,
+    }: TextChatRequest = await req.json();
+
+    // Service-role client for conversation logging — writes bypass RLS; RLS on
+    // support_conversations/support_messages restricts reads to the user.
+    const serviceRoleClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false },
+    });
+
+    // Short-circuit: frontend explicitly asked to close the conversation.
+    if (shouldCloseConversation && incomingConversationId) {
+      const closeResult = await closeConversation(serviceRoleClient, incomingConversationId);
+      if (!closeResult.ok) {
+        logStep("closeConversation failed (non-fatal)", { error: closeResult.error });
+      }
+      return new Response(JSON.stringify({ ok: true, closed: closeResult.ok }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
     if (!message?.trim()) {
       return new Response(
         JSON.stringify({ error: "Message is required" }),
@@ -268,6 +310,44 @@ serve(async (req) => {
 
     const systemPrompt = SYSTEM_PROMPTS[effectiveContext] || SYSTEM_PROMPTS.general;
     logStep("Context selected", { context: effectiveContext, messageLength: message.length });
+
+    // ── Support conversation logging (Phase 22 D1 / #410) ──────────────────
+    // Open/reuse a conversation row and log the user turn. All writes are
+    // best-effort — any failure is logged but never breaks the chat.
+    let activeConversationId: string | null = null;
+    let turnIndex = 0;
+    if (effectiveContext === "support") {
+      if (incomingConversationId) {
+        activeConversationId = incomingConversationId;
+        turnIndex = await getNextTurnIndex(serviceRoleClient, incomingConversationId);
+      } else {
+        const opened = await openConversation(serviceRoleClient, {
+          userId: user.id,
+          routeContext: context as LogChatContext,
+          classifiedContextDetected: classifiedContext,
+          classifierContextUsed: effectiveContext,
+          classifierDismissed: !!disableClassifier,
+        });
+        if (opened.ok && opened.data) {
+          activeConversationId = opened.data.id;
+          turnIndex = 0;
+        } else {
+          logStep("openConversation failed (non-fatal)", { error: opened.error });
+        }
+      }
+
+      if (activeConversationId) {
+        const userAppend = await appendTurn(serviceRoleClient, {
+          conversationId: activeConversationId,
+          turnIndex: turnIndex++,
+          turnType: "user",
+          content: message,
+        });
+        if (!userAppend.ok) {
+          logStep("appendTurn user failed (non-fatal)", { error: userAppend.error });
+        }
+      }
+    }
 
     // Build messages array for OpenRouter
     const messages: ChatMessage[] = [
@@ -365,6 +445,17 @@ serve(async (req) => {
           ? (rawArgs ? JSON.parse(rawArgs) : {})
           : (rawArgs ?? {});
 
+        // Log the tool_call turn before invocation so even crashes leave a trace.
+        if (activeConversationId) {
+          await appendTurn(serviceRoleClient, {
+            conversationId: activeConversationId,
+            turnIndex: turnIndex++,
+            turnType: "tool_call",
+            toolName: name,
+            toolArgs: args,
+          });
+        }
+
         if (name === "search_properties") {
           logStep("Tool call: search_properties", { args });
           const serviceClient = createClient(supabaseUrl, supabaseServiceKey, {
@@ -376,15 +467,25 @@ serve(async (req) => {
             "TEXT-CHAT",
           );
           searchResults = searchResponse.results;
+          const searchResultPayload = {
+            success: true,
+            results: searchResults,
+            total_count: searchResults.length,
+          };
           toolResultMessages.push({
             role: "tool",
             tool_call_id: call.id,
-            content: JSON.stringify({
-              success: true,
-              results: searchResults,
-              total_count: searchResults.length,
-            }),
+            content: JSON.stringify(searchResultPayload),
           });
+          if (activeConversationId) {
+            await appendTurn(serviceRoleClient, {
+              conversationId: activeConversationId,
+              turnIndex: turnIndex++,
+              turnType: "tool_result",
+              toolName: name,
+              toolResultJson: { total_count: searchResults.length },
+            });
+          }
           continue;
         }
 
@@ -407,6 +508,26 @@ serve(async (req) => {
             tool_call_id: call.id,
             content: JSON.stringify(toolResult),
           });
+
+          if (activeConversationId) {
+            await appendTurn(serviceRoleClient, {
+              conversationId: activeConversationId,
+              turnIndex: turnIndex++,
+              turnType: "tool_result",
+              toolName: name,
+              toolResultJson: toolResult as unknown as Record<string, unknown>,
+            });
+
+            // Escalation link — if open_dispute succeeded, stamp escalation
+            // metadata on the conversation so admins can join transcripts to
+            // their dispute rows (Phase 22 C5 + D1).
+            if (name === "open_dispute" && toolResult.success && toolResult.data) {
+              const disputeRow = (toolResult.data as { dispute?: { id?: string } }).dispute;
+              if (disputeRow?.id) {
+                await markEscalated(serviceRoleClient, activeConversationId, disputeRow.id);
+              }
+            }
+          }
           continue;
         }
 
@@ -450,7 +571,14 @@ serve(async (req) => {
         );
       }
 
-      return streamSSEResponse(openRouterResponse, corsHeaders, searchResults, classifiedContext);
+      return streamSSEResponse(
+        openRouterResponse,
+        corsHeaders,
+        searchResults,
+        classifiedContext,
+        activeConversationId,
+        makeAssistantLogger(),
+      );
     }
 
     // No tool call — check if we already have content, otherwise stream
@@ -482,7 +610,46 @@ serve(async (req) => {
       }
     }
 
-    return streamSSEResponse(openRouterResponse, corsHeaders, searchResults, classifiedContext);
+    return streamSSEResponse(
+      openRouterResponse,
+      corsHeaders,
+      searchResults,
+      classifiedContext,
+      activeConversationId,
+      makeAssistantLogger(),
+    );
+
+    function makeAssistantLogger() {
+      if (!activeConversationId) return undefined;
+      const convId = activeConversationId;
+      const assistantTurnIndex = turnIndex++;
+      return async (fullText: string) => {
+        try {
+          await appendTurn(serviceRoleClient, {
+            conversationId: convId,
+            turnIndex: assistantTurnIndex,
+            turnType: "assistant",
+            content: fullText,
+            model: OPENROUTER_MODEL,
+          });
+          // Recompute counters in one pass at the end of the turn.
+          const userCount = (conversationHistory ?? []).filter((m) => m.role === "user").length + 1;
+          const assistantCount = (conversationHistory ?? []).filter((m) => m.role === "assistant").length + 1;
+          await bumpConversationCounters(serviceRoleClient, convId, {
+            // Deltas for THIS turn only — one user message + one assistant +
+            // however many tools fired.
+            user_message_count: 1,
+            assistant_message_count: 1,
+            tool_call_count: 0, // tool_call inserts already increment elsewhere if needed; leaving 0 to avoid double-count
+          });
+          logStep("conversation turn logged", { convId, userCount, assistantCount });
+        } catch (err) {
+          logStep("assistant turn log failed (non-fatal)", {
+            error: err instanceof Error ? err.message : String(err),
+          });
+        }
+      };
+    }
 
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -497,20 +664,32 @@ serve(async (req) => {
 
 /**
  * Transforms an OpenRouter streaming response into SSE events for the client.
- * Sends search results + classified-context events before the text stream.
+ * Sends classifier + search + conversation events before the text stream.
+ * onComplete receives the accumulated assistant text so the caller can log it.
  */
 function streamSSEResponse(
   openRouterResponse: Response,
   corsHeaders: Record<string, string>,
   searchResults?: SearchResult[],
   classifiedContext?: ClassifiedContext | null,
+  conversationId?: string | null,
+  onComplete?: (fullText: string) => Promise<void> | void,
 ): Response {
   const encoder = new TextEncoder();
 
   const readable = new ReadableStream({
     async start(controller) {
-      // Intent classifier result — emit first so the client can update the
-      // chip before any tokens arrive.
+      // Conversation id — frontend binds subsequent turns to this id.
+      if (conversationId) {
+        controller.enqueue(
+          encoder.encode(
+            `event: conversation_id\ndata: ${JSON.stringify({ conversation_id: conversationId })}\n\n`,
+          ),
+        );
+      }
+
+      // Intent classifier result — emit before tokens so the client can update
+      // the chip before any streaming text arrives.
       if (classifiedContext) {
         controller.enqueue(
           encoder.encode(
@@ -535,6 +714,7 @@ function streamSSEResponse(
 
       const decoder = new TextDecoder();
       let buffer = "";
+      let accumulatedText = "";
 
       try {
         while (true) {
@@ -557,6 +737,7 @@ function streamSSEResponse(
               const chunk = JSON.parse(data);
               const delta = chunk.choices?.[0]?.delta;
               if (delta?.content) {
+                accumulatedText += delta.content;
                 controller.enqueue(
                   encoder.encode(`event: token\ndata: ${JSON.stringify(delta.content)}\n\n`)
                 );
@@ -572,6 +753,17 @@ function streamSSEResponse(
       } finally {
         controller.enqueue(encoder.encode(`event: done\ndata: [DONE]\n\n`));
         controller.close();
+
+        // Log the final assistant turn — best-effort, never surfaced to client.
+        if (onComplete && accumulatedText) {
+          try {
+            await onComplete(accumulatedText);
+          } catch (err) {
+            logStep("onComplete logger failed (non-fatal)", {
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+        }
       }
     },
   });
