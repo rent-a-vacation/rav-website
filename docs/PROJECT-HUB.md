@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-23T03:44:48"
-change_ref: "683e4ad"
+last_updated: "2026-04-23T10:15:43"
+change_ref: "2c593e2"
 change_type: "session-58"
 status: "active"
 ---
@@ -93,10 +93,10 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1259 automated tests** (138 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **1291 automated tests** (139 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-062 (001-059 deployed to DEV + PROD; 060 + 061 + 062 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
+- **Migrations created:** 001-063 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
@@ -108,7 +108,18 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-58)
 
-**Session 58 — Phase 22 Tracks C complete + D1 shipped — support agent end-to-end (#405+#408+#406+#409+#407+#410, Apr 22, 2026):**
+**Session 58 — PHASE 22 COMPLETE — RAVIO Customer Support Foundation end-to-end (#405+#408+#406+#409+#407+#410+#411, Apr 22-23, 2026):**
+
+**Sixth PR (#433) — D2 #411 admin Support Interactions tab + metrics + thumbs rating:**
+- Migration 063 — `get_support_metrics(date_from, date_to)` RPC returning total/ended/deflected/escalated counts + deflection%/escalation% + median response ms (server-side via `percentile_cont` on user→assistant gaps) + rating counts. RAV-team-only via `is_rav_team` guard inside the fn. One round trip; keeps the dashboard responsive even as conversation volume grows.
+- New `src/hooks/useSupportConversations.ts` — React Query hooks: list/detail/metrics/rate.
+- New `src/components/admin/AdminSupportInteractions.tsx` — metrics cards (conversations, deflection %, escalation %, median response), rating summary, filter bar (user email search, date range, escalation filter, rating filter), transcripts table, full transcript detail dialog with turn-typed rendering (user bubble / assistant bubble / collapsible tool_call + tool_result / error row).
+- New admin tab `AdminDashboard` → "Support" (visible to all RAV team, mirrors Disputes/Concierge). Route-protected via existing `isRavTeam()` gate.
+- New `src/components/RavioChatRating.tsx` — subtle "Was this helpful?" + thumbs up/down buttons. Integrated into `TextChatPanel` footer; renders only when a support `conversationId` is bound and an assistant has replied.
+- `useTextChat` now exposes `conversationId` as state so the rating widget can bind. Rating mutation writes via existing RLS policy `support_conversations_rate_own`.
+- New `src/lib/supportMetrics.ts` + test — pure formatters for %, ms→"1.2s"/"2m 14s", rating label, turn summarizer, `isDeflected` predicate. 22 unit tests.
+- Tests: 1259 → 1291 (+32).
+- **Phase 22 milestone (#37) + epic (#395) now 22 of 22 tickets shipped. 100%.**
 
 **Fifth PR (#432) — D1 #410 support conversation logging:**
 - Migration 062 — two new tables: `support_conversations` (route_context, classifier_context_detected/used, classifier_dismissed, counters, escalated_to_dispute_id FK, user_rating placeholder for #411 thumbs) + `support_messages` (turn_index UNIQUE per conversation, turn_type enum `user`/`assistant`/`tool_call`/`tool_result`/`error`, content + tool_name + tool_args + tool_result_json). RLS: user sees own, RAV team sees all, service-role writes. Indexes tuned for #411 analytics queries.
@@ -160,7 +171,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **New feedback memory captured:** "CS and UX as business differentiators" — user direction that when picking between cheap and robust implementations for support surfaces, bias toward the robust one even at latency/complexity cost. Drove the choice of DB+Stripe fallback over DB-only for `check_refund_status`.
 - **Tests:** 1146 → 1166 (+20). 134 → 135 files. 0 type errors, build clean (1m 5s).
 
-**End state:** Phase 22 at **21 of 22 tickets (95%) — Tracks A/B/C/E complete + D1 shipped**. Remaining: only **#411 D2** — admin Support Interactions tab (transcript browser, deflection/escalation/SLA metrics, thumbs-up/down UI). PROD deploy of `text-chat` + migrations 060 + 061 + 062 held per CLAUDE.md.
+**End state:** **Phase 22 COMPLETE — 22 of 22 tickets shipped (100%).** All tracks (A infrastructure / B content / C agent extension / D observability / E diagrams) done. The RAVIO support agent now: persists every support conversation with tool-level granularity, auto-detects context per route, classifies ambiguous messages and lets users revert, escalates to AdminDisputes with `source='ravio_support'` tagging, and admins get a full transcript browser + deflection/escalation/response-time metrics + user-rating signal. Only the #80 lawyer-blocked policy drafts (#404) remain in Phase 22, and that block is not in the dev team's hands. PROD deploy of `text-chat` + migrations 060 + 061 + 062 + 063 held per CLAUDE.md — one deploy window will light everything up.
 
 ---
 

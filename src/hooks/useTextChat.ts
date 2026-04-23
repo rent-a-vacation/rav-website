@@ -49,6 +49,8 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
   // (Phase 22 D1 / #410). Passed back on subsequent turns so they bind to the
   // same conversation row. Reset on route-change and clearHistory.
   const conversationIdRef = useRef<string | null>(null);
+  // Mirrored as state so consumers (#411 rating widget) can subscribe.
+  const [conversationId, setConversationIdState] = useState<string | null>(null);
 
   // Clear conversation when context changes
   useEffect(() => {
@@ -60,6 +62,7 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
       setClassifiedContext(null);
       classifierDismissedRef.current = false;
       conversationIdRef.current = null;
+      setConversationIdState(null);
       abortControllerRef.current?.abort();
     }
   }, [context]);
@@ -191,6 +194,7 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
               const payload = JSON.parse(data) as { conversation_id?: string };
               if (payload.conversation_id) {
                 conversationIdRef.current = payload.conversation_id;
+                setConversationIdState(payload.conversation_id);
               }
             } catch {
               // Skip malformed payload
@@ -292,6 +296,7 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
     setError(null);
     setClassifiedContext(null);
     conversationIdRef.current = null;
+    setConversationIdState(null);
     // Clearing history does NOT reset the dismissal — if the user already
     // said "no I don't want support," we respect that across history clears
     // within the same session. A route change (contextRef effect above)
@@ -315,5 +320,6 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
     context,
     classifiedContext,
     dismissClassification,
+    conversationId,
   };
 }

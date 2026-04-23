@@ -38,6 +38,7 @@ import {
   Key,
   Bell,
   Headphones,
+  LifeBuoy,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminProperties from "@/components/admin/AdminProperties";
@@ -63,6 +64,7 @@ import { LaunchReadinessChecklist } from "@/components/admin/LaunchReadinessChec
 import AdminApiKeys from "@/components/admin/AdminApiKeys";
 import AdminNotificationCenter from "@/components/admin/AdminNotificationCenter";
 import AdminConcierge from "@/components/admin/AdminConcierge";
+import AdminSupportInteractions from "@/components/admin/AdminSupportInteractions";
 
 const IS_DEV = import.meta.env.VITE_SUPABASE_URL?.includes("oukbxqnlxnkainnligfz");
 
@@ -299,6 +301,10 @@ const AdminDashboard = () => {
               <Headphones className="h-4 w-4" />
               <span className="hidden sm:inline">Concierge</span>
             </TabsTrigger>
+            <TabsTrigger value="support-interactions" className="gap-2">
+              <LifeBuoy className="h-4 w-4" />
+              <span className="hidden sm:inline">Support</span>
+            </TabsTrigger>
             {isRavAdmin() && (
               <TabsTrigger value="api-keys" className="gap-2">
                 <Key className="h-4 w-4" />
@@ -354,6 +360,10 @@ const AdminDashboard = () => {
               initialSearch={activeTab === "disputes" ? initialSearch : ""}
               onNavigateToEntity={navigateToEntity}
             />
+          </TabsContent>
+
+          <TabsContent value="support-interactions">
+            <AdminSupportInteractions />
           </TabsContent>
 
           <TabsContent value="verifications">
