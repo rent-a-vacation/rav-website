@@ -208,7 +208,7 @@ describe("useTextChat", () => {
     });
 
     await act(async () => {
-      result.current.sendMessage("How do I bid?");
+      result.current.sendMessage("How do I submit an Offer?");
     });
 
     await waitFor(() => {
@@ -220,11 +220,34 @@ describe("useTextChat", () => {
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({
-          message: "How do I bid?",
+          message: "How do I submit an Offer?",
           conversationHistory: [],
           context: "bidding",
         }),
       })
     );
+  });
+
+  describe("route-based auto-detection", () => {
+    it("falls back to support context on /my-trips when no prop supplied", () => {
+      const { result } = renderHook(() => useTextChat(), {
+        wrapper: createHookWrapper({ initialEntries: ["/my-trips"] }),
+      });
+      expect(result.current.context).toBe("support");
+    });
+
+    it("falls back to rentals context on /property/:id", () => {
+      const { result } = renderHook(() => useTextChat(), {
+        wrapper: createHookWrapper({ initialEntries: ["/property/abc-123"] }),
+      });
+      expect(result.current.context).toBe("rentals");
+    });
+
+    it("explicit context prop always wins over route detection", () => {
+      const { result } = renderHook(() => useTextChat({ context: "property-detail" }), {
+        wrapper: createHookWrapper({ initialEntries: ["/my-trips"] }),
+      });
+      expect(result.current.context).toBe("property-detail");
+    });
   });
 });

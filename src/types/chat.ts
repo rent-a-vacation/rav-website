@@ -10,4 +10,4 @@ export interface ChatMessage {
 
 export type ChatStatus = "idle" | "sending" | "streaming" | "error";
 
-export type ChatContext = "rentals" | "property-detail" | "bidding" | "general";
+export type ChatContext = "rentals" | "property-detail" | "bidding" | "support" | "general";

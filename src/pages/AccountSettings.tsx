@@ -29,6 +29,7 @@ import { User, Mail, Phone, Lock, Shield, Calendar, Save, Loader2, Bell, Downloa
 import { SubscriptionManagement } from "@/components/SubscriptionManagement";
 import { MembershipPlans } from "@/components/MembershipPlans";
 import { Textarea } from "@/components/ui/textarea";
+import { RavioFloatingChat } from "@/components/RavioFloatingChat";
 
 const AccountSettings = () => {
   usePageMeta("Account Settings", "Manage your Rent-A-Vacation account profile, security, and preferences.");
@@ -701,6 +702,7 @@ const AccountSettings = () => {
       </main>
 
       <Footer />
+      <RavioFloatingChat />
     </div>
   );
 };

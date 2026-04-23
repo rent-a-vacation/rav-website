@@ -1,8 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import type { ChatMessage, ChatStatus, ChatContext } from "@/types/chat";
 import type { VoiceSearchResult } from "@/types/voice";
 import { supabase } from "@/lib/supabase";
 import { trackEvent } from "@/lib/posthog";
+import { detectChatContext } from "@/lib/chatContext";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
@@ -12,10 +14,21 @@ function generateId(): string {
 }
 
 interface UseTextChatOptions {
-  context: ChatContext;
+  /**
+   * Explicit context override. Semantically-owned pages (PropertyDetail,
+   * Rentals, BiddingMarketplace) should pass their context directly.
+   * Omit to auto-detect from the current route via `detectChatContext`.
+   */
+  context?: ChatContext;
 }
 
-export function useTextChat({ context }: UseTextChatOptions) {
+export function useTextChat({ context: explicitContext }: UseTextChatOptions = {}) {
+  const location = useLocation();
+  const context = useMemo<ChatContext>(
+    () => explicitContext ?? detectChatContext(location.pathname),
+    [explicitContext, location.pathname],
+  );
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [status, setStatus] = useState<ChatStatus>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -212,5 +225,6 @@ export function useTextChat({ context }: UseTextChatOptions) {
     error,
     sendMessage,
     clearHistory,
+    context,
   };
 }
