@@ -51,6 +51,7 @@ import { AgeBadge } from "./AgeBadge";
 type DisputeStatus = Database["public"]["Enums"]["dispute_status"];
 type DisputeCategory = Database["public"]["Enums"]["dispute_category"];
 type DisputePriority = Database["public"]["Enums"]["dispute_priority"];
+type DisputeSource = Database["public"]["Enums"]["dispute_source"];
 
 interface DisputeWithDetails {
   id: string;
@@ -60,6 +61,7 @@ interface DisputeWithDetails {
   category: DisputeCategory;
   priority: DisputePriority;
   status: DisputeStatus;
+  source: DisputeSource;
   description: string;
   evidence_urls: string[];
   resolution_notes: string | null;
@@ -142,6 +144,7 @@ const AdminDisputes = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("active");
   const [assignmentFilter, setAssignmentFilter] = useState<string>("all");
+  const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [ravTeamMembers, setRavTeamMembers] = useState<Pick<Profile, "id" | "full_name">[]>([]);
 
@@ -397,7 +400,9 @@ const AdminDisputes = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
       (assignmentFilter === "mine" && d.assigned_to === user?.id) ||
       (assignmentFilter === "unassigned" && !d.assigned_to);
 
-    return matchesSearch && matchesAssignment;
+    const matchesSource = sourceFilter === "all" || d.source === sourceFilter;
+
+    return matchesSearch && matchesAssignment && matchesSource;
   });
 
   const isResolved = (status: DisputeStatus) =>
@@ -482,6 +487,17 @@ const AdminDisputes = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
           </SelectContent>
         </Select>
 
+        <Select value={sourceFilter} onValueChange={setSourceFilter}>
+          <SelectTrigger className="w-[170px]">
+            <SelectValue placeholder="Source" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Sources</SelectItem>
+            <SelectItem value="user_filed">User-Filed</SelectItem>
+            <SelectItem value="ravio_support">RAVIO Support</SelectItem>
+          </SelectContent>
+        </Select>
+
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -521,11 +537,18 @@ const AdminDisputes = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
                 <TableRow key={dispute.id}>
                   <TableCell>
                     <div>
-                      <AdminEntityLink tab="users" search={dispute.reporter?.email || ""} onNavigate={onNavigateToEntity}>
-                        <p className="font-medium text-sm">
-                          {dispute.reporter?.full_name || "Unknown"}
-                        </p>
-                      </AdminEntityLink>
+                      <div className="flex items-center gap-2">
+                        <AdminEntityLink tab="users" search={dispute.reporter?.email || ""} onNavigate={onNavigateToEntity}>
+                          <p className="font-medium text-sm">
+                            {dispute.reporter?.full_name || "Unknown"}
+                          </p>
+                        </AdminEntityLink>
+                        {dispute.source === "ravio_support" && (
+                          <Badge variant="outline" className="h-5 text-[10px] font-medium border-primary/40 text-primary">
+                            via RAVIO
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground truncate max-w-[200px]">
                         {dispute.description}
                       </p>
@@ -646,6 +669,11 @@ const AdminDisputes = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
                   <Badge className={PRIORITY_COLORS[selectedDispute.priority]}>
                     Priority: {selectedDispute.priority}
                   </Badge>
+                  {selectedDispute.source === "ravio_support" && (
+                    <Badge variant="outline" className="border-primary/40 text-primary">
+                      Opened via RAVIO
+                    </Badge>
+                  )}
                   {selectedDispute.refund_amount != null && selectedDispute.refund_amount > 0 && (
                     <Badge className="bg-green-100 text-green-700">
                       Refund: ${selectedDispute.refund_amount.toFixed(2)}

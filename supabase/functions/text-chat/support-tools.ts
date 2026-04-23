@@ -321,6 +321,8 @@ export async function openDispute(
   }
 
   // RLS policy "Users can create disputes" enforces reporter_id = auth.uid().
+  // source='ravio_support' tags this as an agent-opened dispute so AdminDisputes
+  // can surface + filter + measure separately from user-filed ones (#409).
   const result = await (supabase.from("disputes") as {
     insert: (row: Record<string, unknown>) => {
       select: (cols: string) => {
@@ -334,6 +336,7 @@ export async function openDispute(
       category,
       description,
       status: "open",
+      source: "ravio_support",
     })
     .select(SAFE_DISPUTE_COLUMNS)
     .single();

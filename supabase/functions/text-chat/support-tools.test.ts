@@ -220,6 +220,27 @@ describe("open_dispute", () => {
     expect(result.note).toMatch(/RAV team/);
   });
 
+  it("tags agent-opened disputes with source='ravio_support' (#409)", async () => {
+    // Hand-rolled mock that captures the insert payload so we can assert on it.
+    const insertSpy = vi.fn().mockReturnValue({
+      select: () => ({
+        single: () => Promise.resolve({ data: { id: "dp-tagged" }, error: null }),
+      }),
+    });
+    const spySupa = {
+      from: () => ({ insert: insertSpy }),
+    };
+
+    const result = await openDispute(spySupa, USER, validArgs);
+
+    expect(result.success).toBe(true);
+    expect(insertSpy).toHaveBeenCalledTimes(1);
+    const payload = insertSpy.mock.calls[0][0] as Record<string, unknown>;
+    expect(payload.source).toBe("ravio_support");
+    expect(payload.reporter_id).toBe(USER.userId);
+    expect(payload.status).toBe("open");
+  });
+
   it("surfaces RLS rejection when the user does not own the booking", async () => {
     const supa = createSupabaseMock({
       disputes: {
