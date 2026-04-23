@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-23T00:43:36"
-change_ref: "83217fa"
+last_updated: "2026-04-23T01:32:26"
+change_ref: "9fc5af7"
 change_type: "session-58"
 status: "active"
 ---
@@ -93,8 +93,8 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1215 automated tests** (136 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s — run with `npm run test:p0`
+- **1249 automated tests** (137 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-061 (001-059 deployed to DEV + PROD; 060 + 061 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
@@ -108,7 +108,16 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-58)
 
-**Session 58 — Phase 22 Track C: support agent + route detection + agent-dispute source tagging (#405 + #408 + #406 + #409, Apr 22, 2026):**
+**Session 58 — Phase 22 Track C: support agent + route detection + agent-dispute tagging + intent classifier — Track C COMPLETE (#405 + #408 + #406 + #409 + #407, Apr 22, 2026):**
+
+**Fourth PR (#431) — C3 #407 intent classifier + "Switched to Support" chip:**
+- New `supabase/functions/text-chat/intent-classifier.ts` — keyword-first classifier with OpenRouter model fallback. Returns `'support'` / `'rentals'` / `null`. 20 unit tests (keyword coverage, model fallback, fail-closed on HTTP/network errors, payload truncation, keyword-short-circuit behavior).
+- Edge fn integration — classifier fires only when `context === 'general'` AND first message AND frontend hasn't dismissed. Emits new SSE event `classified_context` before tokens; uses resolved context for system prompt + tool selection for that turn.
+- `useTextChat` parses the new SSE event → state `classifiedContext`; `dismissClassification()` handler flips session-scoped `classifierDismissedRef` which forces `disableClassifier: true` on future sends (survives history clear within session; resets on route change). PostHog events: `text_chat_classified`, `text_chat_classification_reverted`.
+- `TextChatPanel` renders a subtle chip above messages when `classifiedContext !== context`: "Switched to **{context label}** — back to general help". Click dismisses. Chip reuses existing `CONTEXT_LABELS` — no new brand strings.
+- `RavioFloatingChat` passes the new state + handler through.
+- **Tests:** 1215 → 1249 (+34). intent-classifier.test.ts (20), useTextChat classifier cases (3), TextChatPanel chip cases (2), plus auto-update of one existing test for new `disableClassifier` body field.
+- **Phase 22 Track C COMPLETE.** Only Track D observability (#410 + #411) remains.
 
 **Third PR (#430) — C5 #409 agent-opened dispute source tagging:**
 - Migration 061 — new `dispute_source` enum (`user_filed`, `ravio_support`) + `source` column on `disputes` with default `'user_filed'` + index. All existing rows keep `user_filed` implicitly; no data migration needed.
@@ -140,7 +149,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **New feedback memory captured:** "CS and UX as business differentiators" — user direction that when picking between cheap and robust implementations for support surfaces, bias toward the robust one even at latency/complexity cost. Drove the choice of DB+Stripe fallback over DB-only for `check_refund_status`.
 - **Tests:** 1146 → 1166 (+20). 134 → 135 files. 0 type errors, build clean (1m 5s).
 
-**End state:** Phase 22 at 19 of 22 tickets (86%). Remaining: **#407** (intent classifier + "Switched to Support" chip), **#410** (support conversation logging), **#411** (admin Support Interactions tab + metrics). Recommended next: #407 (closes Track C entirely); then #410 → #411 as the observability pair. PROD deploy of `text-chat` + migrations 060 + 061 still held per CLAUDE.md. `STRIPE_SECRET_KEY` already set on both DEV and PROD so the live-Stripe reconcile path in `check_refund_status` works day-one.
+**End state:** Phase 22 at **20 of 22 tickets (91%) — Track C COMPLETE**. Remaining: **#410** (support conversation logging), **#411** (admin Support Interactions tab + metrics). Recommended next: #410 → #411 as a focused observability pair. PROD deploy of `text-chat` + migrations 060 + 061 still held per CLAUDE.md. `STRIPE_SECRET_KEY` already set on both DEV and PROD.
 
 ---
 

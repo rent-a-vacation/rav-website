@@ -16,8 +16,15 @@ vi.mock("@/lib/supabase", () => ({
 // Must import after mock
 const { useTextChat } = await import("./useTextChat");
 
-function createMockSSEResponse(tokens: string[], searchResults?: unknown[]) {
+function createMockSSEResponse(
+  tokens: string[],
+  searchResults?: unknown[],
+  classifiedContext?: "support" | "rentals",
+) {
   let sseData = "";
+  if (classifiedContext) {
+    sseData += `event: classified_context\ndata: ${JSON.stringify({ classified: classifiedContext })}\n\n`;
+  }
   if (searchResults) {
     sseData += `event: search_results\ndata: ${JSON.stringify(searchResults)}\n\n`;
   }
@@ -223,6 +230,7 @@ describe("useTextChat", () => {
           message: "How do I submit an Offer?",
           conversationHistory: [],
           context: "bidding",
+          disableClassifier: false,
         }),
       })
     );
@@ -248,6 +256,70 @@ describe("useTextChat", () => {
         wrapper: createHookWrapper({ initialEntries: ["/my-trips"] }),
       });
       expect(result.current.context).toBe("property-detail");
+    });
+  });
+
+  describe("intent classifier (#407)", () => {
+    it("captures classified_context from SSE stream", async () => {
+      vi.mocked(fetch).mockResolvedValueOnce(
+        createMockSSEResponse(["ok"], undefined, "support")
+      );
+      const { result } = renderHook(() => useTextChat({ context: "general" }), {
+        wrapper: createHookWrapper(),
+      });
+
+      expect(result.current.classifiedContext).toBeNull();
+
+      await act(async () => {
+        result.current.sendMessage("Where is my refund?");
+      });
+      await waitFor(() => {
+        expect(result.current.status).toBe("idle");
+      });
+
+      expect(result.current.classifiedContext).toBe("support");
+    });
+
+    it("starts with no classification and stays null when server doesn't emit", async () => {
+      vi.mocked(fetch).mockResolvedValueOnce(createMockSSEResponse(["hi"]));
+      const { result } = renderHook(() => useTextChat({ context: "general" }), {
+        wrapper: createHookWrapper(),
+      });
+
+      await act(async () => {
+        result.current.sendMessage("hello");
+      });
+      await waitFor(() => expect(result.current.status).toBe("idle"));
+
+      expect(result.current.classifiedContext).toBeNull();
+    });
+
+    it("dismissClassification clears the chip and sets disableClassifier on next send", async () => {
+      vi.mocked(fetch)
+        .mockResolvedValueOnce(createMockSSEResponse(["r1"], undefined, "support"))
+        .mockResolvedValueOnce(createMockSSEResponse(["r2"]));
+
+      const { result } = renderHook(() => useTextChat({ context: "general" }), {
+        wrapper: createHookWrapper(),
+      });
+
+      await act(async () => {
+        result.current.sendMessage("where's my refund");
+      });
+      await waitFor(() => expect(result.current.status).toBe("idle"));
+      expect(result.current.classifiedContext).toBe("support");
+
+      act(() => result.current.dismissClassification());
+      expect(result.current.classifiedContext).toBeNull();
+
+      await act(async () => {
+        result.current.sendMessage("just saying hi");
+      });
+      await waitFor(() => expect(result.current.status).toBe("idle"));
+
+      const secondCall = vi.mocked(fetch).mock.calls[1];
+      const body = JSON.parse((secondCall[1] as RequestInit).body as string);
+      expect(body.disableClassifier).toBe(true);
     });
   });
 });

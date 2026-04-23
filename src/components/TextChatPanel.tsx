@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Send, X, Trash2, MapPin, Users, AlertCircle } from "lucide-react";
+import { Send, X, Trash2, MapPin, Users, AlertCircle, ArrowLeftCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +59,12 @@ interface TextChatPanelProps {
   context: ChatContext;
   onSendMessage: (text: string) => void;
   onClearHistory: () => void;
+  /** Phase 22 C3 (#407) — server-classified context; when set and different
+   *  from `context`, renders the "Switched to X — [back]" chip. */
+  classifiedContext?: ChatContext | null;
+  /** Dismisses the classifier chip and tells the hook to suppress future
+   *  classifications for this session. */
+  onDismissClassification?: () => void;
 }
 
 function TypingIndicator() {
@@ -111,6 +117,8 @@ export function TextChatPanel({
   context,
   onSendMessage,
   onClearHistory,
+  classifiedContext,
+  onDismissClassification,
 }: TextChatPanelProps) {
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -183,6 +191,24 @@ export function TextChatPanel({
             </div>
           </div>
         </SheetHeader>
+
+        {/* Classifier chip — only when server swapped the context on an
+            ambiguous route. Keeps the swap discoverable and reversible. */}
+        {classifiedContext && classifiedContext !== context && onDismissClassification && (
+          <div className="px-4 py-2 border-b bg-muted/30 shrink-0">
+            <button
+              type="button"
+              onClick={onDismissClassification}
+              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={`Dismiss ${CONTEXT_LABELS[classifiedContext]} context and go back to general help`}
+            >
+              <ArrowLeftCircle className="h-3.5 w-3.5" />
+              <span>
+                Switched to <strong className="text-foreground">{CONTEXT_LABELS[classifiedContext]}</strong> — back to general help
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* Messages */}
         <ScrollArea className="flex-1 px-4" ref={scrollRef}>

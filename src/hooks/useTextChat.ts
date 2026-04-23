@@ -33,8 +33,18 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
   const [status, setStatus] = useState<ChatStatus>("idle");
   const [error, setError] = useState<string | null>(null);
 
+  // Intent classifier (Phase 22 C3 / #407) — server may swap the context
+  // on ambiguous first messages (context='general'). Stored separately from
+  // the route/explicit context so the chip can show the delta.
+  const [classifiedContext, setClassifiedContext] = useState<ChatContext | null>(null);
+
   const abortControllerRef = useRef<AbortController | null>(null);
   const contextRef = useRef(context);
+  // Session-scoped override — true once the user has dismissed the classifier
+  // chip. While active, subsequent sends tell the server to skip the classifier
+  // even if history is cleared (so a cleared-and-re-asked ambiguous message
+  // doesn't re-trigger the chip the user already rejected).
+  const classifierDismissedRef = useRef(false);
 
   // Clear conversation when context changes
   useEffect(() => {
@@ -43,6 +53,8 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
       setMessages([]);
       setStatus("idle");
       setError(null);
+      setClassifiedContext(null);
+      classifierDismissedRef.current = false;
       abortControllerRef.current?.abort();
     }
   }, [context]);
@@ -101,6 +113,7 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
             message: trimmed,
             conversationHistory,
             context: contextRef.current,
+            disableClassifier: classifierDismissedRef.current,
           }),
           signal: abortControllerRef.current.signal,
         },
@@ -167,6 +180,23 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
             continue;
           }
 
+          if (currentEvent === "classified_context") {
+            try {
+              const payload = JSON.parse(data) as { classified?: ChatContext };
+              if (payload.classified) {
+                setClassifiedContext(payload.classified);
+                trackEvent("text_chat_classified", {
+                  route_context: contextRef.current,
+                  classified: payload.classified,
+                });
+              }
+            } catch {
+              // Skip malformed classifier payload
+            }
+            currentEvent = "";
+            continue;
+          }
+
           if (currentEvent === "done" || data === "[DONE]") {
             currentEvent = "";
             continue;
@@ -217,6 +247,19 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
     setMessages([]);
     setStatus("idle");
     setError(null);
+    setClassifiedContext(null);
+    // Clearing history does NOT reset the dismissal — if the user already
+    // said "no I don't want support," we respect that across history clears
+    // within the same session. A route change (contextRef effect above)
+    // fully resets both.
+  }, []);
+
+  const dismissClassification = useCallback(() => {
+    setClassifiedContext(null);
+    classifierDismissedRef.current = true;
+    trackEvent("text_chat_classification_reverted", {
+      route_context: contextRef.current,
+    });
   }, []);
 
   return {
@@ -226,5 +269,7 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
     sendMessage,
     clearHistory,
     context,
+    classifiedContext,
+    dismissClassification,
   };
 }
