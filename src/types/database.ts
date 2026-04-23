@@ -502,6 +502,7 @@ export type Database = {
           category: Database["public"]["Enums"]["dispute_category"]
           priority: Database["public"]["Enums"]["dispute_priority"]
           status: Database["public"]["Enums"]["dispute_status"]
+          source: Database["public"]["Enums"]["dispute_source"]
           description: string
           evidence_urls: string[]
           resolution_notes: string | null
@@ -522,6 +523,7 @@ export type Database = {
           category?: Database["public"]["Enums"]["dispute_category"]
           priority?: Database["public"]["Enums"]["dispute_priority"]
           status?: Database["public"]["Enums"]["dispute_status"]
+          source?: Database["public"]["Enums"]["dispute_source"]
           description: string
           evidence_urls?: string[]
           resolution_notes?: string | null
@@ -542,6 +544,7 @@ export type Database = {
           category?: Database["public"]["Enums"]["dispute_category"]
           priority?: Database["public"]["Enums"]["dispute_priority"]
           status?: Database["public"]["Enums"]["dispute_status"]
+          source?: Database["public"]["Enums"]["dispute_source"]
           description?: string
           evidence_urls?: string[]
           resolution_notes?: string | null
@@ -2241,6 +2244,7 @@ export type Database = {
         | "owner_no_show"
         | "other"
       dispute_priority: "low" | "medium" | "high" | "critical"
+      dispute_source: "user_filed" | "ravio_support"
       dispute_status:
         | "open"
         | "investigating"

@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-23T00:22:11"
-change_ref: "2ad0d63"
+last_updated: "2026-04-23T00:43:36"
+change_ref: "83217fa"
 change_type: "session-58"
 status: "active"
 ---
@@ -93,10 +93,10 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1214 automated tests** (136 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **1215 automated tests** (136 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-060 (001-059 deployed to DEV + PROD; 060 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
+- **Migrations created:** 001-061 (001-059 deployed to DEV + PROD; 060 + 061 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
@@ -108,7 +108,15 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-58)
 
-**Session 58 — Phase 22 Track C: support agent + route-based context detection (#405 + #408 + #406, Apr 22, 2026):**
+**Session 58 — Phase 22 Track C: support agent + route detection + agent-dispute source tagging (#405 + #408 + #406 + #409, Apr 22, 2026):**
+
+**Third PR (#430) — C5 #409 agent-opened dispute source tagging:**
+- Migration 061 — new `dispute_source` enum (`user_filed`, `ravio_support`) + `source` column on `disputes` with default `'user_filed'` + index. All existing rows keep `user_filed` implicitly; no data migration needed.
+- `support-tools.ts` `openDispute` now inserts with `source: 'ravio_support'` so RAVIO support agent escalations are distinguishable in the admin queue. 1 new unit test asserts the insert payload carries the source (hand-rolled spy pattern, since shared `createSupabaseMock` doesn't capture insert args).
+- `AdminDisputes.tsx` — new "Source" filter ("All Sources" / "User-Filed" / "RAVIO Support"); compact `via RAVIO` pill on agent-opened table rows; prominent "Opened via RAVIO" badge in the detail dialog. User-filed rows render with no source indicator (it's the implicit default).
+- `src/types/database.ts` — Row/Insert/Update extended with `source`; new `dispute_source` enum entry.
+- **Scope held:** unchanged `ReportIssueDialog` user flow (still inserts without a source — defaults to `user_filed`). Did NOT touch pre-existing `CATEGORY_LABELS` gap (missing 5 damage/no-show categories from migration 041). PROD migration deploy held per CLAUDE.md.
+- Tests: 1214 → 1215 (+1 openDispute source-tagging assertion).
 
 **Second PR (#429) — C2 #406 route-based context detection:**
 - New `src/lib/chatContext.ts` with `detectChatContext(pathname)` — maps route prefixes (`/my-trips`, `/owner-dashboard`, `/account`, `/settings/*`, `/disputes/*`, `/messages`, `/checkout`, etc.) to `support`; `/rentals`, `/property/*`, `/tools/*`, `/destinations/*`, `/calculator`, `/rav-deals` to `rentals`; `/marketplace`, `/bidding*` to `bidding`; else `general`. 35 test cases covering every documented route + case-insensitivity + partial-segment edge cases.
@@ -132,7 +140,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **New feedback memory captured:** "CS and UX as business differentiators" — user direction that when picking between cheap and robust implementations for support surfaces, bias toward the robust one even at latency/complexity cost. Drove the choice of DB+Stripe fallback over DB-only for `check_refund_status`.
 - **Tests:** 1146 → 1166 (+20). 134 → 135 files. 0 type errors, build clean (1m 5s).
 
-**End state:** Phase 22 at 18 of 22 tickets (82%). Remaining: #407 (intent classifier + chip), #409 (disputes.source enum + AdminDisputes filter), #410 (conversation logging), #411 (admin support metrics). Recommended next pickup: **#409** — closes the escalation loop visibly in admin UI. Then #410/#411 as an observability pair. PROD deploy of `text-chat` still held per CLAUDE.md — gets the support prompt + 5 tools on next deploy. `STRIPE_SECRET_KEY` env var is already set on both DEV and PROD (webhook + cancellation fns use it), so the live-Stripe reconcile path is ready on first deploy.
+**End state:** Phase 22 at 19 of 22 tickets (86%). Remaining: **#407** (intent classifier + "Switched to Support" chip), **#410** (support conversation logging), **#411** (admin Support Interactions tab + metrics). Recommended next: #407 (closes Track C entirely); then #410 → #411 as the observability pair. PROD deploy of `text-chat` + migrations 060 + 061 still held per CLAUDE.md. `STRIPE_SECRET_KEY` already set on both DEV and PROD so the live-Stripe reconcile path in `check_refund_status` works day-one.
 
 ---
 
