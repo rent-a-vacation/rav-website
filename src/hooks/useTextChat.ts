@@ -45,6 +45,10 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
   // even if history is cleared (so a cleared-and-re-asked ambiguous message
   // doesn't re-trigger the chip the user already rejected).
   const classifierDismissedRef = useRef(false);
+  // Support conversation id assigned by the server on the first support turn
+  // (Phase 22 D1 / #410). Passed back on subsequent turns so they bind to the
+  // same conversation row. Reset on route-change and clearHistory.
+  const conversationIdRef = useRef<string | null>(null);
 
   // Clear conversation when context changes
   useEffect(() => {
@@ -55,6 +59,7 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
       setError(null);
       setClassifiedContext(null);
       classifierDismissedRef.current = false;
+      conversationIdRef.current = null;
       abortControllerRef.current?.abort();
     }
   }, [context]);
@@ -114,6 +119,7 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
             conversationHistory,
             context: contextRef.current,
             disableClassifier: classifierDismissedRef.current,
+            conversationId: conversationIdRef.current ?? undefined,
           }),
           signal: abortControllerRef.current.signal,
         },
@@ -175,6 +181,19 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
               );
             } catch {
               // Skip malformed search results
+            }
+            currentEvent = "";
+            continue;
+          }
+
+          if (currentEvent === "conversation_id") {
+            try {
+              const payload = JSON.parse(data) as { conversation_id?: string };
+              if (payload.conversation_id) {
+                conversationIdRef.current = payload.conversation_id;
+              }
+            } catch {
+              // Skip malformed payload
             }
             currentEvent = "";
             continue;
@@ -244,10 +263,35 @@ export function useTextChat({ context: explicitContext }: UseTextChatOptions = {
 
   const clearHistory = useCallback(() => {
     abortControllerRef.current?.abort();
+    // Best-effort: tell the server to close the current support conversation
+    // so metrics get a clean ended_at stamp. Fire-and-forget.
+    const conversationId = conversationIdRef.current;
+    if (conversationId) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!session?.access_token) return;
+        void fetch(`${SUPABASE_URL}/functions/v1/text-chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            message: "",
+            conversationHistory: [],
+            context: contextRef.current,
+            conversationId,
+            closeConversation: true,
+          }),
+        }).catch(() => {
+          // Best-effort; no UI impact.
+        });
+      });
+    }
     setMessages([]);
     setStatus("idle");
     setError(null);
     setClassifiedContext(null);
+    conversationIdRef.current = null;
     // Clearing history does NOT reset the dismissal — if the user already
     // said "no I don't want support," we respect that across history clears
     // within the same session. A route change (contextRef effect above)

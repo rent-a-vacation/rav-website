@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-23T01:32:26"
-change_ref: "9fc5af7"
+last_updated: "2026-04-23T03:44:48"
+change_ref: "683e4ad"
 change_type: "session-58"
 status: "active"
 ---
@@ -93,10 +93,10 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1249 automated tests** (137 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **1259 automated tests** (138 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-061 (001-059 deployed to DEV + PROD; 060 + 061 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
+- **Migrations created:** 001-062 (001-059 deployed to DEV + PROD; 060 + 061 + 062 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
@@ -108,7 +108,18 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-58)
 
-**Session 58 — Phase 22 Track C: support agent + route detection + agent-dispute tagging + intent classifier — Track C COMPLETE (#405 + #408 + #406 + #409 + #407, Apr 22, 2026):**
+**Session 58 — Phase 22 Tracks C complete + D1 shipped — support agent end-to-end (#405+#408+#406+#409+#407+#410, Apr 22, 2026):**
+
+**Fifth PR (#432) — D1 #410 support conversation logging:**
+- Migration 062 — two new tables: `support_conversations` (route_context, classifier_context_detected/used, classifier_dismissed, counters, escalated_to_dispute_id FK, user_rating placeholder for #411 thumbs) + `support_messages` (turn_index UNIQUE per conversation, turn_type enum `user`/`assistant`/`tool_call`/`tool_result`/`error`, content + tool_name + tool_args + tool_result_json). RLS: user sees own, RAV team sees all, service-role writes. Indexes tuned for #411 analytics queries.
+- Deliberately **not** extending the Phase 21 `conversations` table despite the issue AC suggesting so — the agent data model is genuinely different (tool calls as first-class messages, no two-participant semantics, purpose-built analytics columns). Sidesteps cross-contamination of inbox queries/hooks/RLS.
+- New `supabase/functions/text-chat/conversation-logger.ts` pure-logic module — `openConversation`, `appendTurn`, `bumpConversationCounters`, `markEscalated`, `closeConversation`, `getNextTurnIndex`. All fail-closed (errors return `{ ok: false, error }` instead of throwing). 10 unit tests.
+- Edge fn integration: fires only when `effectiveContext === 'support'`. Opens a conversation on first turn or binds to incoming `conversationId`; appends user turn → each tool_call + tool_result → final assistant turn (streamed text accumulated then logged in SSE `finally` via an `onComplete` callback passed to `streamSSEResponse`); stamps escalation metadata when `open_dispute` tool succeeds. New SSE event `conversation_id`.
+- Frontend: `useTextChat` captures `conversation_id` in a ref, threads it back on every send, resets on route change + `clearHistory`. `clearHistory` fire-and-forgets a `closeConversation: true` request so `ended_at` gets stamped for metrics.
+- **What this unlocks for #411:** full transcript browser, deflection-rate / escalation-rate / SLA / tool-use metrics, admin jump from an agent-opened dispute to its originating transcript, thumbs-up/down column (UI ships with #411), classifier tuning signals via `classifier_context_detected` vs `_used`.
+- Not Sentry-related. Classifier/tool errors that throw bubble through existing browser Sentry; edge-fn server-side Sentry instrumentation is separate (#227, post-launch).
+- **Scope held:** no admin UI (that's #411), no thumbs UI (#411), PROD deploys held per CLAUDE.md.
+- Tests: 1249 → 1259 (+10 conversation-logger tests).
 
 **Fourth PR (#431) — C3 #407 intent classifier + "Switched to Support" chip:**
 - New `supabase/functions/text-chat/intent-classifier.ts` — keyword-first classifier with OpenRouter model fallback. Returns `'support'` / `'rentals'` / `null`. 20 unit tests (keyword coverage, model fallback, fail-closed on HTTP/network errors, payload truncation, keyword-short-circuit behavior).
@@ -149,7 +160,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **New feedback memory captured:** "CS and UX as business differentiators" — user direction that when picking between cheap and robust implementations for support surfaces, bias toward the robust one even at latency/complexity cost. Drove the choice of DB+Stripe fallback over DB-only for `check_refund_status`.
 - **Tests:** 1146 → 1166 (+20). 134 → 135 files. 0 type errors, build clean (1m 5s).
 
-**End state:** Phase 22 at **20 of 22 tickets (91%) — Track C COMPLETE**. Remaining: **#410** (support conversation logging), **#411** (admin Support Interactions tab + metrics). Recommended next: #410 → #411 as a focused observability pair. PROD deploy of `text-chat` + migrations 060 + 061 still held per CLAUDE.md. `STRIPE_SECRET_KEY` already set on both DEV and PROD.
+**End state:** Phase 22 at **21 of 22 tickets (95%) — Tracks A/B/C/E complete + D1 shipped**. Remaining: only **#411 D2** — admin Support Interactions tab (transcript browser, deflection/escalation/SLA metrics, thumbs-up/down UI). PROD deploy of `text-chat` + migrations 060 + 061 + 062 held per CLAUDE.md.
 
 ---
 

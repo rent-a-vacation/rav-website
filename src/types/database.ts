@@ -1591,6 +1591,111 @@ export type Database = {
           },
         ]
       }
+      support_conversations: {
+        Row: {
+          id: string
+          user_id: string
+          route_context: Database["public"]["Enums"]["support_chat_context"]
+          classifier_context_detected: Database["public"]["Enums"]["support_chat_context"] | null
+          classifier_context_used: Database["public"]["Enums"]["support_chat_context"]
+          classifier_dismissed: boolean
+          started_at: string
+          last_turn_at: string
+          ended_at: string | null
+          user_message_count: number
+          assistant_message_count: number
+          tool_call_count: number
+          escalated_to_dispute_id: string | null
+          escalated_at: string | null
+          user_rating: number | null
+          rating_submitted_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          route_context: Database["public"]["Enums"]["support_chat_context"]
+          classifier_context_detected?: Database["public"]["Enums"]["support_chat_context"] | null
+          classifier_context_used: Database["public"]["Enums"]["support_chat_context"]
+          classifier_dismissed?: boolean
+          started_at?: string
+          last_turn_at?: string
+          ended_at?: string | null
+          user_message_count?: number
+          assistant_message_count?: number
+          tool_call_count?: number
+          escalated_to_dispute_id?: string | null
+          escalated_at?: string | null
+          user_rating?: number | null
+          rating_submitted_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          route_context?: Database["public"]["Enums"]["support_chat_context"]
+          classifier_context_detected?: Database["public"]["Enums"]["support_chat_context"] | null
+          classifier_context_used?: Database["public"]["Enums"]["support_chat_context"]
+          classifier_dismissed?: boolean
+          started_at?: string
+          last_turn_at?: string
+          ended_at?: string | null
+          user_message_count?: number
+          assistant_message_count?: number
+          tool_call_count?: number
+          escalated_to_dispute_id?: string | null
+          escalated_at?: string | null
+          user_rating?: number | null
+          rating_submitted_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          id: string
+          conversation_id: string
+          turn_index: number
+          turn_type: Database["public"]["Enums"]["support_turn_type"]
+          content: string | null
+          tool_name: string | null
+          tool_args: Json | null
+          tool_result_json: Json | null
+          tokens_used: number | null
+          model: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          turn_index: number
+          turn_type: Database["public"]["Enums"]["support_turn_type"]
+          content?: string | null
+          tool_name?: string | null
+          tool_args?: Json | null
+          tool_result_json?: Json | null
+          tokens_used?: number | null
+          model?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          conversation_id?: string
+          turn_index?: number
+          turn_type?: Database["public"]["Enums"]["support_turn_type"]
+          content?: string | null
+          tool_name?: string | null
+          tool_args?: Json | null
+          tool_result_json?: Json | null
+          tokens_used?: number | null
+          model?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       system_settings: {
         Row: {
           created_at: string | null
@@ -2245,6 +2350,18 @@ export type Database = {
         | "other"
       dispute_priority: "low" | "medium" | "high" | "critical"
       dispute_source: "user_filed" | "ravio_support"
+      support_chat_context:
+        | "rentals"
+        | "property-detail"
+        | "bidding"
+        | "support"
+        | "general"
+      support_turn_type:
+        | "user"
+        | "assistant"
+        | "tool_call"
+        | "tool_result"
+        | "error"
       dispute_status:
         | "open"
         | "investigating"
