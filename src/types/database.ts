@@ -2232,6 +2232,21 @@ export type Database = {
         Returns: Database["public"]["Enums"]["owner_trust_level"]
       }
       get_proposal_count: { Args: { _request_id: string }; Returns: number }
+      get_support_metrics: {
+        Args: { date_from: string; date_to: string }
+        Returns: {
+          total_conversations: number
+          ended_conversations: number
+          deflected_count: number
+          escalated_count: number
+          deflection_pct: number | null
+          escalation_pct: number | null
+          median_response_ms: number | null
+          rated_count: number
+          positive_rating_count: number
+          negative_rating_count: number
+        }[]
+      }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]

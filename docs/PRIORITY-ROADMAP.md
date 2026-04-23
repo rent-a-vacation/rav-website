@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-23T03:44:48"
-change_ref: "683e4ad"
+last_updated: "2026-04-23T10:15:43"
+change_ref: "2c593e2"
 change_type: "session-58"
 status: "active"
 ---
@@ -45,7 +45,6 @@ All unblocked follow-ups from Sessions 54-58. Pick in any order; they're indepen
 
 | Issue | Title | Est. | Why now |
 |-------|-------|------|---------|
-| **#411** | Phase 22 D2: Admin "Support Interactions" tab + metrics | 1d | Last Phase 22 ticket. Depends on #410 (shipped). Transcript browser, deflection/escalation/SLA metrics, thumbs up/down UI. |
 | **#376** | Pre-Booked listing verification (resort reservation proof) | 1-2d | Unblocked by DEC-034 — proof-collection UX only meaningful after the flow distinction exists (which it now does). New schema fields + admin verify dialog + email templates. |
 | **#378** | "Open for Bidding" indicator everywhere (create-time toggle + consistent badge) | 3-4h | Unblocked by DEC-034 — integrates with the ListingTypeBadge visual system. |
 | **#381** | Role-relevant landing-view ordering | 6-8h | Surface most-time-sensitive items on each dashboard's Overview tab per "rooted in simplicity" principle. |
@@ -53,7 +52,7 @@ All unblocked follow-ups from Sessions 54-58. Pick in any order; they're indepen
 | **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up from Tests-With-Features shortfalls. Enables future edge-fn work to be properly tested. |
 | **#393** | PLATFORM-INVENTORY.md — one-page mental model of everything built | 2-3h | Session 56 meta-ask: a single doc cataloging product + platform + dev-tooling + governance layers so the user can explain what they've built to investors, new collaborators, and future sessions. |
 
-> **Phase 22 epic (#395)** — Tracks A, B, C, E complete + D1 shipped. C1+C4+C2+C5+C3+D1 (#405+#408+#406+#409+#407+#410) shipped in Session 58 (5 PRs). Only **#411 D2** remains — admin transcript browser + metrics + thumbs UI.
+> **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** All of A/B/C/D/E shipped. Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Only external item is #404 (legal-blocked public policy drafts — depends on #80 lawyer review).
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -132,7 +131,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
-| Apr 22, 2026 | 58 | **Phase 22 Tracks C complete + D1 shipped** — 5 PRs across the session. PR #428 (C1+C4): text-chat `context:'support'` + 5 agent tools; DB-first with live Stripe reconcile. PR #429 (C2): route-based context detection + `<RavioFloatingChat />` on /my-trips, /owner-dashboard, /account. PR #430 (C5): Migration 061 `dispute_source` enum; AdminDisputes "via RAVIO" badges. PR #431 (C3): `intent-classifier.ts` + SSE `classified_context` + "Switched to X — back" chip with session-scoped dismissal. PR #432 (D1): Migration 062 `support_conversations` + `support_messages` with tool-call first-class turn type; edge-fn logger wires full transcript capture + escalation stamping; frontend threads `conversation_id`. 113 new tests total this session. Phase 22 now 95% complete (21 of 22). Remaining: only **#411 D2** (admin metrics + transcript UI). |
+| Apr 22-23, 2026 | 58 | **PHASE 22 COMPLETE — 22/22 tickets shipped across 6 PRs this session.** PR #428 (C1+C4): text-chat `context:'support'` + 5 agent tools; DB-first with live Stripe reconcile. PR #429 (C2): route-based context detection + `<RavioFloatingChat />` on /my-trips, /owner-dashboard, /account. PR #430 (C5): Migration 061 `dispute_source` enum; AdminDisputes "via RAVIO" badges. PR #431 (C3): `intent-classifier.ts` + SSE `classified_context` + "Switched to X — back" chip. PR #432 (D1): Migration 062 `support_conversations` + `support_messages` + full transcript capture + escalation stamping. PR #433 (D2): Migration 063 `get_support_metrics` RPC + `AdminSupportInteractions` tab (metrics cards, filter bar, transcripts table, detail dialog) + `RavioChatRating` thumbs UI. 145 new tests total this session. |
 | Apr 21, 2026 | 57 | **Phase 22 SHIPPED Tracks A + B + E (15 of 22 tickets, 8 PRs #418-#425).** Full documentation infrastructure end-to-end on DEV: 22 markdown files in `docs/support/`, migration 060 (support_docs), `ingest-support-docs` edge fn + GitHub Action, `docs-sync-check` extension, 6 legal-blocked drafts at status:draft pending #80. Issues closed: #396-#404, #412-#417. Remaining: Track C (#405-#409 RAVIO agent code) + Track D (#410, #411 observability) — next session. PROD deploys held per CLAUDE.md. |
 | Apr 20, 2026 | 57 (planning) | Phase 22 Customer Support Foundation SCOPED. Milestone #37 + epic #395 + 22 child issues #396-#417. DEC-036 logged: reject CrewAI, extend RAVIO text chat with `context: 'support'` + tool use; voice stays discovery-only. 20 support docs planned. Markdown canonical → Supabase `support_docs` sync. PR #418. |
 | Apr 20, 2026 | 56 | **DEC-034 Marketplace Flow Distinction SHIPPED end-to-end (#380 CLOSED)** via 5 incremental PRs (#385-#389). Migrations 058 + 059. `listing_source_type` enum + `ListingTypeBadge` everywhere. Critical search-filter fix. 3 new notification types. `/sdlc` doc-update checklist promoted to root `CLAUDE.md` (PR #390) so it applies to every session. 1146 tests. Issues unblocked: #376, #378, #381. |

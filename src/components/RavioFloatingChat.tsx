@@ -27,6 +27,7 @@ export function RavioFloatingChat({ className }: RavioFloatingChatProps) {
     context,
     classifiedContext,
     dismissClassification,
+    conversationId,
   } = useTextChat();
 
   return (
@@ -50,6 +51,7 @@ export function RavioFloatingChat({ className }: RavioFloatingChatProps) {
         onClearHistory={clearHistory}
         classifiedContext={classifiedContext}
         onDismissClassification={dismissClassification}
+        conversationId={conversationId}
       />
     </>
   );

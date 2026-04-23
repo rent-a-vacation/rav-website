@@ -14,6 +14,7 @@ import {
 import type { ChatMessage, ChatStatus, ChatContext } from "@/types/chat";
 import type { VoiceSearchResult } from "@/types/voice";
 import { cn } from "@/lib/utils";
+import { RavioChatRating } from "@/components/RavioChatRating";
 
 const CONTEXT_LABELS: Record<ChatContext, string> = {
   rentals: "Property Search",
@@ -65,6 +66,10 @@ interface TextChatPanelProps {
   /** Dismisses the classifier chip and tells the hook to suppress future
    *  classifications for this session. */
   onDismissClassification?: () => void;
+  /** Phase 22 D2 (#411) — id of the persisted support conversation; when
+   *  set and the conversation has an assistant reply, the footer shows
+   *  a thumbs up/down rating prompt. */
+  conversationId?: string | null;
 }
 
 function TypingIndicator() {
@@ -119,6 +124,7 @@ export function TextChatPanel({
   onClearHistory,
   classifiedContext,
   onDismissClassification,
+  conversationId,
 }: TextChatPanelProps) {
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -281,6 +287,14 @@ export function TextChatPanel({
             )}
           </div>
         </ScrollArea>
+
+        {/* Rating prompt — only for persisted support conversations that have
+            at least one assistant turn. */}
+        {conversationId && messages.some((m) => m.role === "assistant" && m.content) && (
+          <div className="px-4 py-2 border-t shrink-0 bg-muted/20">
+            <RavioChatRating conversationId={conversationId} />
+          </div>
+        )}
 
         {/* Input area */}
         <div className="px-4 py-3 border-t shrink-0">
