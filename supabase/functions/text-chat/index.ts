@@ -12,6 +12,7 @@ import {
   type SupabaseLike,
   type UserContext,
 } from "./support-tools.ts";
+import { classifyIntent, type ClassifiedContext } from "./intent-classifier.ts";
 
 // --- CORS: Same allowlist pattern as voice-search ---
 function isAllowedOrigin(origin: string): boolean {
@@ -168,6 +169,10 @@ interface TextChatRequest {
   message: string;
   conversationHistory: ChatMessage[];
   context: string;
+  /** Session-scoped flag set by the frontend once the user dismisses the
+   *  classifier chip — tells the edge fn to skip the classifier even if
+   *  history is empty. See useTextChat.dismissClassification. */
+  disableClassifier?: boolean;
 }
 
 // OpenRouter model — Gemini 3 Flash: fast, cheap ($0.50/M tokens), supports tool calling
@@ -235,7 +240,7 @@ serve(async (req) => {
     }
 
     // Parse request
-    const { message, conversationHistory, context }: TextChatRequest = await req.json();
+    const { message, conversationHistory, context, disableClassifier }: TextChatRequest = await req.json();
     if (!message?.trim()) {
       return new Response(
         JSON.stringify({ error: "Message is required" }),
@@ -243,8 +248,26 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = SYSTEM_PROMPTS[context] || SYSTEM_PROMPTS.general;
-    logStep("Context selected", { context, messageLength: message.length });
+    // Intent classification — fires only on ambiguous first messages AND
+    // when the frontend hasn't flagged a session-scoped override (see
+    // useTextChat.dismissClassification). See intent-classifier.ts.
+    let classifiedContext: ClassifiedContext | null = null;
+    let effectiveContext = context;
+    const isFirstMessage = !conversationHistory || conversationHistory.length === 0;
+    if (context === "general" && isFirstMessage && !disableClassifier) {
+      classifiedContext = await classifyIntent(message, Deno.env.get("OPENROUTER_API_KEY") ?? null);
+      if (classifiedContext) {
+        effectiveContext = classifiedContext;
+        logStep("Intent classifier swapped context", {
+          from: context,
+          to: classifiedContext,
+          userId: user.id,
+        });
+      }
+    }
+
+    const systemPrompt = SYSTEM_PROMPTS[effectiveContext] || SYSTEM_PROMPTS.general;
+    logStep("Context selected", { context: effectiveContext, messageLength: message.length });
 
     // Build messages array for OpenRouter
     const messages: ChatMessage[] = [
@@ -264,11 +287,15 @@ serve(async (req) => {
 
     // Determine which tools this context exposes to the model
     let tools: unknown[] | undefined;
-    if (context === "rentals") tools = [SEARCH_TOOL];
-    else if (context === "support") tools = SUPPORT_TOOL_SCHEMAS;
+    if (effectiveContext === "rentals") tools = [SEARCH_TOOL];
+    else if (effectiveContext === "support") tools = SUPPORT_TOOL_SCHEMAS;
 
     // First OpenRouter call (may trigger tool call)
-    logStep("Calling OpenRouter", { model: OPENROUTER_MODEL, toolsEnabled: !!tools, context });
+    logStep("Calling OpenRouter", {
+      model: OPENROUTER_MODEL,
+      toolsEnabled: !!tools,
+      context: effectiveContext,
+    });
     let openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -423,7 +450,7 @@ serve(async (req) => {
         );
       }
 
-      return streamSSEResponse(openRouterResponse, corsHeaders, searchResults);
+      return streamSSEResponse(openRouterResponse, corsHeaders, searchResults, classifiedContext);
     }
 
     // No tool call — check if we already have content, otherwise stream
@@ -455,7 +482,7 @@ serve(async (req) => {
       }
     }
 
-    return streamSSEResponse(openRouterResponse, corsHeaders, searchResults);
+    return streamSSEResponse(openRouterResponse, corsHeaders, searchResults, classifiedContext);
 
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -470,17 +497,28 @@ serve(async (req) => {
 
 /**
  * Transforms an OpenRouter streaming response into SSE events for the client.
- * Sends search results as a separate event before the text stream.
+ * Sends search results + classified-context events before the text stream.
  */
 function streamSSEResponse(
   openRouterResponse: Response,
   corsHeaders: Record<string, string>,
   searchResults?: SearchResult[],
+  classifiedContext?: ClassifiedContext | null,
 ): Response {
   const encoder = new TextEncoder();
 
   const readable = new ReadableStream({
     async start(controller) {
+      // Intent classifier result — emit first so the client can update the
+      // chip before any tokens arrive.
+      if (classifiedContext) {
+        controller.enqueue(
+          encoder.encode(
+            `event: classified_context\ndata: ${JSON.stringify({ classified: classifiedContext })}\n\n`,
+          ),
+        );
+      }
+
       // Send search results as a separate SSE event if present
       if (searchResults && searchResults.length > 0) {
         controller.enqueue(

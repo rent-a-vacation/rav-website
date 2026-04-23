@@ -18,7 +18,16 @@ interface RavioFloatingChatProps {
  */
 export function RavioFloatingChat({ className }: RavioFloatingChatProps) {
   const [open, setOpen] = useState(false);
-  const { messages, status, error, sendMessage, clearHistory, context } = useTextChat();
+  const {
+    messages,
+    status,
+    error,
+    sendMessage,
+    clearHistory,
+    context,
+    classifiedContext,
+    dismissClassification,
+  } = useTextChat();
 
   return (
     <>
@@ -39,6 +48,8 @@ export function RavioFloatingChat({ className }: RavioFloatingChatProps) {
         context={context}
         onSendMessage={sendMessage}
         onClearHistory={clearHistory}
+        classifiedContext={classifiedContext}
+        onDismissClassification={dismissClassification}
       />
     </>
   );

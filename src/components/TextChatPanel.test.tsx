@@ -92,6 +92,38 @@ describe("TextChatPanel", () => {
     expect(screen.getByText("How do I cancel my booking?")).toBeInTheDocument();
   });
 
+  it("renders classifier chip when classifiedContext differs from context (#407)", () => {
+    const onDismiss = vi.fn();
+    renderWithProviders(
+      <TextChatPanel
+        {...defaultProps}
+        context="general"
+        classifiedContext="support"
+        onDismissClassification={onDismiss}
+      />
+    );
+    const chip = screen.getByRole("button", {
+      name: /dismiss support context/i,
+    });
+    expect(chip).toBeInTheDocument();
+    fireEvent.click(chip);
+    expect(onDismiss).toHaveBeenCalled();
+  });
+
+  it("does NOT render chip when classifiedContext matches context", () => {
+    renderWithProviders(
+      <TextChatPanel
+        {...defaultProps}
+        context="support"
+        classifiedContext="support"
+        onDismissClassification={vi.fn()}
+      />
+    );
+    expect(
+      screen.queryByRole("button", { name: /dismiss support context/i })
+    ).not.toBeInTheDocument();
+  });
+
   it("shows context badge for general", () => {
     renderWithProviders(<TextChatPanel {...defaultProps} context="general" />);
     expect(screen.getByText("Platform Help")).toBeInTheDocument();

@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-23T00:43:36"
-change_ref: "83217fa"
+last_updated: "2026-04-23T01:32:26"
+change_ref: "9fc5af7"
 change_type: "session-58"
 status: "active"
 ---
@@ -15,9 +15,9 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1215 |
-| **Test files** | 136 |
-| **P0 critical-path tests** | 97 (tagged `@p0`) + 4 subscription P0s + 1 support-tool P0 + 35 detectChatContext P0s |
+| **Total tests** | 1249 |
+| **Test files** | 137 |
+| **P0 critical-path tests** | 97 (tagged `@p0`) + 4 subscription P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
 | **CI run time** | <3 min |
