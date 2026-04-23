@@ -53,6 +53,7 @@ import { SubscriptionManagement } from "@/components/SubscriptionManagement";
 import { ReferralDashboard } from "@/components/owner/ReferralDashboard";
 import { OwnerTaxInfo } from "@/components/owner/OwnerTaxInfo";
 import { useOwnerCommission } from "@/hooks/useOwnerCommission";
+import { RavioFloatingChat } from "@/components/RavioFloatingChat";
 import { useOwnerDashboardStats } from "@/hooks/owner/useOwnerDashboardStats";
 import { useOwnerEarnings } from "@/hooks/owner/useOwnerEarnings";
 import { useOwnerListingsData } from "@/hooks/owner/useOwnerListingsData";
@@ -749,6 +750,7 @@ const OwnerDashboard = () => {
           </TabsContent>
         </Tabs>
       </main>
+      <RavioFloatingChat />
     </div>
   );
 };

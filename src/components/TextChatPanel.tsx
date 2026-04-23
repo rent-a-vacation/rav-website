@@ -18,7 +18,8 @@ import { cn } from "@/lib/utils";
 const CONTEXT_LABELS: Record<ChatContext, string> = {
   rentals: "Property Search",
   "property-detail": "Property Help",
-  bidding: "Bidding Guide",
+  bidding: "Marketplace",
+  support: "Support",
   general: "Platform Help",
 };
 
@@ -30,12 +31,18 @@ const SUGGESTED_PROMPTS: Record<ChatContext, string[]> = {
   ],
   "property-detail": [
     "What amenities does this have?",
-    "How does bidding work for this listing?",
+    "How do Offers work on this Listing?",
     "Are there similar properties nearby?",
   ],
   bidding: [
-    "How do I place a bid?",
-    "What is a travel request?",
+    "How do I submit an Offer?",
+    "What is a Wish?",
+  ],
+  support: [
+    "Where's my refund?",
+    "How do I cancel my booking?",
+    "I'm having a problem with my stay",
+    "How do I file a dispute?",
   ],
   general: [
     "How does Rent-A-Vacation work?",

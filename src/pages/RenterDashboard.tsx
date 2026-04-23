@@ -26,6 +26,7 @@ import { useMyMembership } from '@/hooks/useMembership';
 import { canAccessConcierge } from '@/lib/tierGating';
 import { ConciergeRequestDialog } from '@/components/concierge/ConciergeRequestDialog';
 import { ConciergeRequestList } from '@/components/concierge/ConciergeRequestList';
+import { RavioFloatingChat } from '@/components/RavioFloatingChat';
 
 // Lazy-load heavy sub-pages
 const MyBookings = lazy(() => import('./MyBookings'));
@@ -340,6 +341,7 @@ const RenterDashboard = () => {
       </div>
 
       <Footer />
+      <RavioFloatingChat />
     </div>
   );
 };

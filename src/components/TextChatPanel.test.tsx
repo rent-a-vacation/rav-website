@@ -78,7 +78,18 @@ describe("TextChatPanel", () => {
 
   it("shows context badge for bidding", () => {
     renderWithProviders(<TextChatPanel {...defaultProps} context="bidding" />);
-    expect(screen.getByText("Bidding Guide")).toBeInTheDocument();
+    expect(screen.getByText("Marketplace")).toBeInTheDocument();
+  });
+
+  it("shows context badge for support", () => {
+    renderWithProviders(<TextChatPanel {...defaultProps} context="support" />);
+    expect(screen.getByText("Support")).toBeInTheDocument();
+  });
+
+  it("shows support suggested prompts", () => {
+    renderWithProviders(<TextChatPanel {...defaultProps} context="support" />);
+    expect(screen.getByText("Where's my refund?")).toBeInTheDocument();
+    expect(screen.getByText("How do I cancel my booking?")).toBeInTheDocument();
   });
 
   it("shows context badge for general", () => {

@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-22T23:47:09"
-change_ref: "c820f23"
+last_updated: "2026-04-23T00:22:11"
+change_ref: "2ad0d63"
 change_type: "session-58"
 status: "active"
 ---
@@ -93,8 +93,8 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1166 automated tests** (135 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 — run with `npm run test:p0`
+- **1214 automated tests** (136 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-060 (001-059 deployed to DEV + PROD; 060 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
@@ -108,7 +108,20 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-58)
 
-**Session 58 — Phase 22 Track C: RAVIO support agent wired up (#405 + #408, Apr 22, 2026):**
+**Session 58 — Phase 22 Track C: support agent + route-based context detection (#405 + #408 + #406, Apr 22, 2026):**
+
+**Second PR (#429) — C2 #406 route-based context detection:**
+- New `src/lib/chatContext.ts` with `detectChatContext(pathname)` — maps route prefixes (`/my-trips`, `/owner-dashboard`, `/account`, `/settings/*`, `/disputes/*`, `/messages`, `/checkout`, etc.) to `support`; `/rentals`, `/property/*`, `/tools/*`, `/destinations/*`, `/calculator`, `/rav-deals` to `rentals`; `/marketplace`, `/bidding*` to `bidding`; else `general`. 35 test cases covering every documented route + case-insensitivity + partial-segment edge cases.
+- `useTextChat` now accepts an OPTIONAL `context` prop; when omitted it auto-detects via `useLocation().pathname`. Explicit context (PropertyDetail, Rentals, BiddingMarketplace, HowItWorksPage) always wins. Chat history clears on context switch (route navigation triggers the same reset mechanism that was already in place).
+- `ChatContext` union extended with `"support"`.
+- New `<RavioFloatingChat />` helper — floating bottom-right button + panel with zero props; mounted on `/my-trips` (RenterDashboard), `/owner-dashboard`, `/account` (AccountSettings). These are the first surfaces where the support context is actually exercised end-to-end by a user.
+- **Terminology drift in `TextChatPanel` fixed inline** (pre-existing DEC-031 gaps; cleaned up while in the file per the user's direction to "stay consistent with the current plan"): `"Bidding Guide"` → `"Marketplace"`; prompt `"place a bid"` → `"submit an Offer"`; prompt `"travel request"` → `"Wish"`; prompt `"bidding work for this listing"` → `"Offers work on this Listing"`. All new strings conform to BRAND-LOCK §8 (plain nouns for marketplace mechanics) + §9 (Listing / Wish / Offer).
+- Support-context suggested prompts: "Where's my refund?", "How do I cancel my booking?", "I'm having a problem with my stay", "How do I file a dispute?" — locked vocabulary only; no new brand terms introduced.
+- **New feedback memory:** `avoid_churning_locked_terminology.md` — captures the principle that mid-session rename ideas get deferred; use locked vocab in-flight, flag the idea, do the rename in its own PR later. Precipitated by the user floating "Wish → Travel Wish" during #406 and then deciding to stay with DEC-031 for now.
+- **Scope held:** only the 4 pre-existing TextChatPanel drift strings were touched. Broader "wish / travel request / bid" cleanup across ~30 other files (UserGuide, Documentation, MyBidsDashboard, hooks, etc.) deliberately NOT included — that's a standalone terminology-audit PR if/when we do it.
+- Tests: 1166 → 1214 (+48). `chatContext.test.ts` (35), new auto-detection cases in `useTextChat.test.ts` (3), new support panel cases in `TextChatPanel.test.tsx` (2), plus existing tests validated against the new label strings.
+
+**First PR (#428) — C1 #405 + C4 #408:**
 - **Paired PR for C1 (#405) + C4 (#408).** `supabase/functions/text-chat/index.ts` gains a `context: 'support'` branch with a dedicated empathetic system prompt. All 5 agent tools implemented as pure-logic handlers in a new `support-tools.ts` module and wired into the edge function's tool-call loop.
 - **5 tools:** `lookup_booking` (booking_id or own-email lookup, RLS-scoped), `check_refund_status` (**DB-first with live Stripe reconcile** when the DB has a refund_reference but no processed timestamp; fails closed with a note on Stripe errors), `check_dispute_status`, `open_dispute` (validates 13 categories + min description length; enforces reporter_id via RLS), `query_support_docs` (keyword tsvector search against the `support_docs` table, status='active' only).
 - **Tool call loop generalised:** the edge function now iterates ALL tool_calls (parallel), dispatches by name (`search_properties` for rentals / any of the 5 support tools / graceful fallback for unknown), and feeds all results back in one follow-up streaming call. Rentals behaviour preserved.
@@ -119,7 +132,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **New feedback memory captured:** "CS and UX as business differentiators" — user direction that when picking between cheap and robust implementations for support surfaces, bias toward the robust one even at latency/complexity cost. Drove the choice of DB+Stripe fallback over DB-only for `check_refund_status`.
 - **Tests:** 1146 → 1166 (+20). 134 → 135 files. 0 type errors, build clean (1m 5s).
 
-**End state:** Phase 22 at 17 of 22 tickets (77%). Remaining: #406, #407, #409 (Track C), #410, #411 (Track D). Next session should start with either #406 (frontend route detection — small, independent) or #409 (disputes.source enum + AdminDisputes filter — unblocks CS telemetry). PROD deploy of `text-chat` still held per CLAUDE.md — gets the support prompt + 5 tools on next deploy. `STRIPE_SECRET_KEY` env var is already set on both DEV and PROD (webhook + cancellation fns use it), so the live-Stripe reconcile path is ready on first deploy.
+**End state:** Phase 22 at 18 of 22 tickets (82%). Remaining: #407 (intent classifier + chip), #409 (disputes.source enum + AdminDisputes filter), #410 (conversation logging), #411 (admin support metrics). Recommended next pickup: **#409** — closes the escalation loop visibly in admin UI. Then #410/#411 as an observability pair. PROD deploy of `text-chat` still held per CLAUDE.md — gets the support prompt + 5 tools on next deploy. `STRIPE_SECRET_KEY` env var is already set on both DEV and PROD (webhook + cancellation fns use it), so the live-Stripe reconcile path is ready on first deploy.
 
 ---
 
