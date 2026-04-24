@@ -10,6 +10,7 @@ import {
   Clock,
   Crown,
   Zap,
+  Gavel,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { type ActiveListing } from "@/hooks/useListings";
@@ -170,6 +171,17 @@ export function ListingCard({
             className="absolute top-3 left-3 mt-8 text-xs font-medium bg-amber-500/90 text-white border-0"
           >
             <Crown className="w-3 h-3 mr-1" />Featured
+          </Badge>
+        )}
+        {/* #378 Bidding Open badge — shown whenever bidding is active.
+            Amber signals "open for Offers" consistently with owner/admin badges. */}
+        {listing.open_for_bidding && listing.bidding_ends_at && new Date(listing.bidding_ends_at) > new Date() && (
+          <Badge
+            variant="secondary"
+            className="absolute bottom-3 right-3 text-xs font-medium bg-amber-500/95 text-white border-0"
+          >
+            <Gavel className="w-3 h-3 mr-1" />
+            Bidding Open
           </Badge>
         )}
         {/* Image overlay slot (compare checkbox, etc.) */}

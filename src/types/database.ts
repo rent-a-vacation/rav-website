@@ -734,6 +734,7 @@ export type Database = {
       }
       listings: {
         Row: {
+          admin_phone_verification_notes: string | null
           allow_counter_offers: boolean
           approved_at: string | null
           approved_by: string | null
@@ -742,6 +743,10 @@ export type Database = {
           check_in_date: string
           check_out_date: string
           cleaning_fee: number | null
+          confirmation_proof_hash: string | null
+          confirmation_proof_path: string | null
+          confirmation_verified_at: string | null
+          confirmation_verified_by: string | null
           created_at: string
           final_price: number
           id: string
@@ -749,17 +754,22 @@ export type Database = {
           nightly_rate: number
           notes: string | null
           open_for_bidding: boolean
+          owner_attestation_accepted_at: string | null
           owner_id: string
           owner_price: number
+          proof_rejected_reason: string | null
+          proof_status: Database["public"]["Enums"]["listing_proof_status"]
           property_id: string
           rav_markup: number
           reserve_price: number | null
+          resort_confirmation_number: string | null
           resort_fee: number | null
           source_type: Database["public"]["Enums"]["listing_source_type"]
           status: Database["public"]["Enums"]["listing_status"]
           updated_at: string
         }
         Insert: {
+          admin_phone_verification_notes?: string | null
           allow_counter_offers?: boolean
           approved_at?: string | null
           approved_by?: string | null
@@ -768,6 +778,10 @@ export type Database = {
           check_in_date: string
           check_out_date: string
           cleaning_fee?: number | null
+          confirmation_proof_hash?: string | null
+          confirmation_proof_path?: string | null
+          confirmation_verified_at?: string | null
+          confirmation_verified_by?: string | null
           created_at?: string
           final_price: number
           id?: string
@@ -775,17 +789,22 @@ export type Database = {
           nightly_rate?: number
           notes?: string | null
           open_for_bidding?: boolean
+          owner_attestation_accepted_at?: string | null
           owner_id: string
           owner_price: number
+          proof_rejected_reason?: string | null
+          proof_status?: Database["public"]["Enums"]["listing_proof_status"]
           property_id: string
           rav_markup?: number
           reserve_price?: number | null
+          resort_confirmation_number?: string | null
           resort_fee?: number | null
           source_type?: Database["public"]["Enums"]["listing_source_type"]
           status?: Database["public"]["Enums"]["listing_status"]
           updated_at?: string
         }
         Update: {
+          admin_phone_verification_notes?: string | null
           allow_counter_offers?: boolean
           approved_at?: string | null
           approved_by?: string | null
@@ -794,6 +813,10 @@ export type Database = {
           check_in_date?: string
           check_out_date?: string
           cleaning_fee?: number | null
+          confirmation_proof_hash?: string | null
+          confirmation_proof_path?: string | null
+          confirmation_verified_at?: string | null
+          confirmation_verified_by?: string | null
           created_at?: string
           final_price?: number
           id?: string
@@ -801,11 +824,15 @@ export type Database = {
           nightly_rate?: number
           notes?: string | null
           open_for_bidding?: boolean
+          owner_attestation_accepted_at?: string | null
           owner_id?: string
           owner_price?: number
+          proof_rejected_reason?: string | null
+          proof_status?: Database["public"]["Enums"]["listing_proof_status"]
           property_id?: string
           rav_markup?: number
           reserve_price?: number | null
+          resort_confirmation_number?: string | null
           resort_fee?: number | null
           source_type?: Database["public"]["Enums"]["listing_source_type"]
           status?: Database["public"]["Enums"]["listing_status"]
@@ -2392,6 +2419,12 @@ export type Database = {
         | "released"
         | "refunded"
         | "disputed"
+      listing_proof_status:
+        | "not_required"
+        | "required"
+        | "submitted"
+        | "verified"
+        | "rejected"
       listing_source_type: "pre_booked" | "wish_matched"
       listing_status:
         | "draft"

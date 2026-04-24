@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-23T10:15:43"
-change_ref: "2c593e2"
+last_updated: "2026-04-24T18:29:19"
+change_ref: "27a34e1"
 change_type: "session-58"
 status: "active"
 ---
@@ -93,20 +93,35 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1291 automated tests** (139 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **1308 automated tests** (140 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-063 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
+- **Migrations created:** 001-064 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 + 064 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync at Session 57 end; Session 58 PR for Phase 22 C1 + C4 (#405 + #408) open at time of writing
+- **dev and main:** in sync at Session 58 end (Phase 22 complete); Session 59 PR for #376 + #378 open at time of writing
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-58)
+### Session Handoff (Sessions 25-59)
+
+**Session 59 — Pre-Booked reservation verification + Open-for-Offers surfacing (#376 + #378, Apr 24, 2026):**
+- **One bundled PR (#376 + #378)** because both touched `ListProperty`, `OwnerListings`, and `AdminListings` in overlapping ways. Scoping via the 7-decision matrix with the user: all 7 leans confirmed + 3 anti-scam layers agreed (attestation, file-hash dedup, admin phone-verification checklist).
+- **#376 Pre-Booked reservation proof.** Migration 064 adds: `listing_proof_status` enum (`not_required`/`required`/`submitted`/`verified`/`rejected`), 9 columns on `listings` (confirmation number, proof path + SHA-256 hash, verification by/at, rejection reason, owner attestation timestamp, admin phone-verification notes), `listing-proofs` private storage bucket with 10 MB cap and PDF/JPEG/PNG allowed-list, 4 RLS policies, backfill that grandfathers pre-existing Pre-Booked active/booked listings as `verified`, 2 new `notification_catalog` entries for proof_verified/rejected. UNIQUE index on `confirmation_proof_hash` enforces cross-owner proof dedup.
+- **Owner flow** in `ListProperty` Step 2: confirmation-number field + file upload (validated via `validateProofFile`) + legal-language attestation checkbox. Client-side pre-check queries for duplicate proof hash before upload so owners get a fast friendly error if they reuse a file. Listing id is generated client-side via `crypto.randomUUID()` so the storage path can be scoped before insert; on insert failure the orphan file is cleaned up. On success, listing lands in `proof_status='submitted'` awaiting admin review.
+- **Owner recovery flow.** `OwnerListings` now shows proof status badges on all listing statuses (awaiting upload / pending review / verified / rejected). When rejected, a red alert block shows the admin's rejection reason plus a "Re-upload proof" button that opens the new `ReuploadProofDialog` (confirmation-number + file + attestation). Re-upload flips the listing back to `proof_status='submitted'` for another admin pass.
+- **Admin flow** in `AdminListings`: new "Model" column (Direct / Bidding) + "Proof" column (color-coded badge) + column tooltips. New `ProofVerifyDialog` with embedded PDF/image preview via short-lived signed URL, admin phone-verification notes field (for the process-based anti-scam layer), Verify / Reject branch. Approve button on Pre-Booked listings is disabled with an explanatory tooltip when proof isn't verified yet. Verify success + reject both fire `notification-dispatcher` to the owner (fire-and-forget, non-blocking).
+- **#378 Open-for-Offers surfacing.** New bidding-config section in `ListProperty` Step 2 (toggle + conditional min-bid / ends-at / reserve-price / counter-offers fields, all with muted subtext). New "Bidding Open" badge on `ListingCard` (search results) positioned bottom-right of the image. New persistent "Open for Offers" badge on `PropertyDetail` next to the type badge above the fold (previously buried in a collapsible). Consistent amber for Bidding Open, emerald for Direct Booking across owner + admin + search surfaces.
+- **Pure-logic util** `src/lib/listingProof.ts` — `hashFile` (SHA-256 via Web Crypto with FileReader fallback for older test envs), `validateProofFile` (MIME + size guard), `buildProofStoragePath` (path-traversal sanitizer), status dictionaries for labels + badge classes + help text. **17 unit tests.**
+- **Test helper** `renderWithProviders` updated to wrap in `TooltipProvider` (mirrors `App.tsx`) so admin-tab tests that use tooltips don't need to import it themselves.
+- **New durable feedback memory:** "Help Text Everywhere" — every new form field, column, button, dialog gets short non-intrusive guiding text. This PR systematically applies that rule to every new control.
+- **Scope held:** per-listing SMS alerts (blocked on A2P 10DLC), trust-level gating of proof requirement (post-launch enhancement), OCR extraction of reservation details (v1.5), direct brand-API verification integrations (partnership-dependent).
+- Tests: 1291 → 1308 (+17). Migrations 064 held from PROD per CLAUDE.md.
+
+---
 
 **Session 58 — PHASE 22 COMPLETE — RAVIO Customer Support Foundation end-to-end (#405+#408+#406+#409+#407+#410+#411, Apr 22-23, 2026):**
 

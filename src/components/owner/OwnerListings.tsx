@@ -45,6 +45,7 @@ import type { Property, Listing, ListingStatus, CancellationPolicy, Database } f
 import { CANCELLATION_POLICY_LABELS, CANCELLATION_POLICY_DESCRIPTIONS } from "@/types/database";
 import { OpenForBiddingDialog } from "@/components/bidding/OpenForBiddingDialog";
 import { BidsManagerDialog } from "@/components/bidding/BidsManagerDialog";
+import { ReuploadProofDialog } from "@/components/owner/ReuploadProofDialog";
 import { ActionSuccessCard } from "@/components/ActionSuccessCard";
 import { sendListingSubmittedEmail } from "@/lib/email";
 import { ListingFairValueBadge } from "@/components/fair-value/ListingFairValueBadge";
@@ -122,6 +123,10 @@ const OwnerListings = () => {
   const [biddingDialogOpen, setBiddingDialogOpen] = useState(false);
   const [bidsManagerOpen, setBidsManagerOpen] = useState(false);
   const [selectedListingForBidding, setSelectedListingForBidding] = useState<ListingWithProperty | null>(null);
+
+  // #376 proof reupload dialog state
+  const [reuploadOpen, setReuploadOpen] = useState(false);
+  const [reuploadListing, setReuploadListing] = useState<ListingWithProperty | null>(null);
 
   // Fetch listings and properties
   const fetchData = async () => {
@@ -692,6 +697,26 @@ const OwnerListings = () => {
                           </Badge>
                         )
                       )}
+                      {/* #376 Proof status — shown on all statuses when relevant */}
+                      {listing.proof_status && listing.proof_status !== 'not_required' && listing.proof_status !== 'verified' && (
+                        <Badge
+                          variant="outline"
+                          className={
+                            listing.proof_status === 'rejected'
+                              ? 'border-red-400 text-red-700'
+                              : listing.proof_status === 'submitted'
+                              ? 'border-blue-400 text-blue-700'
+                              : 'border-amber-400 text-amber-700'
+                          }
+                        >
+                          Proof: {listing.proof_status === 'submitted' ? 'Pending Review' : listing.proof_status === 'rejected' ? 'Rejected' : 'Upload Required'}
+                        </Badge>
+                      )}
+                      {listing.proof_status === 'verified' && (
+                        <Badge variant="outline" className="border-emerald-400 text-emerald-700">
+                          Proof Verified
+                        </Badge>
+                      )}
                     </div>
                     <CardTitle className="text-lg">
                       {listing.property?.resort_name}
@@ -720,6 +745,31 @@ const OwnerListings = () => {
                 </div>
               </CardHeader>
               <CardContent>
+                {/* #376 Proof rejected alert ---------------------------- */}
+                {listing.proof_status === 'rejected' && (
+                  <div className="mb-4 bg-red-50 border border-red-200 rounded-md p-3">
+                    <p className="text-sm font-medium text-red-800 mb-1">
+                      Reservation proof rejected
+                    </p>
+                    {listing.proof_rejected_reason && (
+                      <p className="text-sm text-red-700 mb-2">
+                        {listing.proof_rejected_reason}
+                      </p>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-red-300 text-red-800 hover:bg-red-100"
+                      onClick={() => {
+                        setReuploadListing(listing);
+                        setReuploadOpen(true);
+                      }}
+                    >
+                      Re-upload proof
+                    </Button>
+                  </div>
+                )}
+
                 <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -871,6 +921,21 @@ const OwnerListings = () => {
             setBidsManagerOpen(open);
             if (!open) setSelectedListingForBidding(null);
           }}
+        />
+      )}
+
+      {/* #376 Re-upload Proof Dialog */}
+      {reuploadListing && (
+        <ReuploadProofDialog
+          listingId={reuploadListing.id}
+          existingConfirmationNumber={reuploadListing.resort_confirmation_number ?? null}
+          rejectedReason={reuploadListing.proof_rejected_reason ?? null}
+          open={reuploadOpen}
+          onOpenChange={(open) => {
+            setReuploadOpen(open);
+            if (!open) setReuploadListing(null);
+          }}
+          onSuccess={() => fetchData()}
         />
       )}
 
