@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-24T18:29:19"
-change_ref: "27a34e1"
+last_updated: "2026-04-24T21:11:26"
+change_ref: "0fa0c27"
 change_type: "session-58"
 status: "active"
 ---
@@ -93,8 +93,8 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1308 automated tests** (140 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s — run with `npm run test:p0`
+- **1311 automated tests** (141 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s + 3 ActionNeededSection P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-064 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 + 064 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
@@ -108,7 +108,16 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-59)
 
-**Session 59 — Pre-Booked reservation verification + Open-for-Offers surfacing (#376 + #378, Apr 24, 2026):**
+**Session 59 — Pre-Booked reservation verification + Open-for-Offers surfacing + role-relevant dashboard landing views (#376 + #378 + #381, Apr 24, 2026):**
+
+**Second PR (#381) — Action Needed sections on Traveler / Owner / Admin landing views:**
+- New `src/components/dashboard/ActionNeededSection.tsx` — compact tile grid with urgency tones (red urgent / amber action / blue info). Friendly empty state with optional CTA.
+- New `src/hooks/usePriorityActions.ts` — 3 React Query hooks (`useTravelerPriorityActions`, `useOwnerPriorityActions`, `useAdminPriorityActions`). Each returns a `PriorityAction[]` sorted by urgency: for travelers, counter-offers / imminent check-ins / pending Wish-Matched confirmations; for owners, proof-rejected / Wish-Matched resort-confirmation / pending Offers / unread inquiries; for admins, open disputes / escrow / pending approvals / proof verifications / user approvals / owner-identity reviews.
+- Mounted at the top of `RenterDashboard` Overview, `OwnerDashboard` dashboard tab, `AdminOverview`. Each dashboard gets a role-specific empty-state CTA ("Browse Rentals" / "List another week" / silent).
+- Every tile is one click from the detail destination — no gray-tab hunts.
+- Tests: 1308 → 1311 (+3). `ActionNeededSection.test.tsx` covers loading state, empty state with CTA, and filtered-rendering.
+
+**First PR (#434) — #376 Pre-Booked reservation verification + #378 Open-for-Offers surfacing:**
 - **One bundled PR (#376 + #378)** because both touched `ListProperty`, `OwnerListings`, and `AdminListings` in overlapping ways. Scoping via the 7-decision matrix with the user: all 7 leans confirmed + 3 anti-scam layers agreed (attestation, file-hash dedup, admin phone-verification checklist).
 - **#376 Pre-Booked reservation proof.** Migration 064 adds: `listing_proof_status` enum (`not_required`/`required`/`submitted`/`verified`/`rejected`), 9 columns on `listings` (confirmation number, proof path + SHA-256 hash, verification by/at, rejection reason, owner attestation timestamp, admin phone-verification notes), `listing-proofs` private storage bucket with 10 MB cap and PDF/JPEG/PNG allowed-list, 4 RLS policies, backfill that grandfathers pre-existing Pre-Booked active/booked listings as `verified`, 2 new `notification_catalog` entries for proof_verified/rejected. UNIQUE index on `confirmation_proof_hash` enforces cross-owner proof dedup.
 - **Owner flow** in `ListProperty` Step 2: confirmation-number field + file upload (validated via `validateProofFile`) + legal-language attestation checkbox. Client-side pre-check queries for duplicate proof hash before upload so owners get a fast friendly error if they reuse a file. Listing id is generated client-side via `crypto.randomUUID()` so the storage path can be scoped before insert; on insert failure the orphan file is cleaned up. On success, listing lands in `proof_status='submitted'` awaiting admin review.
