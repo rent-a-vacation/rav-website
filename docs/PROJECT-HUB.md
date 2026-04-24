@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-24T21:11:26"
-change_ref: "0fa0c27"
+last_updated: "2026-04-24T21:26:39"
+change_ref: "ab45b6d"
 change_type: "session-58"
 status: "active"
 ---
@@ -96,8 +96,8 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **1311 automated tests** (141 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s + 3 ActionNeededSection P0s — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-064 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 + 064 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
-- **Edge functions:** 35 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
+- **Migrations created:** 001-065 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 + 064 + 065 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
+- **Edge functions:** 36 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` + `cancel-listing` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
@@ -108,7 +108,15 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-59)
 
-**Session 59 — Pre-Booked reservation verification + Open-for-Offers surfacing + role-relevant dashboard landing views (#376 + #378 + #381, Apr 24, 2026):**
+**Session 59 — Pre-Booked reservation verification + Open-for-Offers surfacing + role-relevant dashboard landing views + cancel-listing cascade (#376 + #378 + #381 + #377, Apr 24, 2026):**
+
+**Third PR (#377) — Cancel-listing cascade (atomic bid-reject + booking-refund + notifications):**
+- Migration 065 adds `cancelled_at`, `cancellation_reason`, `cancelled_by` audit columns on `listings` + `listing_cancelled_by_owner` notification_catalog entry.
+- New `supabase/functions/cancel-listing/index.ts` edge function orchestrates: flip listing to `cancelled` with audit stamps → bulk-reject pending bids with the owner's reason → dispatch `listing_cancelled_by_owner` notifications to each bidder → iterate confirmed/pending bookings and invoke existing `process-cancellation` per-booking (owner-initiated, Stripe refunds + notifications) → bump `owner_verifications.cancellation_count` (trust signal). Returns summary `{ cancelledBidsCount, cancelledBookingsCount, refundTotal, refundFailures[] }`. Rate-limited via existing `CANCELLATION` preset.
+- New `src/components/owner/CancelListingDialog.tsx` — loads an impact preview (pending bids count, active bookings count, total refund amount) on open; requires a ≥4-char reason; shows friendly toast summaries on success and warns when any refund failed and admin will need to reconcile.
+- `OwnerListings` replaces the previous rudimentary `AlertDialog` (which just flipped status and left bids/bookings hanging) with the new dialog flow.
+- `src/types/database.ts` extended with the three new listing columns across Row/Insert/Update.
+- Scope held: no change to the per-booking `process-cancellation` flow; the edge fn composes it. Intentional non-atomicity across Stripe calls — if any booking refund fails, the listing stays cancelled + admin reconciliation is the escape hatch (acceptable because the owner decision was already made).
 
 **Second PR (#381) — Action Needed sections on Traveler / Owner / Admin landing views:**
 - New `src/components/dashboard/ActionNeededSection.tsx` — compact tile grid with urgency tones (red urgent / amber action / blue info). Friendly empty state with optional CTA.
