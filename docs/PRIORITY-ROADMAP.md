@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-24T18:29:19"
-change_ref: "27a34e1"
+last_updated: "2026-04-24T21:11:26"
+change_ref: "0fa0c27"
 change_type: "session-58"
 status: "active"
 ---
@@ -45,7 +45,6 @@ All unblocked follow-ups from Sessions 54-58. Pick in any order; they're indepen
 
 | Issue | Title | Est. | Why now |
 |-------|-------|------|---------|
-| **#381** | Role-relevant landing-view ordering | 6-8h | Surface most-time-sensitive items on each dashboard's Overview tab per "rooted in simplicity" principle. |
 | **#377** | Cancel-listing cascade (bulk bid rejection + booking cancellation + notifications) | 1d | Standalone, coordinates with DEC-034 wish-matched handling. New edge function + atomic cascade. |
 | **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up from Tests-With-Features shortfalls. Enables future edge-fn work to be properly tested. |
 | **#393** | PLATFORM-INVENTORY.md — one-page mental model of everything built | 2-3h | Session 56 meta-ask: a single doc cataloging product + platform + dev-tooling + governance layers so the user can explain what they've built to investors, new collaborators, and future sessions. |
@@ -129,6 +128,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 24, 2026 | 59 | **#381 shipped** — Action Needed sections on Traveler / Owner / Admin landing views. New `ActionNeededSection` component + `usePriorityActions` hooks (3 variants). Role-specific tiles: travelers see counter-offers + imminent check-ins; owners see proof-rejected + Wish-Matched confirmations + pending Offers + unread inquiries; admins see disputes + escrow + pending approvals + proof verifications. Empty state with role-relevant CTA. 3 new tests. |
 | Apr 24, 2026 | 59 | **#376 + #378 bundled + shipped.** Migration 064 adds `listing_proof_status` enum + 9 new columns on `listings` + `listing-proofs` private storage bucket (10 MB cap, PDF/JPEG/PNG) + 4 RLS policies + 2 notification_catalog entries. Owner gets proof step in `ListProperty` with file+number+attestation; rejected listings get alert + `ReuploadProofDialog`. Admin gets `ProofVerifyDialog` with embedded preview, phone-verification notes, and Approve-button gating. #378 ships consistent Direct / Bidding-Open badges across ListProperty / OwnerListings / AdminListings / ListingCard / PropertyDetail. 17 new tests (pure-logic util). Help-text-everywhere memory captured. |
 | Apr 22-23, 2026 | 58 | **PHASE 22 COMPLETE — 22/22 tickets shipped across 6 PRs this session.** PR #428 (C1+C4): text-chat `context:'support'` + 5 agent tools; DB-first with live Stripe reconcile. PR #429 (C2): route-based context detection + `<RavioFloatingChat />` on /my-trips, /owner-dashboard, /account. PR #430 (C5): Migration 061 `dispute_source` enum; AdminDisputes "via RAVIO" badges. PR #431 (C3): `intent-classifier.ts` + SSE `classified_context` + "Switched to X — back" chip. PR #432 (D1): Migration 062 `support_conversations` + `support_messages` + full transcript capture + escalation stamping. PR #433 (D2): Migration 063 `get_support_metrics` RPC + `AdminSupportInteractions` tab (metrics cards, filter bar, transcripts table, detail dialog) + `RavioChatRating` thumbs UI. 145 new tests total this session. |
 | Apr 21, 2026 | 57 | **Phase 22 SHIPPED Tracks A + B + E (15 of 22 tickets, 8 PRs #418-#425).** Full documentation infrastructure end-to-end on DEV: 22 markdown files in `docs/support/`, migration 060 (support_docs), `ingest-support-docs` edge fn + GitHub Action, `docs-sync-check` extension, 6 legal-blocked drafts at status:draft pending #80. Issues closed: #396-#404, #412-#417. Remaining: Track C (#405-#409 RAVIO agent code) + Track D (#410, #411 observability) — next session. PROD deploys held per CLAUDE.md. |

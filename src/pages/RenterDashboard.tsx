@@ -27,6 +27,8 @@ import { canAccessConcierge } from '@/lib/tierGating';
 import { ConciergeRequestDialog } from '@/components/concierge/ConciergeRequestDialog';
 import { ConciergeRequestList } from '@/components/concierge/ConciergeRequestList';
 import { RavioFloatingChat } from '@/components/RavioFloatingChat';
+import { ActionNeededSection } from '@/components/dashboard/ActionNeededSection';
+import { useTravelerPriorityActions } from '@/hooks/usePriorityActions';
 
 // Lazy-load heavy sub-pages
 const MyBookings = lazy(() => import('./MyBookings'));
@@ -38,6 +40,7 @@ type TabValue = (typeof TABS)[number];
 const RenterDashboard = () => {
   usePageMeta('My Trips', 'Manage your bookings, offers, travel requests, and favorites.');
   const { user } = useAuth();
+  const { data: priorityActions = [], isLoading: actionsLoading } = useTravelerPriorityActions();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get('tab') as TabValue) || 'overview';
   const { data: membership } = useMyMembership();
@@ -166,6 +169,17 @@ const RenterDashboard = () => {
 
             {/* Overview Tab */}
             <TabsContent value="overview">
+              {/* #381 — surface role-relevant time-sensitive items first */}
+              <div className="mb-8">
+                <ActionNeededSection
+                  actions={priorityActions}
+                  isLoading={actionsLoading}
+                  emptyMessage="You're all caught up. Plan your next trip?"
+                  emptyCtaLabel="Browse Rentals"
+                  emptyCtaLink="/rentals"
+                />
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {/* Next Trip Card */}
                 <Card className="md:col-span-2">

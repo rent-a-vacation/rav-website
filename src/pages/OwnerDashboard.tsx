@@ -54,6 +54,8 @@ import { ReferralDashboard } from "@/components/owner/ReferralDashboard";
 import { OwnerTaxInfo } from "@/components/owner/OwnerTaxInfo";
 import { useOwnerCommission } from "@/hooks/useOwnerCommission";
 import { RavioFloatingChat } from "@/components/RavioFloatingChat";
+import { ActionNeededSection } from "@/components/dashboard/ActionNeededSection";
+import { useOwnerPriorityActions } from "@/hooks/usePriorityActions";
 import { useOwnerDashboardStats } from "@/hooks/owner/useOwnerDashboardStats";
 import { useOwnerEarnings } from "@/hooks/owner/useOwnerEarnings";
 import { useOwnerListingsData } from "@/hooks/owner/useOwnerListingsData";
@@ -120,6 +122,9 @@ const OwnerDashboard = () => {
   // Draft banner state
   const [draft, setDraft] = useState<ListPropertyDraft | null>(() => loadDraft());
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+
+  // #381 priority actions for the owner landing view
+  const { data: priorityActions = [], isLoading: priorityActionsLoading } = useOwnerPriorityActions();
 
   async function handlePublishDraft() {
     if (!user || !draft) return;
@@ -361,6 +366,15 @@ const OwnerDashboard = () => {
 
           {/* ========== Dashboard Tab (Overview + Portfolio) ========== */}
           <TabsContent value="dashboard" className="mt-6 space-y-6">
+            {/* #381 — surface time-sensitive owner actions first */}
+            <ActionNeededSection
+              actions={priorityActions}
+              isLoading={priorityActionsLoading}
+              emptyMessage="All caught up — no action needed right now."
+              emptyCtaLabel="List another week"
+              emptyCtaLink="/list-property"
+            />
+
             {/* Draft publish banner */}
             {draft && draft.resortName && draft.checkInDate && (
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">

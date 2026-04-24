@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Building2, 
-  Calendar, 
-  DollarSign, 
+import {
+  Building2,
+  Calendar,
+  DollarSign,
   Users,
   TrendingUp,
   Clock,
-  CheckCircle2,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
+import { ActionNeededSection } from "@/components/dashboard/ActionNeededSection";
+import { useAdminPriorityActions } from "@/hooks/usePriorityActions";
 
 interface PlatformStats {
   totalProperties: number;
@@ -40,6 +41,7 @@ const AdminOverview = () => {
     pendingPayouts: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const { data: priorityActions = [], isLoading: priorityActionsLoading } = useAdminPriorityActions();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -116,6 +118,15 @@ const AdminOverview = () => {
         <p className="text-muted-foreground">
           Real-time metrics across all properties and users
         </p>
+      </div>
+
+      {/* #381 — decisions that are blocking travelers, owners, or revenue move to the top */}
+      <div className="mb-8">
+        <ActionNeededSection
+          actions={priorityActions}
+          isLoading={priorityActionsLoading}
+          emptyMessage="All clear — no pending admin actions."
+        />
       </div>
 
       {/* Key Metrics */}
