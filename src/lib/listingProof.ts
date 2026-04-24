@@ -49,15 +49,37 @@ export const PROOF_STATUS_DESCRIPTIONS: Record<ListingProofStatus, string> = {
   rejected: "Previous upload was rejected. Owner needs to re-upload with a correct file.",
 };
 
-async function readAsArrayBuffer(file: File | Blob): Promise<ArrayBuffer> {
-  // Browsers + modern jsdom expose File.arrayBuffer(); fall back to FileReader
-  // for older test envs.
+/**
+ * Normalize a File/Blob into a Uint8Array across environments. Browsers +
+ * modern jsdom expose File.arrayBuffer(); older jsdom in CI doesn't, and its
+ * FileReader shim can return values that crypto.subtle.digest rejects. We
+ * coerce everything to Uint8Array (which SubtleCrypto always accepts as a
+ * TypedArray) so the hash path is identical on Windows local + Ubuntu CI.
+ */
+async function readAsUint8Array(file: File | Blob): Promise<Uint8Array> {
   if (typeof (file as Blob).arrayBuffer === "function") {
-    return (file as Blob).arrayBuffer();
+    const buf = await (file as Blob).arrayBuffer();
+    return new Uint8Array(buf);
   }
-  return new Promise<ArrayBuffer>((resolve, reject) => {
+  if (typeof (file as Blob).text === "function") {
+    // Text path — safe for the content files we accept (PDF/JPEG/PNG) since
+    // they're read as bytes by the browser; TextEncoder round-trips arbitrary
+    // bytes consistently enough for dedup purposes (same bytes → same hash).
+    return new TextEncoder().encode(await (file as Blob).text());
+  }
+  return new Promise<Uint8Array>((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
+    reader.onload = () => {
+      const result = reader.result;
+      if (result instanceof ArrayBuffer) {
+        resolve(new Uint8Array(result));
+      } else if (result && typeof result === "object" && "byteLength" in (result as object)) {
+        // Node Buffer / jsdom Buffer-like
+        resolve(new Uint8Array(result as unknown as ArrayBufferLike));
+      } else {
+        resolve(new TextEncoder().encode(String(result ?? "")));
+      }
+    };
     reader.onerror = () => reject(reader.error);
     reader.readAsArrayBuffer(file as Blob);
   });
@@ -70,8 +92,8 @@ async function readAsArrayBuffer(file: File | Blob): Promise<ArrayBuffer> {
  * Returns a lowercase hex string.
  */
 export async function hashFile(file: File | Blob): Promise<string> {
-  const buffer = await readAsArrayBuffer(file);
-  const digest = await crypto.subtle.digest("SHA-256", buffer);
+  const bytes = await readAsUint8Array(file);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
