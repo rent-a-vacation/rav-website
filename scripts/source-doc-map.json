@@ -5,6 +5,10 @@
       "docs": ["docs/RAV-PRICING-TAXES-ACCOUNTING.md", "docs/ARCHITECTURE.md"]
     },
     {
+      "source": ["supabase/functions/**", "supabase/migrations/**", "src/flows/**"],
+      "docs": ["docs/PLATFORM-INVENTORY.md"]
+    },
+    {
       "source": ["src/hooks/owner/**", "src/components/owner-dashboard/**"],
       "docs": ["docs/features/owner-dashboard/README.md"]
     },

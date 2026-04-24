@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-24T21:26:39"
-change_ref: "ab45b6d"
+last_updated: "2026-04-24T22:04:34"
+change_ref: "6397d67"
 change_type: "session-58"
 status: "active"
 ---
@@ -46,7 +46,6 @@ All unblocked follow-ups from Sessions 54-58. Pick in any order; they're indepen
 | Issue | Title | Est. | Why now |
 |-------|-------|------|---------|
 | **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up from Tests-With-Features shortfalls. Enables future edge-fn work to be properly tested. |
-| **#393** | PLATFORM-INVENTORY.md — one-page mental model of everything built | 2-3h | Session 56 meta-ask: a single doc cataloging product + platform + dev-tooling + governance layers so the user can explain what they've built to investors, new collaborators, and future sessions. |
 
 > **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** All of A/B/C/D/E shipped. Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Only external item is #404 (legal-blocked public policy drafts — depends on #80 lawyer review).
 
@@ -127,6 +126,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 24, 2026 | 59 | **#393 shipped** — new `docs/PLATFORM-INVENTORY.md` gives a one-page mental model across 4 layers (Product / Platform / Dev Tooling / Governance). Linked from README + CLAUDE.md session-start block. Added to source-doc-map.json so source changes trigger staleness warnings. |
 | Apr 24, 2026 | 59 | **#377 shipped** — cancel-listing cascade. Migration 065 adds audit cols + notification type. New `cancel-listing` edge fn orchestrates: listing → cancelled + audit stamp → bulk-reject pending bids → notify bidders → cancel confirmed/pending bookings via existing `process-cancellation` (Stripe refunds) → bump `cancellation_count`. New `CancelListingDialog` with impact preview (bid count / booking count / refund total) + reason input. Replaces the rudimentary status-flip in OwnerListings. |
 | Apr 24, 2026 | 59 | **#381 shipped** — Action Needed sections on Traveler / Owner / Admin landing views. New `ActionNeededSection` component + `usePriorityActions` hooks (3 variants). Role-specific tiles: travelers see counter-offers + imminent check-ins; owners see proof-rejected + Wish-Matched confirmations + pending Offers + unread inquiries; admins see disputes + escrow + pending approvals + proof verifications. Empty state with role-relevant CTA. 3 new tests. |
 | Apr 24, 2026 | 59 | **#376 + #378 bundled + shipped.** Migration 064 adds `listing_proof_status` enum + 9 new columns on `listings` + `listing-proofs` private storage bucket (10 MB cap, PDF/JPEG/PNG) + 4 RLS policies + 2 notification_catalog entries. Owner gets proof step in `ListProperty` with file+number+attestation; rejected listings get alert + `ReuploadProofDialog`. Admin gets `ProofVerifyDialog` with embedded preview, phone-verification notes, and Approve-button gating. #378 ships consistent Direct / Bidding-Open badges across ListProperty / OwnerListings / AdminListings / ListingCard / PropertyDetail. 17 new tests (pure-logic util). Help-text-everywhere memory captured. |
