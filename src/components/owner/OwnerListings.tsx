@@ -46,6 +46,7 @@ import { CANCELLATION_POLICY_LABELS, CANCELLATION_POLICY_DESCRIPTIONS } from "@/
 import { OpenForBiddingDialog } from "@/components/bidding/OpenForBiddingDialog";
 import { BidsManagerDialog } from "@/components/bidding/BidsManagerDialog";
 import { ReuploadProofDialog } from "@/components/owner/ReuploadProofDialog";
+import { CancelListingDialog } from "@/components/owner/CancelListingDialog";
 import { ActionSuccessCard } from "@/components/ActionSuccessCard";
 import { sendListingSubmittedEmail } from "@/lib/email";
 import { ListingFairValueBadge } from "@/components/fair-value/ListingFairValueBadge";
@@ -127,6 +128,10 @@ const OwnerListings = () => {
   // #376 proof reupload dialog state
   const [reuploadOpen, setReuploadOpen] = useState(false);
   const [reuploadListing, setReuploadListing] = useState<ListingWithProperty | null>(null);
+
+  // #377 cancel-listing dialog state
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelListing, setCancelListing] = useState<ListingWithProperty | null>(null);
 
   // Fetch listings and properties
   const fetchData = async () => {
@@ -298,21 +303,10 @@ const OwnerListings = () => {
     setIsDialogOpen(true);
   };
 
-  // Handle cancel listing
-  const handleCancel = async (listingId: string) => {
-    try {
-      const { error } = await supabase
-        .from("listings")
-        .update({ status: "cancelled" } as never)
-        .eq("id", listingId);
-
-      if (error) throw error;
-      toast.success("Listing cancelled");
-      fetchData();
-    } catch (error: unknown) {
-      console.error("Error cancelling listing:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to cancel listing");
-    }
+  // Handle cancel listing — opens the cascade dialog (#377)
+  const openCancelDialog = (listing: ListingWithProperty) => {
+    setCancelListing(listing);
+    setCancelOpen(true);
   };
 
   // Handle delete listing
@@ -836,29 +830,14 @@ const OwnerListings = () => {
                   )}
 
                   {["draft", "pending_approval", "active"].includes(listing.status) && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <XCircle className="mr-2 h-3 w-3" />
-                          Cancel
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Cancel Listing?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will cancel the listing and it will no longer be available
-                            for booking. This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Keep Listing</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleCancel(listing.id)}>
-                            Cancel Listing
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openCancelDialog(listing)}
+                    >
+                      <XCircle className="mr-2 h-3 w-3" />
+                      Cancel
+                    </Button>
                   )}
 
                   {["draft", "cancelled"].includes(listing.status) && (
@@ -936,6 +915,20 @@ const OwnerListings = () => {
             if (!open) setReuploadListing(null);
           }}
           onSuccess={() => fetchData()}
+        />
+      )}
+
+      {/* #377 Cancel Listing Dialog */}
+      {cancelListing && (
+        <CancelListingDialog
+          listingId={cancelListing.id}
+          listingSummary={`${cancelListing.property?.resort_name ?? "Listing"} · ${format(new Date(cancelListing.check_in_date), 'MMM d')} — ${format(new Date(cancelListing.check_out_date), 'MMM d, yyyy')}`}
+          open={cancelOpen}
+          onOpenChange={(open) => {
+            setCancelOpen(open);
+            if (!open) setCancelListing(null);
+          }}
+          onCancelled={() => fetchData()}
         />
       )}
 

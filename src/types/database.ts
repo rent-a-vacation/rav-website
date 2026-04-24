@@ -740,6 +740,9 @@ export type Database = {
           approved_by: string | null
           bidding_ends_at: string | null
           cancellation_policy: Database["public"]["Enums"]["cancellation_policy"]
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
           check_in_date: string
           check_out_date: string
           cleaning_fee: number | null
@@ -775,6 +778,9 @@ export type Database = {
           approved_by?: string | null
           bidding_ends_at?: string | null
           cancellation_policy?: Database["public"]["Enums"]["cancellation_policy"]
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           check_in_date: string
           check_out_date: string
           cleaning_fee?: number | null
@@ -810,6 +816,9 @@ export type Database = {
           approved_by?: string | null
           bidding_ends_at?: string | null
           cancellation_policy?: Database["public"]["Enums"]["cancellation_policy"]
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           check_in_date?: string
           check_out_date?: string
           cleaning_fee?: number | null
