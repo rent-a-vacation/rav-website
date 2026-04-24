@@ -18,6 +18,7 @@
    gh issue list --repo rent-a-vacation/rav-website --state open --label "pre-launch"
    ```
 2. Read `docs/PROJECT-HUB.md` for architectural context and decisions
+3. For the full mental model of everything built (product + platform + tooling + governance), read `docs/PLATFORM-INVENTORY.md`
 3. Confirm with the user which issue to work on before starting any code
 
 ### At the END of every session — MANDATORY DOCUMENTATION CHECKLIST

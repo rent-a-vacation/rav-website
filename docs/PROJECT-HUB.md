@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-24T21:26:39"
-change_ref: "ab45b6d"
+last_updated: "2026-04-24T22:04:34"
+change_ref: "6397d67"
 change_type: "session-58"
 status: "active"
 ---
@@ -108,7 +108,14 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 ### Session Handoff (Sessions 25-59)
 
-**Session 59 — Pre-Booked reservation verification + Open-for-Offers surfacing + role-relevant dashboard landing views + cancel-listing cascade (#376 + #378 + #381 + #377, Apr 24, 2026):**
+**Session 59 — Proof + Bidding + Action Needed + Cancel cascade + Platform Inventory (#376 + #378 + #381 + #377 + #393, Apr 24, 2026):**
+
+**Fourth PR (#393) — PLATFORM-INVENTORY.md:**
+- New `docs/PLATFORM-INVENTORY.md` — one-page mental model across four layers: §1 Product (features by surface), §2 Platform (hosting/DB/edge-fns/Stripe/email/SMS/observability/secrets), §3 Dev Tooling (skills/scripts/CI/hooks/testing/memory), §4 Governance (CLAUDE.md rules, BRAND-LOCK, Key Decisions Log, tiered roadmap, #127 blocked chain).
+- "How to use this file" block distinguishes investor read vs. new-engineer read vs. pre-launch read.
+- Cross-references to PROJECT-HUB / BRAND-LOCK / LAUNCH-READINESS / TESTING-STATUS / PRIORITY-ROADMAP — inventory is the *index* across them, not a replacement.
+- Linked from README.md and the project CLAUDE.md session-start block so it surfaces on every future session.
+- Added to `scripts/source-doc-map.json` — source changes to edge fns / migrations / flows now trigger staleness warnings on this doc in CI.
 
 **Third PR (#377) — Cancel-listing cascade (atomic bid-reject + booking-refund + notifications):**
 - Migration 065 adds `cancelled_at`, `cancellation_reason`, `cancelled_by` audit columns on `listings` + `listing_cancelled_by_owner` notification_catalog entry.

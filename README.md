@@ -135,9 +135,11 @@ supabase/
 └── migrations/          # 39 PostgreSQL migrations (DDL + RLS + RPCs)
 
 docs/
-├── PROJECT-HUB.md       # Architectural decisions & session context
-├── brand-assets/        # Brand style guide, concepts, creative copy
-└── features/            # Feature-specific documentation
+├── PLATFORM-INVENTORY.md  # 👉 Start here — one-page mental model of everything RAV has built
+├── PROJECT-HUB.md         # Architectural decisions & session context
+├── PRIORITY-ROADMAP.md    # What to work on next
+├── brand-assets/          # Brand style guide, concepts, creative copy
+└── features/              # Feature-specific documentation
 ```
 
 ---
