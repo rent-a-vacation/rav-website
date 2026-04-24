@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-24T22:04:34"
-change_ref: "6397d67"
+last_updated: "2026-04-24T22:18:57"
+change_ref: "0cb7347"
 change_type: "session-58"
 status: "active"
 ---
@@ -37,17 +37,26 @@ status: "active"
 
 ---
 
-## Current Priority Tiers (as of April 22, 2026 — Session 58)
+## Next-Session Pickup (confirmed with user end of Session 59)
+
+When `/sdlc pickup` runs next, the user has explicitly scoped the next session around four items. Work them in this order; they are independent.
+
+1. **#371** — Edge function test harness. Tech-debt; unblocks proper Tests-With-Features coverage for all future edge-fn work. 1-2d (needs scoping).
+2. **#438** — Incorporation documentation starter kit. Draft `docs/incorporation/` folder from Stripe Atlas samples + enhance. Pairs with #80 lawyer-review pass on existing platform ToS drafts. 2-4h.
+3. **#230–#234** — Marketing social setup (Facebook, Instagram, LinkedIn, Google Business, X). Mostly non-code; some admin + content drafting. Sequence in whatever order makes sense per user availability.
+4. **#256** — Pitch deck & investor materials. Brand-aligned + uses PLATFORM-INVENTORY.md from Session 59 as source-of-truth for capability claims.
+
+**Also consider after those:** A controlled PROD deploy window for the accumulated Phase 22 + Session 59 changes (migrations 060–065, text-chat updates with support context + 5 tools + classifier, ingest-support-docs + cancel-listing edge fns, support_conversations + listing-proofs + dispute_source schemas). All currently sit on DEV per CLAUDE.md human-confirmation rule.
+
+## Current Priority Tiers (as of April 24, 2026 — Session 59)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-All unblocked follow-ups from Sessions 54-58. Pick in any order; they're independent.
-
 | Issue | Title | Est. | Why now |
 |-------|-------|------|---------|
-| **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up from Tests-With-Features shortfalls. Enables future edge-fn work to be properly tested. |
+| **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up. Post-session-59, four edge fns ship untested (`cancel-listing`, `ingest-support-docs`, `text-chat` support branch, classifier module). Unblocks proper Tests-With-Features coverage. |
 
-> **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** All of A/B/C/D/E shipped. Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Only external item is #404 (legal-blocked public policy drafts — depends on #80 lawyer review).
+> **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Session 59 cleared all remaining Tier A pre-launch marketplace items (#376 proof workflow, #378 Open-for-Offers, #381 Action Needed dashboards, #377 cancel-listing cascade, #393 PLATFORM-INVENTORY). Tier A is effectively empty except #371 (tech-debt).
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -59,6 +68,7 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #257 | Resort data compliance audit | Legal review of seed data sources. |
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
 | **#404** | Phase 22 B5: Legal-blocked public policy docs (privacy, booking-terms, payment-policy, trust-safety, insurance-liability, subscription-terms) | Blocked by #80 (legal consult — timeshare lawyer). 6 drafts production-ready, held with `status: 'draft'` pending lawyer sign-off. Not blocking launch of the support agent itself. |
+| **#438** | Incorporation documentation starter kit (operating agreement, formation checklist, IP assignment, state tax notes) | Pairs with #80 lawyer-review pass. Pre-incorporation research + drafting; enhances Stripe Atlas / LegalZoom templates so lawyer review is editing not authoring. Session 60 pickup. |
 
 ### Tier C: Tier Feature Differentiation — ✅ COMPLETED IN SESSION 53 (PR #367)
 
@@ -126,6 +136,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 24, 2026 | 59 | **Session close handoff.** All 5 Session-59 PRs merged (#434–#437). New issue **#438** opened for Session-60 incorporation-docs research. Priority queue explicitly set for next `/sdlc pickup`: #371 → #438 → #230-234 → #256. PROD deploy window for accumulated DEV migrations 060–065 + edge fns (`ingest-support-docs`, `cancel-listing`, `text-chat` with support branch) recommended before or alongside #371. |
 | Apr 24, 2026 | 59 | **#393 shipped** — new `docs/PLATFORM-INVENTORY.md` gives a one-page mental model across 4 layers (Product / Platform / Dev Tooling / Governance). Linked from README + CLAUDE.md session-start block. Added to source-doc-map.json so source changes trigger staleness warnings. |
 | Apr 24, 2026 | 59 | **#377 shipped** — cancel-listing cascade. Migration 065 adds audit cols + notification type. New `cancel-listing` edge fn orchestrates: listing → cancelled + audit stamp → bulk-reject pending bids → notify bidders → cancel confirmed/pending bookings via existing `process-cancellation` (Stripe refunds) → bump `cancellation_count`. New `CancelListingDialog` with impact preview (bid count / booking count / refund total) + reason input. Replaces the rudimentary status-flip in OwnerListings. |
 | Apr 24, 2026 | 59 | **#381 shipped** — Action Needed sections on Traveler / Owner / Admin landing views. New `ActionNeededSection` component + `usePriorityActions` hooks (3 variants). Role-specific tiles: travelers see counter-offers + imminent check-ins; owners see proof-rejected + Wish-Matched confirmations + pending Offers + unread inquiries; admins see disputes + escrow + pending approvals + proof verifications. Empty state with role-relevant CTA. 3 new tests. |
