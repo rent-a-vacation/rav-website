@@ -25,7 +25,19 @@ import {
   Users,
   Star,
   MapPin,
+  FileUp,
+  Gavel,
+  AlertTriangle,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  hashFile,
+  validateProofFile,
+  buildProofStoragePath,
+  MAX_PROOF_FILE_SIZE_BYTES,
+} from "@/lib/listingProof";
 import type { VacationClubBrand, Resort, ResortUnitType } from "@/types/database";
 import { supabase } from "@/lib/supabase";
 import { PricingSuggestion } from "@/components/owner/PricingSuggestion";
@@ -115,6 +127,15 @@ interface ListPropertyDraft {
   nightlyRate: string;
   cleaningFee: string;
   cancellationPolicy: CancellationPolicy;
+  // #376 proof + #378 bidding (file is NOT persisted in draft — too big for
+  // localStorage; confirmation number + bidding fields are fine)
+  resortConfirmationNumber?: string;
+  ownerAttestationAccepted?: boolean;
+  openForBidding?: boolean;
+  minBidAmount?: string;
+  biddingEndsAt?: string;
+  reservePrice?: string;
+  allowCounterOffers?: boolean;
 }
 
 function saveDraft(draft: ListPropertyDraft) {
@@ -170,6 +191,25 @@ const ListProperty = () => {
   const [cleaningFee, setCleaningFee] = useState(draft?.cleaningFee || "");
   const [cancellationPolicy, setCancellationPolicy] = useState<CancellationPolicy>(draft?.cancellationPolicy || "");
 
+  // #376 Pre-Booked reservation proof
+  const [resortConfirmationNumber, setResortConfirmationNumber] = useState(
+    draft?.resortConfirmationNumber || "",
+  );
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [proofFileError, setProofFileError] = useState<string | null>(null);
+  const [ownerAttestationAccepted, setOwnerAttestationAccepted] = useState(
+    draft?.ownerAttestationAccepted || false,
+  );
+
+  // #378 Bidding configuration (data model already exists on listings)
+  const [openForBidding, setOpenForBidding] = useState(draft?.openForBidding || false);
+  const [minBidAmount, setMinBidAmount] = useState(draft?.minBidAmount || "");
+  const [biddingEndsAt, setBiddingEndsAt] = useState(draft?.biddingEndsAt || "");
+  const [reservePrice, setReservePrice] = useState(draft?.reservePrice || "");
+  const [allowCounterOffers, setAllowCounterOffers] = useState(
+    draft?.allowCounterOffers ?? true,
+  );
+
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -186,7 +226,8 @@ const ListProperty = () => {
 
   const todayStr = new Date().toISOString().split("T")[0];
 
-  // Auto-save draft on form changes
+  // Auto-save draft on form changes. Note: proofFile is deliberately NOT
+  // persisted — too large for localStorage. Owner re-selects on reload.
   useEffect(() => {
     if (formStep > 1 || selectedBrand || resortName) {
       saveDraft({
@@ -204,9 +245,16 @@ const ListProperty = () => {
         nightlyRate,
         cleaningFee,
         cancellationPolicy,
+        resortConfirmationNumber,
+        ownerAttestationAccepted,
+        openForBidding,
+        minBidAmount,
+        biddingEndsAt,
+        reservePrice,
+        allowCounterOffers,
       });
     }
-  }, [formStep, selectedBrand, isManualEntry, resortName, location, bedrooms, bathrooms, sleeps, description, checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy]);
+  }, [formStep, selectedBrand, isManualEntry, resortName, location, bedrooms, bathrooms, sleeps, description, checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy, resortConfirmationNumber, ownerAttestationAccepted, openForBidding, minBidAmount, biddingEndsAt, reservePrice, allowCounterOffers]);
 
   // Load full resort details when selected
   useEffect(() => {
@@ -266,9 +314,45 @@ const ListProperty = () => {
       ? resortName && location && bedrooms && bathrooms && sleeps
       : selectedResort && selectedUnitType;
 
+  // Proof requirements (#376) — Pre-Booked listings require proof at list time.
+  const proofReady =
+    resortConfirmationNumber.trim().length >= 4 &&
+    proofFile !== null &&
+    !proofFileError &&
+    ownerAttestationAccepted;
+
+  // Bidding requirements (#378) — when enabled, minimum fields must be set.
+  const biddingReady =
+    !openForBidding ||
+    (
+      minBidAmount !== "" &&
+      parseFloat(minBidAmount) > 0 &&
+      biddingEndsAt !== "" &&
+      new Date(biddingEndsAt) > new Date()
+    );
+
   const canProceedStep2 =
-    checkInDate && checkOutDate && nightlyRate && cancellationPolicy &&
-    calculateNights(checkInDate, checkOutDate) > 0;
+    !!(checkInDate && checkOutDate && nightlyRate && cancellationPolicy &&
+      calculateNights(checkInDate, checkOutDate) > 0) &&
+    proofReady &&
+    biddingReady;
+
+  function handleProofFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    if (!file) {
+      setProofFile(null);
+      setProofFileError(null);
+      return;
+    }
+    const err = validateProofFile(file);
+    if (err) {
+      setProofFile(null);
+      setProofFileError(err.message);
+      return;
+    }
+    setProofFile(file);
+    setProofFileError(null);
+  }
 
   async function handleSubmit() {
     if (!user || !isPropertyOwner()) return;
@@ -304,7 +388,42 @@ const ListProperty = () => {
 
       if (propError || !newProperty) throw new Error(propError?.message || "Failed to create property");
 
-      // 2. Create listing (use tier-aware commission rate)
+      // 2. Prepare proof: hash file client-side, pre-check for dedup so the
+      //    owner gets a fast, human-readable error if they're reusing a file.
+      //    The DB-level UNIQUE index is the authoritative guard; this is just
+      //    a UX nicety that avoids a wasted storage upload.
+      if (!proofFile) {
+        throw new Error("Reservation proof is required.");
+      }
+      const proofHash = await hashFile(proofFile);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: existingHashRow } = await (supabase as any)
+        .from("listings")
+        .select("id")
+        .eq("confirmation_proof_hash", proofHash)
+        .maybeSingle();
+      if (existingHashRow) {
+        throw new Error(
+          "This proof file has already been used on another listing. Please upload the reservation email for this specific trip.",
+        );
+      }
+
+      // 3. Generate listing id client-side so we can scope the storage path
+      //    to the listing before inserting. If the upload succeeds but the
+      //    insert fails, we orphan the file — acceptable (cleanup job can
+      //    sweep; owner retries without re-uploading).
+      const newListingId = (globalThis.crypto ?? crypto).randomUUID();
+      const proofPath = buildProofStoragePath(user.id, newListingId, proofFile.name);
+
+      const { error: uploadError } = await supabase.storage
+        .from("listing-proofs")
+        .upload(proofPath, proofFile, {
+          contentType: proofFile.type,
+          upsert: false,
+        });
+      if (uploadError) throw new Error(`Proof upload failed: ${uploadError.message}`);
+
+      // 4. Create listing (use tier-aware commission rate)
       const rate = parseFloat(nightlyRate);
       const cleaning = parseFloat(cleaningFee) || 0;
       const nights = calculateNights(checkInDate, checkOutDate);
@@ -313,6 +432,7 @@ const ListProperty = () => {
       const finalPrice = ownerPrice + ravMarkup;
 
       const listingData = {
+        id: newListingId,
         property_id: (newProperty as { id: string }).id,
         owner_id: user.id,
         check_in_date: checkInDate,
@@ -325,13 +445,30 @@ const ListProperty = () => {
         final_price: finalPrice,
         cancellation_policy: cancellationPolicy,
         status: "pending_approval",
+        // #376 proof fields
+        resort_confirmation_number: resortConfirmationNumber.trim(),
+        confirmation_proof_path: proofPath,
+        confirmation_proof_hash: proofHash,
+        owner_attestation_accepted_at: new Date().toISOString(),
+        proof_status: "submitted",
+        // #378 bidding fields (only when enabled)
+        open_for_bidding: openForBidding,
+        min_bid_amount: openForBidding ? parseFloat(minBidAmount) : null,
+        bidding_ends_at: openForBidding ? new Date(biddingEndsAt).toISOString() : null,
+        reserve_price: openForBidding && reservePrice ? parseFloat(reservePrice) : null,
+        allow_counter_offers: openForBidding ? allowCounterOffers : true,
       };
 
       const { error: listError } = await supabase
         .from("listings")
         .insert(listingData as never);
 
-      if (listError) throw new Error(listError.message);
+      if (listError) {
+        // Best-effort cleanup of the orphaned proof file so storage doesn't
+        // leak when the insert fails (e.g. FK or constraint violation).
+        await supabase.storage.from("listing-proofs").remove([proofPath]);
+        throw new Error(listError.message);
+      }
 
       // Track listing creation
       trackEvent('listing_created', {
@@ -780,6 +917,165 @@ const ListProperty = () => {
                     </Select>
                   </div>
 
+                  {/* #378 Open for Bidding toggle ---------------------- */}
+                  <div className="rounded-lg border p-4 space-y-3 bg-card">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <Gavel className="w-4 h-4 text-primary" />
+                          <Label htmlFor="open-for-bidding" className="font-medium">
+                            Open for Offers
+                          </Label>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Let travelers submit Offers for your Listing in addition to booking at
+                          the direct price. You set a minimum and a deadline.
+                        </p>
+                      </div>
+                      <Switch
+                        id="open-for-bidding"
+                        checked={openForBidding}
+                        onCheckedChange={setOpenForBidding}
+                      />
+                    </div>
+
+                    {openForBidding && (
+                      <div className="space-y-3 pt-2 border-t">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <Label htmlFor="min-bid" className="text-xs font-medium">
+                              Minimum Offer ($)
+                            </Label>
+                            <Input
+                              id="min-bid"
+                              type="number"
+                              min="1"
+                              value={minBidAmount}
+                              onChange={(e) => setMinBidAmount(e.target.value)}
+                              placeholder="e.g. 150"
+                            />
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Travelers can't submit an Offer below this.
+                            </p>
+                          </div>
+                          <div>
+                            <Label htmlFor="bidding-ends" className="text-xs font-medium">
+                              Offers Close
+                            </Label>
+                            <Input
+                              id="bidding-ends"
+                              type="datetime-local"
+                              min={new Date(Date.now() + 60_000).toISOString().slice(0, 16)}
+                              value={biddingEndsAt}
+                              onChange={(e) => setBiddingEndsAt(e.target.value)}
+                            />
+                            <p className="text-xs text-muted-foreground mt-1">
+                              After this, no new Offers accepted.
+                            </p>
+                          </div>
+                        </div>
+                        <div>
+                          <Label htmlFor="reserve-price" className="text-xs font-medium">
+                            Reserve Price ($)
+                            <span className="text-muted-foreground font-normal"> — optional</span>
+                          </Label>
+                          <Input
+                            id="reserve-price"
+                            type="number"
+                            min="0"
+                            value={reservePrice}
+                            onChange={(e) => setReservePrice(e.target.value)}
+                            placeholder="e.g. 250"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Hidden floor — Offers below this are auto-declined. Leave blank to review every Offer yourself.
+                          </p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            id="allow-counter"
+                            checked={allowCounterOffers}
+                            onCheckedChange={(checked) => setAllowCounterOffers(!!checked)}
+                          />
+                          <div className="flex-1">
+                            <Label htmlFor="allow-counter" className="text-sm">
+                              Allow counter-offers
+                            </Label>
+                            <p className="text-xs text-muted-foreground">
+                              Travelers can negotiate back after you counter their Offer.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* #376 Reservation Proof --------------------------------- */}
+                  <div className="rounded-lg border p-4 space-y-3 bg-card">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-primary" />
+                      <h4 className="font-medium">Reservation Proof</h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Since you already have this resort reservation, we verify it before your Listing goes live. This protects travelers (and you) from double-booking issues. It only takes a day or two.
+                    </p>
+
+                    <div>
+                      <Label htmlFor="confirmation-number" className="text-xs font-medium">
+                        Resort Confirmation Number
+                      </Label>
+                      <Input
+                        id="confirmation-number"
+                        type="text"
+                        value={resortConfirmationNumber}
+                        onChange={(e) => setResortConfirmationNumber(e.target.value)}
+                        placeholder="e.g. HLT-8472291"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        The confirmation code on your reservation email from the resort.
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="proof-file" className="text-xs font-medium">
+                        Upload Reservation Email (PDF / JPG / PNG)
+                      </Label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Input
+                          id="proof-file"
+                          type="file"
+                          accept="application/pdf,image/jpeg,image/png"
+                          onChange={handleProofFileChange}
+                          className="flex-1"
+                        />
+                        {proofFile && <FileUp className="w-4 h-4 text-emerald-600" />}
+                      </div>
+                      {proofFileError ? (
+                        <p className="text-xs text-destructive mt-1 flex items-start gap-1">
+                          <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                          <span>{proofFileError}</span>
+                        </p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Your confirmation email as PDF is easiest. Up to {Math.round(MAX_PROOF_FILE_SIZE_BYTES / 1024 / 1024)}&nbsp;MB. Only RAV staff and you can see this file.
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-start gap-2 pt-1">
+                      <Checkbox
+                        id="attestation"
+                        checked={ownerAttestationAccepted}
+                        onCheckedChange={(checked) => setOwnerAttestationAccepted(!!checked)}
+                      />
+                      <Label htmlFor="attestation" className="text-xs leading-snug">
+                        I confirm this reservation is genuine and held under my name.
+                        I understand misrepresenting a reservation may result in account
+                        suspension and legal action.
+                      </Label>
+                    </div>
+                  </div>
+
                   {/* Pricing preview */}
                   {pricingPreview && (
                     <div className="bg-primary/5 rounded-lg p-4 space-y-2">
@@ -901,6 +1197,8 @@ const ListProperty = () => {
                               formStep, selectedBrand, isManualEntry, resortName, location,
                               bedrooms, bathrooms, sleeps, description,
                               checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy,
+                              resortConfirmationNumber, ownerAttestationAccepted,
+                              openForBidding, minBidAmount, biddingEndsAt, reservePrice, allowCounterOffers,
                             });
                             navigate("/signup");
                           }}
@@ -925,6 +1223,8 @@ const ListProperty = () => {
                               formStep, selectedBrand, isManualEntry, resortName, location,
                               bedrooms, bathrooms, sleeps, description,
                               checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy,
+                              resortConfirmationNumber, ownerAttestationAccepted,
+                              openForBidding, minBidAmount, biddingEndsAt, reservePrice, allowCounterOffers,
                             });
                             setUpgradeDialogOpen(true);
                           }}

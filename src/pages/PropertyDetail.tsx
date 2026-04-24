@@ -29,6 +29,7 @@ import {
   Clock,
   ShieldCheck,
   Shield,
+  Gavel,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ListingTypeBadge } from "@/components/marketplace/ListingTypeBadge";
@@ -375,6 +376,14 @@ const PropertyDetail = () => {
                 {/* Social proof + type badges */}
                 <div className="flex flex-wrap items-center gap-2 mb-4">
                   <ListingTypeBadge type={(listing as { source_type?: "pre_booked" | "wish_matched" })?.source_type ?? "pre_booked"} />
+                  {/* #378 Persistent bidding badge — used to be buried in the
+                      "Need Help?" collapsible; now above the fold next to type. */}
+                  {isBiddable && (
+                    <Badge className="bg-amber-500/95 text-white border-0">
+                      <Gavel className="w-3 h-3 mr-1" />
+                      Open for Offers
+                    </Badge>
+                  )}
                   {popularityLabel && (
                     <Badge className="bg-orange-500/90 text-white border-0">
                       <Flame className="w-3 h-3 mr-1" />

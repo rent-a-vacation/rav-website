@@ -38,6 +38,17 @@ import type { Listing, Property, Profile, ListingStatus } from "@/types/database
 import { AdminEntityLink, type AdminNavigationProps } from "./AdminEntityLink";
 import { AgeBadge } from "./AgeBadge";
 import AdminListingEditDialog from "./AdminListingEditDialog";
+import { ProofVerifyDialog } from "./ProofVerifyDialog";
+import {
+  PROOF_STATUS_LABELS,
+  PROOF_STATUS_BADGE_CLASSES,
+} from "@/lib/listingProof";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Gavel, HelpCircle, Shield } from "lucide-react";
 
 const REJECTION_TEMPLATES = [
   "Incomplete property details",
@@ -85,6 +96,10 @@ const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
   const [editListing, setEditListing] = useState<ListingWithDetails | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  // #376 proof verify dialog
+  const [proofListing, setProofListing] = useState<ListingWithDetails | null>(null);
+  const [proofDialogOpen, setProofDialogOpen] = useState(false);
 
   useEffect(() => {
     if (initialSearch) setSearchQuery(initialSearch);
@@ -445,6 +460,28 @@ const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
                   <TableHead>Owner</TableHead>
                   <TableHead>Dates</TableHead>
                   <TableHead>Pricing</TableHead>
+                  <TableHead>
+                    <Tooltip>
+                      <TooltipTrigger className="flex items-center gap-1">
+                        Model
+                        <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        Direct booking vs. open for Offers. Bidding Open means travelers can submit Offers until the deadline.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableHead>
+                  <TableHead>
+                    <Tooltip>
+                      <TooltipTrigger className="flex items-center gap-1">
+                        Proof
+                        <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        Reservation proof verification status. Only Pre-Booked Stays require proof — Wish-Matched confirm post-acceptance.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -495,6 +532,26 @@ const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
                       </div>
                     </TableCell>
                     <TableCell>
+                      {listing.open_for_bidding ? (
+                        <Badge variant="outline" className="border-amber-400 text-amber-700">
+                          <Gavel className="h-3 w-3 mr-1" />
+                          Bidding
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-emerald-400 text-emerald-700">
+                          Direct
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={PROOF_STATUS_BADGE_CLASSES[listing.proof_status ?? "not_required"]}
+                      >
+                        {PROOF_STATUS_LABELS[listing.proof_status ?? "not_required"]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex flex-col gap-1">
                         <Badge className={STATUS_COLORS[listing.status]}>
                           {STATUS_LABELS[listing.status]}
@@ -511,28 +568,59 @@ const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        {listing.status === "pending_approval" && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-green-600 hover:text-green-700"
-                              onClick={() => handleApprove(listing.id)}
-                            >
-                              <Check className="h-4 w-4 mr-1" />
-                              Approve
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-red-600 hover:text-red-700"
-                              onClick={() => openRejectDialog(listing.id)}
-                            >
-                              <X className="h-4 w-4 mr-1" />
-                              Reject
-                            </Button>
-                          </>
+                        {(listing.proof_status === "submitted" || listing.proof_status === "rejected") && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-primary"
+                            onClick={() => {
+                              setProofListing(listing);
+                              setProofDialogOpen(true);
+                            }}
+                          >
+                            <Shield className="h-4 w-4 mr-1" />
+                            {listing.proof_status === "rejected" ? "View Proof" : "Verify Proof"}
+                          </Button>
                         )}
+                        {listing.status === "pending_approval" && (() => {
+                          const proofBlocksApprove =
+                            listing.source_type === "pre_booked" &&
+                            listing.proof_status !== "verified";
+                          return (
+                            <>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-green-600 hover:text-green-700"
+                                      onClick={() => handleApprove(listing.id)}
+                                      disabled={proofBlocksApprove}
+                                    >
+                                      <Check className="h-4 w-4 mr-1" />
+                                      Approve
+                                    </Button>
+                                  </span>
+                                </TooltipTrigger>
+                                {proofBlocksApprove && (
+                                  <TooltipContent side="top">
+                                    Reservation proof must be verified before this Pre-Booked Stay can go active.
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() => openRejectDialog(listing.id)}
+                              >
+                                <X className="h-4 w-4 mr-1" />
+                                Reject
+                              </Button>
+                            </>
+                          );
+                        })()}
                         {isRavAdmin() && (
                           <Button
                             variant="ghost"
@@ -653,6 +741,17 @@ const AdminListings = ({ initialSearch = "", onNavigateToEntity }: AdminNavigati
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         onSaved={fetchListings}
+      />
+
+      <ProofVerifyDialog
+        listing={proofListing}
+        open={proofDialogOpen}
+        onOpenChange={(open) => {
+          setProofDialogOpen(open);
+          if (!open) setProofListing(null);
+        }}
+        onVerified={fetchListings}
+        onRejected={fetchListings}
       />
     </div>
   );

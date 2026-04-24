@@ -2,6 +2,7 @@ import React, { type ReactElement } from "react";
 import { render, type RenderOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface ProvidersOptions {
   /** Initial route entries for MemoryRouter */
@@ -29,7 +30,9 @@ function createWrapper(options: ProvidersOptions = {}) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>
+          <TooltipProvider>{children}</TooltipProvider>
+        </MemoryRouter>
       </QueryClientProvider>
     );
   };
