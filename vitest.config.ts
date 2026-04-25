@@ -14,8 +14,26 @@ export default defineConfig({
     ],
     coverage: {
       provider: "v8",
-      include: ["src/lib/**", "src/hooks/**", "src/contexts/**"],
-      exclude: ["src/hooks/use-mobile.tsx", "src/hooks/use-toast.ts"],
+      include: [
+        "src/lib/**",
+        "src/hooks/**",
+        "src/contexts/**",
+        // #445 — edge function logic. Excludes the thin Deno.serve wrappers
+        // (index.ts / *.ts at top of each fn dir) which import URL deps that
+        // Vitest can't resolve. The handler.ts / *-resolver.ts / helper files
+        // are the testable units.
+        "supabase/functions/**/handler.ts",
+        "supabase/functions/**/conversation-logger.ts",
+        "supabase/functions/**/intent-classifier.ts",
+        "supabase/functions/**/support-tools.ts",
+        "supabase/functions/**/context-resolver.ts",
+      ],
+      exclude: [
+        "src/hooks/use-mobile.tsx",
+        "src/hooks/use-toast.ts",
+        // Test fixtures + mocks — never measure
+        "supabase/functions/_shared/__tests__/**",
+      ],
       thresholds: {
         statements: 25,
         branches: 25,
