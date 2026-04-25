@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-03-21T02:05:09"
-change_ref: "94959eb"
-change_type: "session-39-docs-update"
+last_updated: "2026-04-25T06:41:23"
+change_ref: "2dd6116"
+change_type: "session-60"
 status: "active"
 ---
 # Testing Guidelines — Rent-A-Vacation
@@ -162,3 +162,98 @@ Thresholds (enforced in `vitest.config.ts`):
 - Lines: 25%
 
 Run `npm run test:coverage` to see the report locally.
+
+## Edge Function Testing (Session 60 / #371)
+
+Supabase edge functions live in `supabase/functions/` and run on the **Deno** runtime in production. We test them in **Vitest** (the same runner as the frontend) — not `deno test` — for these reasons:
+
+- Single test command for contributors (`npm run test`) covers everything.
+- The frontend `createSupabaseMock()` helper (`src/test/helpers/supabase-mock.ts`) is fully reusable; no parallel Deno-specific mock infra to maintain.
+- `vitest.config.ts` already globs `supabase/functions/**/*.{test,spec}.ts`.
+- CI doesn't need a Deno runtime setup step.
+
+**Trade-off:** Tests don't validate against the real Deno runtime APIs (`Deno.serve`, `Deno.env`, `npm:` / `https://esm.sh/` import resolution). They cover pure logic via dependency-injection. Deploy smoke remains the only true validation that the deployed bundle works in Supabase Edge Functions.
+
+### The handler-extraction pattern
+
+Each testable edge fn splits into two files:
+
+- **`handler.ts`** — exports `async function handler(req: Request, deps: Deps): Promise<Response>` plus typed `Deps` interface. Imports nothing from `https://esm.sh/...` or `npm:...`. Stripe / Supabase / Resend types are narrow `*Like` interfaces declared inline (or just `any`/`Record<string, unknown>`).
+- **`index.ts`** — 5-15 line Deno wrapper that imports the SDK URLs and wires the production deps:
+
+```ts
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@18.5.0";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { handler } from "./handler.ts";
+
+serve((req) => handler(req, {
+  supabase: createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "", { auth: { persistSession: false } }),
+  stripe: new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", { apiVersion: "2025-08-27.basil" }),
+  env: { /* whitelisted env keys */ },
+}));
+```
+
+### Shared infra
+
+- `supabase/functions/_shared/__tests__/stripe-mock.ts` — `createStripeMock({ overrides })` factory. Mock surfaces: `customers.list`, `checkout.sessions.create/retrieve`, `refunds.create/retrieve`, `webhooks.constructEvent`, `accounts.*`, `transfers.create`. Each method has a sensible default; pass overrides per test.
+- `supabase/functions/_shared/__tests__/edge-fn-fixtures.ts` — `createEdgeFnSupabaseMock(tableData, opts)` wraps `createSupabaseMock()` with edge-fn defaults: rate-limit RPC returns `allowed=true`, `auth.getUser()` returns a real test user, `.functions.invoke()` is stubbed. Plus `makeListing()`, `makeBooking()`, `makeProfile()`, `makeRequest()`, `makeTestEnv()`, `TEST_USER`, `TEST_OWNER`.
+- `supabase/functions/_shared/__tests__/stripe-events.ts` — pre-built sample webhook event payloads for `stripe-webhook` handler tests.
+
+### Example test pattern
+
+```ts
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createStripeMock } from "../_shared/__tests__/stripe-mock";
+import { createEdgeFnSupabaseMock, makeListing, makeRequest, makeTestEnv } from "../_shared/__tests__/edge-fn-fixtures";
+import { handler, type Deps } from "./handler";
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("ok", { status: 200 })));
+});
+
+it("creates a checkout session @p0", async () => {
+  const supabase = createEdgeFnSupabaseMock({
+    listings: { data: makeListing(), error: null },
+    bookings: { data: { id: "booking-1" }, error: null },
+  });
+  const stripe = createStripeMock({ checkoutSessionsCreate: { id: "cs_1", url: "https://stripe.example/cs_1" } });
+  const deps: Deps = { supabase, stripe, env: makeTestEnv() };
+  const res = await handler(makeRequest({ body: { listingId: "listing-test-1" } }), deps);
+  expect(res.status).toBe(200);
+});
+```
+
+### When to add tests
+
+Whenever you add or modify an edge fn that:
+- Touches money (Stripe SDK calls, escrow updates, payouts, refunds)
+- Cascades across multiple tables (e.g., cancel-listing → bids + bookings + verifications)
+- Branches on env flags (e.g., `STRIPE_TAX_ENABLED`)
+- Implements policy/business logic (e.g., refund-policy calculation)
+
+For pure-logic helpers (intent classification, conversation logging), keep extracting to co-located helper files (`text-chat/intent-classifier.ts` style) and test those directly without the handler wrapper.
+
+### Coverage covered today
+
+The harness pattern is established for these edge fns (Session 60 / #371):
+
+- `create-booking-checkout` (12 tests)
+- `verify-booking-payment` (9 tests)
+- `stripe-webhook` (17 tests — entry + per-event-type handlers)
+- `process-cancellation` (13 tests — 5 pure policy + 8 handler integration)
+- `cancel-listing` (7 tests — full cascade orchestration)
+- `text-chat/context-resolver` (6 tests — extracted from index.ts during this work)
+
+Plus pre-existing Phase 22 tests:
+- `text-chat/conversation-logger.test.ts` (5 tests)
+- `text-chat/intent-classifier.test.ts` (~17 tests)
+- `text-chat/support-tools.test.ts` (~28 tests)
+
+**Not yet covered** (open as follow-up issues — see PRIORITY-ROADMAP):
+- `create-connect-account`, `create-stripe-payout`
+- `ingest-support-docs`
+- `notification-dispatcher`, `sms-scheduler`, `twilio-webhook`
+- `text-chat/index.ts` end-to-end (requires full handler.ts extraction; deferred)
+

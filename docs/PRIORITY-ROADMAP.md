@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-24T22:18:57"
-change_ref: "0cb7347"
-change_type: "session-58"
+last_updated: "2026-04-25T06:41:23"
+change_ref: "2dd6116"
+change_type: "session-59"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -52,11 +52,11 @@ When `/sdlc pickup` runs next, the user has explicitly scoped the next session a
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-| Issue | Title | Est. | Why now |
-|-------|-------|------|---------|
-| **#371** | Edge function test harness | 1-2d (needs scoping) | Tech-debt follow-up. Post-session-59, four edge fns ship untested (`cancel-listing`, `ingest-support-docs`, `text-chat` support branch, classifier module). Unblocks proper Tests-With-Features coverage. |
+_Empty after Session 60 — #371 shipped, see Revision History below._
 
-> **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Session 59 cleared all remaining Tier A pre-launch marketplace items (#376 proof workflow, #378 Open-for-Offers, #381 Action Needed dashboards, #377 cancel-listing cascade, #393 PLATFORM-INVENTORY). Tier A is effectively empty except #371 (tech-debt).
+> **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Session 59 cleared all remaining Tier A pre-launch marketplace items (#376 proof workflow, #378 Open-for-Offers, #381 Action Needed dashboards, #377 cancel-listing cascade, #393 PLATFORM-INVENTORY). Session 60 closed #371 (edge-fn test harness, DEC-037).
+>
+> Next pickup is **#438 (incorporation docs starter kit)** — see Tier B.
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -115,6 +115,7 @@ Park these until after launch or until specific triggers.
 | #165 | Owner Volume Discount | Needs decision — post-launch |
 | #166 | Membership tier value prop | Needs decision — post-launch |
 | #71 | Percy GitHub integration | Low priority — private repo limitation |
+| #440 | Archive PROJECT-HUB session handoffs 25-54 to COMPLETED-PHASES | Mechanical doc migration. Pure reorganization — defer until a docs-focused session. |
 
 ---
 
@@ -136,6 +137,8 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 25, 2026 | 60 | **#371 SHIPPED — edge function test harness.** DEC-037 logged: Vitest, not Deno-native. Pattern: each Stripe-touching + cancel-listing edge fn split into `handler.ts` (testable) + `index.ts` (5-line `Deno.serve` wrapper). 64 new tests across 6 files (1311 → 1375); 23 new `@p0` tags (176 → 199). Refactored: create-booking-checkout, verify-booking-payment, stripe-webhook, process-cancellation, cancel-listing. Plus extracted `text-chat/context-resolver.ts` for the pure intent-classification routing logic. New shared infra: `_shared/__tests__/{stripe-mock, edge-fn-fixtures, stripe-events}.ts`. Tier A now empty; next pickup **#438**. |
+| Apr 25, 2026 | 60 | **Session 60 pickup + doc audit.** All 4 bootstrap docs brought current: LAUNCH-READINESS rebuilt with Sessions 53-59 platform-completeness rows + updated By-the-Numbers (1311 tests / 141 files / 065 migrations / 36 edge fns); PROJECT-HUB body 'Last Updated' bumped to Session 59; PRIORITY-ROADMAP + COMPLETED-PHASES frontmatter stamped to session-59. New issue **#440** opened for the larger archival task (move PROJECT-HUB Session 25-54 handoff entries into COMPLETED-PHASES). Tier E. Doc audit cleared before pivoting to #371. |
 | Apr 24, 2026 | 59 | **Session close handoff.** All 5 Session-59 PRs merged (#434–#437). New issue **#438** opened for Session-60 incorporation-docs research. Priority queue explicitly set for next `/sdlc pickup`: #371 → #438 → #230-234 → #256. PROD deploy window for accumulated DEV migrations 060–065 + edge fns (`ingest-support-docs`, `cancel-listing`, `text-chat` with support branch) recommended before or alongside #371. |
 | Apr 24, 2026 | 59 | **#393 shipped** — new `docs/PLATFORM-INVENTORY.md` gives a one-page mental model across 4 layers (Product / Platform / Dev Tooling / Governance). Linked from README + CLAUDE.md session-start block. Added to source-doc-map.json so source changes trigger staleness warnings. |
 | Apr 24, 2026 | 59 | **#377 shipped** — cancel-listing cascade. Migration 065 adds audit cols + notification type. New `cancel-listing` edge fn orchestrates: listing → cancelled + audit stamp → bulk-reject pending bids → notify bidders → cancel confirmed/pending bookings via existing `process-cancellation` (Stripe refunds) → bump `cancellation_count`. New `CancelListingDialog` with impact preview (bid count / booking count / refund total) + reason input. Replaces the rudimentary status-flip in OwnerListings. |

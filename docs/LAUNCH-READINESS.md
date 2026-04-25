@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-20T12:58:39"
-change_ref: "0a2ec90"
-change_type: "session-54"
+last_updated: "2026-04-25T06:41:23"
+change_ref: "2dd6116"
+change_type: "session-59"
 status: "active"
 ---
 # Launch Readiness Checklist
@@ -18,9 +18,9 @@ Admin Dashboard > **Launch** tab — runs automated checks and provides Go Live 
 
 ---
 
-## Platform Completeness (Sessions 33-48)
+## Platform Completeness (Sessions 33-59)
 
-The following major features were completed in Sessions 33-48 and are deployed:
+The following major features were completed in Sessions 33-59 and are deployed:
 
 | Area | What was built | Session |
 |------|---------------|---------|
@@ -45,15 +45,25 @@ The following major features were completed in Sessions 33-48 and are deployed:
 | Multi-Year Event Generation | Curated events unified into DB with admin CRUD UI + multi-year generator | 48 |
 | Marketplace Terminology Lock | Three nouns locked: **Listing · Wish · Offer**. "Offer" replaces "Bid" + "Proposal" in all UI. RAV prefix dropped from transactional CTAs (Make an Offer, Post a Wish). Single **Marketplace** nav link replaces "Name Your Price" + "Make a Wish". `/bidding` → `/marketplace` with redirect. Owner dashboard gains top-level **Offers** tab (Sent + Received). Notifications categories renamed (Offers / Wishes). (DEC-031) | 52 |
 | Site-wide UI Polish | 30 pages tightened — `Section` + `SectionHeader` layout primitives, standardised vertical rhythm (`py-12 md:py-16`), `tracking-tight` headings, soft border separators, off-brand tool badges unified to brand primary. No brand-color changes. | 52 |
+| Tier Feature Differentiation | 5 tier-gated features: early access (Plus), exclusive deals (Premium), priority placement (Owner Pro), concierge support (Premium), dedicated AM (Owner Business). Migration 057 + shared `tierGating.ts`. | 53 |
+| Stripe Tax env-flag gate + JWT hardening | `STRIPE_TAX_ENABLED` env flag unblocks dev sandbox + pre-LLC PROD; edge fn JWT verify config hardened via `config.toml`; 3 QA-surfaced bugs fixed (offers crash, owner bid + booking notifications). | 54 |
+| Phase A QA Wins | MyTrips booking detail view (#379), Path 3 hybrid dashboard naming (#375). | 55 |
+| Marketplace Flow Distinction (DEC-034) | `listing_source_type` enum + Pre-Booked Stay (instant confirm) vs. Wish-Matched Stay (owner-confirmation countdown). Migrations 058 + 059. `ListingTypeBadge` everywhere. Critical search-filter fix prevents wish-matched listings leaking. 3 new notification types. | 56 |
+| Phase 22 Customer Support Foundation (Tracks A/B/E) | 22 markdown docs in `docs/support/`, `support_docs` table (migration 060) + `ingest-support-docs` edge fn + GitHub Action `sync-support-docs.yml`. 6 legal-blocked drafts at `status: draft` pending #80. | 57 |
+| Phase 22 Customer Support Foundation (Tracks C/D) | RAVIO support agent: `context: 'support'` branch + 5 tools (DB-first with live Stripe reconcile), route detection + `<RavioFloatingChat />` on /my-trips/owner-dashboard/account, intent classifier + "Switched to X — back" chip, `dispute_source` enum (migration 061) with "via RAVIO" badges, `support_conversations` + `support_messages` (migration 062), `get_support_metrics` RPC (migration 063), Admin Support Interactions tab + `RavioChatRating` thumbs UI. **Phase 22 epic #395 COMPLETE — 22/22 tickets.** | 58 |
+| Pre-Booked Listing Reservation Proof (#376) + Open-for-Offers badges (#378) | Migration 064 — `listing_proof_status` enum + 9 columns on `listings` + `listing-proofs` private storage bucket (10 MB cap, PDF/JPEG/PNG) + 4 RLS policies + 2 notification_catalog entries. Owner gets proof step in `ListProperty` with file + reservation number + attestation; rejected listings get alert + `ReuploadProofDialog`. Admin gets `ProofVerifyDialog` with embedded preview, phone-verification notes, Approve gating. Consistent Direct / Bidding-Open badges across ListProperty / OwnerListings / AdminListings / ListingCard / PropertyDetail. | 59 |
+| Action Needed Sections on Landing Views (#381) | `ActionNeededSection` component + 3 `usePriorityActions` hook variants — travelers see counter-offers + imminent check-ins; owners see proof-rejected + Wish-Matched confirmations + pending Offers + unread inquiries; admins see disputes + escrow + pending approvals + proof verifications. Empty state with role-relevant CTA. | 59 |
+| Cancel-Listing Cascade (#377) | Migration 065 (audit cols + notification type) + new `cancel-listing` edge fn — atomic listing cancellation that bulk-rejects pending bids → notifies bidders → cancels confirmed/pending bookings via `process-cancellation` (Stripe refunds) → bumps `cancellation_count`. New `CancelListingDialog` with impact preview (bid count / booking count / refund total). | 59 |
+| PLATFORM-INVENTORY.md (#393) | One-page mental model across 4 layers: Product (features by surface), Platform (hosting/DB/edge-fns/Stripe/email/SMS/observability/secrets), Dev Tooling (skills/scripts/CI/hooks/testing/memory), Governance (CLAUDE.md rules, BRAND-LOCK, Key Decisions, tiered roadmap, #127 blocked chain). Linked from README + CLAUDE.md session-start block. | 59 |
 
 ### By the Numbers
 
 | Metric | Count |
 |--------|-------|
-| Automated tests | 1090 (130 test files) |
-| P0 critical-path tests | 97 (`npm run test:p0` ~2s) |
-| SQL migrations | 046 (all deployed to DEV + PROD) |
-| Edge functions | 30 (27 deployed to PROD; 3 SMS functions deployed to DEV only — blocked on A2P 10DLC / #127) |
+| Automated tests | 1375 (147 test files) |
+| P0 critical-path tests | 199 tagged `@p0` (run with `npm run test:p0` — ~2s for filtered subset) |
+| SQL migrations | 065 (001-059 deployed to DEV + PROD; 060-065 deployed to DEV only — PROD held per CLAUDE.md human-confirmation rule) |
+| Edge functions | 36 total (27 deployed to PROD + 4 subscription fns on DEV + 3 SMS fns blocked on #127 + `ingest-support-docs` + `cancel-listing` deployed to DEV only). `text-chat` extended in Session 58 with `context: 'support'` branch + 5 agent tools + intent classifier — awaiting PROD deploy. |
 | Type errors | 0 |
 | Lint errors | 0 |
 | Build status | Clean |

@@ -1,13 +1,13 @@
 ---
-last_updated: "2026-04-24T21:11:26"
-change_ref: "0fa0c27"
-change_type: "session-58"
+last_updated: "2026-04-25T06:41:23"
+change_ref: "2dd6116"
+change_type: "session-60"
 status: "active"
 ---
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** April 22, 2026 (Session 58)
+> **Last Updated:** April 25, 2026 (Session 60 — #371 edge function test harness)
 
 ---
 
@@ -15,9 +15,9 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1311 |
-| **Test files** | 141 |
-| **P0 critical-path tests** | 97 (tagged `@p0`) + 4 subscription P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s + 3 ActionNeededSection P0s |
+| **Total tests** | 1375 |
+| **Test files** | 147 |
+| **P0 critical-path tests** | 199 total tagged `@p0` (97 base + subscription/support/classifier/ActionNeeded carry-over + 23 new from edge-fn harness — Session 60 #371) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
 | **CI run time** | <3 min |
@@ -53,6 +53,7 @@ npm run test:e2e:headed   # Playwright with browser visible
 | `src/hooks/*.test.ts` | ~38 | ~320 |
 | `src/components/**/*.test.tsx` | ~29 | ~165 |
 | `src/contexts/*.test.tsx` | ~4 | ~20 |
+| `supabase/functions/**/*.test.ts` | 10 | 124 (Phase 22 helpers + Session 60 #371 edge-fn harness) |
 | `e2e/smoke/` | 2 | 3 |
 
 ## Stack
