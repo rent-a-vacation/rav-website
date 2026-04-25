@@ -33,6 +33,12 @@ Run this at the start of every session:
    npm run test:p0
    ```
 
+5. **Verify the 4 key docs are current (CRITICAL — this is what bootstraps session context):**
+   ```bash
+   npm run docs:sync-check
+   ```
+   If any doc shows drift (❌ or ⚠️ except for the "run npm test first" warning), STOP and ask the user whether to refresh them before starting new work. Stale docs poison the next session's context.
+
 5. **Report to the user:**
    - Current Tier A items (what to build next)
    - Any new issues since last session
@@ -126,7 +132,9 @@ Run this at the start of every session:
    gh pr merge <number> --repo rent-a-vacation/rav-website --merge
    ```
 
-### Phase 6: Issue & Documentation Updates
+### Phase 6: Issue & Documentation Updates — MANDATORY CHECKLIST
+
+After every merged PR, walk through this checklist. **No session ends with stale docs.** `/sdlc status` relies on these files — if they lie, the next session starts with a distorted picture of the project.
 
 1. **Close the issue with business-language summary:**
    ```bash
@@ -135,18 +143,64 @@ Run this at the start of every session:
    Technical: [migration details, test counts, deployment notes]"
    ```
 
-2. **Update PRIORITY-ROADMAP.md:**
-   - Remove completed item from its tier
+2. **`docs/PRIORITY-ROADMAP.md`** — ALWAYS
+   - Remove completed item from its tier (or mark ✅ Done if tier-closing)
    - Add revision history entry with date + session + what changed
+   - Add newly-opened follow-up issues to the appropriate tier (unassigned items go in "needs tier assignment" note)
 
-3. **Update PROJECT-HUB.md** if architectural decisions were made
+3. **`docs/PROJECT-HUB.md`** — ALWAYS
+   - Extend current Session handoff entry (or start a new one)
+   - Update "Platform Status" block (test count, migrations, edge functions, dev/main sync state)
+   - Add DEC-### entry in Key Decisions Log if any architectural decision was made
 
-4. **Create follow-up issues** for anything discovered during implementation:
-   ```bash
-   gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." --body "..."
-   ```
+4. **`docs/testing/TESTING-STATUS.md`** — if tests were added/removed
+   - Update total-test count, test-file count, run times
+   - Update QA manual-scenarios row if QA scenarios were added/updated
 
-5. **Update memory** if anything session-persistent was learned
+5. **`docs/LAUNCH-READINESS.md`** — if pre-launch checklist items or blocked-items changed
+   - Update rows + blockers table
+   - Add new rows for env flags, infra gates, or deployment requirements introduced
+
+6. **`docs/ARCHITECTURE.md`** + **Flow manifests (`src/flows/`)** — if routes, components, tables, or edge functions changed
+   - Update the relevant flow manifest (owner-lifecycle / traveler-lifecycle / admin-lifecycle)
+   - `/architecture` page auto-regenerates from manifests — no manual Mermaid edits
+   - Update ARCHITECTURE.md narrative if a new cross-cutting concern was introduced
+
+7. **`src/pages/UserGuide.tsx`** + **FAQ** — if user-facing behavior changed
+   - Traveler-facing changes → update `renterSections`
+   - Owner-facing changes → update `ownerSections`
+   - Admin-facing changes → update the admin section
+   - New workflow → add FAQ entry
+
+8. **`docs/testing/QA-PLAYBOOK.md`** + **QA Scenario Spreadsheet** — if user workflow changed
+   - If a flow now differs per state/track, add scenario variants (e.g., S-##a, S-##b)
+   - Rename terminology in scenario steps to match latest UI labels
+   - Note: scenario spreadsheet lives in Google Drive — scenario numbers stay stable, content updates
+
+9. **`docs/brand-assets/BRAND-LOCK.md`** — if terminology or brand language changed
+   - Update the Terminology Context Map (Section 9)
+   - Add new DEC-### if it supersedes prior terminology lock
+
+10. **`docs/COMPLETED-PHASES.md`** — only at session close for sessions aging out of PROJECT-HUB
+    - Move session-handoff entries older than ~5 sessions from PROJECT-HUB to this archive
+    - Keep PROJECT-HUB "Session Handoff" section lean (current + last 5 sessions)
+
+11. **Create follow-up issues** for anything discovered during implementation:
+    ```bash
+    gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." --milestone "Launch Readiness" --body "..."
+    ```
+
+12. **Update memory** if anything session-persistent was learned (see `auto memory` system prompt — feedback / project / user memories)
+
+### Before calling a session done, ask yourself:
+- [ ] Does `/sdlc status` (which reads live docs) give an accurate picture?
+- [ ] Would a new collaborator reading PROJECT-HUB understand today's changes?
+- [ ] Do the testing docs claim the right test count + scenario state?
+- [ ] Did I change any user-facing behavior without telling USER-GUIDE + FAQ?
+- [ ] Did I introduce an env flag, infra gate, or deploy flag without updating LAUNCH-READINESS?
+- [ ] Did a route, table, or edge function change without a flow-manifest update?
+
+If the answer to any of these is "no", fix it before closing.
 
 ---
 

@@ -13,6 +13,7 @@ import {
   type UserContext,
 } from "./support-tools.ts";
 import { classifyIntent, type ClassifiedContext } from "./intent-classifier.ts";
+import { resolveEffectiveContext } from "./context-resolver.ts";
 import {
   openConversation,
   appendTurn,
@@ -292,20 +293,24 @@ serve(async (req) => {
 
     // Intent classification — fires only on ambiguous first messages AND
     // when the frontend hasn't flagged a session-scoped override (see
-    // useTextChat.dismissClassification). See intent-classifier.ts.
-    let classifiedContext: ClassifiedContext | null = null;
-    let effectiveContext = context;
+    // useTextChat.dismissClassification). The pure-logic decision lives in
+    // context-resolver.ts; classifier itself is in intent-classifier.ts.
     const isFirstMessage = !conversationHistory || conversationHistory.length === 0;
-    if (context === "general" && isFirstMessage && !disableClassifier) {
-      classifiedContext = await classifyIntent(message, Deno.env.get("OPENROUTER_API_KEY") ?? null);
-      if (classifiedContext) {
-        effectiveContext = classifiedContext;
-        logStep("Intent classifier swapped context", {
-          from: context,
-          to: classifiedContext,
-          userId: user.id,
-        });
-      }
+    const resolved = await resolveEffectiveContext({
+      routeContext: context,
+      isFirstMessage,
+      disableClassifier,
+      message,
+      classify: (msg) => classifyIntent(msg, Deno.env.get("OPENROUTER_API_KEY") ?? null),
+    });
+    const classifiedContext: ClassifiedContext | null = resolved.classifiedContext;
+    const effectiveContext = resolved.effectiveContext;
+    if (resolved.classifierSwapped) {
+      logStep("Intent classifier swapped context", {
+        from: context,
+        to: resolved.effectiveContext,
+        userId: user.id,
+      });
     }
 
     const systemPrompt = SYSTEM_PROMPTS[effectiveContext] || SYSTEM_PROMPTS.general;

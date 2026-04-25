@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-24T22:04:34"
-change_ref: "6397d67"
-change_type: "session-58"
+last_updated: "2026-04-25T06:41:23"
+change_ref: "2dd6116"
+change_type: "session-59"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** April 20, 2026 (Session 57: DEC-036, Phase 22 epic scoped)
+> **Last Updated:** April 24, 2026 (Session 59: proof workflow + Action Needed + cancel-listing cascade + PLATFORM-INVENTORY)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -93,8 +93,8 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1311 automated tests** (141 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 97 critical-path tests tagged `@p0` + 4 subscription P0s + 6 ListingTypeBadge P0s + 1 support-tool P0 + 35 detectChatContext P0s + 17 intent-classifier P0s + 3 ActionNeededSection P0s — run with `npm run test:p0`
+- **1375 automated tests** (147 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 199 tagged `@p0` (97 base + previous carry-overs + 23 new from edge-fn harness Session 60 #371) — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-065 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 + 064 + 065 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 36 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` + `cancel-listing` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
@@ -103,10 +103,50 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync at Session 58 end (Phase 22 complete); Session 59 PR for #376 + #378 open at time of writing
+- **dev and main:** in sync after Session 59 close (PRs #434–#437 + #439). Session 60 #371 edge-fn test harness lives on dev awaiting PR.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-59)
+### Session Handoff (Sessions 25-60)
+
+**Session 60 — Edge function test harness + doc audit (#371, Apr 25, 2026):**
+
+The first Tier A pickup from the Session 59 → 60 handoff. Established the Vitest-based unit-test harness pattern for Supabase edge functions, refactoring 5 production fns to make their orchestration logic testable. Plus a full bootstrap-doc audit — fixed drift in LAUNCH-READINESS / PROJECT-HUB / PRIORITY-ROADMAP / COMPLETED-PHASES, and opened follow-up #440 for the deferred PROJECT-HUB → COMPLETED-PHASES archival migration.
+
+**Key design decision (DEC-037):** Use **Vitest** for edge-function tests, NOT Deno-native `deno test`. Discovered during exploration that Phase 22 already shipped 3 edge-fn tests using Vitest + the frontend `createSupabaseMock()` helper, and `vitest.config.ts` already globs `supabase/functions/**`. Introducing a parallel Deno toolchain would duplicate infra without value. Trade-off acknowledged: tests don't validate against the real Deno runtime APIs (`Deno.serve`, `Deno.env`, URL imports) — pure logic only via dependency-injection. Documented in `docs/testing/TESTING-GUIDELINES.md`.
+
+**Architectural pattern (the "handler.ts split"):** Each refactored edge fn now has two files:
+- `handler.ts` — exports `async function handler(req, deps)` plus typed `Deps` interface. Zero URL imports, so Vitest can resolve it. Stripe / Supabase / Resend types are narrow `*Like` interfaces.
+- `index.ts` — 5–15 line `Deno.serve` wrapper that imports the SDK URLs and wires production deps.
+
+**Files created:**
+- `supabase/functions/_shared/__tests__/stripe-mock.ts` — `createStripeMock({ overrides })` factory covering `customers`, `checkout.sessions`, `refunds`, `webhooks.constructEvent`, `accounts`, `transfers`, `accountLinks`.
+- `supabase/functions/_shared/__tests__/edge-fn-fixtures.ts` — `createEdgeFnSupabaseMock(tableData, opts)` (defaults: rate-limit allowed, real test user, stubbed `.functions.invoke`) + `makeListing/Booking/Profile/Request/TestEnv` builders + `TEST_USER` / `TEST_OWNER` constants.
+- `supabase/functions/_shared/__tests__/stripe-events.ts` — pre-built sample webhook event payloads (8 event types).
+- `supabase/functions/text-chat/context-resolver.ts` — pure-logic helper extracted from `text-chat/index.ts`. Used in production AND tested.
+
+**Files refactored (handler.ts split):** create-booking-checkout, verify-booking-payment, stripe-webhook, process-cancellation, cancel-listing.
+
+**New tests (64 total, +5% test count):**
+- `create-booking-checkout/handler.test.ts` — 12 tests (auth, rate-limit, STRIPE_TAX_ENABLED on/off, commission resolution, customer reuse, DEC-034 wish_matched branch)
+- `verify-booking-payment/handler.test.ts` — 9 tests (paid/unpaid/already-confirmed paths, source_type fan-out, Resend fire-and-forget tolerance)
+- `stripe-webhook/handler.test.ts` — 17 tests (signature verify pass/fail/missing, dispatch routing, per-event-type handlers, idempotency)
+- `process-cancellation/handler.test.ts` — 13 tests (5 pure `calculatePolicyRefund` for the 4 policies + 8 handler integration tests)
+- `cancel-listing/handler.test.ts` — 7 tests (full cascade: bids → bookings → counter, ownership + status guards, refund-failure tolerance)
+- `text-chat/context-resolver.test.ts` — 6 tests (route × first-message × disableClassifier × classifier-result matrix)
+
+**Test count:** 1311 → **1375** (147 test files). P0 count: 176 → 199 (+23 new `@p0` tags on highest-risk paths). Local test run unchanged at ~2 min full / ~2s P0.
+
+**Doc audit (separate from #371):** 4 bootstrap docs brought current.
+- `LAUNCH-READINESS.md` rebuilt — added platform-completeness rows for Sessions 53–59, refreshed By-the-Numbers (1311 tests / 141 files / 065 migrations / 36 edge fns).
+- `PROJECT-HUB.md` body "Last Updated" line bumped to Session 59 (frontmatter to Session 59).
+- `PRIORITY-ROADMAP.md` frontmatter to Session 59.
+- `COMPLETED-PHASES.md` frontmatter to Session 59. **Larger archival deferred** — opened #440 to migrate Sessions 25–54 handoffs out of PROJECT-HUB into COMPLETED-PHASES (~30 sessions, mechanical reorganization, big diff). Tracked in Tier E.
+
+**PR:** TBD (will reference in next handoff entry once merged).
+**Issue:** #371 closes on PR merge.
+**Follow-ups opened:** #440 (PROJECT-HUB archival), TBD (Stripe-Connect tests, ingest-support-docs tests, notification stack tests, vitest coverage extension to `supabase/functions/**`).
+
+---
 
 **Session 59 — Proof + Bidding + Action Needed + Cancel cascade + Platform Inventory (#376 + #378 + #381 + #377 + #393, Apr 24, 2026):**
 
@@ -962,6 +1002,24 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-037: Edge Function Test Harness — Vitest, Not Deno-Native
+**Date:** April 25, 2026 (Session 60, #371)
+**Decision:** Test Supabase edge functions in **Vitest** (the same runner as the frontend), not in Deno-native `deno test`. Each testable edge fn is split into `handler.ts` (no URL imports — pure logic with injected deps) + `index.ts` (5–15 line `Deno.serve` wrapper that wires production deps).
+
+**Rationale:**
+1. **Pattern already chosen.** Phase 22 (Sessions 57–58) shipped 3 edge-fn tests using Vitest + the existing frontend `createSupabaseMock()` helper, and `vitest.config.ts` already globs `supabase/functions/**/*.{test,spec}.ts` (line 13). Issue #371's stated approach (Deno-native) was wrong on the codebase as it actually exists.
+2. **Single test command.** Contributors run `npm run test`. No second runner, no Deno setup step in GitHub Actions, no `deno.json`, no parallel mock infrastructure to maintain.
+3. **Reuse existing fixtures.** `mockUser`, `mockProfile`, `mockListing`, `createSupabaseMock` work as-is. New shared infra (`createStripeMock`, edge-fn-specific fixtures, sample webhook events) is small.
+4. **Coverage thresholds unchanged.** `coverage.include` stays scoped to `src/{lib,hooks,contexts}/**` for this pass — extending to `supabase/functions/**` would noisily shift reported coverage. Revisit in a follow-up once the harness pattern is established.
+
+**Trade-off acknowledged:** Tests don't validate against the real Deno runtime APIs (`Deno.serve`, `Deno.env`, `npm:` / `https://esm.sh/` URL imports). They cover pure logic via dependency-injection. Deploy smoke remains the only true validation that the production bundle works in Supabase Edge Functions.
+
+**Pattern documented in:** `docs/testing/TESTING-GUIDELINES.md` → "Edge Function Testing" section.
+**First applied to:** create-booking-checkout, verify-booking-payment, stripe-webhook, process-cancellation, cancel-listing, text-chat/context-resolver (64 new tests).
+**Status:** Active.
 
 ---
 
