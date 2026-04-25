@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-25T06:41:23"
-change_ref: "2dd6116"
+last_updated: "2026-04-25T12:30:58"
+change_ref: "b378ef3"
 change_type: "session-60"
 status: "active"
 ---
@@ -15,9 +15,9 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1375 |
-| **Test files** | 147 |
-| **P0 critical-path tests** | 199 total tagged `@p0` (97 base + subscription/support/classifier/ActionNeeded carry-over + 23 new from edge-fn harness — Session 60 #371) |
+| **Total tests** | 1394 |
+| **Test files** | 149 |
+| **P0 critical-path tests** | 201 total tagged `@p0` (199 base + 2 new from #442 Stripe Connect tests) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
 | **CI run time** | <3 min |
@@ -53,7 +53,7 @@ npm run test:e2e:headed   # Playwright with browser visible
 | `src/hooks/*.test.ts` | ~38 | ~320 |
 | `src/components/**/*.test.tsx` | ~29 | ~165 |
 | `src/contexts/*.test.tsx` | ~4 | ~20 |
-| `supabase/functions/**/*.test.ts` | 10 | 124 (Phase 22 helpers + Session 60 #371 edge-fn harness) |
+| `supabase/functions/**/*.test.ts` | 12 | 143 (Phase 22 helpers + Session 60 #371 edge-fn harness + #442 Stripe Connect) |
 | `e2e/smoke/` | 2 | 3 |
 
 ## Stack
