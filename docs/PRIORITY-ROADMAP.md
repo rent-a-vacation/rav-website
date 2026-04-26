@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-25T06:41:23"
-change_ref: "2dd6116"
+last_updated: "2026-04-25T21:17:59"
+change_ref: "e1f3aea"
 change_type: "session-59"
 status: "active"
 ---
@@ -48,13 +48,13 @@ When `/sdlc pickup` runs next, the user has explicitly scoped the next session a
 
 **Also consider after those:** A controlled PROD deploy window for the accumulated Phase 22 + Session 59 changes (migrations 060–065, text-chat updates with support context + 5 tools + classifier, ingest-support-docs + cancel-listing edge fns, support_conversations + listing-proofs + dispute_source schemas). All currently sit on DEV per CLAUDE.md human-confirmation rule.
 
-## Current Priority Tiers (as of April 24, 2026 — Session 59)
+## Current Priority Tiers (as of April 25, 2026 — Session 60)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-_Empty after Session 60 — #371 shipped, see Revision History below._
+_Empty after Session 60. #371 + #442 + #445 all shipped (PRs #441, #446). All edge-fn harness work either complete or properly deferred (see Tier E for #443/#444)._
 
-> **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Session 59 cleared all remaining Tier A pre-launch marketplace items (#376 proof workflow, #378 Open-for-Offers, #381 Action Needed dashboards, #377 cancel-listing cascade, #393 PLATFORM-INVENTORY). Session 60 closed #371 (edge-fn test harness, DEC-037).
+> **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Session 59 cleared all remaining Tier A pre-launch marketplace items (#376 proof workflow, #378 Open-for-Offers, #381 Action Needed dashboards, #377 cancel-listing cascade, #393 PLATFORM-INVENTORY). Session 60 closed #371 (edge-fn test harness, DEC-037), #442 (Stripe Connect tests), #445 (vitest coverage extension).
 >
 > Next pickup is **#438 (incorporation docs starter kit)** — see Tier B.
 
@@ -67,8 +67,8 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #187 | Pre-launch manual verification | Needs systematic walkthrough. Partially done. |
 | #257 | Resort data compliance audit | Legal review of seed data sources. |
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
-| **#404** | Phase 22 B5: Legal-blocked public policy docs (privacy, booking-terms, payment-policy, trust-safety, insurance-liability, subscription-terms) | Blocked by #80 (legal consult — timeshare lawyer). 6 drafts production-ready, held with `status: 'draft'` pending lawyer sign-off. Not blocking launch of the support agent itself. |
-| **#438** | Incorporation documentation starter kit (operating agreement, formation checklist, IP assignment, state tax notes) | Pairs with #80 lawyer-review pass. Pre-incorporation research + drafting; enhances Stripe Atlas / LegalZoom templates so lawyer review is editing not authoring. Session 60 pickup. |
+| **#404** | Phase 22 B5: Legal-blocked public policy docs (privacy, booking-terms, payment-policy, trust-safety, insurance-liability, subscription-terms, refund, cancellation) | Blocked by #80 (legal consult — timeshare lawyer). 8 drafts production-ready in `docs/support/policies/`, held with `status: 'draft'` pending lawyer sign-off. Bundle into the same lawyer pass as #438. |
+| **#438** | Incorporation documentation starter kit (operating agreement, formation checklist, IP assignment, state tax notes, RAV-specific marketplace docs) | **NEXT PICKUP.** Confirmed Session 60: Delaware C-Corp via Stripe Atlas (vs Gust under boardroom review); 4 founders all Florida-based; foreign-entity registration in Florida; scope WIDE — full packet for #80 lawyer engagement. Goal: zero owners onboard before lawyer signs off. |
 
 ### Tier C: Tier Feature Differentiation — ✅ COMPLETED IN SESSION 53 (PR #367)
 
@@ -86,16 +86,17 @@ All 5 items shipped. Migration 057. Shared `tierGating.ts` utility with 26 tests
 
 These are marketing setup tasks. Can be done in parallel with code work.
 
-| Issue | Title |
-|-------|-------|
-| #230 | Facebook Business Page |
-| #231 | Instagram Business Account |
-| #232 | LinkedIn Company Page |
-| #234 | Google Business Profile |
-| #213 | Social media presence setup (umbrella) |
-| #214 | Content strategy & campaign planning |
-| #256 | Pitch deck & investor materials |
-| #250-255 | Market Research epic (6 issues) |
+| Issue | Title | Notes |
+|-------|-------|-------|
+| #230 | Facebook Business Page | pre-launch |
+| #231 | Instagram Business Account | pre-launch |
+| #232 | LinkedIn Company Page | pre-launch |
+| #234 | Google Business Profile | pre-launch |
+| #213 | Social media presence setup (umbrella) | covers #230-#234 + #233 |
+| #214 | Content strategy & campaign planning | post-launch (label) but feeds into pre-launch positioning |
+| #256 | Pitch deck & investor materials | pre-launch — pickup #4 from Session 59 plan; uses PLATFORM-INVENTORY.md as source-of-truth |
+| #233 | X (Twitter) profile setup | labeled `post-launch` — moved out of pre-launch group; surfaces here for tracking |
+| #250-255 | Market Research epic (6 issues) | pre-launch — feature comparison, mystery shopping, review mining, keyword research, ARDA reports |
 
 ### Tier E: Post-Launch / Deferred
 
@@ -114,8 +115,11 @@ Park these until after launch or until specific triggers.
 | #224 | One-Time Events support | Future — after event search ships |
 | #165 | Owner Volume Discount | Needs decision — post-launch |
 | #166 | Membership tier value prop | Needs decision — post-launch |
+| **#368** | Tier value enhancements (faster payouts, cancellation upgrades, seasonal pricing) | post-launch — needs scoping decision; was previously unmapped to any tier |
 | #71 | Percy GitHub integration | Low priority — private repo limitation |
 | #440 | Archive PROJECT-HUB session handoffs 25-54 to COMPLETED-PHASES | Mechanical doc migration. Pure reorganization — defer until a docs-focused session. |
+| **#443** | Edge-fn test for ingest-support-docs (admin ETL) | Low-risk admin ETL. Implementation guide posted as comment on issue (Session 60). Can be picked up anytime — ~2-3h work. |
+| **#444** | Edge-fn tests for notification stack (notification-dispatcher, sms-scheduler, twilio-webhook) | Blocked on A2P 10DLC anyway (#127 chain). Wait until SMS handles production traffic before adding tests. |
 
 ---
 
@@ -137,6 +141,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 25, 2026 | 60 | **#442 + #445 SHIPPED (PR #446).** Stripe Connect tests + vitest coverage extension to `supabase/functions/**`. 19 new tests (1375 → 1394). Coverage now measures handler.ts files; thresholds unchanged at 25/25/30/25 — all pass with 75/78/84/75 actuals. Tier A confirmed empty. Tier audit: added #368 + #443 + #444 to Tier E with explicit triggers; clarified #233 (X/Twitter) as post-launch; expanded #404 row to mention all 8 policy drafts (was 6); reframed #438 with confirmed Atlas + 4-founder + Florida foreign-entity scope. |
 | Apr 25, 2026 | 60 | **#371 SHIPPED — edge function test harness.** DEC-037 logged: Vitest, not Deno-native. Pattern: each Stripe-touching + cancel-listing edge fn split into `handler.ts` (testable) + `index.ts` (5-line `Deno.serve` wrapper). 64 new tests across 6 files (1311 → 1375); 23 new `@p0` tags (176 → 199). Refactored: create-booking-checkout, verify-booking-payment, stripe-webhook, process-cancellation, cancel-listing. Plus extracted `text-chat/context-resolver.ts` for the pure intent-classification routing logic. New shared infra: `_shared/__tests__/{stripe-mock, edge-fn-fixtures, stripe-events}.ts`. Tier A now empty; next pickup **#438**. |
 | Apr 25, 2026 | 60 | **Session 60 pickup + doc audit.** All 4 bootstrap docs brought current: LAUNCH-READINESS rebuilt with Sessions 53-59 platform-completeness rows + updated By-the-Numbers (1311 tests / 141 files / 065 migrations / 36 edge fns); PROJECT-HUB body 'Last Updated' bumped to Session 59; PRIORITY-ROADMAP + COMPLETED-PHASES frontmatter stamped to session-59. New issue **#440** opened for the larger archival task (move PROJECT-HUB Session 25-54 handoff entries into COMPLETED-PHASES). Tier E. Doc audit cleared before pivoting to #371. |
 | Apr 24, 2026 | 59 | **Session close handoff.** All 5 Session-59 PRs merged (#434–#437). New issue **#438** opened for Session-60 incorporation-docs research. Priority queue explicitly set for next `/sdlc pickup`: #371 → #438 → #230-234 → #256. PROD deploy window for accumulated DEV migrations 060–065 + edge fns (`ingest-support-docs`, `cancel-listing`, `text-chat` with support branch) recommended before or alongside #371. |
