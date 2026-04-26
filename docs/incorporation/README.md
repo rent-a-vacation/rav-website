@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:43:16"
-change_ref: "cb46aaa"
+last_updated: "2026-04-26T00:59:55"
+change_ref: "c7e181b"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -17,15 +17,22 @@ status: "active"
 
 ```
 docs/incorporation/
-├── README.md                           # this file — index + status
-├── templates/                          # reusable templates (more added over time)
+├── README.md                              # this file — index + status
+├── templates/                             # reusable templates
 │   ├── README.md
-│   └── founder-term-sheet.md           # 4-way equity split agreement
-├── lawyer-outreach/                    # Florida marketplace lawyer engagement
-│   ├── intro-email.md                  # short intro to Greenberg Traurig / Holland & Knight
-│   └── rfp.md                          # full scope of work for the engagement
-└── personal-outreach/                  # personal-network referral requests
-    └── attorney-referral-letter.md     # reusable template for friends/contacts
+│   ├── founder-term-sheet.md              # 4-way equity split agreement
+│   ├── term-sheet-explainer-one-pager.md  # "why we need this even without VC"
+│   ├── equity-split-worksheet.md          # 7-factor structured scoring tool
+│   └── signing-logistics-guide.md         # .md → signed PDF; Drive structure
+├── lawyer-outreach/                       # Florida marketplace lawyer engagement
+│   ├── intro-email.md                     # short intro to Greenberg Traurig / Holland & Knight
+│   └── rfp.md                             # full scope of work for the engagement
+├── personal-outreach/                     # personal-network referral requests
+│   └── attorney-referral-letter.md        # reusable template for friends/contacts
+├── founder-meetings/                      # meeting prep + agendas + notes
+│   └── 2026-04-26-term-sheet-and-equity/
+│       └── agenda.md
+└── signed/                                # PDF copies of signed documents (created at signing time)
 ```
 
 Future additions (per #438 scope WIDE — see PRIORITY-ROADMAP.md):
