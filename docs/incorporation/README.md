@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:34:48"
-change_ref: "05da176"
+last_updated: "2026-04-26T00:43:16"
+change_ref: "cb46aaa"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -57,7 +57,7 @@ All five start the same week — incorporation is the gating dependency for noth
 - **Decision:** Stripe Atlas (UNANIMOUS boardroom verdict, 5-0 — see `docs/boardroom/sessions/2026-04-25-incorporation-service-choice/`)
 - **Vehicle:** Delaware C-Corp
 - **Operating state:** Florida (foreign-entity registration required)
-- **Founders:** 4 confirmed (Sujit, Ajumon, Sandhya, Celin) all Florida-based; potential 5th joining within ~6 months
+- **Founders:** 4 confirmed (Sujit, Ajumon, Sandhya, Celin) — all Florida-based. No additional founders planned.
 - **Critical blocker for 2 founders:** Ajumon and Celin's Outside Business Activity (OBA) disclosures are pending with their employers (regulated financial institutions). Their **founder stock issuance is blocked until OBAs clear**, but **incorporation itself is NOT blocked** — Sujit and Sandhya can incorporate today, and Ajumon and Celin's allocations stay reserved
 - **Goal:** Zero owners onboard the platform until a Florida timeshare attorney has signed off on the full packet (incorporation + 8 policy drafts + RAV-specific marketplace docs)
 - **Budget posture:** Bootstrapped. Won't cut corners on legal foundation but expect to compress lawyer hours through preparation

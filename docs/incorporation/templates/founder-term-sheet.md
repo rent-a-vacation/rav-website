@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:34:48"
-change_ref: "05da176"
+last_updated: "2026-04-26T00:43:16"
+change_ref: "cb46aaa"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -47,8 +47,6 @@ The Founders agree to the following allocation of founder Common Stock at incorp
 **Founder allocation:** [70-80%] of authorized shares to be issued as founder Common Stock. <!-- TODO: pick exact founder allocation. 70-80% is the typical range; the rest stays unissued for the option pool + future fundraising dilution. -->
 
 **Option pool reserve:** [10-15%] of authorized shares reserved for future employee + advisor option grants. <!-- TODO: pick exact option pool. 10% is conservative, 15% is standard for VC-track companies. Yokum recommended 10-15%; pick based on hiring plans. --> Per Yokum: "If you don't reserve before outside investment, the investor will require you to create the pool at investment time, which dilutes the founders, not the investor."
-
-**Future 5th founder reserve:** Approximately [X%] of authorized shares set aside for the potential 5th founder if they join within 6 months. <!-- TODO: see Section 6 — decide whether to reserve specifically or roll into the option pool. -->
 
 ---
 
@@ -99,30 +97,7 @@ Ajumon and Celin are currently employed by regulated financial institutions whos
 
 ---
 
-## 6. Future 5th Founder
-
-A fifth founder may join the Company within approximately 6 months of incorporation. The Founders agree the following framework applies:
-
-**If the 5th founder joins within 90 days of incorporation:**
-- Treated as a true co-founder
-- Receives founder Common Stock from the [reserved 5th founder allocation] in Section 2
-- 4-year vesting / 1-year cliff with vesting commencement on their start date
-- 83(b) election within 30 days of stock issuance
-
-**If the 5th founder joins between 90 days and 6 months after incorporation:**
-- Treated as Employee #1 with an option grant from the option pool
-- Per Yokum: "Once value has been created — and your platform has substantial value already — issuing additional 'founder' stock to a new joiner creates real tax problems for them (they have to value the stock at fair market value and pay tax on the spread)."
-- 4-year vesting / 1-year cliff
-- Standard option-grant terms; no special founder treatment
-
-**If the 5th founder does not join within 6 months:**
-- The reserved 5th founder allocation rolls back into the option pool
-
-<!-- TODO: confirm 90-day vs 6-month vs other thresholds with all four founders. The 90-day threshold is a common rule-of-thumb but is not legally required. -->
-
----
-
-## 7. IP Assignment
+## 6. IP Assignment
 
 Each Founder agrees to execute the Company's standard Confidential Information and Invention Assignment Agreement (CIIAA / PIIA) at incorporation. The CIIAA assigns all relevant intellectual property (code, designs, business plans, copyrights, trademarks, patents, trade secrets) to the Company.
 
@@ -135,7 +110,7 @@ Each Founder agrees to execute the Company's standard Confidential Information a
 
 ---
 
-## 8. Board of Directors
+## 7. Board of Directors
 
 At incorporation, the Board of Directors will consist of:
 
@@ -149,25 +124,25 @@ The Board may be expanded by board action (or written consent) at any time after
 
 ---
 
-## 9. Indemnification
+## 8. Indemnification
 
 The Company will execute its standard Indemnification Agreement with each Founder upon their formal taking of office (which is at incorporation for Sujit and Sandhya; deferred to OBA clearance for Ajumon and Celin). Atlas's standard Indemnification Agreement is incorporated by reference.
 
 ---
 
-## 10. Confidentiality
+## 9. Confidentiality
 
 This term sheet, all financial information about the Company, all customer data, and all unannounced product plans are confidential and may not be disclosed to any third party without the written consent of all four Founders, except as required by law.
 
 ---
 
-## 11. Choice of Law and Forum
+## 10. Choice of Law and Forum
 
 This term sheet is governed by the laws of the State of Delaware. Any dispute arising under this term sheet will be resolved in state or federal court in Delaware.
 
 ---
 
-## 12. Governing Document Hierarchy
+## 11. Governing Document Hierarchy
 
 In the event of conflict between this term sheet and any document later executed by the Company (the Certificate of Incorporation, Bylaws, Stock Purchase Agreements, Indemnification Agreements, etc.), the later-executed Company documents control. This term sheet is a pre-incorporation memorandum of intent.
 
