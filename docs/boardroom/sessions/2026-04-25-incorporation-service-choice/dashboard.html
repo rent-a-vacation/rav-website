@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RAV Boardroom — Incorporation Service Choice</title>
+<style>
+  :root {
+    --primary: #1C7268;
+    --accent: #E8703A;
+    --bg: #F8F6F3;
+    --text: #1D2E38;
+    --muted: #5d6b75;
+    --card-bg: #fff;
+    --border: #d8d0c4;
+    --vote-yes: #2e7d32;
+    --vote-no: #c62828;
+    --vote-cond: #d4a017;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.55;
+  }
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 28px 32px;
+  }
+  header h1 { margin: 0 0 8px 0; font-size: 24px; letter-spacing: -0.01em; }
+  header .question { font-size: 15px; opacity: 0.92; }
+  .verdict-banner {
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 32px;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 24px;
+  }
+  h2 {
+    color: var(--primary);
+    font-size: 19px;
+    margin: 32px 0 14px 0;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .advisor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .advisor-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .advisor-card h3 { margin: 0 0 4px 0; color: var(--primary); font-size: 16px; }
+  .advisor-card .domain { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+  .vote-row { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .vote-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .vote-pill {
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .vote-yes { background: #e8f5e9; color: var(--vote-yes); }
+  .vote-no { background: #ffebee; color: var(--vote-no); }
+  .vote-conditional { background: #fff8e1; color: var(--vote-cond); }
+  .changed-badge {
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .quote {
+    font-style: italic;
+    color: var(--text);
+    border-left: 3px solid var(--accent);
+    padding-left: 12px;
+    margin: 10px 0 0 0;
+    font-size: 13px;
+  }
+  .tensions {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 16px 0;
+  }
+  .tension-row {
+    padding: 10px 0;
+    border-bottom: 1px solid #ece6d8;
+  }
+  .tension-row:last-child { border-bottom: 0; }
+  .tension-title { font-weight: 600; color: var(--primary); font-size: 14px; margin-bottom: 4px; }
+  .tension-detail { color: var(--text); font-size: 13px; }
+  .sliders {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+  }
+  .slider-row { margin-bottom: 22px; }
+  .slider-row label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; color: var(--primary); }
+  .slider-row .help { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .slider-row input[type="range"] { width: 100%; }
+  .slider-row .val { font-weight: 600; color: var(--accent); }
+  #impact {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: #f0ede5;
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .briefing {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-top: 16px;
+  }
+  .briefing h3 { color: var(--primary); margin-top: 0; font-size: 15px; }
+  .briefing ol { padding-left: 22px; }
+  .briefing li { margin-bottom: 6px; }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 24px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RAV Boardroom — Incorporation Service Choice</h1>
+  <div class="question">Stripe Atlas vs Gust vs Clerky — which incorporation service for a Delaware C-Corp, 4 founders all in Florida, marketplace for timeshare rentals?</div>
+</header>
+
+<div class="verdict-banner">
+  Final Verdict: UNANIMOUS YES — Stripe Atlas (5-0) · 1 advisor changed (Brian: CONDITIONAL → YES)
+</div>
+
+<div class="container">
+
+<h2>Advisor Verdicts</h2>
+<div class="advisor-grid">
+
+  <div class="advisor-card">
+    <h3>Yokum Taku</h3>
+    <div class="domain">Startup formation / Delaware C-Corp / Cap table</div>
+    <div class="vote-row">
+      <span class="vote-label">R1</span><span class="vote-pill vote-yes">YES</span>
+      <span class="vote-label">Final</span><span class="vote-pill vote-yes">YES</span>
+    </div>
+    <p class="quote">"Atlas is week 1 because nothing else can be week 1. Lock the equity split this week."</p>
+  </div>
+
+  <div class="advisor-card">
+    <h3>Brian T. Lower</h3>
+    <div class="domain">Timeshare law / Florida regulatory</div>
+    <div class="vote-row">
+      <span class="vote-label">R1</span><span class="vote-pill vote-conditional">CONDITIONAL</span>
+      <span class="vote-label">Final</span><span class="vote-pill vote-yes">YES</span>
+      <span class="changed-badge">Changed</span>
+    </div>
+    <p class="quote">"Atlas is necessary, not sufficient. Don't let 'incorporation done' feel like 'legally cleared to onboard owners.'"</p>
+  </div>
+
+  <div class="advisor-card">
+    <h3>Tonia Klausner</h3>
+    <div class="domain">Platform compliance / Class action defense / TCPA</div>
+    <div class="vote-row">
+      <span class="vote-label">R1</span><span class="vote-pill vote-yes">YES</span>
+      <span class="vote-label">Final</span><span class="vote-pill vote-yes">YES</span>
+    </div>
+    <p class="quote">"60-70% of RAV's pre-launch legal exposure is in the platform-document layer, not the formation layer."</p>
+  </div>
+
+  <div class="advisor-card">
+    <h3>Jason Gamel</h3>
+    <div class="domain">Timeshare regulation / ARDA / Industry credibility</div>
+    <div class="vote-row">
+      <span class="vote-label">R1</span><span class="vote-pill vote-yes">YES</span>
+      <span class="vote-label">Final</span><span class="vote-pill vote-yes">YES</span>
+    </div>
+    <p class="quote">"Atlas vs Gust is industry-invisible. The energy belongs on building ARDA-recognized standing and resort-brand outreach."</p>
+  </div>
+
+  <div class="advisor-card">
+    <h3>Patrick McKenzie</h3>
+    <div class="domain">Payments / Stripe / Marketplace risk</div>
+    <div class="vote-row">
+      <span class="vote-label">R1</span><span class="vote-pill vote-yes">YES</span>
+      <span class="vote-label">Final</span><span class="vote-pill vote-yes">YES</span>
+    </div>
+    <p class="quote">"Atlas is a payments-infrastructure decision wearing a corporate-formation costume."</p>
+  </div>
+
+</div>
+
+<h2>Key Tensions</h2>
+<div class="tensions">
+  <div class="tension-row">
+    <div class="tension-title">1. How much mental energy does this decision deserve?</div>
+    <div class="tension-detail">Yokum/Patrick/Tonia — Atlas has specific advantages (cap table cleanliness, Stripe activation, bench effect). Brian/Jason — the Atlas-vs-Gust choice is largely industry-invisible; the founder is over-weighting it because it has a clean forking decision and a price tag.</div>
+  </div>
+  <div class="tension-row">
+    <div class="tension-title">2. Sequential vs parallel workstreams</div>
+    <div class="tension-detail">Brian's Round 1 implied incorporation could be Step 1 of "about Step 12." Yokum's Round 2 sharply rebutted: incorporation is the gating dependency for nothing except itself, and 5 workstreams should run in parallel from week 1 (Atlas + Florida timeshare lawyer + marketplace policy lawyer + brand-protection outreach + ARDA membership).</div>
+  </div>
+  <div class="tension-row">
+    <div class="tension-title">3. PaySafe escrow — money transmission risk</div>
+    <div class="tension-detail">Patrick raised then understated; Tonia sharpened. The marketplace lawyer engagement specifically needs to opine on whether PaySafe is licensed as a money services business in every state RAV operates. Stripe Connect-native escrow is the alternative if PaySafe doesn't survive the opinion.</div>
+  </div>
+  <div class="tension-row">
+    <div class="tension-title">4. ARDA membership timing</div>
+    <div class="tension-detail">Jason wants membership at incorporation. Brian wants to defer until 1,000+ transactions exist to point to. Compromise reached: defer to month 6.</div>
+  </div>
+</div>
+
+<h2>What-If Sliders</h2>
+<div class="sliders">
+  <div class="slider-row">
+    <label>Weeks to engage Florida marketplace lawyer (after incorporation): <span class="val" id="lawyerWeeksVal">1</span></label>
+    <div class="help">Earlier = parallel workstreams; longer = sequential delay before launch.</div>
+    <input type="range" id="lawyerWeeks" min="1" max="12" value="1" oninput="recalculate()">
+  </div>
+  <div class="slider-row">
+    <label>Weeks until first owner onboarded: <span class="val" id="launchWeeksVal">8</span></label>
+    <div class="help">Realistic minimum is ~6 weeks (2 Atlas + 4 lawyer review). Earlier risks unfinished policy review.</div>
+    <input type="range" id="launchWeeks" min="2" max="20" value="8" oninput="recalculate()">
+  </div>
+  <div class="slider-row">
+    <label>Estimated lawyer engagement budget: $<span class="val" id="lawyerBudgetVal">12,000</span></label>
+    <div class="help">$5K-$25K range. Lower = limited review scope; higher = full packet review including timeshare opinion.</div>
+    <input type="range" id="lawyerBudget" min="5000" max="30000" step="1000" value="12000" oninput="recalculate()">
+  </div>
+
+  <div id="impact"></div>
+</div>
+
+<h2>Founder Briefing</h2>
+<div class="briefing">
+  <h3>The Decision</h3>
+  <p>Use Stripe Atlas to incorporate RAV as a Delaware C-Corp.</p>
+
+  <h3>The Verdict</h3>
+  <p>Unanimous YES (5-0). Brian was the only conditional vote in Round 1 and upgraded to YES in Round 2 after the parallel-workstreams framing was clarified.</p>
+
+  <h3>The Sharpest Insight</h3>
+  <p><em>"Atlas is a payments-infrastructure decision wearing a corporate-formation costume."</em> — Patrick McKenzie. Pre-cleared Stripe live activation through Atlas eliminates 2-10 days of manual underwriting friction that an independently-applied Stripe account for a brand-new timeshare-rental marketplace entity will face. That alone is worth the entire $500 fee.</p>
+
+  <h3>Recommended Actions This Week (5 parallel workstreams)</h3>
+  <ol>
+    <li>Sign a one-page founder term sheet documenting the 4-way equity split (Sujit, Ajumon, Sandhya, Celin) + planned 5th founder reserve. All four signatures.</li>
+    <li>Start Atlas filing — Sujit and Sandhya issue founder shares immediately; Ajumon and Celin's allocations reserved until OBA disclosures clear.</li>
+    <li>Engage a Florida marketplace lawyer (Greenberg Traurig Orlando hospitality or Holland & Knight vacation ownership group). Hand them the 8 policy drafts AND ask for opinions on PaySafe licensing AND Florida Vacation Plan / Timesharing Act regulatory opinion.</li>
+    <li>Begin proactive brand-protection outreach to Hilton Grand Vacations, Marriott Vacations Worldwide, Disney Vacation Club within 30 days of incorporation.</li>
+    <li>File Florida foreign-entity registration (form CR2E047, ~$200) within 30 days of receiving the Delaware Cert.</li>
+  </ol>
+
+  <h3>The Dissent Worth Heeding</h3>
+  <p>Brian's Round 1 concern (which he upgraded out of in Round 2 but still matters): do not let "Atlas filing complete" become equivalent to "platform is launch-ready." The corporate shell is necessary, not sufficient. Zero owners onboard until both the timeshare regulatory opinion AND the platform-policy lawyer review are complete.</p>
+</div>
+
+</div>
+
+<footer>
+  Generated by /boardroom on 2026-04-25 · Board: LEGAL-ADVISORY · 5 advisors, 2 rounds
+</footer>
+
+<script>
+function recalculate() {
+  const lw = parseInt(document.getElementById('lawyerWeeks').value);
+  const launch = parseInt(document.getElementById('launchWeeks').value);
+  const budget = parseInt(document.getElementById('lawyerBudget').value);
+
+  document.getElementById('lawyerWeeksVal').textContent = lw;
+  document.getElementById('launchWeeksVal').textContent = launch;
+  document.getElementById('lawyerBudgetVal').textContent = budget.toLocaleString();
+
+  let messages = [];
+
+  // Lawyer-weeks logic
+  if (lw <= 2) {
+    messages.push("✓ Engaging the lawyer in week 1-2 keeps both workstreams parallel. By the time Atlas filing finishes (~2 weeks), the lawyer review is partially complete.");
+  } else if (lw <= 6) {
+    messages.push("⚠ Lawyer engagement starting in week " + lw + " stretches the timeline. Atlas will be done in week 2; you'll be sitting on a formed entity with no lawyer-blessed policy framework for " + (lw - 2) + " weeks.");
+  } else {
+    messages.push("✗ Engaging the lawyer in week " + lw + " is the failure mode Brian and Tonia both flagged. The platform shell exists but you cannot legally onboard owners. Your launch is gated by this delay.");
+  }
+
+  // Launch-weeks logic
+  const minSafeLaunch = Math.max(6, lw + 4);
+  if (launch < minSafeLaunch) {
+    messages.push("⚠ Launching in week " + launch + " is " + (minSafeLaunch - launch) + " week(s) earlier than safe given lawyer engagement starts in week " + lw + ". Realistic minimum is week " + minSafeLaunch + " (2-week Atlas + 4-week lawyer review).");
+  } else if (launch <= 10) {
+    messages.push("✓ Launch at week " + launch + " gives the lawyer review adequate time. Owners onboarded under enforceable terms.");
+  } else {
+    messages.push("ℹ Launch at week " + launch + " is conservative — gives 4+ weeks of slack on policy review. Defensible if you want maximum legal certainty before first owner onboards.");
+  }
+
+  // Budget logic
+  if (budget < 8000) {
+    messages.push("⚠ Budget of $" + budget.toLocaleString() + " is likely insufficient for the full packet (8 policy drafts + PaySafe opinion + Florida Vacation Plan opinion + RAV-specific marketplace docs). Expect scope cuts.");
+  } else if (budget <= 18000) {
+    messages.push("✓ Budget of $" + budget.toLocaleString() + " covers the policy review + 1-2 specialty opinions. Realistic for a marketplace-startup engagement.");
+  } else {
+    messages.push("ℹ Budget of $" + budget.toLocaleString() + " supports a full engagement including all opinion letters and RAV-specific document drafting (owner agreement, AUP, marketplace operator agreement).");
+  }
+
+  document.getElementById('impact').innerHTML = messages.map(m => '<div style="margin: 6px 0;">' + m + '</div>').join('');
+}
+recalculate();
+</script>
+
+</body>
+</html>
