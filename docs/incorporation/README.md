@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:59:55"
-change_ref: "c7e181b"
+last_updated: "2026-04-27T12:44:05"
+change_ref: "d1dd28e"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -22,7 +22,9 @@ docs/incorporation/
 │   ├── README.md
 │   ├── founder-term-sheet.md              # 4-way equity split agreement
 │   ├── term-sheet-explainer-one-pager.md  # "why we need this even without VC"
-│   ├── equity-split-worksheet.md          # 7-factor structured scoring tool
+│   ├── equity-split-briefing.md           # reading-half: 3 pre-built split options + guiding questions
+│   ├── equity-split-worksheet-form.md     # fill-in-half: 1-page form, printed 4x at meeting
+│   ├── role-selection-form.md             # fill-in form: each founder claims their own title
 │   └── signing-logistics-guide.md         # .md → signed PDF; Drive structure
 ├── lawyer-outreach/                       # Florida marketplace lawyer engagement
 │   ├── intro-email.md                     # short intro to Greenberg Traurig / Holland & Knight
@@ -54,7 +56,7 @@ All five start the same week — incorporation is the gating dependency for noth
 | 1 | **Founder term sheet** — 4-way equity split signed before clicking Atlas | Sujit + 3 co-founders | ⏸ Pending signatures | `templates/founder-term-sheet.md` |
 | 2 | **Atlas filing** — Delaware C-Corp + EIN + Stripe live + Mercury bank | Sujit | ⏸ Pending term sheet | (Atlas-generated docs land here once filed) |
 | 3 | **Florida marketplace lawyer** — engage Greenberg Traurig Orlando hospitality OR Holland & Knight vacation ownership group | Sujit | ⏸ Outreach pending | `lawyer-outreach/intro-email.md`, `lawyer-outreach/rfp.md` |
-| 4 | **Brand-protection outreach** — Hilton Grand Vacations, Marriott Vacations Worldwide, Disney Vacation Club | Sujit + Sandhya (the OBA-cleared founders) | ⏸ Pending Atlas Cert (need entity name) | (separate folder TBD) |
+| 4 | **Brand-protection outreach** — Hilton Grand Vacations, Marriott Vacations Worldwide, Disney Vacation Club | OBA-cleared Founders (assigned at the term-sheet meeting) | ⏸ Pending Atlas Cert (need entity name) | (separate folder TBD) |
 | 5 | **Florida foreign-entity registration** — form CR2E047, ~$200 | Sujit | ⏸ Pending Atlas Cert | (filing receipts land here) |
 
 ---
@@ -65,7 +67,7 @@ All five start the same week — incorporation is the gating dependency for noth
 - **Vehicle:** Delaware C-Corp
 - **Operating state:** Florida (foreign-entity registration required)
 - **Founders:** 4 confirmed (Sujit, Ajumon, Sandhya, Celin) — all Florida-based. No additional founders planned.
-- **Critical blocker for 2 founders:** Ajumon and Celin's Outside Business Activity (OBA) disclosures are pending with their employers (regulated financial institutions). Their **founder stock issuance is blocked until OBAs clear**, but **incorporation itself is NOT blocked** — Sujit and Sandhya can incorporate today, and Ajumon and Celin's allocations stay reserved
+- **OBA disclosure dependency:** Some Founders may be employed by regulated financial institutions or other employers whose Outside Business Activity (OBA) policies require disclosure and approval before they can hold equity in or take an officer role at an outside company. Each Founder's status is confirmed at the term-sheet meeting. **Founder stock issuance is blocked for any Founder whose OBA is still pending**, but **incorporation itself is NOT blocked** — OBA-cleared Founders can incorporate immediately, and OBA-pending Founders' allocations stay reserved at the percentages locked in the term sheet until clearance
 - **Goal:** Zero owners onboard the platform until a Florida timeshare attorney has signed off on the full packet (incorporation + 8 policy drafts + RAV-specific marketplace docs)
 - **Budget posture:** Bootstrapped. Won't cut corners on legal foundation but expect to compress lawyer hours through preparation
 

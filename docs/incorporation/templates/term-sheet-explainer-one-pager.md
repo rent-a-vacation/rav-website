@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:59:55"
-change_ref: "c7e181b"
+last_updated: "2026-04-27T12:44:05"
+change_ref: "d1dd28e"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -52,7 +52,7 @@ When we click "Incorporate" on Stripe Atlas, the wizard generates:
 
 These are **legally binding documents**. The day we sign them, our equity, vesting, and roles are locked in.
 
-**The term sheet is what we agree to BEFORE Atlas drafts those docs.** Without it, the four of us would be negotiating equity percentages while one of us is paying the $500 Atlas fee in real-time, in front of a wizard that demands a number. That's a bad way to make a $X-million decision.
+**The term sheet is what we agree to BEFORE Atlas drafts those docs.** Without it, the four of us would be negotiating equity percentages while one of us is filling out the Atlas form on the website in real time, in front of a wizard that demands a number. That's a bad way to make a $X-million decision.
 
 ### 2. It surfaces the hard conversations now, when stakes are zero
 
@@ -85,7 +85,7 @@ Without a term sheet, the answer is: "we discussed it verbally and then Atlas's 
 
 This term sheet costs us nothing. It takes ~30-60 minutes to discuss and sign. It doesn't require lawyers (we'll engage lawyers for the platform documents — see the lawyer outreach files). It doesn't lock us in to anything that Atlas isn't already going to lock us in to anyway. And it gives us all five of the benefits above.
 
-The only "cost" is the awkwardness of having the equity conversation in advance. Which we have to have anyway. Doing it now via a structured document is easier than doing it later in a Slack thread.
+The only "cost" is the awkwardness of having the equity conversation in advance. Which we have to have anyway. Doing it now via a structured document is easier than doing it later in a Whatsapp thread.
 
 ---
 
@@ -111,16 +111,32 @@ To be clear, the term sheet **does not**:
 
 What it **does** do is document our agreement on:
 
-- Who the four founders are
-- What roles we each take (CEO/CTO, COO, CPO, CFO)
-- What percentage of founder Common Stock each of us gets
+- Who the four founders are (full legal names)
+- What role each of us takes (titles selected at the meeting via the role reference at the end of this doc)
+- What percentage of founder Common Stock each of us is allocated
 - That we agree to 4-year vesting with a 1-year cliff (Atlas standard)
-- That we agree to file our 83(b) elections within 30 days (IRS hard deadline)
-- That Ajumon's and Celin's stock issuance is reserved until their OBA disclosures clear
+- That we agree to file our 83(b) elections within 30 days of receiving stock (hard IRS deadline)
+- That stock issuance for any founder whose Outside Business Activity (OBA) disclosure is still pending is held in reserve until clearance — the percentage is locked now, only the timing of issuance defers
 - That all four of us assign our pre-incorporation IP contributions to RAV
-- That Sujit will be the initial sole director on the board (at incorporation)
+- The initial board composition (decided at the meeting — see Decisions section below)
 
 That's it. It's a 4-page document that captures the agreement we'd be making informally anyway, and writes it down so it can't be misremembered.
+
+---
+
+## What we'll decide together at the meeting
+
+Several pieces of the term sheet are filled in live at the meeting. Read these before you arrive so the conversation in the room is the actual decision, not a download of context. The five things we'll lock together:
+
+| # | Decision | What gets recorded |
+|---|---|---|
+| 1 | **Equity split** | The four percentages summing to 100% of the founder allocation. The central decision. We'll use the equity-split worksheet to land on this. |
+| 2 | **OBA clearance status per founder** | Each founder confirms current status: cleared (with date + employer) / pending (with date filed + expected resolution) / not yet filed. This determines whose stock issues at filing and whose is held in reserve. |
+| 3 | **Initial board composition** | Sole CEO director vs two co-directors. **Constraint:** a founder with a pending OBA disclosure should NOT take a director seat — director status is more legally exposed than future-officer status and more likely to trigger an OBA conflict at the founder's day-job employer. |
+| 4 | **Founder allocation vs option pool** | Two percentages of authorized shares. The founder allocation (typically 70-80%) is what the four of us split among ourselves; the option pool (typically 10-15%) is reserved for future hires/advisors; the remainder stays unissued as buffer. |
+| 5 | **Reservation timeline for OBA-pending founders** | How long reserved-but-unissued shares stay reserved before reverting to the option pool — typically 6, 12, or 18 months. |
+
+**Roles are handled separately at the meeting via a one-page selection form.** Each founder fills in the title they want — see the role reference at the end of this doc to know what's on the menu. **Self-nomination only — no founder picks anyone else's title.** Reveal simultaneously, discuss any collisions. Takes about 5-7 minutes.
 
 ---
 
@@ -128,9 +144,9 @@ That's it. It's a 4-page document that captures the agreement we'd be making inf
 
 1. **Sujit** starts the Stripe Atlas filing process the same week (no later than 7 days after term-sheet signing)
 2. **Atlas** generates the formal Stock Purchase Agreements within 7-10 business days
-3. **Sujit and Sandhya** sign their formal SPAs and receive their founder stock immediately
-4. **Sujit and Sandhya** mail their 83(b) elections within 30 days (HARD IRS DEADLINE — not negotiable)
-5. **Ajumon and Celin** wait for OBA disclosures to clear, then sign SPAs and file their own 83(b) elections within 30 days of that signing
+3. **OBA-cleared founders** sign their formal SPAs and receive their founder stock immediately
+4. **OBA-cleared founders** mail their 83(b) elections within 30 days (HARD IRS DEADLINE — not negotiable)
+5. **OBA-pending founders** wait for their disclosures to clear, then sign SPAs and file 83(b) elections within 30 days of that signing — their percentage is already locked in the term sheet; only the timing defers
 6. **All four** sign IP assignment agreements at incorporation (regardless of stock-issuance timing)
 
 The term sheet is step 0 of all of this. Everything else flows from it.
@@ -144,3 +160,28 @@ The term sheet is step 0 of all of this. Everything else flows from it.
 - It costs nothing, takes an hour, and protects all four of us if anything ever goes sideways.
 - It does NOT replace legal review of platform documents (that's a separate engagement we're scoping with a Florida marketplace lawyer).
 - Sign the term sheet → start Atlas filing the same week.
+
+---
+
+## Appendix: Role / Title Reference
+
+Each founder picks the title that best matches what they want to do in the company. Pick from the menu below or propose a non-listed title. **Self-nomination only — no one picks anyone else's title.**
+
+| Title | What this person owns | Day-to-day work |
+|---|---|---|
+| **CEO** (Chief Executive Officer) | Overall company direction, fundraising, board relationship, ultimate accountability for outcomes. | Sets strategy, hires/fires, talks to investors and acquirers, signs major contracts, public face of the company. |
+| **President** | Often paired with CEO (CEO > President in seniority) or used as deputy-leader role. Sometimes overlaps with COO. | Cross-functional leadership; the "second-in-command" running execution while CEO runs strategy. |
+| **CTO** (Chief Technology Officer) | Technical strategy, architecture, engineering, technical roadmap. Owns "how it's built." | Codebase ownership, technical hires, infrastructure decisions, security posture, AI/integration partnerships. |
+| **COO** (Chief Operating Officer) | Day-to-day operations, internal process, scaling the business, vendor/partner management. Owns "how the company runs." | Support operations, supplier relationships, hiring process, contracts, vendor selection (Atlas, Stripe, accounting), running the internal team. |
+| **CPO** (Chief Product Officer) | Product strategy, roadmap, user experience, what gets built next. Owns "what the user sees." | Feature prioritization, user research, design direction, conversion funnel, product analytics, A/B testing. |
+| **CMO** (Chief Marketing Officer) | Go-to-market, brand positioning, growth, customer acquisition. Owns "how customers hear about us." | Content strategy, paid acquisition, social media, brand voice, PR, partnerships with travel publications, SEO/SEM. |
+| **CFO** (Chief Financial Officer) | Financial planning, accounting, fundraising operations, modeling. Owns "the numbers." | Cap table, P&L, monthly close, vendor payments, tax filings, financial modeling, banking relationships. |
+| **Chief Strategy Officer** *(optional)* | Partnerships, BD, deals with resorts/brands, acquisition outreach. Owns "growth-via-relationships." | Direct outreach to Hilton/Marriott/Disney/Wyndham, BD partnerships, M&A conversations, strategic deal-making. |
+
+### A few rules of the road
+
+- **Titles describe ultimate accountability, not exclusive work.** In early stage, all four of us do a bit of everything. The CEO will write code; the CTO will answer support tickets. Title says "the buck stops with you on this," not "only you do this."
+- **Roles can be combined.** Common combinations: **CEO/CTO** (strategy + tech in one person), **President/COO** (deputy + operations), **CFO/CSO** (numbers + deals).
+- **Industry-credibility note:** C-suite labels read harder to acquirers and partners than informal titles. "CFO" lands better than "Finance Lead" when emailing Marriott Vacations Worldwide.
+- **Non-default titles are fine** ("President", "Founder & X", "Chief Strategy Officer") — Atlas's wizard accepts free-text.
+- **The four of us don't need four different titles from this list.** If only three resonate, fine. Some functions may not need a dedicated owner at this stage and can be picked up later.

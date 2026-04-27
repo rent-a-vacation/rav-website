@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:59:55"
-change_ref: "c7e181b"
+last_updated: "2026-04-27T12:44:05"
+change_ref: "d1dd28e"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -201,7 +201,9 @@ docs/incorporation/
 ├── templates/                                      [clean, unfilled templates]
 │   ├── founder-term-sheet.md
 │   ├── term-sheet-explainer-one-pager.md
-│   ├── equity-split-worksheet.md
+│   ├── equity-split-briefing.md                    [reading half, pre-meeting]
+│   ├── equity-split-worksheet-form.md              [fill-in half, in-meeting]
+│   ├── role-selection-form.md                      [fill-in form, in-meeting]
 │   └── signing-logistics-guide.md                  [this file]
 ├── lawyer-outreach/
 ├── personal-outreach/
@@ -222,13 +224,16 @@ docs/incorporation/
 
 ### Before the meeting (Sujit)
 
-1. **Convert the four founder-meeting docs to PDF** (from this repo):
-   - `templates/term-sheet-explainer-one-pager.md` → PDF
-   - `templates/equity-split-worksheet.md` → PDF (4 copies if printing)
+1. **Convert the founder-meeting docs to PDF** (from this repo):
+   - `templates/term-sheet-explainer-one-pager.md` → PDF (pre-meeting reading)
+   - `templates/equity-split-briefing.md` → PDF (pre-meeting reading)
+   - `templates/equity-split-worksheet-form.md` → PDF (4 printed copies for the meeting table)
+   - `templates/role-selection-form.md` → PDF (4 printed copies for the meeting table)
    - `templates/founder-term-sheet.md` → PDF (the actual term sheet — DON'T FILL IN PERCENTAGES YET; those get filled in during the meeting based on the equity-split discussion)
-   - `founder-meetings/2026-04-26-term-sheet-and-equity/agenda.md` → PDF
+   - `founder-meetings/2026-04-26-term-sheet-and-equity/agenda-shared.md` → PDF (shared with all four founders)
+   - `founder-meetings/2026-04-26-term-sheet-and-equity/agenda-facilitation.md` → PDF (Sujit's facilitation playbook only — NOT distributed)
 
-2. **Send the term-sheet-explainer + equity-split-worksheet to all four founders 12-24 hours before the meeting** so they can read in advance. This compresses the meeting time significantly — discussion goes much faster when everyone has read the materials beforehand.
+2. **Send the term-sheet-explainer + equity-split-briefing to all four founders 12-24 hours before the meeting** so they can read in advance. This compresses the meeting time significantly — discussion goes much faster when everyone has read the materials beforehand. The worksheet form does NOT need to be sent in advance; it lives on the table at the meeting.
 
 3. **Set up a Dropbox Sign account** if going with Option B (5 minutes — https://sign.dropbox.com)
 
@@ -236,14 +241,15 @@ docs/incorporation/
 
 ### During the meeting
 
-1. Confirm everyone read the term-sheet-explainer (re-read together if anyone hasn't)
-2. Run the equity-split worksheet process (Steps 1-3 in `equity-split-worksheet.md`)
+1. Confirm everyone read the term-sheet-explainer + equity-split-briefing (re-read together if anyone hasn't)
+2. Run the equity-split worksheet process — distribute printed copies of `equity-split-worksheet-form.md`, each founder fills in independently, then reveal + discuss
 3. Once you have the four numbers, fill them into a clean copy of `founder-term-sheet.md` (or directly into a printed PDF)
 4. Resolve the remaining `<!-- TODO -->` comments in the term sheet:
-   - Confirm exact role titles
-   - Confirm OBA disclosure status for Ajumon and Celin (date filed; expected resolution date)
-   - Confirm 12-month timeframe in Section 5 (could be 6, 12, or 18 months)
-   - Confirm 70-80% founder allocation, 10-15% option pool
+   - Each founder claims their own role in a quick round-robin (self-nomination only — no one picks another founder's role)
+   - Each founder confirms their OBA disclosure status (Cleared with employer + date / Pending with date filed + expected resolution / Not yet filed)
+   - Confirm reservation timeframe in Section 5 (6, 12, or 18 months)
+   - Confirm founder-allocation % (typically 70-80%) and option-pool % (typically 10-15%)
+   - Confirm initial board composition (Section 7): Option A (sole director) vs Option B (two co-directors)
 
 ### After the meeting
 
