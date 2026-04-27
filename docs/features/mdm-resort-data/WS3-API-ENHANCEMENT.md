@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-16T01:58:25"
-change_ref: "9945546"
+last_updated: "2026-04-27T19:34:52"
+change_ref: "611f7c5"
 change_type: "manual-edit"
 status: "active"
 ---
@@ -251,7 +251,7 @@ Update **both** copies: `docs/api/public-api.yaml` AND `public/api/public-api.ya
     summary: Look up a RAV resort by partner system ID
     description: |
       Maps an external system's resort identifier to the RAV golden record.
-      Use this to integrate partner resort IDs without maintaining a local
+      Use this to integrate external resort IDs without maintaining a local
       cross-reference table.
     parameters:
       - name: system

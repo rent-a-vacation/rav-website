@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-12T22:57:23"
-change_ref: "a521368"
+last_updated: "2026-04-27T19:34:52"
+change_ref: "611f7c5"
 change_type: "session-39-docs-update"
 status: "active"
 ---
@@ -80,10 +80,10 @@ Between each section, use these transition phrases to maintain narrative continu
 
 ### Platform Scale
 
-**What to show:** Scroll to the Trust Badges section showing partner resort counts.
+**What to show:** Scroll to the Trust Badges section showing resort counts.
 
 > **Talking point:**
-> "We have 117 partner resorts across 9 major vacation club brands:
+> "We have 117 resorts across 9 major vacation club brands:
 > - Hilton Grand Vacations (62 resorts)
 > - Marriott Vacation Club (40 resorts)
 > - Disney Vacation Club (15 resorts)
@@ -103,7 +103,7 @@ Between each section, use these transition phrases to maintain narrative continu
 
 ### Key Metrics to Highlight
 
-- 117 partner resorts, 9 vacation club brands
+- 117 resorts, 9 vacation club brands
 - 351 unit types across 10+ countries
 - 15% base commission rate (tiered discounts for Pro/Business)
 - 20-40% savings for renters compared to resort-direct booking
@@ -988,7 +988,7 @@ Keep these numbers handy for when stakeholders ask during the demo.
 
 | Metric | Value | Source |
 |--------|-------|--------|
-| Partner resorts | 117 | Database (62 Hilton, 40 Marriott, 15 Disney) |
+| Resorts | 117 | Database (62 Hilton, 40 Marriott, 15 Disney) |
 | Vacation club brands | 9 | calculatorLogic.ts `VACATION_CLUB_BRANDS` |
 | Unit types | 351 | Database |
 | Countries | 10+ | Database |
@@ -1054,7 +1054,7 @@ Keep these numbers handy for when stakeholders ask during the demo.
 ### Closing Statement
 
 > **Talking point:**
-> "To summarize: Rent-A-Vacation is a purpose-built marketplace for timeshare vacation rentals. We have 117 partner resorts across 9 brands, a fully functional two-sided marketplace with payments, escrow, and dispute resolution, AI-powered search with both voice and text, a public REST API for third-party integrations, the RAV Smart Suite of 5 free tools, dynamic pricing intelligence, comprehensive admin tooling, and enterprise-grade security. The platform is at v0.9.0 with 771 automated tests across 99 test files -- feature-complete for launch. We are in the final pre-launch phase, completing business formation, activating Stripe Tax, and onboarding our initial inventory of property owners."
+> "To summarize: Rent-A-Vacation is a purpose-built marketplace for timeshare vacation rentals. We have 117 resorts across 9 brands, a fully functional two-sided marketplace with payments, escrow, and dispute resolution, AI-powered search with both voice and text, a public REST API for third-party integrations, the RAV Smart Suite of 5 free tools, dynamic pricing intelligence, comprehensive admin tooling, and enterprise-grade security. The platform is at v0.9.0 with 771 automated tests across 99 test files -- feature-complete for launch. We are in the final pre-launch phase, completing business formation, activating Stripe Tax, and onboarding our initial inventory of property owners."
 
 ### Call to Action (Customize per Audience)
 

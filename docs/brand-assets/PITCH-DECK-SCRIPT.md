@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-15T11:10:55"
-change_ref: "bc1bafd"
+last_updated: "2026-04-27T19:34:52"
+change_ref: "611f7c5"
 change_type: "session-48-docs-refresh"
 status: "active"
 ---
@@ -445,7 +445,7 @@ ADDITIONAL REVENUE STREAMS:
 • Referral program (owner acquisition)       [BUILT]
 • Featured listing placements                [Future]
 • Premium analytics for owners               [Future]
-• Resort partnership referral fees            [Future]
+• Resort affiliate referral fees              [Future]
 ```
 
 **Labels:** Commission model and tiers are [BUILT]. Revenue streams marked "Future" are [PROJECTED].

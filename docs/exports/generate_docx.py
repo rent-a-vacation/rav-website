@@ -416,7 +416,7 @@ def generate_roadmap():
         [
             ["Voice Search (Ask RAVIO)", "Voice concierge powered by VAPI + Deepgram Nova-3. Natural language queries, 300ms endpointing, smart denoising. Tier-based daily limits with admin overrides", "BUILT"],
             ["Text Chat (Chat with RAVIO)", "LLM-powered text assistant (OpenRouter / Gemini 3 Flash) with SSE streaming and tool calling. Context-aware across 4 page types", "BUILT"],
-            ["Resort Knowledge Base (ResortIQ)", "Database of 117 partner resorts and 351 unit types from 9 vacation club brands. Auto-populates listing specs when owners create listings", "BUILT"],
+            ["Resort Knowledge Base (ResortIQ)", "Database of 117 resorts and 351 unit types from 9 vacation club brands. Auto-populates listing specs when owners create listings", "BUILT"],
         ]
     )
 

@@ -389,7 +389,7 @@ const HowItWorksPage = () => {
             <div>
               <Home className="w-10 h-10 mx-auto mb-3 opacity-80" />
               <div className="font-display text-4xl font-bold mb-1">117</div>
-              <div className="opacity-80">Partner Resorts</div>
+              <div className="opacity-80">Resorts</div>
             </div>
             <div>
               <Users className="w-10 h-10 mx-auto mb-3 opacity-80" />

@@ -539,7 +539,7 @@ async function handleResorts(
 
 /**
  * GET /v1/resorts/by-external-id?system=xpd&id=XPD-12345
- * Maps an external partner resort ID to the RAV golden record.
+ * Maps an external resort ID to the RAV golden record.
  */
 async function handleResortByExternalId(
   _req: Request,

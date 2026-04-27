@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-12T22:57:23"
-change_ref: "a521368"
+last_updated: "2026-04-27T19:34:52"
+change_ref: "611f7c5"
 change_type: "session-39-docs-update"
 status: "archived"
 ---
@@ -89,7 +89,7 @@ The platform is feature-complete for MVP across 19 completed development phases,
 |---------|-------------|--------|
 | **Voice Search (Ask RAVIO)** | Voice concierge powered by VAPI + Deepgram Nova-3 transcription. Natural language queries ("show me beachfront condos in Hawaii for next month"), 300ms endpointing, smart denoising. Tier-based daily limits with admin overrides | BUILT |
 | **Text Chat (Chat with RAVIO)** | LLM-powered text assistant (OpenRouter / Gemini 3 Flash) with SSE streaming and tool calling for property search. Context-aware across 4 page types (rentals, property detail, bidding, general) | BUILT |
-| **Resort Knowledge Base (ResortIQ)** | Database of 117 partner resorts and 351 unit types from 9 vacation club brands. Auto-populates listing specs (bedrooms, bathrooms, max guests, square footage) when owners create listings | BUILT |
+| **Resort Knowledge Base (ResortIQ)** | Database of 117 resorts and 351 unit types from 9 vacation club brands. Auto-populates listing specs (bedrooms, bathrooms, max guests, square footage) when owners create listings | BUILT |
 
 ### 2.6 Admin & Operations
 
