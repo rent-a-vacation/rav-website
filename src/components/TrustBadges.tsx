@@ -9,7 +9,7 @@ const badges = [
   {
     icon: Building2,
     value: "117",
-    label: "Partner Resorts",
+    label: "Resorts",
   },
   {
     icon: Gavel,

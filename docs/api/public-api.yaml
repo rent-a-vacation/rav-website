@@ -315,7 +315,7 @@ paths:
       summary: Look up a RAV resort by partner system ID
       description: |
         Maps an external system's resort identifier to the RAV golden record.
-        Use this to integrate partner resort IDs (e.g. XPD, OTA aggregator codes)
+        Use this to integrate external resort IDs (e.g. XPD, OTA aggregator codes)
         without maintaining a local cross-reference table.
       security:
         - ApiKeyAuth: []
