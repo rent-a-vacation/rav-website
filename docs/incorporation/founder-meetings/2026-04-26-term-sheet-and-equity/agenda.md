@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:59:55"
-change_ref: "c7e181b"
+last_updated: "2026-04-27T12:44:05"
+change_ref: "d1dd28e"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -10,18 +10,18 @@ status: "active"
 **Date:** April 26, 2026
 **Time:** [TIME]
 **Location:** [IN-PERSON OR VIDEO LINK]
-**Attendees:** Sujit (CEO/CTO), Ajumon (COO), Sandhya (CPO), Celin (CFO)
+**Attendees:** Sujit, Ajumon, Sandhya, Celin (titles self-nominated via the pre-meeting Google Sheet — confirmed at the meeting)
 
-**Goal:** End the meeting with a signed Founder Term Sheet that captures the 4-way equity split, vesting schedule, OBA-blocker handling, and IP assignment. This is the gating document before Sujit starts the Stripe Atlas filing process.
+**Goal:** End the meeting with a signed Founder Term Sheet that captures the 4-way equity split, vesting schedule, OBA-pending handling, role assignments, initial board composition, and IP assignment. This is the gating document before Sujit starts the Stripe Atlas filing process.
 
-**Time required:** ~90-120 minutes total
+**Time required:** ~75-105 minutes total
 
 ---
 
 ## Pre-meeting reading (send to founders 12-24 hours in advance)
 
 1. **`templates/term-sheet-explainer-one-pager.md`** (5 min read) — explains why we need a term sheet even though we're not raising VC. Pre-empts the "isn't this only for VC?" question.
-2. **`templates/equity-split-worksheet.md`** (10 min read) — the structured process for deciding the 4-way equity split. Each founder will need to fill this in during the meeting (or before, if they want to think about it in advance).
+2. **`templates/equity-split-briefing.md`** (5-10 min read) — reading-half of the equity-split material. Three pre-built split options + guiding questions. Read pre-meeting; bring as reference at the meeting. The fill-in form (`equity-split-worksheet-form.md`) is printed and on the table at the meeting — no need to read in advance.
 3. **`templates/founder-term-sheet.md`** (15 min read) — the actual document we're going to sign. Skim so everyone knows what they're agreeing to. The percentages are blank; we fill them in during the meeting.
 
 If founders ask "do I need to read all three before the meeting?" → **yes**. The meeting goes 30-45 minutes faster if everyone has pre-read.
@@ -44,30 +44,32 @@ If founders ask "do I need to read all three before the meeting?" → **yes**. T
 
 ---
 
-### Block 2 — Equity split (60-75 min)
+### Block 2 — Equity split (30-45 min)
 
-This is the hard part. Run the worksheet process from `equity-split-worksheet.md`.
+Run the worksheet process described in `equity-split-briefing.md` (reading-half, sent ahead) and `equity-split-worksheet-form.md` (fill-in-half, printed 4 copies). The briefing presents three pre-built splits as a menu — founders pick from the menu (or propose their own) rather than scoring contribution factors.
 
-**Step 1 (20 min) — INDIVIDUAL WORKSHEET FILLING:**
-- Hand each founder a copy of the equity-split-worksheet (printed, or Google Doc link, or filled in on paper)
-- Set a 20-minute timer
-- **NO DISCUSSION DURING THIS TIME.** Phones face down. Everyone fills in independently.
-- The worksheet has 7 factors; each founder rates all four founders on each factor; then calculates a percentage at the bottom
+**Step 1 (5-10 min) — INDIVIDUAL PICKS:**
+- Hand each founder a printed copy of the equity-split-worksheet-form
+- Set a 10-minute timer
+- **NO DISCUSSION DURING THIS TIME.** Phones face down. Each founder picks their preferred option (A / B / C / Other), writes their one-sentence reasoning, and marks their acceptable range
+- The three options on the menu: A = 25/25/25/25 (equal split); B = 30/30/20/20 (modest weighted split); C = 35/30/20/15 (graduated split)
 
-**Step 2 (10 min) — REVEAL:**
+**Step 2 (5 min) — REVEAL:**
 - All four worksheets go on the table at the same time
-- Read out each person's bottom-line numbers for each founder
-- Write them on a whiteboard or shared screen so everyone can see all four side by side
+- Each founder reads out their pick + one-sentence reasoning + acceptable-range checkmarks
+- Sujit captures all four picks on a whiteboard or shared screen
 
-**Step 3 (30-45 min) — DISCUSSION:**
+**Step 3 (20-30 min) — DISCUSSION:**
 
-Three possible outcomes (covered in the worksheet doc):
+Three possible outcomes:
 
-- **Tight consensus** (everyone within ±3 points per founder): Take the median for each founder, normalize to 100%, write into the term sheet. Move to Block 3.
-- **Moderate variance** (5-10 points): Walk through each factor where people scored differently. Usually the disagreement is in 1-2 factors (most often "value of past contribution" or "expected future hours"). Discuss; re-run the math with shared assumptions.
-- **Wide variance** (>10 points per founder): **Stop the meeting.** Do not try to negotiate to a number tonight. Schedule a follow-up. Consider an outside facilitator (the Florida lawyer once engaged, or a startup advisor).
+- **Everyone picked the same option:** Done in 5 minutes. Write it into the term sheet. Move to Block 3.
+- **Picks differ but acceptable ranges overlap:** The overlap IS the answer. Pick from the overlap; discuss any small tweaks; lock the number.
+- **Picks differ AND ranges don't overlap:** Surface which of the three "how to think about your choice" questions in the worksheet you disagree on (founding equity vs other forms of recognition / binary vs graduated acknowledgment / 18-month outlook). Often the underlying disagreement is on one of those — once you align on it, the number follows.
 
-**Sujit's job during this discussion:** Keep it structured. When someone says "I think it should be X%", ask "based on which factor in the worksheet?" Keep the conversation grounded in the explicit factors, not in vague "fairness" arguments.
+**If the conversation gets stuck for >20 minutes on Step 3:** stop. Schedule a follow-up within 7 days. Consider an outside facilitator (a startup advisor, or the lawyer once engaged). Don't try to push through with everyone tired and frustrated.
+
+**Sujit's job during this discussion:** Keep it grounded in the worksheet's framing. When someone says "I think it should be X%", ask "which option does that correspond to, or are you proposing a fourth?" Keep the conversation about the underlying views, not vague "fairness" arguments.
 
 **Hard rule:** the equity discussion ends with **four numbers totaling 100% written down**. No "we'll figure out the exact percentages later." That's how this gets stuck.
 
@@ -79,12 +81,12 @@ Walk through the open `<!-- TODO -->` comments in `templates/founder-term-sheet.
 
 | Section | TODO | Decision needed |
 |---|---|---|
-| 1 | Role titles | Confirm: Sujit = CEO/CTO, Ajumon = COO, Sandhya = CPO, Celin = CFO. Anyone want a different title? |
-| 1 | OBA status for Ajumon and Celin | Confirm date filed + expected resolution date for each (or "not yet filed") |
+| 1 | Role titles | Confirm each founder's self-nominated title (collected via pre-meeting Google Sheet). Discuss any role collisions. Non-default titles ("President", "Founder & X", "Chief Strategy Officer") are acceptable. |
+| 1 | OBA status per founder | Each founder confirms status: Cleared (with employer + date) / Pending (with date filed + expected resolution) / Not yet filed |
 | 2 | Founder allocation % | Pick from 70-80% range (recommend 75% — middle of standard range) |
 | 2 | Option pool % | Pick from 10-15% range (recommend 10% — conservative for a 4-founder pre-launch company) |
 | 5 | OBA reservation timeframe | Pick from 6/12/18 months (recommend 12 — gives realistic time for the OBA process while preventing indefinite reservation) |
-| 7 (formerly 8) | Board composition | Confirm Sujit as initial sole director, expand later by board action |
+| 7 | Board composition | Decide Option A (sole director) vs Option B (two co-directors). **Constraint:** founders with pending OBA disclosures should NOT take a director seat — director status is more legally exposed than future-officer status. |
 
 Sujit fills these in on a working copy as decisions are made.
 
@@ -117,12 +119,12 @@ Two paths — pick before the meeting:
 Sujit walks through what happens after signing:
 
 1. **Sujit:** Starts Atlas filing the same week. Atlas takes 7-10 business days for Cert + EIN + Stripe live + Mercury bank.
-2. **Sujit + Sandhya:** Be ready to sign formal Stock Purchase Agreements when Atlas generates them (within 2 weeks).
-3. **Sujit + Sandhya:** Mail 83(b) elections within 30 days of receiving stock. **HARD IRS DEADLINE** — set calendar reminders right now in the room.
-4. **Ajumon + Celin:** Continue OBA disclosure process. Notify other founders the moment OBA clears so we can issue your stock.
+2. **OBA-cleared Founders:** Be ready to sign formal Stock Purchase Agreements when Atlas generates them (within 2 weeks).
+3. **OBA-cleared Founders:** Mail 83(b) elections within 30 days of receiving stock. **HARD IRS DEADLINE** — set calendar reminders right now in the room.
+4. **OBA-pending Founders:** Continue OBA disclosure process. Notify other founders the moment OBA clears so we can issue your stock + file 83(b) within 30 days of clearance.
 5. **All four:** Sign IP assignment agreements (CIIAAs) at incorporation. These are separate from the Stock Purchase Agreements and apply regardless of OBA status.
 6. **Sujit:** Sends the lawyer outreach intro emails this week (separate workstream — see `lawyer-outreach/intro-email.md`).
-7. **Sujit + Sandhya:** Begin proactive brand-protection outreach to Hilton Grand Vacations / Marriott Vacations Worldwide / Disney Vacation Club within 30 days of incorporation.
+7. **OBA-cleared Founders:** Begin proactive brand-protection outreach to Hilton Grand Vacations / Marriott Vacations Worldwide / Disney Vacation Club within 30 days of incorporation.
 8. **Sujit:** Files Florida foreign-entity registration (form CR2E047, ~$200) within 30 days of receiving Delaware Cert.
 
 **Set a follow-up meeting** for ~3 weeks out — checkpoint to review:
@@ -130,7 +132,7 @@ Sujit walks through what happens after signing:
 - Any responses from lawyer outreach? Engagement letter signed?
 - Any responses from brand-protection outreach?
 - 83(b) elections mailed?
-- Status of OBA disclosures for Ajumon + Celin?
+- Status of any pending OBA disclosures?
 
 ---
 
@@ -143,7 +145,7 @@ Sujit walks through what happens after signing:
 - [ ] Whiteboard or shared screen set up for the equity-split discussion (Step 2 of the worksheet)
 - [ ] Printer access if going with Path A (print-and-sign in person)
 - [ ] 4 copies of the equity-split worksheet printed (or Google Doc link sent — pick the format that matches the meeting style)
-- [ ] Calendar slot blocked for ~120 minutes (don't time-pressure this conversation)
+- [ ] Calendar slot blocked for ~105 minutes (don't time-pressure this conversation; budget extra over the estimate)
 - [ ] Follow-up meeting tentatively scheduled for ~3 weeks out
 
 ---
@@ -156,7 +158,7 @@ Sujit walks through what happens after signing:
 
 **Watch for "we'll figure out the percentages later."** Hard rule — we don't leave the meeting without four numbers totaling 100%. If we genuinely can't get there tonight, schedule the follow-up immediately and pick a date within 7 days. Don't let this drift.
 
-**Watch for OBA-conversation avoidance.** Ajumon and Celin's OBA status affects when their stock issues, not whether or how much. Make sure they understand this clearly. The reservation in the term sheet doesn't reduce their equity — it just defers the timing.
+**Watch for OBA-conversation avoidance.** For any founder with a pending OBA disclosure, OBA status affects *when* their stock issues, not *whether* or *how much*. Make sure they understand this clearly. The reservation in the term sheet doesn't reduce their equity — it just defers the timing.
 
 **Watch the time on Block 2 (equity discussion).** If you're 60+ minutes in and nowhere close to consensus, stop. Schedule the follow-up. Don't try to push through with everyone tired and frustrated — that's how bad equity decisions happen.
 

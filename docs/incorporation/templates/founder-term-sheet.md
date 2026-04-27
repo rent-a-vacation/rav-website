@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:43:16"
-change_ref: "cb46aaa"
+last_updated: "2026-04-27T12:44:05"
+change_ref: "d1dd28e"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -21,12 +21,12 @@ The undersigned four individuals (together, the **"Founders"**) are forming **Re
 
 | Founder | Legal Name | Role | State of Residence | OBA Status |
 |---------|-----------|------|-------------------|-----------|
-| 1 | [SUJIT FULL LEGAL NAME] | Chief Executive Officer / Chief Technology Officer | Florida | Cleared (VyStar Credit Union) |
-| 2 | [AJUMON FULL LEGAL NAME] | Chief Operating Officer | Florida | <!-- TODO: confirm OBA disclosure status with employer; date filed; expected resolution date --> |
-| 3 | [SANDHYA FULL LEGAL NAME] | Chief Product Officer | Florida | Cleared |
-| 4 | [CELIN FULL LEGAL NAME] | Chief Financial Officer | Florida | <!-- TODO: confirm OBA disclosure status with employer; date filed; expected resolution date --> |
+| 1 | [SUJIT FULL LEGAL NAME] | [TITLE — selected by founder] | Florida | [CLEARED with employer + date / PENDING with date filed + expected resolution / NOT YET FILED] |
+| 2 | [AJUMON FULL LEGAL NAME] | [TITLE — selected by founder] | Florida | [CLEARED with employer + date / PENDING with date filed + expected resolution / NOT YET FILED] |
+| 3 | [SANDHYA FULL LEGAL NAME] | [TITLE — selected by founder] | Florida | [CLEARED with employer + date / PENDING with date filed + expected resolution / NOT YET FILED] |
+| 4 | [CELIN FULL LEGAL NAME] | [TITLE — selected by founder] | Florida | [CLEARED with employer + date / PENDING with date filed + expected resolution / NOT YET FILED] |
 
-<!-- TODO: confirm exact role titles. The board recommended C-suite titles for industry credibility (Jason Gamel, Round 1). If a founder prefers a different title (e.g., "Founder & CFO" vs "CFO"), use the preferred form. -->
+<!-- TODO at meeting: each founder selects their own title and confirms their OBA status. Self-nomination only on titles — no founder picks another founder's role. The board recommended C-suite titles for industry credibility (Jason Gamel, Round 1). Non-default titles ("President", "Founder & CFO", "Chief Strategy Officer") are acceptable. See the role reference at the end of the explainer doc. -->
 
 ---
 
@@ -34,12 +34,14 @@ The undersigned four individuals (together, the **"Founders"**) are forming **Re
 
 The Founders agree to the following allocation of founder Common Stock at incorporation:
 
+<!-- TODO at meeting: equity split is the central decision. Common patterns for 4-founder companies with one technical founder who built the platform pre-formation: equal split (25/25/25/25), weighted toward technical contribution (e.g., 35/25/20/20), or weighted toward CEO/operational lead. The board did not opine on this — it's a founder-decision matter. Consider the Slicing Pie methodology if you want a contribution-weighted approach. -->
+
 | Founder | Founder Shares (% of total founder allocation) | Notes |
 |---------|------------------------------------------------|-------|
-| Sujit | **[XX%]** | <!-- TODO: equity split is the central decision. Common patterns for 4-founder companies with one technical founder who built the platform pre-formation: equal split (25/25/25/25), weighted toward technical contribution (e.g., 35/25/20/20), or weighted toward CEO/operational lead. The board did not opine on this — it's a founder-decision matter. Consider the Slicing Pie methodology if you want a contribution-weighted approach. --> |
-| Ajumon | **[XX%]** | Stock issuance held in reserve until OBA disclosure clears. See Section 5. |
-| Sandhya | **[XX%]** | |
-| Celin | **[XX%]** | Stock issuance held in reserve until OBA disclosure clears. See Section 5. |
+| Sujit | **[XX%]** | If OBA pending at signing, stock issuance held in reserve until disclosure clears (see § 5). |
+| Ajumon | **[XX%]** | If OBA pending at signing, stock issuance held in reserve until disclosure clears (see § 5). |
+| Sandhya | **[XX%]** | If OBA pending at signing, stock issuance held in reserve until disclosure clears (see § 5). |
+| Celin | **[XX%]** | If OBA pending at signing, stock issuance held in reserve until disclosure clears (see § 5). |
 | **Total Founder Allocation** | **100%** | Sum must equal 100% before signing. |
 
 **Authorized share count:** [10,000,000] shares of Common Stock (Atlas default; do not change without specific reason).
@@ -59,7 +61,7 @@ All founder Common Stock vests on the following schedule (Atlas default — do n
 - **Vesting frequency after cliff:** Monthly (1/48 of total grant per month for the remaining 36 months)
 - **Acceleration:** None at this stage. (Single-trigger or double-trigger acceleration may be added later when the Company raises outside capital — Atlas's standard documents do not include acceleration by default.)
 
-**Vesting commencement date:** Each Founder's vesting begins on **[the date of their respective Stock Purchase Agreement]**. For Sujit and Sandhya, this will be the Atlas filing date. For Ajumon and Celin, this will be the date their OBA disclosures clear and their stock is actually issued (see Section 5).
+**Vesting commencement date:** Each Founder's vesting begins on **[the date of their respective Stock Purchase Agreement]**. For OBA-cleared Founders, this will be the Atlas filing date. For OBA-pending Founders, this will be the date their disclosure clears and their stock is actually issued (see Section 5).
 
 **Why 4-year/1-year cliff:** Per Yokum — "this is the standard. Do not skip this because you're friends and co-founders. If any founder leaves in year one, unvested equity should not go with them. Every serious acquirer will check this and will be alarmed if it's absent."
 
@@ -77,15 +79,15 @@ The 83(b) election causes the Founder to be taxed on the value of the stock at i
 
 ---
 
-## 5. OBA-Blocked Founders (Ajumon and Celin)
+## 5. OBA-Pending Founders
 
-Ajumon and Celin are currently employed by regulated financial institutions whose Outside Business Activity (OBA) policies require disclosure and approval before either of them can hold equity in or take an officer role at an outside company. Their OBA disclosures are pending with their respective employers as of the date of this term sheet.
+Some Founders may be employed by regulated financial institutions or other employers whose Outside Business Activity (OBA) policies require disclosure and approval before they can hold equity in or take an officer role at an outside company. Each Founder's OBA status (Cleared / Pending / Not Yet Filed) is recorded in Section 1. The provisions below apply to any Founder whose OBA disclosure is **Pending** or **Not Yet Filed** as of the signing date of this term sheet.
 
 **At incorporation:**
 
-- Sujit and Sandhya will receive their full founder Common Stock allocations and sign their respective Stock Purchase Agreements with the Company on the Atlas filing date.
-- Ajumon's allocation ([XX%]) and Celin's allocation ([XX%]) will be **held as reserved-but-unissued shares** in the Company's authorized share count. They will NOT be issued at incorporation.
-- Ajumon and Celin will be named in the corporate organizational consent as **future officers contingent on OBA clearance**, but will not formally take their officer roles or sign their Stock Purchase Agreements until OBA disclosures clear.
+- **OBA-cleared Founders** will receive their full founder Common Stock allocations and sign their respective Stock Purchase Agreements with the Company on the Atlas filing date.
+- **OBA-pending Founders'** allocations (the percentages locked in Section 2) will be **held as reserved-but-unissued shares** in the Company's authorized share count. They will NOT be issued at incorporation. The percentage is locked; only the timing of issuance defers.
+- **OBA-pending Founders** will be named in the corporate organizational consent as **future officers contingent on OBA clearance**, but will not formally take their officer roles or sign their Stock Purchase Agreements until disclosures clear.
 
 **When OBA disclosures clear (each Founder independently):**
 
@@ -106,7 +108,7 @@ Each Founder agrees to execute the Company's standard Confidential Information a
 - The Founders acknowledge that significant IP — including the codebase at https://github.com/rent-a-vacation/rav-website, the platform brand, the resort database, the policy drafts, and all related materials — was created **before** formal incorporation.
 - All such pre-incorporation IP is hereby assigned to the Company effective at incorporation.
 - Per Yokum: "Every founder must sign an IP assignment agreement assigning all relevant intellectual property to the company — not just the ones who are equity holders today. If [a founder] wrote code before their OBA was resolved, that code lives in their names until they assign it. Fix this before you take a single dollar from investors or acquirers."
-- This means **Ajumon and Celin sign the IP assignment at incorporation, even though their stock issuance is deferred** under Section 5. Their IP contributions assign immediately; their compensation in stock follows when OBA clears.
+- This means **any Founder with deferred stock issuance still signs the IP assignment at incorporation alongside the others**, per Section 5. IP contributions assign immediately; compensation in stock follows when OBA clears.
 
 ---
 
@@ -114,19 +116,22 @@ Each Founder agrees to execute the Company's standard Confidential Information a
 
 At incorporation, the Board of Directors will consist of:
 
-- [SUJIT FULL LEGAL NAME], as initial sole director (CEO seat)
+- [TO BE DECIDED AT MEETING — see options below]
 
-<!-- TODO: confirm whether Sujit is sole initial director or whether all four founders take board seats at incorporation. Industry practice for 4-founder companies varies. The minimal-friction approach (and Atlas default) is sole CEO director, expanding the board after first financing or by board vote. -->
+**Decision at the meeting:** The Founders will choose between the following initial board structures:
+
+- **Option A — Sole director (Atlas default):** One Founder serves as initial sole director. Atlas's default and the most common early-stage choice. Lowest operational friction (every board action is one signature). Common pick: the CEO.
+- **Option B — Two co-directors:** Two Founders serve as initial directors. Reflects co-leadership when two Founders are contributing comparably across strategy/operations. Higher friction (every board written consent needs both signatures), but distributes board-level authority.
+
+**Constraint:** A Founder with a pending OBA disclosure should NOT take an initial board seat. Director status is more legally exposed than future-officer status and more likely to trigger an OBA conflict at the Founder's day-job employer. Such a Founder may be added to the Board after their OBA clears.
 
 The Board may be expanded by board action (or written consent) at any time after incorporation.
-
-**Note on OBA-blocked founders:** Ajumon and Celin should NOT take initial board seats at incorporation, since formally serving as a director may itself trigger an OBA conflict at their employers. They can be added to the Board after their OBA disclosures clear.
 
 ---
 
 ## 8. Indemnification
 
-The Company will execute its standard Indemnification Agreement with each Founder upon their formal taking of office (which is at incorporation for Sujit and Sandhya; deferred to OBA clearance for Ajumon and Celin). Atlas's standard Indemnification Agreement is incorporated by reference.
+The Company will execute its standard Indemnification Agreement with each Founder upon their formal taking of office (at incorporation for OBA-cleared Founders; deferred to OBA clearance for OBA-pending Founders). Atlas's standard Indemnification Agreement is incorporated by reference.
 
 ---
 
@@ -163,12 +168,16 @@ By signing below, each Founder agrees to the terms above and commits to taking t
 
 ## After signing — next actions
 
-1. **Sujit:** Save the signed term sheet to `docs/incorporation/founder-term-sheet-signed-YYYY-MM-DD.md` (with this file kept clean as the template)
-2. **Sujit:** Start Stripe Atlas filing process the same day
-3. **Sujit + Sandhya:** Be prepared to sign Stock Purchase Agreements as soon as Atlas generates them (typically within 7-10 business days)
-4. **Sujit + Sandhya:** Mail 83(b) elections within 30 days of receiving stock
-5. **Ajumon + Celin:** Continue OBA disclosure process with employers; notify other founders when cleared
-6. **All four:** Sign CIIAAs at incorporation (regardless of stock-issuance timing)
+1. **Sujit:** Save two files (this template file stays clean for reuse):
+   - `docs/incorporation/founder-term-sheet-filled-YYYY-MM-DD.md` — the filled-in markdown (TODOs resolved, percentages in, names in). Searchable source-of-truth that future agents can read without OCR'ing a PDF.
+   - `docs/incorporation/signed/founder-term-sheet-signed-YYYY-MM-DD.pdf` — the e-signed PDF. The legal artifact.
+2. **Sujit:** Save the e-signature audit trail alongside the signed PDF (DocuSign "Certificate of Completion" or Dropbox Sign audit page) — don't strip it; it's what makes the signature legally enforceable
+3. **Sujit:** Update `docs/incorporation/README.md` workstream tracker — change Workstream #1 from `⏸ Pending signatures` to `✅ Signed YYYY-MM-DD`
+4. **Sujit:** Start Stripe Atlas filing process the same day
+5. **OBA-cleared Founders:** Be prepared to sign Stock Purchase Agreements as soon as Atlas generates them (typically within 7-10 business days)
+6. **OBA-cleared Founders:** Mail 83(b) elections within 30 days of receiving stock (HARD IRS DEADLINE)
+7. **OBA-pending Founders:** Continue OBA disclosure process with employers; notify other founders when cleared, then sign SPA + file 83(b) within 30 days of clearance
+8. **All four:** Sign CIIAAs at incorporation (regardless of stock-issuance timing)
 
 ---
 

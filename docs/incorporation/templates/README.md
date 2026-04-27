@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-26T00:59:55"
-change_ref: "c7e181b"
+last_updated: "2026-04-27T12:44:05"
+change_ref: "d1dd28e"
 change_type: "session-60-init"
 status: "active"
 ---
@@ -17,7 +17,9 @@ status: "active"
 |---|---|---|
 | [`founder-term-sheet.md`](founder-term-sheet.md) | 4-way founder equity split + vesting + IP assignment + governance preview | **Before clicking incorporate on Stripe Atlas.** Get all 4 founders' signatures, then start Atlas filing the same day. |
 | [`term-sheet-explainer-one-pager.md`](term-sheet-explainer-one-pager.md) | "Why we need a term sheet even though we're not raising VC" — pre-emptively answers the most common founder question | Send to co-founders 12-24 hours before the term-sheet-signing meeting. Reusable for explaining term sheets to anyone. |
-| [`equity-split-worksheet.md`](equity-split-worksheet.md) | Structured 7-factor scoring sheet each founder fills in independently, then compare. Reveals where the disagreements are. | During the founder meeting where equity is decided. Each founder fills in for all four founders; compare results in the room. |
+| [`equity-split-briefing.md`](equity-split-briefing.md) | Reading-half of the equity-split material — background, three pre-built split options (A/B/C), guiding questions for choosing. | Send to co-founders 12-24 hours before the term-sheet-signing meeting. Read pre-meeting; bring as reference at the meeting. |
+| [`equity-split-worksheet-form.md`](equity-split-worksheet-form.md) | Fill-in-half of the equity-split material — one-page form with quick-reference option table and 3 steps (pick / why / acceptable range). | Print 4 copies; each founder fills in independently at the meeting; compare in the room. |
+| [`role-selection-form.md`](role-selection-form.md) | One-page form for each founder to claim their own role/title at the meeting. Quick-reference table of available titles + 2-step fill-in. | Print 4 copies; each founder fills in independently at the meeting; reveal simultaneously and discuss any collisions. |
 | [`signing-logistics-guide.md`](signing-logistics-guide.md) | How to take a `.md` template → signed PDF; recommended e-signature tool (Dropbox Sign, free for our scale); Google Drive folder structure for storing all signed legal documents | Reference doc for any time we need to convert a template here into a signed legal document. Covers the full pipeline. |
 
 ---
