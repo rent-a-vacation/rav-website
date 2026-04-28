@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-25T06:41:23"
-change_ref: "2dd6116"
-change_type: "session-59"
+last_updated: "2026-04-28T10:04:52"
+change_ref: "dfba76b"
+change_type: "session-61"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** April 24, 2026 (Session 59: proof workflow + Action Needed + cancel-listing cascade + PLATFORM-INVENTORY)
+> **Last Updated:** April 28, 2026 (Session 61: PaySafe flow specification — internal spec for escrow + dispute system, 9 gap issues filed)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -106,7 +106,35 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **dev and main:** in sync after Session 59 close (PRs #434–#437 + #439). Session 60 #371 edge-fn test harness lives on dev awaiting PR.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-60)
+### Session Handoff (Sessions 25-61)
+
+**Session 61 — PaySafe Flow Specification (PR #460, Apr 27–28, 2026):**
+
+Authored `docs/payments/PAYSAFE-FLOW-SPEC.md` — the authoritative internal spec for the escrow + dispute system. Single PR (#460) merged to main at `f4f7a12`, doc-only change (no code, no migrations, no test count delta).
+
+**Spec covers** (11 sections):
+- §2 six-state escrow lifecycle (`pending_confirmation` → `confirmation_submitted` → `verified` → `released` / `refunded` / `disputed`) with pre-state branches for Pre-Booked vs Wish-Matched stays (DEC-034)
+- §3 check-in confirmation trigger (target state + current Gaps A/B/C)
+- §4 auto-release eligibility (7 conditions, including `stripe_payouts_enabled` gate, hold period 5 days hardcoded — Gap D)
+- §5 dispute system: 13 categories (8 from migration 026 + 5 from migration 041) grouped by typical filer; status flow; resolution authority (`rav_admin` for safety/payment/cancellation/damage>$500; `rav_staff` for operational; `rav_owner` schema-allowed but unused — Gap E policy-only)
+- §6 SLA targets per category (2h triage on safety/owner-no-show/access — Gap G not enforced)
+- §7 regulatory landscape (FL Ch. 721, HI TAT, TN STR ordinances, CA/NY consumer-protection overrides — Gap I jurisdiction field)
+- §9 nine open gaps (A–I) with priority, suggested home, and dependency notes
+
+**Verified all code references against the implementation** — caught and fixed: migrations 006 and 023 are archived in `docs/supabase-migrations/` (Lovable starter), not in the live `supabase/migrations/` directory; `booking_confirmations` is at lines 131–162 (not 139–190); confirmation insert at `verify-booking-payment/handler.ts:236–266` (not 371); eligibility uses field `stripe_payouts_enabled` (not `payouts_enabled`).
+
+**Tightening pass** added: lifecycle diagram, owner-confirmation timer details (60min default + 2× 30min extensions, sourced from `system_settings` migration 012:133–137), Pre-Booked vs Wish-Matched distinction, complete eligibility (was 5 conditions, now 7), commission-tier note (15% default, Pro −2%, Business −5%), regulatory disclaimer at top of §7, explicit business-hours definition for §6 SLAs (09:00–18:00 ET, M–F, ex-federal-holidays).
+
+**Gaps filed** as 9 discrete GitHub issues (Apr 28 follow-up):
+- **Pre-launch / Launch Readiness:** #461 (A — confirm-checkin), #462 (B — auto-confirm cron, depends on #461), #464 (G — SLA enforcement), #465 (H — Stripe chargeback auto-mirror), #466 (I — jurisdiction field, linked to #80)
+- **Pre-launch / Security Hardening:** #463 (E — per-category role mapping in schema/RLS)
+- **Post-launch:** #467 (C — issue→dispute pre-fill, depends on #461), #468 (D — `HOLD_PERIOD_DAYS` to `system_settings`), #469 (F — split refunds + holdbacks + credits + fee waivers)
+
+**Key design decision (DEC-038)** logged: spec is the long-running source of truth for money-movement architecture. Future gap closures update the spec by removing the corresponding row from §9.
+
+**No platform changes:** test count unchanged (1394), no migrations, no edge-fn changes, dev↔main now in sync via PR #460 merge.
+
+---
 
 **Session 60 — Edge function test harness + doc audit (#371, Apr 25, 2026):**
 
@@ -1002,6 +1030,31 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-038: PaySafe Flow Specification — Authoritative Internal Doc for Money Movement
+**Date:** April 27–28, 2026 (Session 61, PR #460)
+**Decision:** `docs/payments/PAYSAFE-FLOW-SPEC.md` is the **authoritative internal specification** of how money moves through the marketplace — escrow lifecycle, auto-release rules, dispute system (categories, status, authority, SLAs), check-in confirmation, and the state-specific regulatory landscape. When this spec and the code disagree, **the code wins** — open a PR to update the spec.
+
+**Rationale:**
+1. **Onboarding new contributors and counsel.** The escrow + dispute paths cross 5 edge functions, 3 migrations, 2 archived starter migrations, and a Stripe Connect destination-charge model. New engineers (and lawyer doing #80 review) need one document that wires it all together.
+2. **Gap inventory + tracking.** The spec catalogues 9 known gaps (A–I) — each filed as a discrete GitHub issue (#461–#469) with priority, dependencies, and acceptance criteria. Future PRs that close a gap update the spec to remove that row.
+3. **Regulatory pre-launch surface.** §7 captures the timeshare + state-specific rules RAV operates under (FL Ch. 721, HI TAT, TN STR ordinances, CA / NY consumer-protection overrides). Counsel reviews the spec section, not scattered code comments.
+4. **Boundary with public docs.** Internal spec ↔ public-facing policies (`docs/support/policies/payment-policy.md`, `cancellation-policy.md`) are now explicitly distinguished. The public docs stay user-readable; the spec stays implementation-grounded.
+
+**Issue tracking:**
+- **Pre-launch (Launch Readiness milestone):** #461 (Gap A — confirm-checkin server action), #462 (Gap B — auto-confirm cron), #464 (Gap G — SLA enforcement), #465 (Gap H — Stripe chargeback auto-mirror), #466 (Gap I — jurisdiction field, linked to #80)
+- **Pre-launch (Security Hardening milestone):** #463 (Gap E — per-category role mapping in schema/RLS)
+- **Post-launch:** #467 (Gap C — issue → dispute pre-fill), #468 (Gap D — HOLD_PERIOD_DAYS to system_settings), #469 (Gap F — split refunds + holdbacks + credits + fee waivers)
+
+**Cross-links:**
+- Spec at `docs/payments/PAYSAFE-FLOW-SPEC.md` — frontmatter `change_type: session-61-paysafe-spec-v1`
+- Public-facing payment policy at `docs/support/policies/payment-policy.md` (status: draft, blocked on #80)
+- Cancellation policy at `docs/support/policies/cancellation-policy.md`
+- Canonical refund-tier rules at `src/lib/cancellationPolicy.ts`
+
+**Status:** Active. Spec is the long-running source of truth. Future revisions land via PR with a revision-history row entry; closing a gap issue requires a corresponding spec update to remove the row from §9.
 
 ---
 

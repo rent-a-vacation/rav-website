@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-25T21:17:59"
-change_ref: "e1f3aea"
-change_type: "session-59"
+last_updated: "2026-04-28T10:04:52"
+change_ref: "dfba76b"
+change_type: "session-61"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -48,7 +48,7 @@ When `/sdlc pickup` runs next, the user has explicitly scoped the next session a
 
 **Also consider after those:** A controlled PROD deploy window for the accumulated Phase 22 + Session 59 changes (migrations 060–065, text-chat updates with support context + 5 tools + classifier, ingest-support-docs + cancel-listing edge fns, support_conversations + listing-proofs + dispute_source schemas). All currently sit on DEV per CLAUDE.md human-confirmation rule.
 
-## Current Priority Tiers (as of April 25, 2026 — Session 60)
+## Current Priority Tiers (as of April 28, 2026 — Session 61)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
@@ -69,6 +69,11 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
 | **#404** | Phase 22 B5: Legal-blocked public policy docs (privacy, booking-terms, payment-policy, trust-safety, insurance-liability, subscription-terms, refund, cancellation) | Blocked by #80 (legal consult — timeshare lawyer). 8 drafts production-ready in `docs/support/policies/`, held with `status: 'draft'` pending lawyer sign-off. Bundle into the same lawyer pass as #438. |
 | **#438** | Incorporation documentation starter kit (operating agreement, formation checklist, IP assignment, state tax notes, RAV-specific marketplace docs) | **NEXT PICKUP.** Confirmed Session 60: Delaware C-Corp via Stripe Atlas (vs Gust under boardroom review); 4 founders all Florida-based; foreign-entity registration in Florida; scope WIDE — full packet for #80 lawyer engagement. Goal: zero owners onboard before lawyer signs off. |
+| **#461** | PaySafe Gap A — wire up `confirm-checkin` server action (renter arrival button is currently a no-op) | New issue from PaySafe spec §3.2 (DEC-038). Pre-launch. Blocks #462 + #467. |
+| **#462** | PaySafe Gap B — auto-confirmation cron when renter ignores deadline | Depends on #461. Pre-launch — needed for fraud + dispute analytics. |
+| **#464** | PaySafe Gap G — enforce dispute SLAs with alerting + business-hours config | Pre-launch (operational). 2-hour triage on safety/owner-no-show categories cannot be a paper target at launch. |
+| **#465** | PaySafe Gap H — auto-mirror Stripe `charge.dispute.created` to internal disputes | Pre-launch. Chargeback evidence windows are tight; manual mirroring loses time. |
+| **#466** | PaySafe Gap I — jurisdiction field on bookings + per-state disclosure logic | Pre-launch. Linked to #80 — counsel input gates seeding the rules table. Decision A/B/C in issue body re: launch jurisdictions. |
 
 ### Tier C: Tier Feature Differentiation — ✅ COMPLETED IN SESSION 53 (PR #367)
 
@@ -120,6 +125,10 @@ Park these until after launch or until specific triggers.
 | #440 | Archive PROJECT-HUB session handoffs 25-54 to COMPLETED-PHASES | Mechanical doc migration. Pure reorganization — defer until a docs-focused session. |
 | **#443** | Edge-fn test for ingest-support-docs (admin ETL) | Low-risk admin ETL. Implementation guide posted as comment on issue (Session 60). Can be picked up anytime — ~2-3h work. |
 | **#444** | Edge-fn tests for notification stack (notification-dispatcher, sms-scheduler, twilio-webhook) | Blocked on A2P 10DLC anyway (#127 chain). Wait until SMS handles production traffic before adding tests. |
+| **#467** | PaySafe Gap C — pre-fill dispute form from check-in issue report | Post-launch UX win. Depends on #461 (Pre-launch). |
+| **#468** | PaySafe Gap D — move `HOLD_PERIOD_DAYS` to `system_settings` | Post-launch ergonomics. Currently hardcoded at 5; ops cannot tune without redeploy. |
+| **#469** | PaySafe Gap F — native split refunds, holdbacks, rebooking credits, fee waivers | Post-launch. Likely splits into a small epic — needs DEC for scope. |
+| **#463** | PaySafe Gap E — enforce per-category dispute role mapping in schema/RLS | Pre-launch (low risk). In `Security Hardening` milestone (#24). |
 
 ---
 
@@ -141,6 +150,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| Apr 27–28, 2026 | 61 | **PaySafe Flow Specification SHIPPED (PR #460).** New `docs/payments/PAYSAFE-FLOW-SPEC.md` — authoritative internal spec for the escrow + dispute system across 11 sections. DEC-038 logged. **9 gap issues opened** (#461–#469): pre-launch (#461 confirm-checkin server action, #462 auto-confirm cron, #463 role-mapping enforcement, #464 SLA enforcement, #465 Stripe chargeback auto-mirror, #466 jurisdiction field) and post-launch (#467 issue→dispute pre-fill, #468 hold-period to system_settings, #469 split refunds/holdbacks/credits). Tier B updated with the 5 Launch-Readiness gap issues; Tier E updated with the 3 post-launch gap issues + #463 (Security Hardening). Doc-only PR — no test count change (1394), no migrations, no edge-fn changes. |
 | Apr 25, 2026 | 60 | **#442 + #445 SHIPPED (PR #446).** Stripe Connect tests + vitest coverage extension to `supabase/functions/**`. 19 new tests (1375 → 1394). Coverage now measures handler.ts files; thresholds unchanged at 25/25/30/25 — all pass with 75/78/84/75 actuals. Tier A confirmed empty. Tier audit: added #368 + #443 + #444 to Tier E with explicit triggers; clarified #233 (X/Twitter) as post-launch; expanded #404 row to mention all 8 policy drafts (was 6); reframed #438 with confirmed Atlas + 4-founder + Florida foreign-entity scope. |
 | Apr 25, 2026 | 60 | **#371 SHIPPED — edge function test harness.** DEC-037 logged: Vitest, not Deno-native. Pattern: each Stripe-touching + cancel-listing edge fn split into `handler.ts` (testable) + `index.ts` (5-line `Deno.serve` wrapper). 64 new tests across 6 files (1311 → 1375); 23 new `@p0` tags (176 → 199). Refactored: create-booking-checkout, verify-booking-payment, stripe-webhook, process-cancellation, cancel-listing. Plus extracted `text-chat/context-resolver.ts` for the pure intent-classification routing logic. New shared infra: `_shared/__tests__/{stripe-mock, edge-fn-fixtures, stripe-events}.ts`. Tier A now empty; next pickup **#438**. |
 | Apr 25, 2026 | 60 | **Session 60 pickup + doc audit.** All 4 bootstrap docs brought current: LAUNCH-READINESS rebuilt with Sessions 53-59 platform-completeness rows + updated By-the-Numbers (1311 tests / 141 files / 065 migrations / 36 edge fns); PROJECT-HUB body 'Last Updated' bumped to Session 59; PRIORITY-ROADMAP + COMPLETED-PHASES frontmatter stamped to session-59. New issue **#440** opened for the larger archival task (move PROJECT-HUB Session 25-54 handoff entries into COMPLETED-PHASES). Tier E. Doc audit cleared before pivoting to #371. |

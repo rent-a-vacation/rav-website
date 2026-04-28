@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-27T23:23:35"
-change_ref: "ebf90fb"
+last_updated: "2026-04-28T10:04:52"
+change_ref: "dfba76b"
 change_type: "session-61-paysafe-spec-v1"
 status: "active"
 ---
@@ -298,19 +298,19 @@ The internal `disputes` row should be created automatically when a Stripe `charg
 
 ## 9. Open gaps and tracking
 
-Each gap below should become (or be linked to) a GitHub issue before launch. Tracking lives in `docs/PRIORITY-ROADMAP.md`; this doc only enumerates.
+Each gap is tracked as a discrete GitHub issue. Tier assignment and ordering live in `docs/PRIORITY-ROADMAP.md`; this doc only enumerates and links.
 
-| ID | Gap | Priority | Suggested home |
+| ID | Gap | Priority | Issue |
 |---|---|---|---|
-| A | No dedicated `confirm-checkin` server action wired up | Pre-launch | New issue (or fold into #187) |
-| B | No auto-confirmation cron when the renter ignores the deadline | Pre-launch | New issue |
-| C | Check-in issue path does not pre-fill the dispute form | Post-launch UX | New issue |
-| D | `HOLD_PERIOD_DAYS` is hardcoded; should live in `system_settings` | Post-launch | New issue |
-| E | Per-category role mapping (admin vs staff) is policy, not enforced in schema or RLS | Pre-launch (low risk) | New issue |
-| F | No native support for split refunds, holdbacks, rebooking credits, or platform-fee waivers | Post-launch | New issue |
-| G | SLAs are documented here but not enforced in code (no alerting, no business-hours definition in `system_settings`) | Pre-launch (operational) | New issue |
-| H | Stripe `charge.dispute.created` does not auto-create internal dispute row | Pre-launch | New issue |
-| I | No `jurisdiction` field on bookings; no per-state disclosure logic; no per-state cancellation-override rules | Pre-launch | Folds into #80 |
+| A | No dedicated `confirm-checkin` server action wired up | Pre-launch | [#461](https://github.com/rent-a-vacation/rav-website/issues/461) |
+| B | No auto-confirmation cron when the renter ignores the deadline | Pre-launch | [#462](https://github.com/rent-a-vacation/rav-website/issues/462) (depends on #461) |
+| C | Check-in issue path does not pre-fill the dispute form | Post-launch UX | [#467](https://github.com/rent-a-vacation/rav-website/issues/467) (depends on #461) |
+| D | `HOLD_PERIOD_DAYS` is hardcoded; should live in `system_settings` | Post-launch | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) |
+| E | Per-category role mapping (admin vs staff) is policy, not enforced in schema or RLS | Pre-launch (low risk) | [#463](https://github.com/rent-a-vacation/rav-website/issues/463) |
+| F | No native support for split refunds, holdbacks, rebooking credits, or platform-fee waivers | Post-launch | [#469](https://github.com/rent-a-vacation/rav-website/issues/469) |
+| G | SLAs are documented here but not enforced in code (no alerting, no business-hours definition in `system_settings`) | Pre-launch (operational) | [#464](https://github.com/rent-a-vacation/rav-website/issues/464) |
+| H | Stripe `charge.dispute.created` does not auto-create internal dispute row | Pre-launch | [#465](https://github.com/rent-a-vacation/rav-website/issues/465) |
+| I | No `jurisdiction` field on bookings; no per-state disclosure logic; no per-state cancellation-override rules | Pre-launch | [#466](https://github.com/rent-a-vacation/rav-website/issues/466) (linked to #80) |
 
 ---
 
@@ -332,3 +332,4 @@ Each gap below should become (or be linked to) a GitHub issue before launch. Tra
 |---|---|---|
 | 2026-04-27 | Initial draft. Captures current implementation, the nine open gaps (A–I), and the regulatory landscape RAV must address before #80 lawyer pass. | Session 60+ |
 | 2026-04-27 | Tightening pass. Corrected migration paths (006 / 023 archived in `docs/supabase-migrations/`), fixed line-number citations (`booking_confirmations` 131–162; confirmation insert at handler.ts:236–266; eligibility uses `stripe_payouts_enabled`). Added six-state lifecycle diagram, owner-confirmation timer details, Pre-Booked vs Wish-Matched distinction, complete eligibility list (7 conditions), commission-tier note, restructured §5.1 dispute categories by typical filer, regulatory disclaimer at §7, business-hours definition for §6 SLAs. | Session 61 |
+| 2026-04-28 | All nine gaps filed as discrete GitHub issues #461–#469. §9 table updated with issue links + dependency notes. Spec is now self-referential — clicking any gap leads to its tracking issue. | Session 61 (follow-up) |
