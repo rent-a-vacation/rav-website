@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, ArrowLeft, Calendar, MapPin, Users, Loader2, XCircle, Mail, Clock, Ban } from "lucide-react";
-import { format } from "date-fns";
+import { formatSafeDate } from "@/lib/dates";
 import type { Booking, Listing, Property } from "@/types/database";
 import CancelBookingDialog from "@/components/booking/CancelBookingDialog";
 import { computeBookingTimeline } from "@/lib/bookingTimeline";
@@ -154,7 +154,7 @@ const BookingSuccess = () => {
                 <div>
                   <p className="font-medium">Check-in</p>
                   <p className="text-sm text-muted-foreground">
-                    {format(new Date(booking.listing?.check_in_date), "EEEE, MMMM d, yyyy")}
+                    {formatSafeDate(booking.listing?.check_in_date, "EEEE, MMMM d, yyyy")}
                   </p>
                 </div>
               </div>
@@ -163,7 +163,7 @@ const BookingSuccess = () => {
                 <div>
                   <p className="font-medium">Check-out</p>
                   <p className="text-sm text-muted-foreground">
-                    {format(new Date(booking.listing?.check_out_date), "EEEE, MMMM d, yyyy")}
+                    {formatSafeDate(booking.listing?.check_out_date, "EEEE, MMMM d, yyyy")}
                   </p>
                 </div>
               </div>
