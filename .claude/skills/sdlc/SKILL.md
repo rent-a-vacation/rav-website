@@ -115,19 +115,38 @@ Run this at the start of every session:
 
 ### Phase 5: Commit & Deploy
 
+> **Default: direct to `dev`. Feature branch only when the change benefits from isolation.**
+> **Every merge requires explicit per-merge approval from the user — never auto-merge on green CI.**
+
 1. **Commit with conventional format:**
    ```
    type(scope): description
    ```
+
 2. **Push to dev:**
    ```bash
    git push origin dev
    ```
-3. **Create PR dev → main:**
+   This is the default for small/medium changes — solo dev, low overhead, matches the historical pattern (PRs #428–#470).
+
+3. **Use a feature branch instead when:**
+   - Change touches >5 files, schema migrations, payments / auth / RLS
+   - You want a Vercel preview URL isolated from other in-flight work
+   - The diff is large enough that a GitHub PR view helps you review yourself
+   - The change is risky / experimental and you want a clean revert path
+
+   Feature-branch path: branch off dev → push → open PR `feature → dev` → user tests on Vercel preview → user explicitly approves → merge.
+
+4. **When ready to release a batch to production — open `dev → main` PR:**
    ```bash
    gh pr create --repo rent-a-vacation/rav-website --base main --head dev
    ```
-4. **Merge after CI passes:**
+   Stage B is **always separate** from landing on dev. Multiple feature merges typically batch into one release PR.
+
+5. **Merge requires explicit user approval per merge:**
+   - Wait for "go ahead" / "merge it" / "ship it" / "release it" before running `gh pr merge`.
+   - Green CI is necessary but NOT sufficient.
+   - Approval is per-merge — approving Stage A does NOT pre-approve Stage B.
    ```bash
    gh pr merge <number> --repo rent-a-vacation/rav-website --merge
    ```

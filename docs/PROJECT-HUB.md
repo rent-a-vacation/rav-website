@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-28T10:04:52"
-change_ref: "dfba76b"
+last_updated: "2026-05-01T01:14:55"
+change_ref: "a1d0ffa"
 change_type: "session-61"
 status: "active"
 ---
@@ -106,7 +106,26 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **dev and main:** in sync after Session 59 close (PRs #434–#437 + #439). Session 60 #371 edge-fn test harness lives on dev awaiting PR.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-61)
+### Session Handoff (Sessions 25-62)
+
+**Session 62 — Strategic discussion: QA workflow / Sentry / Mobile / Remaining work (Apr 30, 2026):**
+
+Advisor-style conversation captured in [`docs/strategy/2026-04-30-advisor-discussion-qa-sentry-mobile.md`](strategy/2026-04-30-advisor-discussion-qa-sentry-mobile.md). **Not an implementation session — reference only.** Reopen when working on any of the four topics or when revisiting the proposed sequence.
+
+**Topics covered:**
+1. Remaining work — 23 open pre-launch issues; #127 still rate-limiter; PaySafe Gaps + #80 + #257 are the technical critical path
+2. Sentry — six tactical moves on free tier (inbound filters, `beforeSend`, user context, release tracking, GH integration, replay sampling). **Open issue:** GitHub integration installed but "Track this issue" link not creating issues — diagnostic plan in doc
+3. Testing workflow — replacing QA spreadsheet bug-intake pain with **Google Form → Apps Script → GitHub Issue**. Tester stays in Google; scenario spreadsheet kept for coverage tracking only
+4. Mobile — split into Phase 12a (VC demo, Capacitor shell + UX polish, ~2 weeks) vs. full launch (post-PaySafe so mobile launch tells a feature story)
+
+**Draft decisions** (will promote to formal DEC-XXX once implemented):
+- QA bug intake = Google Form + Apps Script + GH Issue (not raw GitHub UI for testers)
+- Mobile = Phase 12a demo-only subset before full launch
+- Sentry GH integration debugged before any further Sentry work
+
+**No code, no migrations, no test count delta.** Doc-only checkpoint to make the conversation revisitable.
+
+---
 
 **Session 61 — PaySafe Flow Specification (PR #460, Apr 27–28, 2026):**
 
