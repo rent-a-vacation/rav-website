@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-05-01T01:14:55"
-change_ref: "a1d0ffa"
+last_updated: "2026-05-01T02:17:14"
+change_ref: "8a06e90"
 change_type: "session-61"
 status: "active"
 ---
@@ -93,8 +93,8 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1375 automated tests** (147 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 199 tagged `@p0` (97 base + previous carry-overs + 23 new from edge-fn harness Session 60 #371) — run with `npm run test:p0`
+- **1402 automated tests** (150 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 201 tagged `@p0` (97 base + previous carry-overs + 23 new from edge-fn harness Session 60 #371 + 2 from #442 Stripe Connect) — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-065 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 + 064 + 065 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
 - **Edge functions:** 36 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` + `cancel-listing` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
