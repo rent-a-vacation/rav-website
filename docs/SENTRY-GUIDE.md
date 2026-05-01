@@ -1,6 +1,6 @@
 ---
-last_updated: "2026-04-18T03:44:08"
-change_ref: "4f7b3b4"
+last_updated: "2026-05-01T01:14:55"
+change_ref: "a1d0ffa"
 change_type: "session-53"
 status: "active"
 ---
@@ -16,6 +16,85 @@ status: "active"
 | **Project** | `rav-website` |
 | **Organization** | `rent-a-vacation-org` |
 | **GitHub Integration** | Installed — `rent-a-vacation/rav-website` connected |
+
+---
+
+## 0. Current Status & Action Plan (last reviewed 2026-04-30, Session 62)
+
+> Living checklist. When we revisit Sentry, **start here** to know what's done vs. open.
+> Strategic context: [`docs/strategy/2026-04-30-advisor-discussion-qa-sentry-mobile.md`](strategy/2026-04-30-advisor-discussion-qa-sentry-mobile.md) §2.
+
+### Verified working ✅
+- Frontend SDK initialized (`src/lib/sentry.ts`) — error capture 100%, traces 5%, replays on-error 100%
+- Source maps uploading via `@sentry/vite-plugin` (production builds only) — confirmed in `vite.config.ts:103-116`
+- GitHub integration **installed** at org level — `rent-a-vacation/rav-website` repo connected (Screenshot 162148)
+- Stack trace linking infra in place — but mapping config is broken, see below
+- 2 alert rules active: high-priority issues (email), uptime monitor on dev.rent-a-vacation.com
+- Sentry MCP server connected for AI-assisted debugging (`~/.sentry/mcp.json` cached)
+
+### Broken / suboptimal — actionable on free tier 🔧
+- **[CRITICAL] Code Mappings misconfigured** (Screenshot 162350 + 162432)
+  - Stack Trace Root: `../../` ← wrong
+  - Source Code Root: empty ← wrong
+  - **Result:** clicking a stack frame in any Sentry error does NOT jump to the correct GitHub source line. Every triage takes longer than it should.
+  - **Fix:** see action plan below — takes 30 seconds.
+
+### To do (free-tier wins, ordered by leverage) ⏳
+- [x] **Fix Code Mappings** — DONE Apr 30. Stack frames now jump to GitHub source. Final values: Stack Trace Root = `../`, Source Code Root = empty (auto-derived via Sentry's "Set up Code Mapping" wizard from the GitHub URL). Verified with `BookingSuccess.tsx:157` frame opening correctly on GitHub.
+- [ ] **Investigate EvalError + script-src CSP errors on `/signup`** (159 + 219 events, 16 users affected) — may indicate signup is partially broken
+- [ ] **Configure Inbound Filters** (Project Settings → Inbound Filters) — block legacy IE, web crawlers, browser extensions, known noisy IPs. Cuts 30-40% of error noise typically.
+- [ ] **Set up Ownership Rules** (Project Settings → Ownership Rules) — auto-assign all issues to you (only one team member right now). Free.
+- [ ] **Add custom tag for `tier`** (Project Settings → Tags & Context) — so you can filter errors by Free / Plus / Pro / Premium / Business. Currently you have `role` but not `tier`.
+- [ ] **Enable Auto Resolve** with a 30-day window (Project Settings → General → Auto Resolve, currently Disabled per Screenshot 162621) — keeps the issue list focused on what actually still happens.
+- [ ] **Add `production` URL to uptime monitoring** once #127 lands and you go live (currently only dev site is monitored — limit is 1 monitor on free tier, so this means swapping when ready).
+
+### Confirmed gated to paid plan — DO NOT PURSUE 🚫
+Documented on the GitHub Integration overview page (Screenshot 161823):
+- ❌ Auto-create GitHub issue from Sentry error → requires **Team plan ($26/mo)**
+- ❌ "Track this issue in Jira/GitHub" button working → requires **Team plan**
+- ❌ Two-way sync of comments / assignees / status → requires **Team plan**
+- ❌ Auto-create issues from alert conditions → requires **Business plan**
+- ❌ CODEOWNERS-based auto-assignment → requires **Business plan**
+
+**Workaround for free tier:** when you find a real bug in Sentry, manually create the GitHub issue using the `gh issue create` snippet in §3 below. The QA workflow we're building (Google Form → GitHub Issue) handles the *new bug* path; this manual workflow handles the *Sentry-found bug* path.
+
+### What Sentry catches vs. what it doesn't (set tester expectations)
+
+> **Sentry is a crash reporter, not a QA tool.** Most QA findings are functional defects, not crashes. Don't expect tester-found issues to appear in Sentry — they won't, because no JavaScript exception was thrown.
+
+**Sentry catches (~20% of QA findings):**
+- Uncaught JavaScript exceptions / promise rejections
+- React component crashes (via `ErrorBoundary.tsx`)
+- CSP violations (currently 6 visible — some are real, some are noise)
+- Anything that ends up in `window.onerror`
+
+**Sentry does NOT catch (~80% of QA findings — these belong in the Google Form):**
+- Functional defects: "button didn't do anything", "wrong text", "form accepted bad input"
+- Layout / mobile / accessibility issues
+- Server-side errors in Supabase edge functions (until #227 instruments them)
+- HTTP errors caught and shown as toasts (no exception was thrown)
+- Wrong navigation, missing CTAs, broken validation messages
+
+**Implication for testers:**
+- Their notes / Form submissions ARE the primary signal for functional defects.
+- IF they happen to see a red error toast or browser console error, optionally paste the Sentry issue URL into the bug Form (optional field). This correlates QA report ↔ Sentry crash.
+- Don't try to "find issues in Sentry" — find them in the Form-generated GitHub issues; use Sentry for the crash subset.
+
+### Action: Fix Code Mappings (do this now)
+
+In Sentry → Settings → Integrations → GitHub → Configure → **Code Mappings** tab → click pencil icon to edit existing mapping:
+
+| Field | Current value (wrong) | New value (correct) |
+|-------|----------------------|---------------------|
+| Project | rav-website | rav-website (no change) |
+| Repo | rent-a-vacation/rav-website | (no change) |
+| Branch | main | main (no change) |
+| **Stack Trace Root** | `../../` | `app:///` |
+| **Source Code Root** | (empty) | (leave empty) |
+
+**Note (Apr 30 finding):** the actual prefix turned out to be `../` (not `app:///` as initially assumed). The simplest path is to use Sentry's auto-derivation: in any unresolved issue's Stack Trace, click the **"Set up Code Mapping"** button next to an in-app frame, and paste the GitHub URL of the file (e.g. `https://github.com/rent-a-vacation/rav-website/blob/main/src/pages/BookingSuccess.tsx`). Sentry computes Stack Trace Root + Source Code Root from comparing the live frame path to the URL. Manual values: Stack Trace Root = `../`, Source Code Root = empty.
+
+**Verification:** open any recent Sentry issue → in the Stack Trace section, find a frame with the green **"In App"** badge → click the **GitHub icon** next to that frame → it should open the exact line on GitHub. Frames in `node_modules/...` won't have GitHub icons (library code is not in the repo) — that's expected, not a bug.
 
 ---
 
