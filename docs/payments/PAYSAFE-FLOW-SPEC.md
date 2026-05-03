@@ -211,7 +211,7 @@ Tracked as **Gap F** (§9).
 
 ## 6. SLAs by dispute type
 
-These are **target SLAs for the operations team**. They are not enforced in code and there is no SLA-violation alerting today. Tracked as **Gap G** (§9).
+~~These are **target SLAs for the operations team**. They are not enforced in code and there is no SLA-violation alerting today.~~ **CLOSED Session 63 / migrations 071 + 072 + `sla-monitor` edge fn.** SLA targets are now seeded into a `sla_targets` table (per-category triage / first response / resolution windows in minutes; on-site categories override business hours). `business_hours_config` defines 09:00–18:00 ET, M–F, ex-2026 federal holidays. The `sla-monitor` cron runs hourly, computes elapsed time per dispute (wall-clock for on-site categories; business minutes otherwise), fires `dispute_sla_breach` notifications to the RAV team, and idempotently stamps `triage_alerted_at` / `resolution_alerted_at` so re-runs do not double-alert. New disputes have their SLA targets snapshotted at insert time so updates to `sla_targets` don't retroactively shift older deadlines.
 
 "Business hours" until §9 Gap G is closed means **09:00–18:00 ET, Monday–Friday, excluding US federal holidays**.
 
@@ -308,7 +308,7 @@ Each gap is tracked as a discrete GitHub issue. Tier assignment and ordering liv
 | ~~D~~ | ✅ **Closed Session 63** — moved to `system_settings.escrow_hold_period_days`; `process-escrow-release` refactored to handler.ts split (DEC-037) | — | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) |
 | ~~E~~ | ✅ **Closed Session 63** — `can_resolve_dispute(category, user_id)` helper + new category-aware UPDATE policy on disputes (migration 069) | — | [#463](https://github.com/rent-a-vacation/rav-website/issues/463) |
 | F | No native support for split refunds, holdbacks, rebooking credits, or platform-fee waivers | Post-launch | [#469](https://github.com/rent-a-vacation/rav-website/issues/469) |
-| G | SLAs are documented here but not enforced in code (no alerting, no business-hours definition in `system_settings`) | Pre-launch (operational) | [#464](https://github.com/rent-a-vacation/rav-website/issues/464) |
+| ~~G~~ | ✅ **Closed Session 63** — `sla_targets` + `business_hours_config` tables + `sla-monitor` scheduled edge fn + on-insert SLA snapshot trigger | — | [#464](https://github.com/rent-a-vacation/rav-website/issues/464) |
 | ~~H~~ | ✅ **Closed Session 63** — `handleChargeDisputeCreated` mirrors Stripe chargebacks to `disputes` (idempotent via `stripe_dispute_id` UNIQUE in migration 070) | — | [#465](https://github.com/rent-a-vacation/rav-website/issues/465) |
 | I | No `jurisdiction` field on bookings; no per-state disclosure logic; no per-state cancellation-override rules | Pre-launch | [#466](https://github.com/rent-a-vacation/rav-website/issues/466) (linked to #80) |
 
