@@ -2,6 +2,32 @@ import * as Sentry from "@sentry/react";
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN as string | undefined;
 
+type SentryEvent = Parameters<NonNullable<Parameters<typeof Sentry.init>[0]["beforeSend"]>>[0];
+
+/**
+ * Drop CSP / `unsafe-eval` events and strip PII before send.
+ * Exported so it can be unit-tested. Returning null tells Sentry to discard the event.
+ */
+export function beforeSend(event: SentryEvent): SentryEvent | null {
+  const exception = event.exception?.values?.[0];
+  const exceptionType = exception?.type ?? "";
+  const exceptionValue = exception?.value ?? "";
+  const message = event.message ?? "";
+
+  // CSP report-uri pipes violation reports here; they're noise if the underlying
+  // eval source is fixed. Drop them so a future eval-using lib can't burn quota.
+  if (exceptionType === "EvalError") return null;
+  if (exceptionValue.includes("unsafe-eval")) return null;
+  if (message.toLowerCase().includes("content security policy")) return null;
+  if (message.toLowerCase().includes("refused to evaluate")) return null;
+
+  if (event.user) {
+    delete event.user.ip_address;
+    delete event.user.email;
+  }
+  return event;
+}
+
 export function initSentry() {
   if (!SENTRY_DSN) return;
 
@@ -39,14 +65,7 @@ export function initSentry() {
       "ResizeObserver loop",
     ],
 
-    beforeSend(event) {
-      // Strip PII from error reports
-      if (event.user) {
-        delete event.user.ip_address;
-        delete event.user.email;
-      }
-      return event;
-    },
+    beforeSend,
   });
 }
 

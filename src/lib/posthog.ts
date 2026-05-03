@@ -13,8 +13,10 @@ export function initPostHog() {
     // Capture pageviews automatically on route change
     capture_pageview: false, // We'll handle this manually via React Router
     capture_pageleave: true,
-    // Session recording (free with Scale plan)
-    disable_session_recording: false,
+    // Session recording disabled — rrweb uses `new Function()` which CSP blocks
+    // without 'unsafe-eval'. We chose to keep CSP strict (issue #473) and rely
+    // on autocapture + custom events for behavioural analytics.
+    disable_session_recording: true,
     // Autocapture clicks, inputs, etc.
     autocapture: true,
     // Privacy: mask sensitive inputs by default
