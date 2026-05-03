@@ -284,7 +284,7 @@ A handful of states (e.g. **California Civil Code §1689**, **New York General B
 
 A renter who files a credit-card chargeback bypasses the RAV dispute system. Stripe routes the dispute to RAV; RAV must respond within Stripe's chargeback-evidence window (typically 7–21 days depending on card network).
 
-The internal `disputes` row should be created automatically when a Stripe `charge.dispute.created` webhook fires, with category `payment_dispute` and `priority='high'`. Auto-creation from the Stripe webhook is **Gap H** (§9). Until then, RAV staff must hand-mirror the chargeback into a dispute row when Stripe notifies us.
+~~The internal `disputes` row should be created automatically when a Stripe `charge.dispute.created` webhook fires, with category `payment_dispute` and `priority='high'`. Auto-creation from the Stripe webhook is **Gap H** (§9).~~ **CLOSED Session 63** — `handleChargeDisputeCreated` in `supabase/functions/stripe-webhook/handler.ts` mirrors every Stripe chargeback to a `disputes` row with `category='payment_dispute'`, `priority='high'`, evidence_urls populated with the Stripe dashboard URL, and `stripe_dispute_id` set so re-firing the webhook is idempotent (UNIQUE index on the column via migration 070). Orphan chargebacks (no matching booking) trigger a RAV team alert for manual investigation.
 
 ---
 
@@ -309,7 +309,7 @@ Each gap is tracked as a discrete GitHub issue. Tier assignment and ordering liv
 | ~~E~~ | ✅ **Closed Session 63** — `can_resolve_dispute(category, user_id)` helper + new category-aware UPDATE policy on disputes (migration 069) | — | [#463](https://github.com/rent-a-vacation/rav-website/issues/463) |
 | F | No native support for split refunds, holdbacks, rebooking credits, or platform-fee waivers | Post-launch | [#469](https://github.com/rent-a-vacation/rav-website/issues/469) |
 | G | SLAs are documented here but not enforced in code (no alerting, no business-hours definition in `system_settings`) | Pre-launch (operational) | [#464](https://github.com/rent-a-vacation/rav-website/issues/464) |
-| H | Stripe `charge.dispute.created` does not auto-create internal dispute row | Pre-launch | [#465](https://github.com/rent-a-vacation/rav-website/issues/465) |
+| ~~H~~ | ✅ **Closed Session 63** — `handleChargeDisputeCreated` mirrors Stripe chargebacks to `disputes` (idempotent via `stripe_dispute_id` UNIQUE in migration 070) | — | [#465](https://github.com/rent-a-vacation/rav-website/issues/465) |
 | I | No `jurisdiction` field on bookings; no per-state disclosure logic; no per-state cancellation-override rules | Pre-launch | [#466](https://github.com/rent-a-vacation/rav-website/issues/466) (linked to #80) |
 
 ---

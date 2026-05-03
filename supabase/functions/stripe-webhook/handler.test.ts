@@ -28,6 +28,7 @@ import {
   handleCheckoutCompleted,
   handleCheckoutExpired,
   handleChargeRefunded,
+  handleChargeDisputeCreated,
   handleAccountUpdated,
   handleTransferCreated,
   handleTransferReversed,
@@ -201,6 +202,97 @@ describe("stripe-webhook — handleChargeRefunded", () => {
     await handleChargeRefunded(supabase, chargeRefundedEvent().data.object);
     // 2 calls: lookup + update
     expect(fromSpy.mock.calls.filter((c) => c[0] === "bookings").length).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe("stripe-webhook — handleChargeDisputeCreated (#465 Gap H) @p0", () => {
+  function makeChargeDispute(overrides: Record<string, unknown> = {}) {
+    return {
+      id: "dp_test_123",
+      payment_intent: "pi_test_abc",
+      reason: "fraudulent",
+      amount: 140000, // cents → $1,400
+      ...overrides,
+    };
+  }
+
+  it("inserts a payment_dispute row when chargeback is for a known booking", async () => {
+    const supabase = createEdgeFnSupabaseMock({
+      // Idempotency lookup: no existing mirrored dispute
+      disputes: { data: null, error: null },
+      bookings: {
+        data: { id: "bk-1", renter_id: "renter-1", listing: { owner_id: "owner-1" } },
+        error: null,
+      },
+    });
+    const fromSpy = vi.spyOn(supabase, "from");
+
+    await handleChargeDisputeCreated(supabase, makeChargeDispute());
+
+    // disputes.select(idempotency check) + bookings.select + disputes.insert
+    expect(fromSpy.mock.calls.filter((c) => c[0] === "disputes").length).toBeGreaterThanOrEqual(2);
+    expect(fromSpy).toHaveBeenCalledWith("bookings");
+    // Notification dispatched to RAV team
+    const invokeMock = (
+      supabase as unknown as { functions: { invoke: ReturnType<typeof vi.fn> } }
+    ).functions.invoke;
+    expect(invokeMock).toHaveBeenCalledWith(
+      "notification-dispatcher",
+      expect.objectContaining({
+        body: expect.objectContaining({ type_key: "stripe_chargeback_received" }),
+      }),
+    );
+  });
+
+  it("is idempotent — re-firing the same chargeback does not insert a duplicate", async () => {
+    const supabase = createEdgeFnSupabaseMock({
+      // Existing mirrored dispute returned by the idempotency lookup
+      disputes: { data: { id: "existing-dispute-1" }, error: null },
+      bookings: { data: null, error: null },
+    });
+    const fromSpy = vi.spyOn(supabase, "from");
+
+    await handleChargeDisputeCreated(supabase, makeChargeDispute());
+
+    // Should NOT have hit bookings (early return after dedup)
+    expect(fromSpy.mock.calls.find((c) => c[0] === "bookings")).toBeUndefined();
+  });
+
+  it("alerts RAV team when chargeback cannot be matched to a booking", async () => {
+    const supabase = createEdgeFnSupabaseMock({
+      disputes: { data: null, error: null },
+      bookings: { data: null, error: null }, // unknown booking
+    });
+
+    await handleChargeDisputeCreated(supabase, makeChargeDispute());
+
+    const invokeMock = (
+      supabase as unknown as { functions: { invoke: ReturnType<typeof vi.fn> } }
+    ).functions.invoke;
+    expect(invokeMock).toHaveBeenCalledWith(
+      "notification-dispatcher",
+      expect.objectContaining({
+        body: expect.objectContaining({ type_key: "stripe_chargeback_orphan" }),
+      }),
+    );
+  });
+
+  it("skips silently when the event has no id (defensive)", async () => {
+    const supabase = createEdgeFnSupabaseMock({});
+    const fromSpy = vi.spyOn(supabase, "from");
+
+    await handleChargeDisputeCreated(supabase, { payment_intent: "pi_x" });
+
+    expect(fromSpy).not.toHaveBeenCalled();
+  });
+
+  it("skips when payment_intent is missing", async () => {
+    const supabase = createEdgeFnSupabaseMock({});
+    const fromSpy = vi.spyOn(supabase, "from");
+
+    await handleChargeDisputeCreated(supabase, { id: "dp_test_999" });
+
+    expect(fromSpy).not.toHaveBeenCalled();
   });
 });
 
