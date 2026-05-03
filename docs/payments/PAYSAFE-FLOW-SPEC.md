@@ -182,7 +182,7 @@ Defined in `supabase/migrations/026_dispute_resolution.sql:21–30`. A dispute c
 - **`rav_staff`** — operational categories only: `cleanliness`, `late_checkout`, `rule_violation`, `unauthorized_guests`, `owner_no_show`, `renter_no_show`. **Must escalate to `rav_admin`** for `safety_concerns`, `payment_dispute`, `cancellation_dispute`, `renter_damage` over $500, any case with prior dispute history on either party, or anything legal counsel has flagged.
 - **`rav_owner`** — RLS allows it (`supabase/migrations/026_dispute_resolution.sql:116, 129, 169`) but in practice this role does not handle individual disputes; access is reserved for governance / legal sign-off.
 
-The role-to-category mapping above is **policy enforced in `AdminDisputes.tsx`**, not in the schema or RLS. Schema-level enforcement is **Gap E** (§9).
+~~The role-to-category mapping above is **policy enforced in `AdminDisputes.tsx`**, not in the schema or RLS.~~ **Closed Session 63 / migration 069** — the role-to-category mapping is now enforced at the schema layer via the `can_resolve_dispute(category, user_id)` SECURITY DEFINER function and the new `"RAV team can update disputes by category"` UPDATE policy on `disputes`. The old catch-all RAV-team UPDATE policy is dropped. UI gating in `AdminDisputes.tsx` becomes defense-in-depth rather than the only enforcement.
 
 ### 5.4 Resolution actions
 
@@ -306,7 +306,7 @@ Each gap is tracked as a discrete GitHub issue. Tier assignment and ordering liv
 | ~~B~~ | ✅ **Closed Session 63** — `auto-confirm-checkins` scheduled edge fn (hourly batch) flips deadline-elapsed rows with `confirmed_at_source='auto'` | — | [#462](https://github.com/rent-a-vacation/rav-website/issues/462) |
 | ~~C~~ | ✅ **Closed Session 63** — `ReportIssueDialog` accepts `prefill` prop; check-in issue surfaces a "File a formal dispute" CTA | — | [#467](https://github.com/rent-a-vacation/rav-website/issues/467) |
 | ~~D~~ | ✅ **Closed Session 63** — moved to `system_settings.escrow_hold_period_days`; `process-escrow-release` refactored to handler.ts split (DEC-037) | — | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) |
-| E | Per-category role mapping (admin vs staff) is policy, not enforced in schema or RLS | Pre-launch (low risk) | [#463](https://github.com/rent-a-vacation/rav-website/issues/463) |
+| ~~E~~ | ✅ **Closed Session 63** — `can_resolve_dispute(category, user_id)` helper + new category-aware UPDATE policy on disputes (migration 069) | — | [#463](https://github.com/rent-a-vacation/rav-website/issues/463) |
 | F | No native support for split refunds, holdbacks, rebooking credits, or platform-fee waivers | Post-launch | [#469](https://github.com/rent-a-vacation/rav-website/issues/469) |
 | G | SLAs are documented here but not enforced in code (no alerting, no business-hours definition in `system_settings`) | Pre-launch (operational) | [#464](https://github.com/rent-a-vacation/rav-website/issues/464) |
 | H | Stripe `charge.dispute.created` does not auto-create internal dispute row | Pre-launch | [#465](https://github.com/rent-a-vacation/rav-website/issues/465) |
