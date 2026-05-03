@@ -114,8 +114,8 @@ These gaps do not block today's escrow auto-release because release is gated on 
 ### 4.1 Hold period
 
 - **Default:** 5 days after the booking's `check_out_date`.
-- **Source:** `supabase/functions/process-escrow-release/index.ts:7` — `const HOLD_PERIOD_DAYS = 5;`.
-- **Configurability:** **hardcoded in the edge function**. Not in `system_settings`. Changing the hold requires a code change plus an edge-function redeploy. **Gap D** (§9).
+- **Source:** `system_settings.escrow_hold_period_days` (`{"days": 5}` JSONB) — **closed Gap D in Session 63 / migration 068**. Resolved by `resolveHoldPeriodDays()` in `supabase/functions/process-escrow-release/handler.ts`. Falls back to default 5 if the setting row is missing or malformed (out-of-range / non-numeric values are rejected with fallback).
+- **Configurability:** runtime — ops can change the value without a code change or redeploy. Admin UI for the setting is a fast-follow.
 
 ### 4.2 Eligibility (all must be true)
 
@@ -305,7 +305,7 @@ Each gap is tracked as a discrete GitHub issue. Tier assignment and ordering liv
 | ~~A~~ | ✅ **Closed Session 63** — `confirm-checkin` edge fn shipped with photo upload + idempotency + notifications | — | [#461](https://github.com/rent-a-vacation/rav-website/issues/461) |
 | ~~B~~ | ✅ **Closed Session 63** — `auto-confirm-checkins` scheduled edge fn (hourly batch) flips deadline-elapsed rows with `confirmed_at_source='auto'` | — | [#462](https://github.com/rent-a-vacation/rav-website/issues/462) |
 | ~~C~~ | ✅ **Closed Session 63** — `ReportIssueDialog` accepts `prefill` prop; check-in issue surfaces a "File a formal dispute" CTA | — | [#467](https://github.com/rent-a-vacation/rav-website/issues/467) |
-| D | `HOLD_PERIOD_DAYS` is hardcoded; should live in `system_settings` | Post-launch | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) |
+| ~~D~~ | ✅ **Closed Session 63** — moved to `system_settings.escrow_hold_period_days`; `process-escrow-release` refactored to handler.ts split (DEC-037) | — | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) |
 | E | Per-category role mapping (admin vs staff) is policy, not enforced in schema or RLS | Pre-launch (low risk) | [#463](https://github.com/rent-a-vacation/rav-website/issues/463) |
 | F | No native support for split refunds, holdbacks, rebooking credits, or platform-fee waivers | Post-launch | [#469](https://github.com/rent-a-vacation/rav-website/issues/469) |
 | G | SLAs are documented here but not enforced in code (no alerting, no business-hours definition in `system_settings`) | Pre-launch (operational) | [#464](https://github.com/rent-a-vacation/rav-website/issues/464) |
