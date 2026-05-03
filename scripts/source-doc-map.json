@@ -21,6 +21,19 @@
       "docs": ["docs/testing/STRIPE-TEST-CARDS-RAV.md"]
     },
     {
+      "source": [
+        "supabase/functions/process-escrow-release/**",
+        "supabase/functions/process-cancellation/**",
+        "supabase/functions/process-dispute-refund/**",
+        "supabase/functions/confirm-checkin/**",
+        "supabase/functions/auto-confirm-checkins/**",
+        "supabase/functions/sla-monitor/**",
+        "supabase/functions/stripe-webhook/**",
+        "src/lib/cancellationPolicy.ts"
+      ],
+      "docs": ["docs/payments/PAYSAFE-FLOW-SPEC.md", "docs/payments/PAYSAFE-COMPLIANCE.md"]
+    },
+    {
       "source": ["supabase/migrations/**"],
       "docs": ["docs/ARCHITECTURE.md", "docs/COMPLETED-PHASES.md"]
     },

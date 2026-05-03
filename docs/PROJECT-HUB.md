@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-05-01T02:17:14"
 change_ref: "8a06e90"
-change_type: "session-61"
+change_type: "session-63"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** April 28, 2026 (Session 61: PaySafe flow specification — internal spec for escrow + dispute system, 9 gap issues filed)
+> **Last Updated:** May 2, 2026 (Session 63: #473 CSP fix shipped; PaySafe gap sweep A/B/C/D/E/G/H + compliance doc — DEC-039 logged)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -106,7 +106,29 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **dev and main:** in sync after Session 59 close (PRs #434–#437 + #439). Session 60 #371 edge-fn test harness lives on dev awaiting PR.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-62)
+### Session Handoff (Sessions 25-63)
+
+**Session 63 — #473 + PaySafe gap sweep + compliance doc (May 2, 2026):**
+
+Implementation session covering eight tickets across two themes: a user-affecting CSP/eval bug on `/signup` (#473) and seven of the nine open PaySafe gaps (A, B, C, D, E, G, H — F deferred per user, I gated on #80). Concurrent with the gap closure: new compliance-posture doc seeded for the lawyer-review pass.
+
+**Eight-PR plan (sequenced through this session):**
+1. PR #474 — `fix(observability): #473 disable PostHog session recording + filter CSP/eval Sentry events`. PostHog rrweb session recording is the eval source; disabled it. Autocapture stays on. Extracted `beforeSend` and added EvalError + CSP-message filters as defense in depth. 6 new tests. **MERGED into PR #474.**
+2. `docs(paysafe): compliance posture doc + retier C/D to pre-launch` — new `docs/payments/PAYSAFE-COMPLIANCE.md`, retier #467 + #468 + consolidate #463 into Tier B, source-doc-map updates, DEC-039 logged.
+3. PR for #461 (Gap A) — `confirm-checkin` edge function (handler.ts split per DEC-037) + photo upload UI in TravelerCheckin issue path + new `checkin-photos` storage bucket + migration 066 + new `src/lib/checkinPhoto.ts` util.
+4. PR for #462 + #467 (Gaps B + C) — auto-confirmation cron edge fn + issue→dispute pre-fill in ReportIssueDialog. Migration 067.
+5. PR for #468 (Gap D) — `escrow_hold_period_days` to `system_settings`; refactors `process-escrow-release` into handler.ts split as a side effect (Tier A coverage win). Migration 068.
+6. PR for #463 (Gap E) — per-category dispute role enforcement via SQL helper + new RLS policy. Migration 069.
+7. PR for #465 (Gap H) — Stripe `charge.dispute.created` webhook case → auto-mirror to internal `disputes` row. Migration 070 adds `stripe_dispute_id` UNIQUE column.
+8. PR for #464 (Gap G) — SLA targets table + business-hours config + new `sla-monitor` scheduled edge fn + AdminDisputes SLA column + filter. Migrations 071 + 072.
+
+**Test budget impact:** Baseline 1402 → projected ~1457 (+55) after all eight PRs. Up to ~155 test files.
+
+**Migrations stacking on DEV:** 066, 067, 068, 069, 070, 071, 072. PROD deploy held per CLAUDE.md until human confirmation at session close.
+
+**Compliance posture (DEC-039) summary:** RAV operates as a marketplace under Stripe Connect destination charges. Funds never enter a RAV-controlled bank account; Stripe is the licensed money transmitter. RAV is not an MSB and does not require state money-transmitter licenses. RAV is responsible for *when* funds move (the 5-day hold + admin holds + dispute pauses + auto-release rules), inter-party dispute mediation, marketplace ToS, timeshare-specific copy compliance, per-state consumer-protection cancellation overrides, and operational SLAs. The new `PAYSAFE-COMPLIANCE.md` is the landing zone for incoming counsel-provided statutory references.
+
+---
 
 **Session 62 — Strategic discussion: QA workflow / Sentry / Mobile / Remaining work (Apr 30, 2026):**
 
@@ -1049,6 +1071,26 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-039: PaySafe Compliance Posture Doc + Tier B Promotion of Gaps C & D
+**Date:** May 2, 2026 (Session 63)
+**Decision:** Create a new doc `docs/payments/PAYSAFE-COMPLIANCE.md` that captures *why* the marketplace + Stripe Connect (destination-charge) architecture keeps RAV out of money-transmission compliance scope, what RAV remains accountable for, and a gap-closure register linking each PaySafe gap to its issue + status. The doc is the landing zone for incoming legal/statutory references the user will share separately. Concurrently promote **#467 (Gap C)** and **#468 (Gap D)** from Tier E (post-launch) to Tier B (pre-launch) per user stance: minimal post-launch deferral.
+
+**Rationale:**
+1. **Counsel handoff surface.** When #80 lawyer review begins, counsel needs one document that explains the legal model — not a spec full of state machines and migration paths. PAYSAFE-FLOW-SPEC describes *what the system does*; this new doc describes *the legal posture under which it operates*.
+2. **Recurring questions deserve a durable answer.** "Are we an MSB?" / "Do we need licenses?" / "What does Stripe own legally?" recur across founder, engineering, and counsel conversations. Captured once in §§3–4 of the new doc.
+3. **Future legal references need a home.** The user has indicated they will share specific statutes / regulations. §7 of the new doc is a structured placeholder per-jurisdiction with a per-statute template (citation → what it requires → how RAV is compliant → counsel guidance).
+4. **Tier B promotion of C/D.** With incorporation about to unblock and a public-traffic phase imminent, deferring #467 (issue→dispute pre-fill) and #468 (HOLD_PERIOD_DAYS to system_settings) post-launch is no longer worth the operational friction. Both are small (~half-day each).
+
+**What changes:**
+- New doc: `docs/payments/PAYSAFE-COMPLIANCE.md`
+- `docs/PRIORITY-ROADMAP.md` — #467 + #468 Tier E → Tier B; #463 consolidated under Tier B (was duplicated); revision-history entry
+- `scripts/source-doc-map.json` — payment edge fns + cancellation lib mapped to both PAYSAFE-FLOW-SPEC + PAYSAFE-COMPLIANCE
+- Session 63 work plan: 7 of 9 PaySafe gaps queued (A, B, C, D, E, G, H) + bug fix #473. F deferred (user-confirmed manual workaround for first ~10 cases). I gated on #80.
+
+**Status:** Active. Compliance doc is now part of the docs-audit + sync-check pipeline. Gap closure register (§6) is updated by every PR that closes a gap; revision history (§9) gets a row per session that touches the doc.
 
 ---
 
