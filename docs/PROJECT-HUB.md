@@ -93,17 +93,17 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1402 automated tests** (150 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 201 tagged `@p0` (97 base + previous carry-overs + 23 new from edge-fn harness Session 60 #371 + 2 from #442 Stripe Connect) — run with `npm run test:p0`
+- **1492 automated tests** (157 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 220+ tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-065 (001-059 deployed to DEV + PROD; 060 + 061 + 062 + 063 + 064 + 065 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
-- **Edge functions:** 36 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` + `cancel-listing` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58, Phase 22 C1 + C4).
+- **Migrations created:** 001-072 (001-059 deployed to DEV + PROD; 060-072 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
+- **Edge functions:** 39 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` + `cancel-listing` + `confirm-checkin` + `auto-confirm-checkins` + `sla-monitor` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58). `process-escrow-release` refactored to handler.ts split (Session 63 / DEC-037).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** in sync after Session 59 close (PRs #434–#437 + #439). Session 60 #371 edge-fn test harness lives on dev awaiting PR.
+- **dev and main:** Session 63 8-PR sweep (PR #474) sits on `dev` awaiting `dev → main` merge (1492 tests, 7 new migrations, 3 new edge fns, 1 refactored).
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
 ### Session Handoff (Sessions 25-63)
@@ -112,19 +112,26 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 
 Implementation session covering eight tickets across two themes: a user-affecting CSP/eval bug on `/signup` (#473) and seven of the nine open PaySafe gaps (A, B, C, D, E, G, H — F deferred per user, I gated on #80). Concurrent with the gap closure: new compliance-posture doc seeded for the lawyer-review pass.
 
-**Eight-PR plan (sequenced through this session):**
-1. PR #474 — `fix(observability): #473 disable PostHog session recording + filter CSP/eval Sentry events`. PostHog rrweb session recording is the eval source; disabled it. Autocapture stays on. Extracted `beforeSend` and added EvalError + CSP-message filters as defense in depth. 6 new tests. **MERGED into PR #474.**
-2. `docs(paysafe): compliance posture doc + retier C/D to pre-launch` — new `docs/payments/PAYSAFE-COMPLIANCE.md`, retier #467 + #468 + consolidate #463 into Tier B, source-doc-map updates, DEC-039 logged.
-3. PR for #461 (Gap A) — `confirm-checkin` edge function (handler.ts split per DEC-037) + photo upload UI in TravelerCheckin issue path + new `checkin-photos` storage bucket + migration 066 + new `src/lib/checkinPhoto.ts` util.
-4. PR for #462 + #467 (Gaps B + C) — auto-confirmation cron edge fn + issue→dispute pre-fill in ReportIssueDialog. Migration 067.
-5. PR for #468 (Gap D) — `escrow_hold_period_days` to `system_settings`; refactors `process-escrow-release` into handler.ts split as a side effect (Tier A coverage win). Migration 068.
-6. PR for #463 (Gap E) — per-category dispute role enforcement via SQL helper + new RLS policy. Migration 069.
-7. PR for #465 (Gap H) — Stripe `charge.dispute.created` webhook case → auto-mirror to internal `disputes` row. Migration 070 adds `stripe_dispute_id` UNIQUE column.
-8. PR for #464 (Gap G) — SLA targets table + business-hours config + new `sla-monitor` scheduled edge fn + AdminDisputes SLA column + filter. Migrations 071 + 072.
+**Eight-PR sweep — all shipped to `dev` in PR #474 (one bundled release):**
 
-**Test budget impact:** Baseline 1402 → projected ~1457 (+55) after all eight PRs. Up to ~155 test files.
+1. **#473 (CSP/eval bug)** — `bbcfadf`. PostHog session recording disabled (rrweb was the eval source); Sentry `beforeSend` now drops EvalError + CSP-message events as defense in depth. 6 new tests.
+2. **PaySafe Compliance doc + retier** — `3ab2b03`. New `docs/payments/PAYSAFE-COMPLIANCE.md` captures the marketplace + Stripe Connect compliance posture; retier #467 + #468 + #463 into Tier B; DEC-039 logged.
+3. **#461 Gap A — confirm-checkin server action** — `6950246`. New edge fn (handler.ts split per DEC-037) + `checkin-photos` private storage bucket + photo upload UI in TravelerCheckin + replaces direct DB writes; idempotent re-tap + auth-gated; new `checkin_confirmation_source` enum. 25 new tests.
+4. **#462 + #467 Gaps B + C — auto-confirm cron + issue→dispute pre-fill** — `53fe924`. New `auto-confirm-checkins` scheduled edge fn flips deadline-elapsed rows with `confirmed_at_source='auto'`. ReportIssueDialog now accepts `prefill` prop; `mapCheckinIssueToDisputeCategory()` maps check-in issue types to dispute categories. 11 new tests.
+5. **#468 Gap D — HOLD_PERIOD_DAYS to system_settings + escrow-release split** — `1c4b4bf`. Migration 068 + `process-escrow-release` first-time DEC-037 split with `resolveHoldPeriodDays()` helper (5 fallback paths covered). Hold period now runtime-tunable. 11 new tests.
+6. **#463 Gap E — Per-category dispute role RLS** — `6049058`. Migration 069 with `can_resolve_dispute(category, user_id)` SECURITY DEFINER helper + new category-aware UPDATE policy on `disputes` (replaces catch-all). Schema parity with the AdminDisputes UI gating; UI becomes defense-in-depth.
+7. **#465 Gap H — Stripe chargeback auto-mirror** — `38e0e20`. New `handleChargeDisputeCreated` case in stripe-webhook handler creates internal `disputes` row from `charge.dispute.created`. Migration 070 adds `stripe_dispute_id` UNIQUE for idempotency. Orphan chargebacks alert RAV team for manual investigation. 5 new tests.
+8. **#464 Gap G — SLA targets + alerting + business-hours config** — `81f92df`. Migrations 071 (sla_targets + business_hours_config tables, seeded with §6 matrix and 2026 federal holidays) + 072 (per-dispute alert tracking + on-insert snapshot trigger). New `sla-monitor` scheduled edge fn fires `dispute_sla_breach` notifications; on-site categories use wall-clock, others use business minutes. New `src/lib/disputeSla.ts` pure-logic util. 32 new tests.
 
-**Migrations stacking on DEV:** 066, 067, 068, 069, 070, 071, 072. PROD deploy held per CLAUDE.md until human confirmation at session close.
+**Final platform stats (after Session 63):**
+- **Tests:** 1402 → **1492** (+90; 7 new test files)
+- **Test files:** 150 → **157**
+- **Migrations:** 065 → **072** (+7 new on DEV; PROD held)
+- **Edge functions:** +3 new (`confirm-checkin`, `auto-confirm-checkins`, `sla-monitor`) + 1 refactored to handler.ts split (`process-escrow-release`)
+
+**PaySafe gap closure (after Session 63):** A, B, C, D, E, G, H closed. F deferred (user-confirmed manual workaround for first ~10 cases). I gated on #80 lawyer pass. **7 of 9 gaps closed.**
+
+**PROD deploy window (pending human confirmation per CLAUDE.md):** Migrations 066–072 + 3 new edge fns + the `stripe-webhook` handler change all sit on DEV awaiting a coordinated PROD push.
 
 **Compliance posture (DEC-039) summary:** RAV operates as a marketplace under Stripe Connect destination charges. Funds never enter a RAV-controlled bank account; Stripe is the licensed money transmitter. RAV is not an MSB and does not require state money-transmitter licenses. RAV is responsible for *when* funds move (the 5-day hold + admin holds + dispute pauses + auto-release rules), inter-party dispute mediation, marketplace ToS, timeshare-specific copy compliance, per-state consumer-protection cancellation overrides, and operational SLAs. The new `PAYSAFE-COMPLIANCE.md` is the landing zone for incoming counsel-provided statutory references.
 

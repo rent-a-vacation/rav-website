@@ -1,13 +1,13 @@
 ---
 last_updated: "2026-05-01T01:38:53"
 change_ref: "b70bd7a"
-change_type: "session-60"
+change_type: "session-63"
 status: "active"
 ---
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** April 30, 2026 (Session 62 — BookingSuccess RangeError fix + `formatSafeDate` helper)
+> **Last Updated:** May 2, 2026 (Session 63 — #473 + 7 PaySafe gaps closed, +90 tests, +7 test files)
 
 ---
 
@@ -15,9 +15,9 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1402 |
-| **Test files** | 150 |
-| **P0 critical-path tests** | 201 total tagged `@p0` (199 base + 2 new from #442 Stripe Connect tests) |
+| **Total tests** | 1492 |
+| **Test files** | 157 |
+| **P0 critical-path tests** | 220+ tagged `@p0` (Session 63 added @p0 on confirm-checkin handler, auto-confirm-checkins, process-escrow-release, sla-monitor, disputeSla, checkinPhoto, sentry, ReportIssueDialog mapper) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
 | **CI run time** | <3 min |
