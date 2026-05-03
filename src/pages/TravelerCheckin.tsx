@@ -49,6 +49,9 @@ import {
   buildCheckinPhotoStoragePath,
   CHECKIN_PHOTO_UI_COPY,
 } from "@/lib/checkinPhoto";
+import ReportIssueDialog, {
+  mapCheckinIssueToDisputeCategory,
+} from "@/components/booking/ReportIssueDialog";
 
 interface CheckinConfirmation {
   id: string;
@@ -103,6 +106,15 @@ const TravelerCheckin = () => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
   const [photoSignedUrls, setPhotoSignedUrls] = useState<Record<string, string>>({});
+  const [disputeDialogOpen, setDisputeDialogOpen] = useState(false);
+  const [disputePrefill, setDisputePrefill] = useState<{
+    bookingId: string;
+    ownerId?: string;
+    resortName?: string;
+    category?: ReturnType<typeof mapCheckinIssueToDisputeCategory>;
+    description?: string;
+    photoNote?: string;
+  } | null>(null);
 
   const bookingId = searchParams.get("booking");
 
@@ -591,9 +603,38 @@ const TravelerCheckin = () => {
                     </div>
                   )}
                   {!checkin.resolved && (
-                    <p className="text-sm text-muted-foreground mt-3">
-                      Our team is reviewing your issue and will contact you shortly.
-                    </p>
+                    <>
+                      <p className="text-sm text-muted-foreground mt-3">
+                        Our team is reviewing your issue and will contact you shortly.
+                      </p>
+                      <div className="mt-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setDisputePrefill({
+                              bookingId: checkin.booking_id,
+                              ownerId: checkin.booking?.listing?.owner_id,
+                              resortName: checkin.booking?.listing?.property?.resort_name,
+                              category: mapCheckinIssueToDisputeCategory(
+                                checkin.issue_type ?? "other",
+                              ),
+                              description: checkin.issue_description ?? "",
+                              photoNote: checkin.verification_photo_path
+                                ? "(Verification photo was attached when this issue was first reported.)"
+                                : undefined,
+                            });
+                            setDisputeDialogOpen(true);
+                          }}
+                        >
+                          <AlertTriangle className="mr-2 h-4 w-4" />
+                          File a formal dispute
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-1.5">
+                          A formal dispute opens a tracked case our team can resolve with refunds, holdbacks, or rebooking credits.
+                        </p>
+                      </div>
+                    </>
                   )}
                 </CardContent>
               </Card>
@@ -794,6 +835,26 @@ const TravelerCheckin = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Formal dispute dialog — pre-filled from check-in issue (#467 / Gap C) */}
+      {disputePrefill && (
+        <ReportIssueDialog
+          open={disputeDialogOpen}
+          onOpenChange={(open) => {
+            setDisputeDialogOpen(open);
+            if (!open) setDisputePrefill(null);
+          }}
+          bookingId={disputePrefill.bookingId}
+          ownerId={disputePrefill.ownerId}
+          resortName={disputePrefill.resortName}
+          role="renter"
+          prefill={{
+            category: disputePrefill.category,
+            description: disputePrefill.description,
+            photoNote: disputePrefill.photoNote,
+          }}
+        />
+      )}
     </div>
   );
 };

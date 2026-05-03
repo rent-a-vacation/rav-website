@@ -28,6 +28,7 @@ function createChain(resolvedValue: { data: unknown; error: unknown; count?: num
     "match",
     "not",
     "or",
+    "is",
     "filter",
     "contains",
     "textSearch",
