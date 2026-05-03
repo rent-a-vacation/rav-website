@@ -115,7 +115,7 @@ Live status of every gap from `PAYSAFE-FLOW-SPEC.md` §9. Updated by every PR th
 
 | Gap | Issue | Status | Closed by | Note |
 |-----|-------|--------|-----------|------|
-| **A** — `confirm-checkin` server action | [#461](https://github.com/rent-a-vacation/rav-website/issues/461) | 🔧 In progress | Session 63 PR | Edge fn + photo upload UI + replace direct DB write |
+| **A** — `confirm-checkin` server action | [#461](https://github.com/rent-a-vacation/rav-website/issues/461) | ✅ Closed | Session 63 PR | Edge fn (handler.ts split per DEC-037) + photo upload UI + replaces direct DB writes; idempotent + auth-gated; new `confirmed_at_source` enum |
 | **B** — Auto-confirmation cron when renter ignores deadline | [#462](https://github.com/rent-a-vacation/rav-website/issues/462) | 🔧 Queued | Session 63 PR | Depends on A |
 | **C** — Issue → dispute pre-fill | [#467](https://github.com/rent-a-vacation/rav-website/issues/467) | 🔧 Queued (was post-launch) | Session 63 PR | **Promoted from Tier E to Tier B** in Session 63 — user stance: minimal post-launch deferral |
 | **D** — `HOLD_PERIOD_DAYS` to `system_settings` | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) | 🔧 Queued (was post-launch) | Session 63 PR | **Promoted from Tier E to Tier B** in Session 63 |

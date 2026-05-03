@@ -293,8 +293,9 @@ export const travelerLifecycle: FlowDefinition = {
       label: 'Check In',
       component: 'TravelerCheckin',
       nodeStyle: 'decision',
-      description: 'Confirm arrival or report issues at the property',
+      description: 'Confirm arrival or report issues at the property (optional photo evidence)',
       tables: ['checkin_confirmations'],
+      edgeFunctions: ['confirm-checkin'],
       branches: [
         { condition: 'All good', targetStepId: 'stay_complete', label: 'Confirmed' },
         { condition: 'Issue reported', targetStepId: 'issue_resolution', label: 'Issue' },

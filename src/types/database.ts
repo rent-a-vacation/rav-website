@@ -573,6 +573,9 @@ export type Database = {
           confirmation_deadline: string
           confirmed_arrival: boolean | null
           confirmed_at: string | null
+          confirmed_at_source:
+            | Database["public"]["Enums"]["checkin_confirmation_source"]
+            | null
           created_at: string
           id: string
           issue_description: string | null
@@ -593,6 +596,9 @@ export type Database = {
           confirmation_deadline: string
           confirmed_arrival?: boolean | null
           confirmed_at?: string | null
+          confirmed_at_source?:
+            | Database["public"]["Enums"]["checkin_confirmation_source"]
+            | null
           created_at?: string
           id?: string
           issue_description?: string | null
@@ -613,6 +619,9 @@ export type Database = {
           confirmation_deadline?: string
           confirmed_arrival?: boolean | null
           confirmed_at?: string | null
+          confirmed_at_source?:
+            | Database["public"]["Enums"]["checkin_confirmation_source"]
+            | null
           created_at?: string
           id?: string
           issue_description?: string | null
@@ -2413,6 +2422,7 @@ export type Database = {
         | "tool_call"
         | "tool_result"
         | "error"
+      checkin_confirmation_source: "renter" | "auto" | "rav_admin"
       dispute_status:
         | "open"
         | "investigating"

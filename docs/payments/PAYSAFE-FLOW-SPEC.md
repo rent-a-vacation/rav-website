@@ -101,7 +101,7 @@ disputed → resolved_full_refund | resolved_partial_refund | resolved_no_refund
 
 - The `checkin_confirmations` table exists with the columns above.
 - `process-deadline-reminders` and `send-booking-confirmation-reminder` edge functions reference the table.
-- **Gap A — no dedicated `confirm-checkin` server action.** The button is present in `/my-trips`, but the write path is incomplete; renter-side confirmation is effectively a no-op today.
+- ~~**Gap A — no dedicated `confirm-checkin` server action.**~~ **CLOSED Session 63** — `supabase/functions/confirm-checkin/{handler,index}.ts` now handles both confirm and report-issue paths server-side: auth-gated (only the booking's renter), idempotent on re-tap, dispatches owner notification on confirm + RAV-team alert on issue. Optional verification photo upload to private `checkin-photos` bucket (migration 066) on the issue path. New `confirmed_at_source` enum tracks renter / auto / rav_admin distinction.
 - **Gap B — no auto-confirmation cron.** A booking the renter never touches will sit indefinitely with `confirmed_arrival = NULL`. Escrow still auto-releases at `check_out_date + 5 days` regardless (see §4), so funds flow correctly — but post-hoc reporting cannot distinguish "renter actively confirmed" from "renter ignored the reminder," which is needed for fraud and dispute analytics.
 - **Gap C — issue → dispute auto-link is partial.** The renter must currently file a dispute through `ReportIssueDialog` separately; the check-in issue path does not yet pre-fill the dispute form with the captured `issue_type` and `issue_description`.
 
@@ -302,7 +302,7 @@ Each gap is tracked as a discrete GitHub issue. Tier assignment and ordering liv
 
 | ID | Gap | Priority | Issue |
 |---|---|---|---|
-| A | No dedicated `confirm-checkin` server action wired up | Pre-launch | [#461](https://github.com/rent-a-vacation/rav-website/issues/461) |
+| ~~A~~ | ✅ **Closed Session 63** — `confirm-checkin` edge fn shipped with photo upload + idempotency + notifications | — | [#461](https://github.com/rent-a-vacation/rav-website/issues/461) |
 | B | No auto-confirmation cron when the renter ignores the deadline | Pre-launch | [#462](https://github.com/rent-a-vacation/rav-website/issues/462) (depends on #461) |
 | C | Check-in issue path does not pre-fill the dispute form | Post-launch UX | [#467](https://github.com/rent-a-vacation/rav-website/issues/467) (depends on #461) |
 | D | `HOLD_PERIOD_DAYS` is hardcoded; should live in `system_settings` | Post-launch | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) |
