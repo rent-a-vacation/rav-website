@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSubmitDispute } from "@/hooks/useSubmitDispute";
 import { useDisputeEvidence } from "@/hooks/useDisputeEvidence";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +32,32 @@ interface ReportIssueDialogProps {
   ownerId?: string;
   resortName?: string;
   role?: "renter" | "owner";
+  /**
+   * Pre-fill the dispute form from a check-in issue report (#467 / Gap C).
+   * Mapped from the renter's earlier `issueType` + `issueDescription` so they
+   * don't have to retype. Photo evidence is referenced via path; renter can
+   * still add additional evidence in the dialog.
+   */
+  prefill?: {
+    category?: DisputeCategory;
+    description?: string;
+    photoNote?: string;
+  };
+}
+
+// Map check-in issue types (TravelerCheckin) to dispute categories.
+const CHECKIN_TO_DISPUTE_CATEGORY: Record<string, DisputeCategory> = {
+  no_access: "access_issues",
+  wrong_unit: "property_not_as_described",
+  not_as_described: "property_not_as_described",
+  cleanliness: "cleanliness",
+  amenities_missing: "property_not_as_described",
+  safety_concern: "safety_concerns",
+  other: "other",
+};
+
+export function mapCheckinIssueToDisputeCategory(issueType: string): DisputeCategory {
+  return CHECKIN_TO_DISPUTE_CATEGORY[issueType] ?? "other";
 }
 
 const RENTER_CATEGORIES: { value: DisputeCategory; label: string }[] = [
@@ -63,6 +89,7 @@ const ReportIssueDialog = ({
   ownerId,
   resortName,
   role = "renter",
+  prefill,
 }: ReportIssueDialogProps) => {
   const { toast } = useToast();
   const submitDispute = useSubmitDispute();
@@ -70,6 +97,18 @@ const ReportIssueDialog = ({
 
   const [category, setCategory] = useState<DisputeCategory | "">("");
   const [description, setDescription] = useState("");
+
+  // Apply prefill when the dialog opens (#467 / Gap C — issue→dispute pre-fill).
+  // Re-applied on every open so the check-in issue path always lands users at
+  // the right state without leaking stale data between independent opens.
+  useEffect(() => {
+    if (!open) return;
+    if (prefill?.category) setCategory(prefill.category);
+    if (prefill?.description !== undefined) {
+      const note = prefill.photoNote ? `\n\n${prefill.photoNote}` : "";
+      setDescription(`${prefill.description}${note}`);
+    }
+  }, [open, prefill?.category, prefill?.description, prefill?.photoNote]);
 
   const categories = role === "owner" ? OWNER_CATEGORIES : RENTER_CATEGORIES;
 

@@ -81,6 +81,8 @@ export const RATE_LIMITS = {
   TEXT_CHAT: { endpoint: "text-chat", maxRequests: 20, windowSeconds: 60 },
   /** Cancellation: 3 requests per minute */
   CANCELLATION: { endpoint: "process-cancellation", maxRequests: 3, windowSeconds: 60 },
+  /** Check-in confirm / report-issue: 5 requests per minute (idempotency layer is at the handler) */
+  CHECKIN_CONFIRMATION: { endpoint: "confirm-checkin", maxRequests: 5, windowSeconds: 60 },
   /** Dispute refund (admin): 5 requests per minute */
   DISPUTE_REFUND: { endpoint: "process-dispute-refund", maxRequests: 5, windowSeconds: 60 },
   /** Account deletion: 3 requests per minute */

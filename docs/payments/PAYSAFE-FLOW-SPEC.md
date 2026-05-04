@@ -101,9 +101,9 @@ disputed → resolved_full_refund | resolved_partial_refund | resolved_no_refund
 
 - The `checkin_confirmations` table exists with the columns above.
 - `process-deadline-reminders` and `send-booking-confirmation-reminder` edge functions reference the table.
-- **Gap A — no dedicated `confirm-checkin` server action.** The button is present in `/my-trips`, but the write path is incomplete; renter-side confirmation is effectively a no-op today.
-- **Gap B — no auto-confirmation cron.** A booking the renter never touches will sit indefinitely with `confirmed_arrival = NULL`. Escrow still auto-releases at `check_out_date + 5 days` regardless (see §4), so funds flow correctly — but post-hoc reporting cannot distinguish "renter actively confirmed" from "renter ignored the reminder," which is needed for fraud and dispute analytics.
-- **Gap C — issue → dispute auto-link is partial.** The renter must currently file a dispute through `ReportIssueDialog` separately; the check-in issue path does not yet pre-fill the dispute form with the captured `issue_type` and `issue_description`.
+- ~~**Gap A — no dedicated `confirm-checkin` server action.**~~ **CLOSED Session 63** — `supabase/functions/confirm-checkin/{handler,index}.ts` now handles both confirm and report-issue paths server-side: auth-gated (only the booking's renter), idempotent on re-tap, dispatches owner notification on confirm + RAV-team alert on issue. Optional verification photo upload to private `checkin-photos` bucket (migration 066) on the issue path. New `confirmed_at_source` enum tracks renter / auto / rav_admin distinction.
+- ~~**Gap B — no auto-confirmation cron.**~~ **CLOSED Session 63** — `auto-confirm-checkins` edge fn (scheduled hourly) selects rows past `confirmation_deadline` with `confirmed_arrival IS NULL` AND `issue_reported = false`, bulk-updates them to `confirmed_arrival = true` with `confirmed_at_source = 'auto'`. Renter-confirmed vs auto-confirmed vs admin-confirmed is now distinguishable for fraud + dispute analytics via the new enum.
+- ~~**Gap C — issue → dispute auto-link is partial.**~~ **CLOSED Session 63** — `ReportIssueDialog` now accepts a `prefill` prop with `category` + `description` + `photoNote`. After a check-in issue is recorded at `/checkin`, the issues card shows a "File a formal dispute" CTA that opens the dispute form with the relevant category pre-mapped (via `mapCheckinIssueToDisputeCategory`) and description pre-filled. Renter doesn't retype.
 
 These gaps do not block today's escrow auto-release because release is gated on `check_out_date + 5d`, no open dispute, and no admin hold — not on `confirmed_arrival`. They do block accurate post-stay analytics and the renter-facing trust signal that "we know your stay went well."
 
@@ -114,8 +114,8 @@ These gaps do not block today's escrow auto-release because release is gated on 
 ### 4.1 Hold period
 
 - **Default:** 5 days after the booking's `check_out_date`.
-- **Source:** `supabase/functions/process-escrow-release/index.ts:7` — `const HOLD_PERIOD_DAYS = 5;`.
-- **Configurability:** **hardcoded in the edge function**. Not in `system_settings`. Changing the hold requires a code change plus an edge-function redeploy. **Gap D** (§9).
+- **Source:** `system_settings.escrow_hold_period_days` (`{"days": 5}` JSONB) — **closed Gap D in Session 63 / migration 068**. Resolved by `resolveHoldPeriodDays()` in `supabase/functions/process-escrow-release/handler.ts`. Falls back to default 5 if the setting row is missing or malformed (out-of-range / non-numeric values are rejected with fallback).
+- **Configurability:** runtime — ops can change the value without a code change or redeploy. Admin UI for the setting is a fast-follow.
 
 ### 4.2 Eligibility (all must be true)
 
@@ -182,7 +182,7 @@ Defined in `supabase/migrations/026_dispute_resolution.sql:21–30`. A dispute c
 - **`rav_staff`** — operational categories only: `cleanliness`, `late_checkout`, `rule_violation`, `unauthorized_guests`, `owner_no_show`, `renter_no_show`. **Must escalate to `rav_admin`** for `safety_concerns`, `payment_dispute`, `cancellation_dispute`, `renter_damage` over $500, any case with prior dispute history on either party, or anything legal counsel has flagged.
 - **`rav_owner`** — RLS allows it (`supabase/migrations/026_dispute_resolution.sql:116, 129, 169`) but in practice this role does not handle individual disputes; access is reserved for governance / legal sign-off.
 
-The role-to-category mapping above is **policy enforced in `AdminDisputes.tsx`**, not in the schema or RLS. Schema-level enforcement is **Gap E** (§9).
+~~The role-to-category mapping above is **policy enforced in `AdminDisputes.tsx`**, not in the schema or RLS.~~ **Closed Session 63 / migration 069** — the role-to-category mapping is now enforced at the schema layer via the `can_resolve_dispute(category, user_id)` SECURITY DEFINER function and the new `"RAV team can update disputes by category"` UPDATE policy on `disputes`. The old catch-all RAV-team UPDATE policy is dropped. UI gating in `AdminDisputes.tsx` becomes defense-in-depth rather than the only enforcement.
 
 ### 5.4 Resolution actions
 
@@ -211,7 +211,7 @@ Tracked as **Gap F** (§9).
 
 ## 6. SLAs by dispute type
 
-These are **target SLAs for the operations team**. They are not enforced in code and there is no SLA-violation alerting today. Tracked as **Gap G** (§9).
+~~These are **target SLAs for the operations team**. They are not enforced in code and there is no SLA-violation alerting today.~~ **CLOSED Session 63 / migrations 071 + 072 + `sla-monitor` edge fn.** SLA targets are now seeded into a `sla_targets` table (per-category triage / first response / resolution windows in minutes; on-site categories override business hours). `business_hours_config` defines 09:00–18:00 ET, M–F, ex-2026 federal holidays. The `sla-monitor` cron runs hourly, computes elapsed time per dispute (wall-clock for on-site categories; business minutes otherwise), fires `dispute_sla_breach` notifications to the RAV team, and idempotently stamps `triage_alerted_at` / `resolution_alerted_at` so re-runs do not double-alert. New disputes have their SLA targets snapshotted at insert time so updates to `sla_targets` don't retroactively shift older deadlines.
 
 "Business hours" until §9 Gap G is closed means **09:00–18:00 ET, Monday–Friday, excluding US federal holidays**.
 
@@ -284,7 +284,7 @@ A handful of states (e.g. **California Civil Code §1689**, **New York General B
 
 A renter who files a credit-card chargeback bypasses the RAV dispute system. Stripe routes the dispute to RAV; RAV must respond within Stripe's chargeback-evidence window (typically 7–21 days depending on card network).
 
-The internal `disputes` row should be created automatically when a Stripe `charge.dispute.created` webhook fires, with category `payment_dispute` and `priority='high'`. Auto-creation from the Stripe webhook is **Gap H** (§9). Until then, RAV staff must hand-mirror the chargeback into a dispute row when Stripe notifies us.
+~~The internal `disputes` row should be created automatically when a Stripe `charge.dispute.created` webhook fires, with category `payment_dispute` and `priority='high'`. Auto-creation from the Stripe webhook is **Gap H** (§9).~~ **CLOSED Session 63** — `handleChargeDisputeCreated` in `supabase/functions/stripe-webhook/handler.ts` mirrors every Stripe chargeback to a `disputes` row with `category='payment_dispute'`, `priority='high'`, evidence_urls populated with the Stripe dashboard URL, and `stripe_dispute_id` set so re-firing the webhook is idempotent (UNIQUE index on the column via migration 070). Orphan chargebacks (no matching booking) trigger a RAV team alert for manual investigation.
 
 ---
 
@@ -302,14 +302,14 @@ Each gap is tracked as a discrete GitHub issue. Tier assignment and ordering liv
 
 | ID | Gap | Priority | Issue |
 |---|---|---|---|
-| A | No dedicated `confirm-checkin` server action wired up | Pre-launch | [#461](https://github.com/rent-a-vacation/rav-website/issues/461) |
-| B | No auto-confirmation cron when the renter ignores the deadline | Pre-launch | [#462](https://github.com/rent-a-vacation/rav-website/issues/462) (depends on #461) |
-| C | Check-in issue path does not pre-fill the dispute form | Post-launch UX | [#467](https://github.com/rent-a-vacation/rav-website/issues/467) (depends on #461) |
-| D | `HOLD_PERIOD_DAYS` is hardcoded; should live in `system_settings` | Post-launch | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) |
-| E | Per-category role mapping (admin vs staff) is policy, not enforced in schema or RLS | Pre-launch (low risk) | [#463](https://github.com/rent-a-vacation/rav-website/issues/463) |
+| ~~A~~ | ✅ **Closed Session 63** — `confirm-checkin` edge fn shipped with photo upload + idempotency + notifications | — | [#461](https://github.com/rent-a-vacation/rav-website/issues/461) |
+| ~~B~~ | ✅ **Closed Session 63** — `auto-confirm-checkins` scheduled edge fn (hourly batch) flips deadline-elapsed rows with `confirmed_at_source='auto'` | — | [#462](https://github.com/rent-a-vacation/rav-website/issues/462) |
+| ~~C~~ | ✅ **Closed Session 63** — `ReportIssueDialog` accepts `prefill` prop; check-in issue surfaces a "File a formal dispute" CTA | — | [#467](https://github.com/rent-a-vacation/rav-website/issues/467) |
+| ~~D~~ | ✅ **Closed Session 63** — moved to `system_settings.escrow_hold_period_days`; `process-escrow-release` refactored to handler.ts split (DEC-037) | — | [#468](https://github.com/rent-a-vacation/rav-website/issues/468) |
+| ~~E~~ | ✅ **Closed Session 63** — `can_resolve_dispute(category, user_id)` helper + new category-aware UPDATE policy on disputes (migration 069) | — | [#463](https://github.com/rent-a-vacation/rav-website/issues/463) |
 | F | No native support for split refunds, holdbacks, rebooking credits, or platform-fee waivers | Post-launch | [#469](https://github.com/rent-a-vacation/rav-website/issues/469) |
-| G | SLAs are documented here but not enforced in code (no alerting, no business-hours definition in `system_settings`) | Pre-launch (operational) | [#464](https://github.com/rent-a-vacation/rav-website/issues/464) |
-| H | Stripe `charge.dispute.created` does not auto-create internal dispute row | Pre-launch | [#465](https://github.com/rent-a-vacation/rav-website/issues/465) |
+| ~~G~~ | ✅ **Closed Session 63** — `sla_targets` + `business_hours_config` tables + `sla-monitor` scheduled edge fn + on-insert SLA snapshot trigger | — | [#464](https://github.com/rent-a-vacation/rav-website/issues/464) |
+| ~~H~~ | ✅ **Closed Session 63** — `handleChargeDisputeCreated` mirrors Stripe chargebacks to `disputes` (idempotent via `stripe_dispute_id` UNIQUE in migration 070) | — | [#465](https://github.com/rent-a-vacation/rav-website/issues/465) |
 | I | No `jurisdiction` field on bookings; no per-state disclosure logic; no per-state cancellation-override rules | Pre-launch | [#466](https://github.com/rent-a-vacation/rav-website/issues/466) (linked to #80) |
 
 ---

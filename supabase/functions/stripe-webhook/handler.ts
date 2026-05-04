@@ -100,6 +100,9 @@ export async function handler(req: Request, deps: Deps): Promise<Response> {
       case "invoice.payment_failed":
         await handleInvoicePaymentFailed(supabase, resend, event.data.object);
         break;
+      case "charge.dispute.created":
+        await handleChargeDisputeCreated(supabase, event.data.object);
+        break;
       default:
         logStep("Unhandled event type", { type: event.type });
     }
@@ -318,6 +321,133 @@ export async function handleCheckoutExpired(supabase: SupabaseLike, session: any
 
   await supabase.from("bookings").update({ status: "cancelled" }).eq("id", bookingId);
   logStep("Pending booking cancelled due to session expiry", { bookingId });
+}
+
+// ── charge.dispute.created ──────────────────────────────────────────────────
+// #465 (PaySafe Gap H) — auto-mirror Stripe chargebacks to internal disputes
+// row so RAV staff don't lose time hand-mirroring during the chargeback
+// evidence window (typically 7-21 days).
+//
+// Idempotent: stripe_dispute_id is UNIQUE (migration 070). Re-firing the
+// webhook returns early without creating a duplicate row.
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function handleChargeDisputeCreated(supabase: SupabaseLike, dispute: any) {
+  const stripeDisputeId: string | undefined = dispute?.id;
+  if (!stripeDisputeId) {
+    logStep("charge.dispute.created without id, skipping");
+    return;
+  }
+
+  // Resolve the booking via payment_intent → bookings.payment_intent_id
+  const paymentIntentId =
+    typeof dispute.payment_intent === "string"
+      ? dispute.payment_intent
+      : dispute.payment_intent?.id;
+  if (!paymentIntentId) {
+    logStep("charge.dispute.created without payment_intent, skipping", {
+      stripeDisputeId,
+    });
+    return;
+  }
+
+  // Idempotency: skip if we already mirrored this dispute
+  const { data: existing } = await supabase
+    .from("disputes")
+    .select("id")
+    .eq("stripe_dispute_id", stripeDisputeId)
+    .maybeSingle();
+  if (existing) {
+    logStep("Stripe dispute already mirrored, skipping", {
+      stripeDisputeId,
+      existingId: (existing as { id: string }).id,
+    });
+    return;
+  }
+
+  const { data: booking } = await supabase
+    .from("bookings")
+    .select("id, renter_id, listing:listings(owner_id)")
+    .eq("payment_intent_id", paymentIntentId)
+    .maybeSingle();
+
+  if (!booking) {
+    logStep("Booking not found for chargeback — alert RAV team manually", {
+      stripeDisputeId,
+      paymentIntentId,
+    });
+    // Notify RAV team so they can investigate the orphan chargeback
+    supabase.functions
+      .invoke("notification-dispatcher", {
+        body: {
+          type_key: "stripe_chargeback_orphan",
+          payload: {
+            title: "Stripe chargeback for unknown booking",
+            message: `Stripe dispute ${stripeDisputeId} for payment_intent ${paymentIntentId} could not be matched to a booking. Manual investigation required.`,
+            stripe_dispute_id: stripeDisputeId,
+          },
+        },
+      })
+      .catch((err: unknown) =>
+        logStep("orphan-chargeback notification failed (non-fatal)", {
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+    return;
+  }
+
+  const ownerId = (booking as { listing?: { owner_id?: string } }).listing?.owner_id ?? null;
+  const renterId = (booking as { renter_id: string }).renter_id;
+
+  // Build evidence URL pointing back to the Stripe dashboard so admins can
+  // jump into the chargeback context immediately.
+  const stripeDashboardUrl = `https://dashboard.stripe.com/payments/${paymentIntentId}/disputes/${stripeDisputeId}`;
+  const reasonText = (dispute.reason as string) || "stripe_chargeback";
+  const amountDollars = ((dispute.amount as number) ?? 0) / 100;
+
+  const { error: insertError } = await supabase.from("disputes").insert({
+    booking_id: (booking as { id: string }).id,
+    reporter_id: renterId,
+    reported_user_id: ownerId,
+    category: "payment_dispute",
+    status: "open",
+    priority: "high",
+    description: `Stripe chargeback received: ${reasonText} ($${amountDollars.toLocaleString()}) for booking ${(booking as { id: string }).id}. Review evidence in Stripe dashboard and respond within the chargeback window.`,
+    evidence_urls: [stripeDashboardUrl],
+    stripe_dispute_id: stripeDisputeId,
+  });
+
+  if (insertError) {
+    logStep("Failed to insert mirrored dispute", {
+      stripeDisputeId,
+      error: insertError.message,
+    });
+    return;
+  }
+
+  logStep("Stripe chargeback mirrored to disputes", {
+    stripeDisputeId,
+    bookingId: (booking as { id: string }).id,
+  });
+
+  // Alert RAV team so the SLA timer (Gap G) can start ticking
+  supabase.functions
+    .invoke("notification-dispatcher", {
+      body: {
+        type_key: "stripe_chargeback_received",
+        payload: {
+          title: "Stripe chargeback received",
+          message: `${reasonText} chargeback ($${amountDollars.toLocaleString()}) — internal dispute opened.`,
+          stripe_dispute_id: stripeDisputeId,
+          booking_id: (booking as { id: string }).id,
+        },
+      },
+    })
+    .catch((err: unknown) =>
+      logStep("chargeback notification failed (non-fatal)", {
+        error: err instanceof Error ? err.message : String(err),
+      }),
+    );
 }
 
 // ── charge.refunded ─────────────────────────────────────────────────────────

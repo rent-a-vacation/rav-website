@@ -30,17 +30,28 @@ import {
   AlertTriangle,
   ArrowLeft,
   Calendar,
+  Camera,
   CheckCircle2,
   Clock,
   Home,
+  Image as ImageIcon,
   Loader2,
   MapPin,
   Phone,
   ThumbsUp,
+  X,
   XCircle,
 } from "lucide-react";
 import { format, isPast, differenceInHours } from "date-fns";
 import type { Booking, Listing, Property, Profile } from "@/types/database";
+import {
+  validateCheckinPhoto,
+  buildCheckinPhotoStoragePath,
+  CHECKIN_PHOTO_UI_COPY,
+} from "@/lib/checkinPhoto";
+import ReportIssueDialog, {
+  mapCheckinIssueToDisputeCategory,
+} from "@/components/booking/ReportIssueDialog";
 
 interface CheckinConfirmation {
   id: string;
@@ -53,6 +64,8 @@ interface CheckinConfirmation {
   issue_type: string | null;
   issue_description: string | null;
   issue_reported_at: string | null;
+  verification_photo_path: string | null;
+  photo_uploaded_at: string | null;
   resolved: boolean;
   created_at: string;
 }
@@ -90,6 +103,18 @@ const TravelerCheckin = () => {
   const [confirmationType, setConfirmationType] = useState<"success" | "issue">("success");
   const [issueType, setIssueType] = useState("");
   const [issueDescription, setIssueDescription] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
+  const [photoSignedUrls, setPhotoSignedUrls] = useState<Record<string, string>>({});
+  const [disputeDialogOpen, setDisputeDialogOpen] = useState(false);
+  const [disputePrefill, setDisputePrefill] = useState<{
+    bookingId: string;
+    ownerId?: string;
+    resortName?: string;
+    category?: ReturnType<typeof mapCheckinIssueToDisputeCategory>;
+    description?: string;
+    photoNote?: string;
+  } | null>(null);
 
   const bookingId = searchParams.get("booking");
 
@@ -145,79 +170,159 @@ const TravelerCheckin = () => {
   }, [user, fetchCheckins]);
 
   const handleConfirmArrival = async () => {
-    if (!selectedCheckin) return;
+    if (!selectedCheckin || !user) return;
 
     setIsSubmitting(true);
     try {
       if (confirmationType === "success") {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (supabase as any)
-          .from("checkin_confirmations")
-          .update({
-            confirmed_arrival: true,
-            confirmed_at: new Date().toISOString(),
-            issue_reported: false,
-          })
-          .eq("id", selectedCheckin.id);
-
+        const { data, error } = await supabase.functions.invoke("confirm-checkin", {
+          body: {
+            bookingId: selectedCheckin.booking_id,
+            action: "confirm",
+          },
+        });
         if (error) throw error;
+        if (data && (data as { success?: boolean }).success === false) {
+          throw new Error((data as { error?: string }).error ?? "Failed to confirm");
+        }
 
         toast({
-          title: "Check-in Confirmed!",
-          description: "Thank you for confirming your arrival. Enjoy your stay!",
+          title: (data as { alreadyConfirmed?: boolean }).alreadyConfirmed
+            ? "Check-in already confirmed"
+            : "Check-in confirmed!",
+          description: "Thanks for letting us know — enjoy your stay.",
         });
       } else {
-        // Report issue
         if (!issueType || !issueDescription.trim()) {
           toast({
-            title: "Error",
+            title: "Missing details",
             description: "Please select an issue type and provide details.",
             variant: "destructive",
           });
           return;
         }
+        if (issueDescription.trim().length < 10) {
+          toast({
+            title: "Description is too short",
+            description: "Add at least 10 characters so the team can act on it.",
+            variant: "destructive",
+          });
+          return;
+        }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (supabase as any)
-          .from("checkin_confirmations")
-          .update({
-            confirmed_arrival: false,
-            confirmed_at: new Date().toISOString(),
-            issue_reported: true,
-            issue_type: issueType,
-            issue_description: issueDescription.trim(),
-            issue_reported_at: new Date().toISOString(),
-          })
-          .eq("id", selectedCheckin.id);
+        // Optional photo upload — non-fatal if it fails (we still want the
+        // text report to land even if storage is flaky).
+        let uploadedPhotoPath: string | null = null;
+        if (photoFile) {
+          const validationError = validateCheckinPhoto(photoFile);
+          if (validationError) {
+            toast({
+              title: "Photo can't be uploaded",
+              description: validationError.message,
+              variant: "destructive",
+            });
+            return;
+          }
+          const path = buildCheckinPhotoStoragePath(
+            user.id,
+            selectedCheckin.booking_id,
+            photoFile.name,
+          );
+          const { error: uploadError } = await supabase.storage
+            .from("checkin-photos")
+            .upload(path, photoFile, {
+              contentType: photoFile.type,
+              upsert: false,
+            });
+          if (uploadError) {
+            console.error("Photo upload failed (non-fatal):", uploadError);
+            toast({
+              title: "Photo couldn't upload",
+              description:
+                "We'll still record your report — you can attach a photo later.",
+              variant: "destructive",
+            });
+          } else {
+            uploadedPhotoPath = path;
+          }
+        }
 
+        const { data, error } = await supabase.functions.invoke("confirm-checkin", {
+          body: {
+            bookingId: selectedCheckin.booking_id,
+            action: "report_issue",
+            issueType,
+            issueDescription: issueDescription.trim(),
+            verificationPhotoPath: uploadedPhotoPath,
+          },
+        });
         if (error) throw error;
+        if (data && (data as { success?: boolean }).success === false) {
+          throw new Error((data as { error?: string }).error ?? "Failed to submit");
+        }
 
         toast({
-          title: "Issue Reported",
-          description: "We've received your report and will contact you shortly.",
+          title: "Issue reported",
+          description: "We've recorded your report and the RAV team will be in touch.",
         });
       }
 
       setIsConfirmDialogOpen(false);
       setIsReportDialogOpen(false);
+      resetIssueForm();
       fetchCheckins();
     } catch (error) {
       console.error("Error updating checkin:", error);
-      toast({
-        title: "Error",
-        description: "Failed to submit. Please try again.",
-        variant: "destructive",
-      });
+      const message =
+        error instanceof Error ? error.message : "Failed to submit. Please try again.";
+      toast({ title: "Submission failed", description: message, variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const resetIssueForm = () => {
+    setIssueType("");
+    setIssueDescription("");
+    setPhotoFile(null);
+    if (photoPreviewUrl) {
+      URL.revokeObjectURL(photoPreviewUrl);
+      setPhotoPreviewUrl(null);
+    }
+  };
+
+  const onPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (!file) {
+      setPhotoFile(null);
+      if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+      setPhotoPreviewUrl(null);
+      return;
+    }
+    const validationError = validateCheckinPhoto(file);
+    if (validationError) {
+      toast({
+        title: "Photo can't be used",
+        description: validationError.message,
+        variant: "destructive",
+      });
+      return;
+    }
+    setPhotoFile(file);
+    if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+    setPhotoPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const removePhoto = () => {
+    setPhotoFile(null);
+    if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+    setPhotoPreviewUrl(null);
+  };
+
   const openConfirmDialog = (checkin: CheckinWithDetails) => {
     setSelectedCheckin(checkin);
     setConfirmationType("success");
-    setIssueType("");
-    setIssueDescription("");
+    resetIssueForm();
     setIsConfirmDialogOpen(true);
   };
 
@@ -242,6 +347,31 @@ const TravelerCheckin = () => {
   );
   const confirmedCheckins = checkins.filter((c) => c.confirmed_arrival === true);
   const issueCheckins = checkins.filter((c) => c.issue_reported === true);
+
+  // Generate signed URLs for any verification photos in issue cards
+  useEffect(() => {
+    const paths = issueCheckins
+      .map((c) => c.verification_photo_path)
+      .filter((p): p is string => !!p && !photoSignedUrls[p]);
+    if (paths.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const updates: Record<string, string> = {};
+      for (const path of paths) {
+        const { data } = await supabase.storage
+          .from("checkin-photos")
+          .createSignedUrl(path, 3600);
+        if (data?.signedUrl) updates[path] = data.signedUrl;
+      }
+      if (!cancelled && Object.keys(updates).length > 0) {
+        setPhotoSignedUrls((prev) => ({ ...prev, ...updates }));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [issueCheckins.length]);
 
   if (authLoading || isLoading) {
     return (
@@ -344,14 +474,13 @@ const TravelerCheckin = () => {
                         <ThumbsUp className="mr-2 h-4 w-4" />
                         Confirm Check-in
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="flex-1"
                         onClick={() => {
                           setSelectedCheckin(checkin);
                           setConfirmationType("issue");
-                          setIssueType("");
-                          setIssueDescription("");
+                          resetIssueForm();
                           setIsReportDialogOpen(true);
                         }}
                       >
@@ -454,10 +583,58 @@ const TravelerCheckin = () => {
                     </p>
                     <p className="text-sm text-muted-foreground">{checkin.issue_description}</p>
                   </div>
+                  {checkin.verification_photo_path && photoSignedUrls[checkin.verification_photo_path] && (
+                    <div className="mt-3 rounded-lg overflow-hidden border border-border max-w-xs">
+                      <a
+                        href={photoSignedUrls[checkin.verification_photo_path]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={photoSignedUrls[checkin.verification_photo_path]}
+                          alt="Submitted with your report"
+                          className="w-full max-h-40 object-cover bg-muted"
+                        />
+                      </a>
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground bg-muted">
+                        <ImageIcon className="h-3 w-3" />
+                        Submitted with your report
+                      </div>
+                    </div>
+                  )}
                   {!checkin.resolved && (
-                    <p className="text-sm text-muted-foreground mt-3">
-                      Our team is reviewing your issue and will contact you shortly.
-                    </p>
+                    <>
+                      <p className="text-sm text-muted-foreground mt-3">
+                        Our team is reviewing your issue and will contact you shortly.
+                      </p>
+                      <div className="mt-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setDisputePrefill({
+                              bookingId: checkin.booking_id,
+                              ownerId: checkin.booking?.listing?.owner_id,
+                              resortName: checkin.booking?.listing?.property?.resort_name,
+                              category: mapCheckinIssueToDisputeCategory(
+                                checkin.issue_type ?? "other",
+                              ),
+                              description: checkin.issue_description ?? "",
+                              photoNote: checkin.verification_photo_path
+                                ? "(Verification photo was attached when this issue was first reported.)"
+                                : undefined,
+                            });
+                            setDisputeDialogOpen(true);
+                          }}
+                        >
+                          <AlertTriangle className="mr-2 h-4 w-4" />
+                          File a formal dispute
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-1.5">
+                          A formal dispute opens a tracked case our team can resolve with refunds, holdbacks, or rebooking credits.
+                        </p>
+                      </div>
+                    </>
                   )}
                 </CardContent>
               </Card>
@@ -569,7 +746,56 @@ const TravelerCheckin = () => {
                 onChange={(e) => setIssueDescription(e.target.value)}
                 rows={4}
               />
+              <p className="text-xs text-muted-foreground">
+                At least 10 characters so the RAV team can act on the report.
+              </p>
             </div>
+
+            {/* Optional photo upload — #461 Gap A */}
+            <div className="space-y-2">
+              <Label htmlFor="issue-photo">{CHECKIN_PHOTO_UI_COPY.label}</Label>
+              {photoPreviewUrl ? (
+                <div className="relative rounded-lg border border-border overflow-hidden">
+                  <img
+                    src={photoPreviewUrl}
+                    alt="Selected verification photo"
+                    className="w-full max-h-48 object-contain bg-muted"
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={removePhoto}
+                    aria-label="Remove photo"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <label
+                  htmlFor="issue-photo"
+                  className="flex flex-col items-center justify-center gap-2 px-4 py-6 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                  <Camera className="h-6 w-6 text-muted-foreground" />
+                  <span className="text-sm font-medium">Tap to add a photo</span>
+                  <span className="text-xs text-muted-foreground text-center">
+                    {CHECKIN_PHOTO_UI_COPY.helpText}
+                  </span>
+                </label>
+              )}
+              <input
+                id="issue-photo"
+                type="file"
+                accept="image/jpeg,image/png,image/heic"
+                className="sr-only"
+                onChange={onPhotoChange}
+              />
+              <p className="text-xs text-muted-foreground">
+                {CHECKIN_PHOTO_UI_COPY.preferenceNote}
+              </p>
+            </div>
+
             <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
               <div className="flex items-start gap-3">
                 <Phone className="h-5 w-5 text-yellow-600 mt-0.5" />
@@ -609,6 +835,26 @@ const TravelerCheckin = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Formal dispute dialog — pre-filled from check-in issue (#467 / Gap C) */}
+      {disputePrefill && (
+        <ReportIssueDialog
+          open={disputeDialogOpen}
+          onOpenChange={(open) => {
+            setDisputeDialogOpen(open);
+            if (!open) setDisputePrefill(null);
+          }}
+          bookingId={disputePrefill.bookingId}
+          ownerId={disputePrefill.ownerId}
+          resortName={disputePrefill.resortName}
+          role="renter"
+          prefill={{
+            category: disputePrefill.category,
+            description: disputePrefill.description,
+            photoNote: disputePrefill.photoNote,
+          }}
+        />
+      )}
     </div>
   );
 };
