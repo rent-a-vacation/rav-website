@@ -81,6 +81,9 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-6">
+          <p className="text-xs text-white/40 text-center mb-6 leading-relaxed max-w-4xl mx-auto">
+            Hilton Grand Vacations®, Marriott Vacations Club®, Disney Vacation Club®, Wyndham Destinations®, Bluegreen Vacations®, Hyatt Residence Club®, Holiday Inn Club Vacations®, and WorldMark by Wyndham® are trademarks of their respective owners. Rent-A-Vacation, Inc. is an independent secondary marketplace and is not affiliated with, endorsed by, or sponsored by any of these brands.
+          </p>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-white/50">
               © 2026 Rent-A-Vacation. A Techsilon Group Company. All rights reserved.
