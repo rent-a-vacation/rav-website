@@ -7,7 +7,7 @@ status: "active"
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** May 2, 2026 (Session 63 — #473 + 7 PaySafe gaps closed, +90 tests, +7 test files)
+> **Last Updated:** May 6, 2026 (Session 64 — #483 + #484 disclaimer registry + DisclaimerBlock + 9 placements + About page; +89 tests, +9 test files)
 
 ---
 
@@ -15,9 +15,9 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1492 |
-| **Test files** | 157 |
-| **P0 critical-path tests** | 220+ tagged `@p0` (Session 63 added @p0 on confirm-checkin handler, auto-confirm-checkins, process-escrow-release, sla-monitor, disputeSla, checkinPhoto, sentry, ReportIssueDialog mapper) |
+| **Total tests** | 1581 |
+| **Test files** | 166 |
+| **P0 critical-path tests** | 290+ tagged `@p0` (Session 64 added @p0 on disclaimer registry, DisclaimerBlock, StateSpecificDisclaimer, Footer registry sourcing, Terms 8.3+8.6, About page, placement audit) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
 | **CI run time** | <3 min |
