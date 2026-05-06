@@ -47,3 +47,17 @@ docs/incorporation/signed/
 
 # Office app temp/lock files
 ~$*
+
+# Confidential strategy & legal source documents — the rent-a-vacation/rav-website
+# repo is PUBLIC. Files matched here must never be committed (or re-committed if
+# they are already tracked). Note: patterns below preventively block future
+# additions; legal dossier + compliance brief PDFs that are already tracked
+# require a separate git-history scrub to fully remove (deferred — see
+# project_legal_dossier_scrub_pending.md memory).
+docs/legal/Legal_Dossier_*.pdf
+docs/legal/RAV_Compliance_Brief_*.pdf
+docs/features/rami/
+docs/competitive-intelligence/
+**/competitor-analysis/
+RAMI-Agent-Build-Prompt-*.docx
+RAV-Competitive-Intelligence-*.docx
