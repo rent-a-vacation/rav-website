@@ -36,7 +36,7 @@ BEGIN
   END IF;
 
   RETURN QUERY
-  WITH window AS (
+  WITH metrics_window AS (
     SELECT *
     FROM public.support_conversations
     WHERE started_at >= date_from
@@ -52,36 +52,36 @@ BEGIN
       ON prev.conversation_id = m.conversation_id
      AND prev.turn_index      = m.turn_index - 1
      AND prev.turn_type       = 'user'
-    JOIN window w ON w.id = m.conversation_id
+    JOIN metrics_window w ON w.id = m.conversation_id
     WHERE m.turn_type = 'assistant'
   )
   SELECT
-    (SELECT COUNT(*) FROM window)                                          AS total_conversations,
-    (SELECT COUNT(*) FROM window WHERE ended_at IS NOT NULL)               AS ended_conversations,
-    (SELECT COUNT(*) FROM window
+    (SELECT COUNT(*) FROM metrics_window)                                          AS total_conversations,
+    (SELECT COUNT(*) FROM metrics_window WHERE ended_at IS NOT NULL)               AS ended_conversations,
+    (SELECT COUNT(*) FROM metrics_window
        WHERE ended_at IS NOT NULL AND escalated_at IS NULL)                AS deflected_count,
-    (SELECT COUNT(*) FROM window WHERE escalated_at IS NOT NULL)           AS escalated_count,
+    (SELECT COUNT(*) FROM metrics_window WHERE escalated_at IS NOT NULL)           AS escalated_count,
     CASE
-      WHEN (SELECT COUNT(*) FROM window WHERE ended_at IS NOT NULL) = 0 THEN NULL
+      WHEN (SELECT COUNT(*) FROM metrics_window WHERE ended_at IS NOT NULL) = 0 THEN NULL
       ELSE ROUND(
-        100.0 * (SELECT COUNT(*) FROM window
+        100.0 * (SELECT COUNT(*) FROM metrics_window
                    WHERE ended_at IS NOT NULL AND escalated_at IS NULL)
-             / (SELECT COUNT(*) FROM window WHERE ended_at IS NOT NULL),
+             / (SELECT COUNT(*) FROM metrics_window WHERE ended_at IS NOT NULL),
         1
       )
     END                                                                    AS deflection_pct,
     CASE
-      WHEN (SELECT COUNT(*) FROM window) = 0 THEN NULL
+      WHEN (SELECT COUNT(*) FROM metrics_window) = 0 THEN NULL
       ELSE ROUND(
-        100.0 * (SELECT COUNT(*) FROM window WHERE escalated_at IS NOT NULL)
-             / (SELECT COUNT(*) FROM window),
+        100.0 * (SELECT COUNT(*) FROM metrics_window WHERE escalated_at IS NOT NULL)
+             / (SELECT COUNT(*) FROM metrics_window),
         1
       )
     END                                                                    AS escalation_pct,
     (SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY gap_ms) FROM response_gaps) AS median_response_ms,
-    (SELECT COUNT(*) FROM window WHERE user_rating IS NOT NULL)            AS rated_count,
-    (SELECT COUNT(*) FROM window WHERE user_rating = 1)                    AS positive_rating_count,
-    (SELECT COUNT(*) FROM window WHERE user_rating = -1)                   AS negative_rating_count;
+    (SELECT COUNT(*) FROM metrics_window WHERE user_rating IS NOT NULL)            AS rated_count,
+    (SELECT COUNT(*) FROM metrics_window WHERE user_rating = 1)                    AS positive_rating_count,
+    (SELECT COUNT(*) FROM metrics_window WHERE user_rating = -1)                   AS negative_rating_count;
 END;
 $$;
 
