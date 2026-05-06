@@ -36,3 +36,14 @@ nul
 __pycache__/
 *.pyc
 *.pyo
+
+# Confidential incorporation artifacts — filled term sheets and signed
+# documents must NEVER be committed to the public repo. See
+# docs/incorporation/templates/signing-logistics-guide.md for the policy.
+# (Templates without dates remain tracked.)
+docs/incorporation/founder-term-sheet-*.md
+docs/incorporation/founder-term-sheet-*.pdf
+docs/incorporation/signed/
+
+# Office app temp/lock files
+~$*

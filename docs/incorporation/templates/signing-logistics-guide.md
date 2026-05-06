@@ -15,12 +15,13 @@ status: "active"
 
 ## TL;DR — recommended approach for the term sheet
 
-1. **Convert** `templates/founder-term-sheet.md` → PDF (use VS Code, browser, or Pandoc — see below)
-2. **Send for e-signature** via **Dropbox Sign** (free for up to 3 signature requests/month — perfect for our scale)
+1. **Convert** the filled term sheet (`docs/incorporation/founder-term-sheet-<YYYYMMDD>.md`) → PDF using `python scripts/md-to-pdf.py <input.md>` with appropriate `--footer-left` / `--footer-center` flags
+2. **Send for e-signature** via **Zoho Sign** (free tier supports the 4-founder signing flow; see Option B for setup)
 3. **Save signed PDF** to:
-   - Google Drive: `Rent-A-Vacation > 01-Incorporation > 01-Term-Sheet > founder-term-sheet-signed-2026-04-26.pdf`
-   - This repo: `docs/incorporation/signed/founder-term-sheet-signed-2026-04-26.pdf`
-4. **Update** the meeting agenda + the term sheet template README to mark it complete
+   - Google Drive (canonical): `Rent-A-Vacation > 01-Incorporation > 01-Term-Sheet > founder-term-sheet-signed-<YYYY-MM-DD>.pdf`
+   - **Do NOT commit the signed PDF or the filled markdown to the public GitHub repo** — `docs/incorporation/founder-term-sheet-*.{md,pdf}` and `docs/incorporation/signed/` are gitignored for this reason
+4. **Save the Audit Trail / Certificate of Completion** alongside the signed PDF in Google Drive — Zoho Sign attaches it as final pages of the signed PDF *and* makes it separately downloadable. Keep both forms; the certificate is what makes the digital signatures legally enforceable
+5. **Update** the meeting agenda + the term sheet template README to mark it complete
 
 **Why NOT Carta yet:** Carta is a cap table management tool — it makes sense AFTER incorporation when you have actual issued stock to track. Pre-incorporation, it's overkill (and Atlas's filing process includes a basic cap table tool free for year 1 anyway). Migrate to Carta later if/when you raise outside capital or scale beyond ~10 employees.
 
@@ -47,40 +48,35 @@ There are three options. Pick based on how digital-first the team is.
 
 ---
 
-### Option B — E-signature via Dropbox Sign (RECOMMENDED)
+### Option B — E-signature via Zoho Sign (RECOMMENDED)
 
 **Steps:**
-1. Convert `founder-term-sheet.md` → PDF
-2. Sujit creates a free Dropbox Sign account (https://sign.dropbox.com — formerly HelloSign)
-3. Upload the PDF, add four signature fields (one per founder)
-4. Send via email to the three other founders + sign yourself
-5. Each founder signs in their browser (no account needed for signers, just email link)
-6. Dropbox Sign emails everyone the fully-signed PDF + audit trail
-7. Save to Google Drive + repo
+1. Convert the filled term sheet markdown → PDF (`python scripts/md-to-pdf.py docs/incorporation/founder-term-sheet-<YYYYMMDD>.md --footer-left "CONFIDENTIAL — RAV Founder Term Sheet" --footer-center "Effective: <DATE>"`)
+2. Sujit creates a free Zoho account if he doesn't already have one (https://www.zoho.com/sign/) — Zoho Sign is part of the broader Zoho suite
+3. Upload the PDF, drag four signature fields + four date fields onto page 5 over the underscored areas
+4. Add the four founders' email addresses as recipients (parallel signing — all four can sign in any order)
+5. Each founder signs in their browser via an email link (no Zoho account needed for signers)
+6. When the last founder signs, Zoho Sign emails everyone the fully-signed PDF with the audit trail attached as final pages
+7. Save the signed PDF + standalone audit trail to Google Drive (do NOT commit to the public repo)
 
 **Pros:**
-- **Free for up to 3 signature requests per month** (perfect — the term sheet is 1 request with 4 signers)
-- **Audit trail included** — IP addresses, timestamps, email-verification of each signer (this is what acquirers want to see in due diligence)
+- **Free tier supports 4 signers per document** — unlike Dropbox Sign, which caps at 3
+- **Audit trail / Completion Certificate** included — IP addresses, timestamps, email-verification of each signer (this is what acquirers want to see in due diligence)
+- **Court-enforceable in all 50 states** under the ESIGN Act + UETA
 - **No printing, no scanning, no in-person required**
 - **All four founders end up with the same signed PDF** (no version-divergence risk)
-- **Court-enforceable in all 50 states** under the ESIGN Act + UETA
+- **Integrates with the broader Zoho suite** if you adopt Zoho Mail / Zoho Books / Zoho CRM later
 
-**Cons:** Sujit needs to set up the account (~5 min). Founders need to click an email link and draw/type their signature.
+**Cons:** Sujit needs to set up a Zoho account (~5 min). Free-tier limits change periodically — verify the current document quota on Zoho's pricing page before sending.
 
-**Free tier limits:**
-- 3 documents per month
-- 1 sender (Sujit's account)
-- Unlimited signers per document
+**What "Audit Trail / Certificate of Completion" actually is:** A separate document Zoho Sign auto-generates showing each signer's name, email, IP address, timestamp, and authentication method. It is NOT the signed PDF — it's the proof that those specific people signed it. Zoho Sign attaches it as the final pages of the signed PDF *and* makes it separately downloadable. Keep both — the signed PDF says "here's what was signed," the certificate says "here's proof these people signed it." Together they make the digital signatures legally enforceable.
 
-For our use case (term sheet + maybe 1-2 other founder docs over the next month), the free tier is plenty.
-
-**Alternatives to Dropbox Sign:**
-- **DocuSign** — industry-standard but free tier is limited (3 envelopes total in trial, then paid)
-- **PandaDoc** — free tier exists but is limited to 1 signed-doc-template-per-month
-- **DocuSeal** — open-source, can self-host or use their cloud (https://www.docuseal.com); fully free for low volume
-- **Adobe Acrobat Sign** — included if anyone has Adobe Creative Cloud
-
-If Dropbox Sign goes paid in the future, **DocuSeal** is the strong free alternative.
+**Alternatives to Zoho Sign:**
+- **Dropbox Sign** — formerly HelloSign. Free tier supports 3 sig-requests/month BUT **caps at 3 signers per document** — does not work for 4-founder docs without upgrading. Fine for any future doc with 1–3 signers.
+- **DocuSign** — industry-standard. Free trial supports up to 5 recipients per envelope but only 3 envelopes lifetime. Burns the trial fast across multiple incorporation docs.
+- **DocuSeal** — open-source, fully free for low volume, no signer cap. Can self-host or use their cloud (https://www.docuseal.com). Good fallback if Zoho Sign's free tier tightens.
+- **PandaDoc** — free tier limited to 1 signed-doc-template-per-month.
+- **Adobe Acrobat Sign** — included if anyone has Adobe Creative Cloud.
 
 ---
 
