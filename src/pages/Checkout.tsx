@@ -333,9 +333,10 @@ const Checkout = () => {
 
               {/* Florida-Specific Disclosure (8.7) — geo-targeted; renders only when the
                   property's state matches a registered state disclosure (FL today; CA after
-                  counsel question C10 lands) */}
+                  counsel question C10 lands). #486 — prefer the denormalized listing.state
+                  from Migration 074; fall back to resort.location.state for legacy listings. */}
               <StateSpecificDisclaimer
-                propertyState={resort?.location?.state}
+                propertyState={listing?.state ?? resort?.location?.state}
                 variant="compact"
                 className="mt-4"
               />

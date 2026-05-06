@@ -101,8 +101,25 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     required: [
       `validateListingForSaleLanguage`,
       `saleLanguageFieldLabel`,
+      // #486 — state captured from selected resort and persisted on listing insert
+      `setState((loc?.state || "").toUpperCase())`,
+      `state: state ? state.toUpperCase() : null`,
     ],
-    notes: "Listing creation must call validateListingForSaleLanguage on owner-provided text fields before any insert (#485 No Timeshare Sales validation).",
+    notes: "Listing creation must call validateListingForSaleLanguage (#485) and persist 2-letter US state code (#486) on insert.",
+  },
+  {
+    file: "src/pages/PropertyDetail.tsx",
+    required: [
+      `propertyState={listing?.state ?? resort?.location?.state}`,
+    ],
+    notes: "PropertyDetail must prefer the denormalized listing.state (Migration 074) and fall back to resort.location.state for legacy listings.",
+  },
+  {
+    file: "src/pages/Checkout.tsx",
+    required: [
+      `propertyState={listing?.state ?? resort?.location?.state}`,
+    ],
+    notes: "Checkout must prefer the denormalized listing.state (Migration 074) and fall back to resort.location.state.",
   },
 ];
 

@@ -780,6 +780,7 @@ export type Database = {
           resort_confirmation_number: string | null
           resort_fee: number | null
           source_type: Database["public"]["Enums"]["listing_source_type"]
+          state: string | null
           status: Database["public"]["Enums"]["listing_status"]
           updated_at: string
         }
@@ -818,6 +819,7 @@ export type Database = {
           resort_confirmation_number?: string | null
           resort_fee?: number | null
           source_type?: Database["public"]["Enums"]["listing_source_type"]
+          state?: string | null
           status?: Database["public"]["Enums"]["listing_status"]
           updated_at?: string
         }
@@ -856,6 +858,7 @@ export type Database = {
           resort_confirmation_number?: string | null
           resort_fee?: number | null
           source_type?: Database["public"]["Enums"]["listing_source_type"]
+          state?: string | null
           status?: Database["public"]["Enums"]["listing_status"]
           updated_at?: string
         }

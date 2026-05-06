@@ -7,7 +7,7 @@ status: "active"
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** May 6, 2026 (Session 64 — #483 + #484 disclaimer registry + 9 placements + About page; #485 No Timeshare Sales validation; +134 tests, +10 test files)
+> **Last Updated:** May 6, 2026 (Session 64 — #483 + #484 disclaimer registry + 9 placements + About; #485 No Timeshare Sales validation; #486 state column on listings + Migration 074; +145 tests, +11 test files)
 
 ---
 
@@ -15,8 +15,8 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1626 |
-| **Test files** | 167 |
+| **Total tests** | 1637 |
+| **Test files** | 168 |
 | **P0 critical-path tests** | 290+ tagged `@p0` (Session 64 added @p0 on disclaimer registry, DisclaimerBlock, StateSpecificDisclaimer, Footer registry sourcing, Terms 8.3+8.6, About page, placement audit) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
