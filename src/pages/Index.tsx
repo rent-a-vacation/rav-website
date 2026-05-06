@@ -11,6 +11,7 @@ import FeaturedResorts from "@/components/FeaturedResorts";
 import HowItWorks from "@/components/HowItWorks";
 import TopDestinations from "@/components/TopDestinations";
 import Footer from "@/components/Footer";
+import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 
 const WelcomeBanner = () => {
   const { profile, isPropertyOwner, isRavTeam } = useAuth();
@@ -127,6 +128,18 @@ const Index = () => {
         <FeaturedResorts />
         <HowItWorks />
         <TopDestinations />
+
+        {/* Marketplace + No Timeshare Sales disclaimers — required on the homepage per
+            Legal Dossier v3 § 8.1 and § 8.2 */}
+        <section
+          className="border-t border-border/40 bg-muted/20 py-10"
+          aria-label="Marketplace disclaimers"
+        >
+          <div className="container mx-auto px-4 max-w-4xl space-y-4">
+            <DisclaimerBlock id="8.1" variant="compact" />
+            <DisclaimerBlock id="8.2" variant="compact" />
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

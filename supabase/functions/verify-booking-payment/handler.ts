@@ -2,6 +2,7 @@
 // `index.ts` stays as a thin Deno.serve wrapper that injects production deps.
 
 import { buildEmailHtml, detailRow } from "../_shared/email-template.ts";
+import { disclaimerHtml } from "../_shared/disclaimers.ts";
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
@@ -448,6 +449,12 @@ export async function handler(req: Request, deps: Deps): Promise<Response> {
             </div>
             <p>The property owner will confirm your reservation with the resort shortly. We'll notify you once that's complete.</p>
             <p>You can also share this with your travel companions and start planning your trip!</p>
+
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+            <p style="font-size: 12px; color: #4a5568; margin: 0 0 12px 0; font-weight: 600;">Important information about your booking</p>
+            ${disclaimerHtml("8.4")}
+            ${disclaimerHtml("8.5")}
+            ${disclaimerHtml("8.8")}
           `,
           cta: {
             label: "View My Booking",

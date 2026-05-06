@@ -50,6 +50,8 @@ import { FairValueCard } from "@/components/fair-value/FairValueCard";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewSummary from "@/components/reviews/ReviewSummary";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
+import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
+import { StateSpecificDisclaimer } from "@/components/legal/StateSpecificDisclaimer";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { OwnerProfileCard } from "@/components/OwnerProfileCard";
 import { InquiryDialog } from "@/components/InquiryDialog";
@@ -843,6 +845,24 @@ const PropertyDetail = () => {
             </div>
           </section>
         )}
+
+        {/* Listing-page disclaimers required by Legal Dossier v3 § VIII —
+            8.1 (Marketplace), 8.2 (No Timeshare Sales), 8.5 (Cancellation & Refund),
+            plus state-specific disclosures (8.7 FL today; CA after counsel returns text). */}
+        <section
+          className="border-t border-border/40 bg-muted/20 py-8 mt-8"
+          aria-label="Listing disclaimers"
+        >
+          <div className="container mx-auto px-4 max-w-4xl space-y-3">
+            <DisclaimerBlock id="8.1" variant="compact" />
+            <DisclaimerBlock id="8.2" variant="compact" />
+            <DisclaimerBlock id="8.5" variant="compact" />
+            <StateSpecificDisclaimer
+              propertyState={resort?.location?.state}
+              variant="compact"
+            />
+          </div>
+        </section>
       </main>
 
       <Footer />

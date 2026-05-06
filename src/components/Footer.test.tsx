@@ -47,4 +47,32 @@ describe("Footer trademark disclaimer", () => {
     expect(disclaimer.textContent).toMatch(/endorsed by/i);
     expect(disclaimer.textContent).toMatch(/sponsored by/i);
   });
+
+  it("renders the trademark disclaimer through the central registry (not inline text)", () => {
+    renderFooter();
+    // The trademark disclaimer must come from the central disclaimer registry so a single
+    // text update propagates everywhere. data-disclaimer-id="trademark" confirms registry sourcing.
+    const tm = screen.getByTestId("disclaimer-trademark");
+    expect(tm.getAttribute("data-disclaimer-id")).toBe("trademark");
+  });
+
+  it("renders the Marketplace Disclaimer (8.1) in the footer", () => {
+    renderFooter();
+    const block = screen.getByTestId("disclaimer-8.1");
+    expect(block.textContent).toMatch(/technology platform/);
+    expect(block.textContent).toMatch(/not a party to any rental agreement/);
+  });
+
+  it("renders the No Timeshare Sales Disclaimer (8.2) in the footer", () => {
+    renderFooter();
+    const block = screen.getByTestId("disclaimer-8.2");
+    expect(block.textContent).toMatch(/rental of timeshare periods only/);
+    expect(block.textContent).toMatch(/does not facilitate, broker, or assist in the purchase, sale, transfer, or resale/);
+  });
+
+  it("links to the About page (where Disclaimer 8.3 also appears)", () => {
+    renderFooter();
+    const aboutLink = screen.getByRole("link", { name: /about/i });
+    expect(aboutLink.getAttribute("href")).toBe("/about");
+  });
 });

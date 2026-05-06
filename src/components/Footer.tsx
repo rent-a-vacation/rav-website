@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin, Gavel } from "lucide-react";
 import { Link } from "react-router-dom";
+import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 
 const Footer = () => {
   return (
@@ -81,9 +82,21 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-6">
-          <p className="text-xs text-white/40 text-center mb-6 leading-relaxed max-w-4xl mx-auto">
-            Hilton Grand Vacations®, Marriott Vacations Club®, Disney Vacation Club®, Wyndham Destinations®, Bluegreen Vacations®, Hyatt Residence Club®, Holiday Inn Club Vacations®, and WorldMark by Wyndham® are trademarks of their respective owners. Rent-A-Vacation, Inc. is an independent secondary marketplace and is not affiliated with, endorsed by, or sponsored by any of these brands.
-          </p>
+          <DisclaimerBlock
+            id="trademark"
+            variant="minimal"
+            className="text-xs text-white/40 text-center mb-3 leading-relaxed max-w-4xl mx-auto"
+          />
+          <DisclaimerBlock
+            id="8.1"
+            variant="minimal"
+            className="text-xs text-white/40 text-center mb-3 leading-relaxed max-w-4xl mx-auto"
+          />
+          <DisclaimerBlock
+            id="8.2"
+            variant="minimal"
+            className="text-xs text-white/40 text-center mb-6 leading-relaxed max-w-4xl mx-auto"
+          />
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-white/50">
               © 2026 Rent-A-Vacation. A Techsilon Group Company. All rights reserved.
@@ -93,6 +106,7 @@ const Footer = () => {
               <span>A Marketplace for Renters and Owners</span>
             </div>
             <div className="flex gap-6 text-sm">
+              <Link to="/about" className="text-white/50 hover:text-white transition-colors">About</Link>
               <Link to="/privacy" className="text-white/50 hover:text-white transition-colors">Privacy Policy</Link>
               <Link to="/terms" className="text-white/50 hover:text-white transition-colors">Terms of Service</Link>
             </div>

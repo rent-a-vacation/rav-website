@@ -1,0 +1,379 @@
+RAV Compliance Development Brief
+
+Instructions for the Claude AI Development Agent
+
+Rent-A-Vacation (rentavacation.com) -- Legal Compliance Hardening
+
+Document Type: Development Agent Instruction Brief Prepared By: Rent-A-Vacation
+Founding Team Date: May 5, 2026 Version: 1.0 For Use By: Claude AI Development
+Agent (Anthropic) Companion Document: Legal Research Memorandum v3 --
+Legal_Dossier_RentAVacation_v3.pdf
+
+ Context for Claude: This brief is the result of comprehensive legal research into the
+ regulatory framework governing online timeshare rental marketplace platforms in
+ the United States. The research covers all 50 states and D.C. and has been reviewed
+ at the level of detail a paralegal or timeshare attorney's office would prepare for a
+ client. Your task is to audit the RAV codebase against the compliance requirements
+ identified in this research, identify gaps, and implement the features and
+ safeguards described below. This is not a theoretical exercise -- these are real legal
+ obligations that must be reflected in the application before it goes into production.
+
+Part 1: Understanding What RAV Is (and Is Not)
+
+Before auditing the codebase, Claude must internalize the following legal
+classification, as every compliance decision flows from it.
+Rent-A-Vacation is a marketplace facilitator. It provides listing infrastructure, search,
+payment processing, and communication tools. It does not:
+
+   Own or manage any listed property.
+   Act as a real estate broker, agent, or fiduciary for any Host or Guest.
+   Negotiate rental terms on behalf of either party.
+   Facilitate the purchase, sale, transfer, or resale of timeshare interests.
+The platform's explicit scope is: rental of timeshare periods only -- no timeshare
+sales of any kind.
+This classification is legally protective, but only if the platform's code, copy, Terms of
+Service, and user flows consistently reflect it. Any feature, label, or workflow that
+implies agency, brokerage, or sales activity undermines this protection.
+
+Part 2: Host User Type Matrix
+
+The platform serves three distinct categories of Hosts. The compliance requirements
+differ materially between them. The codebase must accommodate all three without
+imposing unnecessary friction on casual owners, while ensuring commercial operators
+are properly credentialed.
+
+Host Type Description Typical Profile Key Legal Implication
+
+Type 1 --     One timeshare           Individual owner;   Generally no license
+Casual Owner  property; rents unused  not operating as a  required; platform must
+              points or weeks         business            monitor rental frequency
+              occasionally (1­4                           and flag if commercial
+              times/year) to offset                       thresholds are approached
+              HOA fees
+
+Type 2 --     2­5 timeshare                         May trigger broker/agent
+Multi-        properties; rents       Individual or small licensing requirements in
+Property      regularly across        LLC; may or may FL, CA, HI, NV, AZ; platform
+Owner         multiple resorts        not have a real must collect and display
+                                      estate license license numbers if
+
+                                                    applicable
+
+Type 3 --     6+ units or operating   LLC, corporation,   Almost certainly requires
+Commercial    as a business; renting  or professional     real estate or rental broker
+Operator      as a primary or         rental manager      license in high-scrutiny
+              significant income                          states; platform must verify
+              activity                                    credentials before allowing
+                                                          listings
+The platform must implement a tiered Host onboarding flow that classifies Hosts
+into one of these three types based on their self-reported profile and rental history,
+and applies the appropriate compliance requirements to each tier.
+
+Part 3: Compliance Audit Instructions
+
+Claude should audit the RAV codebase against the following checklist. For each item,
+determine: (a) whether the feature exists, (b) whether it is implemented correctly, and
+© what needs to be built or fixed. Document findings in the two-column format
+described in Part 5.
+
+3.1 Host Onboarding & Credentialing
+
+Audit these areas of the codebase:
+The Host registration and onboarding flow must be audited for the following
+requirements. First, Host type classification: does the onboarding flow ask how many
+timeshare properties the Host owns and how frequently they plan to rent? This data is
+needed to classify the Host as Type 1, 2, or 3. If this classification does not exist, it must
+be built. Second, license number collection: for Type 2 and Type 3 Hosts, does the
+platform collect a real estate or rental license number? This is required in FL, CA, HI,
+NV, and AZ. The field must be present in the Host profile and displayed on all listings
+from those states. Third, identity verification: does the platform verify the Host's
+government-issued ID? This is required for fraud prevention and is increasingly
+expected by state regulators. If not implemented, integrate a licensed identity
+verification provider (Stripe Identity is the recommended option given likely existing
+Stripe integration). Fourth, resort ownership verification: does the platform verify
+that the Host actually owns the timeshare interest they are listing? This can be done
+via resort confirmation letter upload or a resort API integration. This is the single most
+important fraud prevention measure.
+
+3.2 Listing Creation & Display
+
+Audit these areas of the codebase:
+The listing creation and display flow must be audited for the following. First, "No
+Timeshare Sales" enforcement: does the listing creation form prevent Hosts from
+listing timeshare interests for sale? Is there a validation rule that rejects any listing that
+appears to be a sale rather than a rental? Second, state-specific disclosure display:
+for listings in FL and CA, does the platform display the required state-specific
+disclosures on the listing page? These disclosures must be geo-targeted based on the
+property's state. Third, license number display: for Type 2 and Type 3 Hosts in FL, CA,
+HI, NV, and AZ, does the listing page display the Host's license number? Fourth, rental
+frequency indicator: does the listing or Host profile show how many times the Host
+has listed or rented in the past 12 months? This helps Guests assess the Host's
+experience level and helps the platform monitor for commercial threshold breaches.
+
+3.3 Payment & Escrow Architecture
+
+Audit these areas of the codebase:
+This is the highest-risk compliance area. The payment flow must be audited for the
+following. First, fund segregation: are Guest rental payments held in a segregated
+account separate from RAV operating funds? In FL, CA, and HI this is a legal
+requirement, not a best practice. If using Stripe Connect, confirm that the connected
+account architecture properly segregates funds. Second, disbursement timing: are
+funds disbursed to Hosts after check-in (not before)? Disbursing funds before the
+Guest has checked in creates escrow-like obligations that may trigger licensing
+requirements. Third, fund-holding notice: is the Escrow/Fund-Holding Notice
+(Disclaimer 8.8) displayed at checkout and in the booking confirmation? Fourth,
+refund processing: is the platform capable of processing a full refund to a Guest
+within 5 business days in the event of a Host cancellation? This is required by the
+Guest Protection Policy.
+
+3.4 Tax Collection & Remittance
+
+Audit these areas of the codebase:
+Tax compliance is the most universally applicable requirement across all 50 states.
+Audit the following. First, tax calculation engine: does the platform calculate
+applicable transient occupancy taxes, hotel taxes, and/or sales taxes based on the
+property's location? Tax rates vary significantly by state, county, and city. A static tax
+table is insufficient -- the platform needs a dynamic tax calculation engine or
+integration with a tax API (TaxJar or Avalara are the recommended options). Second,
+tax display at checkout: are taxes displayed as a line item at checkout before the
+Guest completes payment? This is required in most jurisdictions. Third, marketplace
+facilitator registration: has the platform registered as a marketplace facilitator in all
+states with applicable lodging/sales taxes? This is a business/legal action, not a code
+action, but the platform should have a state registration status field in its admin
+dashboard. Fourth, tax remittance records: does the platform maintain records of
+taxes collected and remitted by jurisdiction? This is required for audit purposes.
+
+3.5 Disclaimer & Disclosure System
+
+Audit these areas of the codebase:
+All eight required disclaimers must be present and correctly placed. Audit the
+following. First, Disclaimer 8.1 -- Marketplace Disclaimer: present on homepage,
+footer, and all listing pages. Second, Disclaimer 8.2 -- No Timeshare Sales: present
+on homepage, all listing pages, and header/footer. Third, Disclaimer 8.3 -- Non-
+Broker/Non-Agent: present in Terms of Service and About page. Fourth, Disclaimer
+8.4 -- Tax Disclosure: present in checkout flow and booking confirmation. Fifth,
+Disclaimer 8.5 -- Cancellation & Refund Policy: present on listing pages, checkout,
+and booking confirmation. Sixth, Disclaimer 8.6 -- Limitation of Liability: present in
+Terms of Service. Seventh, Disclaimer 8.7 -- Florida-Specific Disclosure: displayed
+on all Florida listings only (geo-targeted). Eighth, Disclaimer 8.8 -- Escrow/Fund-
+Holding Notice: present in payment flow, checkout, and booking confirmation.
+Implementation note: The disclaimer system should be centrally managed so that
+when legal counsel recommends changes to disclaimer language, a single update
+propagates to all locations. Do not hardcode disclaimer text in individual components.
+
+3.6 Consumer Protection & Guest Safety
+
+Audit these areas of the codebase:
+The following consumer protection features must be present. First, Guest Protection
+Policy: is there a documented policy that provides a defined remedy (full refund
+within 5 business days) in the event of a Host cancellation within 30 days of check-in?
+This policy must be displayed on listing pages and checkout. Second, listing accuracy
+reporting: can Guests report inaccurate listing information? Is there a workflow for the
+platform to investigate and act on such reports? This is required to limit liability under
+Palmer v. FantaSea Resorts (2025). Third, fraud reporting mechanism: can Guests
+report suspected fraud? Is there a documented fraud response protocol? Fourth, MLA
+notice: is there a Military Lending Act notice in the payment flow for accounts that self-
+identify as active-duty servicemembers? This is required following Steines v. Westgate
+Palace (2024).
+
+3.7 Rental Frequency Monitoring & Commercial Threshold Flagging
+
+Audit these areas of the codebase:
+This is a new feature that does not likely exist in the current codebase and must be
+built. The platform must monitor each Host's rental activity and flag when they
+approach or exceed thresholds that may indicate commercial operation. The
+recommended thresholds are: a Type 1 Host who creates more than 6 listings per year
+should receive an automated notification that their activity level may require a real
+estate or rental license in their state and should be prompted to update their Host type
+classification. A Type 2 Host who lists more than 12 units per year across multiple
+properties should be flagged for manual review and prompted to provide license
+documentation. A Type 3 Host who has not provided license documentation should be
+blocked from creating new listings in FL, CA, HI, NV, and AZ until documentation is
+provided.
+This monitoring system should be implemented as a background job that runs nightly
+and updates a compliance status field on each Host account.
+
+Part 4: Priority Build List
+
+The following features are ranked by legal urgency. Items marked Immediate
+represent legal obligations that could expose the platform to regulatory action or civil
+liability if not addressed before launch. Items marked Pre-Launch should be
+completed before the platform accepts real money. Items marked Post-Launch can be
+addressed in the first 90 days after launch.
+ Priority  Feature                              Legal Basis            Complexity
+Immediate                                                              High
+           Fund segregation / Stripe Connect FL § 721.08, CA B&P §     Medium
+Immediate  trust account architecture           10145, HI § 514E-9     Low
+                                                                       Medium
+Immediate  All 8 disclaimers deployed and       All jurisdictions      High
+           centrally managed                                           Medium
+Immediate                                                              Medium
+           "No Timeshare Sales" validation on FL § 721.11, CA B&P §    Medium
+Immediate  listing creation                     11003.5                Low
+Pre-                                                                   Medium
+Launch     State-specific disclosures (FL, CA)  FL § 721.20, CA DRE    Low
+Pre-       geo-targeted to listings                                    Medium
+Launch                                                                 High
+Pre-       Tax calculation engine integration 40+ states marketplace   Low
+Launch     (TaxJar or Avalara)                  facilitator laws
+Pre-
+Launch     Host identity verification (Stripe Fraud prevention; FTC
+Pre-       Identity or Persona)                 Act § 5
+Launch
+Pre-       Resort ownership verification        Fraud prevention
+Launch     (document upload)
+Pre-
+Launch     Host type classification in          FL, CA, HI, NV, AZ
+Post-      onboarding (Type 1/2/3)              licensing
+Launch
+Post-      License number collection and FL § 721.20, CA DRE, HI
+Launch     display for Type 2/3 Hosts           § 514E
+
+           Guest Protection Policy display and Consumer protection --
+           refund workflow                      all jurisdictions
+
+           Listing accuracy reporting           Palmer v. FantaSea
+           mechanism                            Resorts (2025)
+
+           Centralized disclaimer management    All jurisdictions
+           system
+
+           Rental frequency monitoring and FL, CA, HI, NV, AZ
+           commercial threshold flagging licensing
+
+           MLA notice in payment flow for Steines v. Westgate
+           servicemembers                       Palace (2024)
+ Priority           Feature                    Legal Basis          Complexity
+Post-      Fraud reporting mechanism and   FTC Act § 5; wire fraud  Medium
+Launch     response protocol               statutes                 Low
+Post-      Admin dashboard -- state tax    Tax compliance -- all    Medium
+Launch     registration status             jurisdictions
+Post-      State compliance calendar (tax  Tax compliance -- all
+Launch     remittance deadlines)           jurisdictions
+
+Part 5: Attorney Meeting Document Template
+
+When the RAV team meets with legal counsel, they will present a two-column
+compliance status document. Claude should generate this document after completing
+the codebase audit, filling in the "Platform Implementation" column based on actual
+findings.
+The document format is as follows. For each legal requirement identified in the
+research, there is a corresponding row showing what the legal requirement is, what
+the applicable authority is, and how the RAV platform has addressed it. The goal is for
+counsel to be able to read this document and immediately understand both the legal
+landscape and the platform's compliance posture.
+Template structure:
+  Legal             Applicable         RAV Platform Implementation        Status
+Requirement         Authority
+
+                    FL § 721.20, CA    Terms of Service explicitly
+Platform must not   DRE, most state    disclaim agency; listing creation
+act as real estate  broker licensing   flow does not involve platform     [Implemented /
+broker              statutes           negotiation; Host-Guest direct     Partial / Gap]
+
+                                       contracting model
+
+Platform must not   FL § 721.11, CA    Listing creation form validates    [Implemented /
+facilitate          B&P § 11003.5      rental-only listings; "No
+timeshare sales                        Timeshare Sales" disclaimer on Partial / Gap]
+                                       all pages
+
+Fund segregation    FL § 721.08, CA    Stripe Connect with separate       [Implemented /
+required            B&P § 10145, HI    trust accounts; funds not          Partial / Gap]
+                    § 514E-9           commingled with operating
+                                       funds
+
+Tax collection and  40+ states         TaxJar integration calculates [Implemented /
+remittance          marketplace        and remits taxes by jurisdiction Partial / Gap]
+                    facilitator laws
+
+Host identity       Fraud prevention;  Stripe Identity integration;       [Implemented /
+verification        FTC Act § 5        government ID required for all     Partial / Gap]
+                                       Hosts
+
+License number      FL § 721.20, CA    License number field in Host       [Implemented /
+display for         DRE, HI § 514E     profile; displayed on listings in  Partial / Gap]
+commercial                             FL, CA, HI, NV, AZ
+operators
+
+Marketplace         All jurisdictions  Displayed on homepage, footer, [Implemented /
+disclaimer                             and all listing pages              Partial / Gap]
+
+No Timeshare        All jurisdictions  Displayed on homepage, all [Implemented /
+Sales disclaimer                       listing pages, and header/footer Partial / Gap]
+
+Tax disclosure at   All jurisdictions  Tax line item displayed at         [Implemented /
+checkout                               checkout and in booking            Partial / Gap]
+                                       confirmation
+
+FL-specific FL § 721.20 Geo-targeted disclosure                           [Implemented /
+disclosure on FL                       displayed on all Florida listings Partial / Gap]
+    Legal           Applicable        RAV Platform Implementation Status
+ Requirement        Authority
+listings                              Geo-targeted disclosure            [Implemented /
+CA-specific       CA DRE              displayed on all California        Partial / Gap]
+disclosure on CA  Consumer            listings
+listings          protection -- all
+Guest Protection  jurisdictions       Policy displayed on listing pages
+Policy            All jurisdictions   and checkout; full refund within [Implemented /
+                                      5 business days for Host           Partial / Gap]
+Limitation of     FL, CA, HI, NV, AZ  cancellation
+liability clause  licensing
+                  Steines v.          Present in Terms of Service;       [Implemented /
+Rental frequency  Westgate Palace     capped at platform fees paid in    Partial / Gap]
+monitoring        (2024)              prior 12 months
+                  Palmer v.
+MLA arbitration   FantaSea Resorts    Automated threshold
+carve-out         (2025)              monitoring; Type 1/2/3             [Implemented /
+Listing accuracy  FTC Act § 5; wire   classification system;             Partial / Gap]
+reporting         fraud statutes      commercial operator flagging
+Fraud reporting
+and response                          MLA notice in payment flow;        [Implemented /
+                                      arbitration clause excludes        Partial / Gap]
+                                      active-duty servicemembers
+
+                                      Guest reporting mechanism; [Implemented /
+                                      platform investigation workflow Partial / Gap]
+
+                                      Fraud reporting button on all      [Implemented /
+                                      listings; documented response      Partial / Gap]
+                                      protocol
+
+Claude's task: After auditing the codebase, fill in the "RAV Platform Implementation"
+and "Status" columns based on actual findings. Where the status is "Gap" or "Partial,"
+add a brief implementation note describing what needs to be built or fixed. This
+completed document will be presented to legal counsel.
+Part 6: What NOT to Over-Engineer
+
+The following items are explicitly out of scope or should not be over-built. The goal is a
+compliant platform, not a compliance fortress that creates friction for casual users.
+The platform should not require a real estate license from Type 1 Hosts (casual owners
+with one property renting 1­4 times per year). This would eliminate the platform's
+primary user base. The platform should not implement escrow management directly
+-- it should use a licensed third-party payment processor and clearly disclaim that it is
+not an escrow agent. The platform should not attempt to provide legal advice to Hosts
+or Guests -- all legal questions should be directed to qualified counsel. The platform
+should not block listings from states where the legal risk is "Monitor" -- those states
+require registration and tax compliance, not operational restrictions. The platform
+should not implement a rigid compliance gate that prevents casual owners from
+listing quickly -- compliance checks should run in the background and flag issues
+without blocking the user flow unless absolutely required by law.
+
+Part 7: Immediate Next Steps for Claude
+
+Upon receiving this brief, Claude should take the following steps in order.
+Step 1: Read the companion document Legal_Dossier_RentAVacation_v3.pdf in full to
+understand the legal context before touching any code.
+Step 2: Audit the RAV codebase against the checklist in Part 3. Document findings for
+each item as: Implemented, Partial, or Gap.
+Step 3: Generate the completed two-column attorney meeting document (Part 5)
+based on actual codebase findings.
+Step 4: Present the gap analysis to the RAV founding team for prioritization before
+beginning implementation.
+Step 5: Implement features in the order specified in the Priority Build List (Part 4),
+starting with all Immediate items.
+Step 6: After implementing each feature, update the attorney meeting document to
+reflect the new implementation status.
+End of Brief -- Version 1.0 -- May 5, 2026 Rent-A-Vacation · rentavacation.com ·
+Confidential -- For Development Use Only
+
