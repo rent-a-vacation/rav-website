@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-04-28T10:04:52"
 change_ref: "dfba76b"
-change_type: "session-63"
+change_type: "session-64"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -48,7 +48,7 @@ When `/sdlc pickup` runs next, the user has explicitly scoped the next session a
 
 **Also consider after those:** A controlled PROD deploy window for the accumulated Phase 22 + Session 59 changes (migrations 060–065, text-chat updates with support context + 5 tools + classifier, ingest-support-docs + cancel-listing edge fns, support_conversations + listing-proofs + dispute_source schemas). All currently sit on DEV per CLAUDE.md human-confirmation rule.
 
-## Current Priority Tiers (as of May 2, 2026 — Session 63)
+## Current Priority Tiers (as of May 6, 2026 — Session 64)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
@@ -151,6 +151,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| May 6, 2026 | 64 | **DEC-040 logged — sequential Phase numbering retired.** Phase 22 was the last numbered phase; new work (5+ related issues sharing an outcome) goes into themed milestones (`Launch Readiness`, `Security Hardening`, `Role-Based UX Overhaul`, etc.). PROJECT-HUB.md, this file, and `CLAUDE.md` updated with the new convention. `scripts/docs-sync-check.ts` extended with `checkPhaseNumbering()` rule that fails CI on any new "Phase 23+" reference outside the allowlist. Auto-memory saved. **No tier changes.** Doc-only Session 64. |
 | May 2, 2026 | 63 | **#473 SHIPPED (PR #474)** — PostHog session recording disabled + Sentry `beforeSend` filter for EvalError/CSP events; resolves 16-user CSP block on /signup. **PaySafe Compliance doc created** (`docs/payments/PAYSAFE-COMPLIANCE.md`) — captures marketplace + Stripe Connect compliance posture, gap closure register, placeholder for incoming counsel references; DEC-039 logged. **PaySafe gaps C (#467), D (#468) promoted Tier E → Tier B**, and #463 (Gap E) consolidated under Tier B per user stance "minimal post-launch deferral." Session 63 working scope: 7 of 9 PaySafe gaps (A, B, C, D, E, G, H) + #473. F deferred (user confirmed); I gated on #80 lawyer pass. |
 | Apr 27–28, 2026 | 61 | **PaySafe Flow Specification SHIPPED (PR #460).** New `docs/payments/PAYSAFE-FLOW-SPEC.md` — authoritative internal spec for the escrow + dispute system across 11 sections. DEC-038 logged. **9 gap issues opened** (#461–#469): pre-launch (#461 confirm-checkin server action, #462 auto-confirm cron, #463 role-mapping enforcement, #464 SLA enforcement, #465 Stripe chargeback auto-mirror, #466 jurisdiction field) and post-launch (#467 issue→dispute pre-fill, #468 hold-period to system_settings, #469 split refunds/holdbacks/credits). Tier B updated with the 5 Launch-Readiness gap issues; Tier E updated with the 3 post-launch gap issues + #463 (Security Hardening). Doc-only PR — no test count change (1394), no migrations, no edge-fn changes. |
 | Apr 25, 2026 | 60 | **#442 + #445 SHIPPED (PR #446).** Stripe Connect tests + vitest coverage extension to `supabase/functions/**`. 19 new tests (1375 → 1394). Coverage now measures handler.ts files; thresholds unchanged at 25/25/30/25 — all pass with 75/78/84/75 actuals. Tier A confirmed empty. Tier audit: added #368 + #443 + #444 to Tier E with explicit triggers; clarified #233 (X/Twitter) as post-launch; expanded #404 row to mention all 8 policy drafts (was 6); reframed #438 with confirmed Atlas + 4-founder + Florida foreign-entity scope. |

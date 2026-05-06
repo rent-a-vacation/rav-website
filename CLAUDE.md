@@ -117,6 +117,26 @@ The same check runs in CI on every PR via `.github/workflows/docs-audit.yml` —
 - **In progress** → add `in-progress` label
 - **Done** → close issue with summary comment
 
+### Milestone strategy — themed, not sequential phases (DEC-040)
+
+Sequential `Phase NN` numbering ended at **Phase 22: Customer Support Foundation**. New work is tracked under **themed GitHub milestones** named for an outcome a non-engineer can read at a glance.
+
+**When to create a new themed milestone:**
+- 5+ related issues that share an outcome
+- Cross-cuts code + docs + ops
+- Has a clean "done" state when the theme is delivered
+
+**When NOT to:**
+- One-off bug → `Maintenance & Bugs`
+- Single feature → standalone issue, no milestone
+- Sequential continuation of an old phase → ❌ **never create `Phase 23` or higher.** Use a theme instead.
+
+**Examples in flight:** `Launch Readiness`, `Role-Based UX Overhaul`, `Search & Discovery Enhancement`, `Security Hardening`, `Growth & Marketing`, `Analytics & Monitoring`, `Maintenance & Bugs`. A natural next theme would be **"PaySafe Compliance Hardening"** wrapping #461–#468 + #80 + #438.
+
+Standard answer to "what phase are we on?": *"Phase 22 was the last numbered phase; current work is tracked under the Launch Readiness milestone."*
+
+`scripts/docs-sync-check.ts` enforces this — any new `Phase 23+` reference in `docs/**/*.md` fails CI (with an allowlist for the historical archive and DEC-040 itself).
+
 ### Creating issues during a session
 ```bash
 # Bug discovered
@@ -125,11 +145,11 @@ gh issue create --repo rent-a-vacation/rav-website \
   --label "bug,platform" \
   --body "[What's broken, steps to reproduce, expected vs actual]"
 
-# Enhancement identified
+# Enhancement identified — milestone is THEMED, not Phase NN
 gh issue create --repo rent-a-vacation/rav-website \
   --title "[Feature name]" \
   --label "enhancement,pre-launch,marketplace" \
-  --milestone "Phase 20: Accounting & Tax" \
+  --milestone "Launch Readiness" \
   --body "[What needs to be built and why]"
 ```
 
@@ -514,3 +534,4 @@ All admin actions that modify data MUST have appropriate confirmation dialogs:
 - ❌ Never skip updating seed manager when adding tables (see Seed Manager Convention)
 - ❌ Never use placeholder content or fake statistics
 - ❌ Never modify production Supabase (xzfllqndrlmhclqfybew) without explicit human confirmation
+- ❌ Never propose `Phase 23` or higher — sequential phase numbering ended at Phase 22 (DEC-040). Use themed milestones for new work.
