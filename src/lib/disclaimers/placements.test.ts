@@ -96,6 +96,14 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     ],
     notes: "Booking confirmation email must include verbatim Tax (8.4), Cancellation (8.5), Escrow (8.8) via the edge-function mirror.",
   },
+  {
+    file: "src/pages/ListProperty.tsx",
+    required: [
+      `validateListingForSaleLanguage`,
+      `saleLanguageFieldLabel`,
+    ],
+    notes: "Listing creation must call validateListingForSaleLanguage on owner-provided text fields before any insert (#485 No Timeshare Sales validation).",
+  },
 ];
 
 describe("Disclaimer placement audit — required <DisclaimerBlock /> usages per page", () => {

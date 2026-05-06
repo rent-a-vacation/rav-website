@@ -48,6 +48,11 @@ import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { calculateNights, computeOwnerPayoutBreakdown } from "@/lib/pricing";
 import { useOwnerCommission } from "@/hooks/useOwnerCommission";
 import { trackEvent } from "@/lib/posthog";
+import {
+  isListingSaleLanguageRejection,
+  saleLanguageFieldLabel,
+  validateListingForSaleLanguage,
+} from "@/lib/listingValidation/noSales";
 
 const benefits = [
   {
@@ -362,6 +367,22 @@ const ListProperty = () => {
     // Check listing limit before creating
     if (!canCreateListing) {
       setSubmitError("You've reached your listing limit. Please upgrade your plan to create more listings.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // #485 — "No Timeshare Sales" validation. RAV facilitates rentals only;
+    // reject listings whose owner-provided text reads like a sale ad. Staff
+    // approval (proof_status workflow) is the secondary defense.
+    const saleCheck = validateListingForSaleLanguage({
+      resortName,
+      location,
+      description,
+    });
+    if (isListingSaleLanguageRejection(saleCheck)) {
+      setSubmitError(
+        `Listings cannot contain sale-related language. The ${saleLanguageFieldLabel(saleCheck.field)} contains "${saleCheck.term}". Rent-A-Vacation is a marketplace for renting timeshare periods only — see /about for details.`,
+      );
       setIsSubmitting(false);
       return;
     }
