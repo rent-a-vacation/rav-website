@@ -30,6 +30,9 @@ export interface ActiveListing {
   bidding_ends_at: string | null;
   min_bid_amount: number | null;
   is_exclusive_deal: boolean;
+  // 2-letter US state code (Migration 074, denormalized from resort.location.state).
+  // Nullable for legacy listings until backfill verification + NOT NULL follow-up.
+  state: string | null;
   created_at: string;
   property: {
     id: string;

@@ -184,6 +184,10 @@ const ListProperty = () => {
   // Form fields (auto-populated from resort/unit selection)
   const [resortName, setResortName] = useState(draft?.resortName || "");
   const [location, setLocation] = useState(draft?.location || "");
+  // 2-letter US state code, auto-populated from selected resort. Used for
+  // geo-targeted state-specific disclosures (FL § 8.7; future CA per
+  // counsel question C10). See compliance issue #486.
+  const [state, setState] = useState<string>("");
   const [bedrooms, setBedrooms] = useState(draft?.bedrooms || "");
   const [bathrooms, setBathrooms] = useState(draft?.bathrooms || "");
   const [sleeps, setSleeps] = useState(draft?.sleeps || "");
@@ -282,6 +286,8 @@ const ListProperty = () => {
       setResortName(resort.resort_name as string);
       setLocation(loc?.full_address || `${loc?.city}, ${loc?.state}`);
       setDescription((resort.description as string) || "");
+      // #486 — Capture state for geo-targeted disclosure rendering.
+      setState((loc?.state || "").toUpperCase());
     }
   }
 
@@ -465,6 +471,10 @@ const ListProperty = () => {
         rav_markup: ravMarkup,
         final_price: finalPrice,
         cancellation_policy: cancellationPolicy,
+        // #486 — 2-letter US state code for geo-targeted disclosures (FL § 8.7,
+        // future CA). NULL is acceptable for off-resort listings until backfill
+        // verification — admin can update later.
+        state: state ? state.toUpperCase() : null,
         status: "pending_approval",
         // #376 proof fields
         resort_confirmation_number: resortConfirmationNumber.trim(),

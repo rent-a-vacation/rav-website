@@ -25,6 +25,7 @@ function makeListing(id: string, tags: string[]): ActiveListing {
     open_for_bidding: true,
     bidding_ends_at: null,
     min_bid_amount: null,
+    state: "FL",
     created_at: "2026-04-01",
     property: {
       id: `prop-${id}`,

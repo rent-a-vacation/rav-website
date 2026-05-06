@@ -858,7 +858,10 @@ const PropertyDetail = () => {
             <DisclaimerBlock id="8.2" variant="compact" />
             <DisclaimerBlock id="8.5" variant="compact" />
             <StateSpecificDisclaimer
-              propertyState={resort?.location?.state}
+              // #486 — Prefer the denormalized listing.state populated by Migration 074;
+              // fall back to resort.location.state for legacy listings until backfill
+              // verification + the NOT NULL follow-up migration.
+              propertyState={listing?.state ?? resort?.location?.state}
               variant="compact"
             />
           </div>
