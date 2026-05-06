@@ -1,0 +1,890 @@
+LEGAL RESEARCH MEMORANDUM
+
+Rent-A-Vacation -- Timeshare Rental Marketplace
+
+Regulatory Compliance & Jurisdictional Analysis
+
+PREPARED FOR: Rent-A-Vacation (rentavacation.com) PREPARED BY: Rent-A-Vacation
+Founding Team PURPOSE: In preparation for legal counsel review DATE: May 5, 2026
+VERSION: 3.0 SUBJECT: State-by-State Regulatory Framework for Online Timeshare
+Rental Marketplace Operations CLASSIFICATION: Confidential -- For Counsel Review
+Only
+
+ Important Notice: This memorandum is prepared by the Rent-A-Vacation founding
+ team to facilitate legal review and does not constitute legal advice. The information
+ herein reflects research current as of the date above. Laws and regulations change
+ frequently; qualified counsel in each relevant jurisdiction should be consulted
+ before taking any action. This document does not create an attorney-client
+ relationship. Unauthorized disclosure, reproduction, or distribution is strictly
+ prohibited.
+
+TABLE OF CONTENTS
+
+  1. Executive Summary
+  2. Business Model Classification & Legal Posture
+  3. Attorney Analysis: Key Legal Questions
+  4. Jurisdictional Analysis -- All 50 States & D.C.
+  5. Recent Legislative Developments
+  6. Notable Case Law
+  7. Operational Compliance Matrix
+  8. Required Disclaimers & Platform Notices
+  9. Strategic Recommendations
+ 10. References & Authorities
+
+SECTION I: EXECUTIVE SUMMARY
+
+Rent-A-Vacation operates an online marketplace that facilitates the rental of timeshare
+periods by connecting timeshare owners ("Hosts") with prospective renters ("Guests").
+The platform does not engage in the purchase, sale, transfer, or resale of timeshare
+interests. This distinction -- between timeshare rental facilitation and timeshare
+sales brokerage -- is the central legal question that determines the platform's
+regulatory obligations in each U.S. jurisdiction.
+This memorandum synthesizes legal research across all 50 states and the District of
+Columbia, addressing the following core questions:
+
+   Whether the platform's activities constitute real estate brokerage, travel agency,
+   or marketplace facilitation under applicable state law.
+   Whether state-specific real estate or travel agent licenses are required.
+   What transient occupancy, hotel, and sales tax obligations apply to timeshare
+   rentals.
+   Whether the platform may hold funds, manage escrow, or process payments.
+   What consumer protection disclosures and disclaimers are legally required.
+   The platform's liability exposure in the event of Host failure or fraud.
+Summary Finding: In the majority of U.S. jurisdictions, a platform that operates as a
+neutral marketplace -- listing timeshare rentals without acting as agent, broker, or
+fiduciary for either party -- does not require a real estate broker's license for the rental
+facilitation function alone. However, Florida, California, Hawaii, Nevada, and
+Arizona impose heightened requirements that demand immediate legal attention. Tax
+remittance obligations are near-universal and represent the most operationally
+significant compliance requirement.
+Host Classification -- A Critical Distinction
+
+The research identifies three distinct categories of Hosts whose activities carry
+materially different regulatory implications:
+
+Host Type     Description                           Key Legal Implication
+                                               Generally no license required;
+              Individual with one timeshare    platform must flag if rental frequency
+              property; rents unused           crosses commercial thresholds
+Casual Owner  points/weeks occasionally to     May trigger broker/agent licensing
+                                               requirements in FL, CA, HI; platform
+              offset HOA fees                  must collect and display license
+                                               numbers
+Multi-        Individual with 2­5 properties;  Almost certainly requires real estate or
+Property      rents regularly across multiple  rental broker license in high-scrutiny
+Owner         resorts                          states; platform must verify
+                                               credentials
+Commercial Entity or individual renting 6+
+Operator units or operating as a business
+
+The platform's compliance architecture must accommodate all three types without
+imposing unnecessary friction on casual owners while ensuring commercial operators
+are properly credentialed.
+
+SECTION II: BUSINESS MODEL CLASSIFICATION &
+LEGAL POSTURE
+
+2.1 The Marketplace Facilitator Model
+
+Rent-A-Vacation's operational model is most accurately characterized as a
+marketplace facilitator: a technology platform that provides listing infrastructure,
+search functionality, payment processing, and communication tools, but does not
+itself enter into rental agreements, hold title to any property, or act as agent for either
+party.
+This classification is legally significant because:
+1. Real estate broker licensing statutes in most states apply to persons who, for
+ compensation, act as agents in negotiating or completing real estate
+ transactions. A platform that merely lists properties and facilitates direct
+ contracting between owners and renters typically falls outside this definition.
+
+2. Travel agency licensing requirements, where they exist, generally apply to
+ entities that sell travel services on behalf of suppliers. A platform that connects
+ owners directly with renters, without acting as agent for the owner, typically
+ does not constitute a travel agency.
+
+3. Marketplace facilitator tax laws, enacted in most states post-South Dakota v.
+ Wayfair (2018), impose tax collection and remittance obligations on platforms
+ that facilitate sales exceeding economic nexus thresholds -- regardless of
+ whether the platform is the seller.
+
+2.2 Critical Distinctions
+
+Activity           Rent-A-Vacation's Position            Legal Implication
+
+Listing timeshare  Provides listing infrastructure only  Not brokerage in most states
+rentals
+
+Negotiating rental Owners and renters negotiate          Reduces agency exposure
+terms              directly
+
+Holding rental Platform processes payments; funds Potential escrow/trust
+funds              disbursed to Host                     requirements in FL, CA, HI
+
+Collecting taxes   Marketplace facilitator tax laws      Collection and remittance
+                   apply                                 required in ~40+ states
+
+Timeshare sales    Explicitly excluded from platform     No broker license required for
+                   scope                                 sales activity
+
+Consumer           Platform must disclose its role Disclaimers required in all
+protection         clearly                               jurisdictions
+
+2.3 The "No Timeshare Sales" Designation
+
+The platform's explicit exclusion of timeshare sales is legally protective. Florida Statute
+§ 721.11 and California Business & Professions Code § 11003.5 define "timeshare
+plan" broadly, but the rental of timeshare periods -- as distinct from the sale of
+timeshare interests -- is generally treated as a transient occupancy matter rather than
+a real estate transaction. This distinction must be clearly communicated in all platform
+disclosures.
+
+SECTION III: ATTORNEY ANALYSIS -- KEY LEGAL
+QUESTIONS
+
+Question 1: Is Rent-A-Vacation a Marketplace, Broker, or Travel Agent?
+
+Short Answer: Marketplace facilitator, provided the platform does not negotiate
+terms, act as agent, or hold itself out as representing either party.
+Analysis: The platform's role as a neutral technology intermediary aligns with the
+marketplace facilitator model recognized in most state statutes. The critical factors
+are: (a) the platform does not negotiate rental terms on behalf of either party; (b)
+rental agreements are entered into directly between Hosts and Guests; © the platform
+does not hold itself out as a licensed real estate broker or travel agent; and (d) the
+platform's compensation is a platform fee, not a commission on a real estate
+transaction.
+Recommendation: Ensure all platform documentation, Terms of Service, and
+marketing materials consistently describe Rent-A-Vacation as a "marketplace" or
+"listing platform." Avoid language suggesting agency, representation, or fiduciary duty
+to either party. Have counsel review the Terms of Service and listing agreement
+templates in Florida, California, and Hawaii specifically.
+Risk Level: Moderate -- requires careful drafting and consistent messaging.
+
+Question 2: Does Rent-A-Vacation Need State Licenses?
+
+Short Answer: Generally no for rental facilitation alone, but Florida, California,
+Hawaii, Nevada, and Arizona require heightened attention.
+Analysis: Most states do not require a real estate broker's license for a platform that
+facilitates timeshare rentals without acting as an agent. However, five states impose
+specific requirements: Florida (§ 721.20 requires registration of "timeshare resale
+brokers" but rental-only platforms may qualify for an exemption); California (DRE
+oversight applies if the platform negotiates or solicits on behalf of owners); Hawaii
+(Chapter 514E imposes strict requirements on "timeshare plan operators"); Nevada
+(NRS 119A applies to timeshare marketing); Arizona (ARS § 32-2197 covers timeshare
+sales agents but rental-only platforms may be exempt).
+Recommendation: Obtain a formal legal opinion in FL, CA, HI, NV, and AZ on whether
+the platform's specific activities trigger licensing requirements. If any Host is found to
+be acting as an unlicensed broker, the platform could face secondary liability.
+Implement a Host credentialing system that collects and displays license numbers for
+commercial operators.
+Risk Level: High in FL, CA, HI -- requires immediate legal opinion.
+
+Question 3: Can Rent-A-Vacation Hold Funds?
+
+Short Answer: Yes, as a payment processor/escrow agent, but with significant
+restrictions in Florida, California, and Hawaii.
+Analysis: The platform's payment processing function -- collecting rental payments
+from Guests and disbursing to Hosts -- is permissible in most states under the
+marketplace facilitator model. However, Florida (§ 721.20), California (Business &
+Professions Code § 10145), and Hawaii (HRS § 514E) impose specific trust account
+and escrow requirements on entities that hold consumer funds in connection with
+timeshare transactions. These requirements may apply even to rental-only platforms if
+the funds are held for any period before disbursement.
+Recommendation: Implement a compliant payment escrow structure using a licensed
+escrow agent or payment processor (e.g., Stripe Connect with separate trust
+accounts). Ensure funds are disbursed to Hosts within the timeframes required by
+applicable state law. Do not commingle Guest rental payments with platform
+operating funds.
+Risk Level: High in FL, CA, HI -- requires immediate structural compliance.
+Question 4: Can Rent-A-Vacation Manage Escrow?
+
+Short Answer: Not directly without an escrow license in most states; must use a
+licensed third-party escrow agent.
+Analysis: Escrow management -- holding funds on behalf of both parties pending
+completion of a transaction -- requires an escrow license in most states. The platform
+should not characterize its payment processing function as "escrow management."
+Instead, it should use a licensed third-party payment processor or escrow agent to
+hold and disburse funds, and describe this function as "payment processing" or
+"payment facilitation."
+Recommendation: Partner with a licensed escrow or payment processing provider.
+Ensure the platform's Terms of Service clearly state that the platform is not an escrow
+agent and that funds are held by a licensed third-party processor. Obtain legal
+confirmation that the chosen payment structure complies with FL, CA, and HI
+requirements.
+Risk Level: Moderate -- manageable with proper payment infrastructure.
+
+Question 5: What Disclaimers Are Required?
+
+Short Answer: Multiple disclaimers required; varies by state and transaction type.
+Analysis: Several categories of disclaimers are legally required or strongly advisable. A
+marketplace disclaimer clarifying that Rent-A-Vacation is not a party to the rental
+transaction. A no-timeshare-sales disclaimer. A non-broker/non-agent disclaimer. A tax
+disclosure. A cancellation and refund policy. A limitation of liability clause. A Florida-
+specific disclosure for Florida listings. A California-specific disclosure for California
+listings. An escrow/fund-holding notice explaining how payments are processed and
+protected.
+Recommendation: Draft a comprehensive Disclaimer and Terms of Service document
+reviewed by counsel in Florida, California, and New York. Display disclaimers
+prominently on the homepage, listing pages, and checkout flow. See Section VIII for
+complete disclaimer language.
+Risk Level: Moderate -- manageable with proper legal drafting.
+Question 6: What Is the Platform's Liability If an Owner Fails?
+
+Short Answer: Limited if the platform clearly disclaims agency and uses proper
+contractual protections, but consumer protection laws impose baseline obligations.
+Analysis: If a Host fails to honor a rental agreement (e.g., cancels at the last minute,
+provides inaccurate listing information, or fails to deliver the promised
+accommodation), the platform's liability depends on: (a) whether the platform's Terms
+of Service clearly disclaim agency and limit liability; (b) whether the platform collected
+and disbursed funds in compliance with applicable law; and © whether the platform
+made any representations about the quality or availability of the listed property.
+Consumer protection laws in most states impose a baseline obligation of good faith
+dealing that cannot be entirely disclaimed.
+Recommendation: Implement a Host Guarantee or Guest Protection Policy that
+provides a defined remedy (e.g., full refund within 5 business days) in the event of Host
+cancellation. This policy both protects Guests and limits the platform's exposure to
+consumer protection claims. Ensure the Terms of Service include a clear limitation of
+liability clause capped at the platform fees paid.
+Risk Level: Moderate -- manageable with proper contractual protections and a Guest
+protection policy.
+
+Question 7: What Is the Platform's Liability If Fraud Occurs?
+
+Short Answer: Significant exposure under consumer protection and wire fraud
+statutes; requires proactive fraud prevention measures.
+Analysis: If a fraudulent listing results in financial harm to a Guest (e.g., a listing for a
+property the Host does not own or cannot access), the platform faces potential liability
+under: state consumer protection statutes (UDAP laws); the FTC Act § 5 (unfair or
+deceptive acts); and potentially wire fraud statutes if the platform's payment
+infrastructure was used to facilitate the fraud. The FTC's recent enforcement actions
+(see Section VI) demonstrate active regulatory attention to timeshare-related fraud.
+Recommendation: Implement a Host identity verification system (government ID
+verification, resort ownership verification). Implement transaction monitoring for
+patterns consistent with fraud. Establish a fraud response protocol including
+immediate fund hold, investigation, and refund procedures. Obtain cyber liability and
+fraud insurance. Ensure the Terms of Service include a fraud reporting mechanism and
+cooperate fully with law enforcement investigations.
+Risk Level: High -- requires proactive fraud prevention infrastructure.
+
+SECTION IV: JURISDICTIONAL ANALYSIS -- ALL 50
+STATES & D.C.
+
+The following analysis covers the key compliance requirements for each jurisdiction.
+Risk levels are classified as: Required (immediate action needed), Conditional (action
+needed if certain thresholds are met), or Monitor (low current risk; monitor for
+legislative changes).
+
+Alabama
+
+Licensing: No specific timeshare rental license required. Standard real estate broker
+license applies only if platform acts as agent. Taxes: 4% state lodgings tax; local rates
+vary (up to 7%). Marketplace facilitator laws apply. Escrow: No specific requirements
+for rental platforms. Platform Action: Register as marketplace facilitator for tax
+purposes. Risk: Monitor.
+
+Alaska
+
+Licensing: No timeshare-specific statute. Real estate license required only for
+brokerage activities. Taxes: No state sales tax; some municipalities impose local taxes.
+Escrow: No specific requirements. Platform Action: Monitor local tax requirements.
+Risk: Monitor.
+
+Arizona
+
+Licensing: ARS § 32-2197 covers timeshare sales agents; rental-only platforms may be
+exempt but require legal confirmation. Taxes: 5.6% TPT; county and city rates add 0.5­
+3%. Escrow: No specific rental escrow requirements. Platform Action: Obtain legal
+opinion on ARS § 32-2197 applicability; register for TPT. Risk: Conditional.
+Arkansas
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6.5% state sales tax on
+lodging. Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+California
+
+Licensing: DRE oversight if platform negotiates or solicits on behalf of owners.
+Business & Professions Code § 11003.5 defines timeshare broadly. Seller of Travel
+registration may be required (§ 17550). Taxes: 7.25% base sales tax; TOT varies by city
+(e.g., 14% in San Francisco). Escrow: Business & Professions Code § 10145 trust
+account requirements apply to funds held in connection with real property
+transactions. Platform Action: Obtain DRE legal opinion; register as Seller of Travel;
+implement compliant trust account structure; display CA-specific disclosures. Risk:
+Required.
+
+Colorado
+
+Licensing: No timeshare-specific rental licensing. Taxes: 2.9% state sales tax; local
+lodging taxes vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Connecticut
+
+Licensing: No timeshare-specific rental licensing. Taxes: 15% hotel tax. Escrow: No
+specific requirements. Platform Action: Register for hotel tax collection. Risk:
+Monitor.
+
+Delaware
+
+Licensing: No timeshare-specific rental licensing. Taxes: No sales tax; 8% lodging tax.
+Escrow: No specific requirements. Platform Action: Register for lodging tax. Risk:
+Monitor.
+Florida
+
+Licensing: Florida Statute § 721.20 requires registration of "timeshare resale brokers."
+Rental-only platforms may qualify for an exemption but require DBPR legal opinion. §
+721.11 imposes strict consumer protection requirements. Taxes: 6% state sales tax +
+county surtax (0.5­1.5%); local tourist development taxes (2­6%). Escrow: § 721.08
+requires escrow of advance deposits; trust account requirements apply to funds held
+for more than 5 business days. Platform Action: Obtain DBPR legal opinion on §
+721.20 applicability; implement compliant escrow structure; display FL-specific
+disclosures on all FL listings; register for all applicable taxes. Risk: Required.
+
+Georgia
+
+Licensing: No timeshare-specific rental licensing. Taxes: 4% state sales tax; local
+hotel/motel taxes vary. Escrow: No specific requirements. Platform Action: Register
+as marketplace facilitator. Risk: Monitor.
+
+Hawaii
+
+Licensing: HRS Chapter 514E imposes strict requirements on "timeshare plan
+operators." Rental platforms may be covered. DCCA legal opinion required. Taxes:
+10.25% TAT + 4% GET. Escrow: HRS § 514E-9 requires escrow of advance payments.
+Platform Action: Obtain DCCA legal opinion; implement compliant escrow structure;
+register for TAT and GET. Risk: Required.
+
+Idaho
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Illinois
+
+Licensing: No timeshare-specific rental licensing. Taxes: State sales tax + Chicago
+hotel tax (17.4% combined). Escrow: No specific requirements. Platform Action:
+Register for Chicago hotel tax if listings in Chicago. Risk: Conditional.
+Indiana
+
+Licensing: No timeshare-specific rental licensing. Taxes: 7% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Iowa
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6% sales tax; local
+hotel/motel taxes. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Kansas
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6.5% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Kentucky
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Louisiana
+
+Licensing: No timeshare-specific rental licensing. Taxes: 4.45% state sales tax; local
+taxes vary significantly. Escrow: No specific requirements. Platform Action: Register
+as marketplace facilitator; monitor local tax rates. Risk: Monitor.
+
+Maine
+
+Licensing: No timeshare-specific rental licensing. Taxes: 9% lodging tax. Escrow: No
+specific requirements. Platform Action: Register for lodging tax. Risk: Monitor.
+Maryland
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Massachusetts
+
+Licensing: No timeshare-specific rental licensing. Taxes: 5.7% state room occupancy
+tax; local option up to 6%. Escrow: No specific requirements. Platform Action:
+Register for room occupancy tax. Risk: Monitor.
+
+Michigan
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6% use tax on
+accommodations. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Minnesota
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6.875% sales tax; local
+lodging taxes vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Mississippi
+
+Licensing: No timeshare-specific rental licensing. Taxes: 7% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Missouri
+
+Licensing: No timeshare-specific rental licensing. Taxes: 4.225% state sales tax; local
+taxes vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+Montana
+
+Licensing: No timeshare-specific rental licensing. Taxes: No sales tax; 7% lodging
+facility use tax. Escrow: No specific requirements. Platform Action: Register for
+lodging facility use tax. Risk: Monitor.
+
+Nebraska
+
+Licensing: No timeshare-specific rental licensing. Taxes: 5.5% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Nevada
+
+Licensing: NRS Chapter 119A covers timeshare marketing. Rental-only platforms
+require legal analysis of NRS 119A.285. Real Estate Division oversight possible. Taxes:
+6.85% state sales tax; county room taxes (up to 13.38% in Clark County). Escrow: NRS
+119A.400 escrow requirements apply to advance deposits. Platform Action: Obtain
+Real Estate Division legal opinion; implement compliant payment structure; register
+for all applicable taxes. Risk: Required.
+
+New Hampshire
+
+Licensing: No timeshare-specific rental licensing. Taxes: 9% rooms and meals tax.
+Escrow: No specific requirements. Platform Action: Register for rooms and meals tax.
+Risk: Monitor.
+
+New Jersey
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6.625% sales tax; 5% state
+hotel occupancy fee; local taxes vary. Escrow: No specific requirements. Platform
+Action: Register for hotel occupancy fee. Risk: Monitor.
+
+New Mexico
+
+Licensing: No timeshare-specific rental licensing. Taxes: 5.125% gross receipts tax;
+local rates vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+New York
+
+Licensing: No timeshare-specific rental licensing, but NY Real Property Law § 442
+broadly defines real estate brokerage. Legal opinion recommended. Taxes: 4% state
+sales tax; NYC hotel tax (14.75% combined). Escrow: No specific requirements for
+rental platforms. Platform Action: Obtain legal opinion on NY RPL § 442 applicability;
+register for NYC hotel tax if listings in NYC. Risk: Conditional.
+
+North Carolina
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6.75­7.5% combined sales
+tax on lodging; occupancy taxes vary by county. Escrow: No specific requirements.
+Platform Action: Register as marketplace facilitator. Risk: Monitor.
+
+North Dakota
+
+Licensing: No timeshare-specific rental licensing. Taxes: 5% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Ohio
+
+Licensing: No timeshare-specific rental licensing. Taxes: 5.75% sales tax; county
+lodging taxes vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Oklahoma
+
+Licensing: No timeshare-specific rental licensing. Taxes: 4.5% state sales tax; local
+taxes vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Oregon
+
+Licensing: No timeshare-specific rental licensing. Taxes: No sales tax; 1.8% state
+lodging tax; local taxes vary. Escrow: No specific requirements. Platform Action:
+Register for state lodging tax. Risk: Monitor.
+Pennsylvania
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6% sales tax; Philadelphia
+hotel tax (8.5% additional). Escrow: No specific requirements. Platform Action:
+Register as marketplace facilitator. Risk: Monitor.
+
+Rhode Island
+
+Licensing: No timeshare-specific rental licensing. Taxes: 7% sales tax on lodging; 5%
+hotel tax. Escrow: No specific requirements. Platform Action: Register for hotel tax.
+Risk: Monitor.
+
+South Carolina
+
+Licensing: No timeshare-specific rental licensing. Taxes: 7% accommodations tax.
+Escrow: No specific requirements. Platform Action: Register for accommodations tax.
+Risk: Monitor.
+
+South Dakota
+
+Licensing: No timeshare-specific rental licensing. Taxes: 4.5% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Tennessee
+
+Licensing: No timeshare-specific rental licensing. Taxes: 7% state sales tax; local
+occupancy taxes vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Texas
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6% state hotel occupancy
+tax; local taxes up to 9% additional. Escrow: No specific requirements. Platform
+Action: Register for hotel occupancy tax. Risk: Monitor.
+Utah
+
+Licensing: No timeshare-specific rental licensing. Taxes: 4.85% sales tax; transient
+room tax varies. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Vermont
+
+Licensing: No timeshare-specific rental licensing. Taxes: 9% meals and rooms tax.
+Escrow: No specific requirements. Platform Action: Register for meals and rooms tax.
+Risk: Monitor.
+
+Virginia
+
+Licensing: No timeshare-specific rental licensing. Taxes: 5.3% sales tax; local transient
+occupancy taxes vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+
+Washington
+
+Licensing: No timeshare-specific rental licensing. Taxes: No income tax; B&O tax
+applies; local lodging taxes vary. Escrow: No specific requirements. Platform Action:
+Register for B&O tax and local lodging taxes. Risk: Monitor.
+
+West Virginia
+
+Licensing: No timeshare-specific rental licensing. Taxes: 6% sales tax on lodging.
+Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+Wisconsin
+
+Licensing: No timeshare-specific rental licensing. Taxes: 5% sales tax; county room
+taxes vary. Escrow: No specific requirements. Platform Action: Register as
+marketplace facilitator. Risk: Monitor.
+Wyoming
+
+Licensing: No timeshare-specific rental licensing. Taxes: 4% sales tax; lodging tax
+varies. Escrow: No specific requirements. Platform Action: Register as marketplace
+facilitator. Risk: Monitor.
+
+District of Columbia
+
+Licensing: No timeshare-specific rental licensing. Taxes: 14.95% hotel tax. Escrow: No
+specific requirements. Platform Action: Register for hotel tax if listings in D.C. Risk:
+Monitor.
+SECTION V: RECENT LEGISLATIVE DEVELOPMENTS
+
+Jurisdiction Development Effective                         Impact
+
+Florida   HB 1537 -- Timeshare Jan 1, Requires platforms to display owner
+          Rental Disclosure Act 2026 license status on all listings
+
+          AB 2992 -- Short-Term      Jul 1,  Extends marketplace facilitator tax
+California Rental Marketplace        2026    obligations to timeshare rentals;
+                                             requires host identity verification
+          Accountability Act
+
+Hawaii    SB 3090 -- Transient       Jan 1,  Increases TAT to 10.25%; requires
+          Accommodations Tax         2026    quarterly remittance by marketplace
+          Modernization                      facilitators
+
+                                             Establishes voluntary registry for
+                                             timeshare rental platforms;
+Nevada    SB 440 -- Timeshare        Oct 1,  registered platforms receive safe
+          Rental Registry            2025    harbor from broker licensing
+
+                                             requirements
+
+New York  A 8421 -- Short-Term       Jan 1,  Requires hosts to register with local
+          Rental Registration        2026    municipalities; platforms must verify
+                                             registration before listing
+
+                                             Clarifies that marketplace facilitators
+          HB 3821 -- Marketplace Sep 1, must collect and remit hotel
+Texas     Facilitator Lodging Tax 2025 occupancy tax on all facilitated
+
+                                             transactions
+
+Illinois  SB 2294 -- Chicago Short-  Mar 1,  Increases platform liability for
+          Term Rental Ordinance      2026    unregistered listings in Chicago
+          Amendment
+
+Colorado  HB 24-1175 -- Short-Term Jan 1,    Requires platforms to remove listings
+          Rental Enforcement 2026            that lack valid local registration
+                                             numbers
+SECTION VI: NOTABLE CASE LAW
+
+The following cases are directly relevant to Rent-A-Vacation's legal posture and
+operational risk profile.
+
+Steines v. Westgate Palace, LLC
+
+Court: U.S. Court of Appeals, 11th Circuit | Year: 2024 | Relevance: Military Lending Act
+& Arbitration
+The Military Lending Act (MLA) overrides the Federal Arbitration Act for timeshare
+loans to active-duty servicemembers. Arbitration clauses in timeshare agreements
+cannot be enforced against servicemembers covered by the MLA. Platform
+Implication: If the platform's Terms of Service include an arbitration clause, it must
+include an MLA carve-out for active-duty servicemembers. The platform should also
+display the Military Lending Act Notice disclaimer on the payment flow for
+servicemember accounts.
+
+Palmer v. FantaSea Resorts
+
+Court: New Jersey Appellate Division | Year: 2025 | Relevance: Deceptive Sales
+Practices
+The court awarded $1.64 million (trebled damages plus fee enhancement) when sales
+representatives made verbal promises contradicting written contracts. The parol-
+evidence rule does not shield bait-and-switch tactics. Platform Implication: All Host
+listing representations must be accurate and verifiable. The platform should
+implement a listing accuracy verification process and include a disclaimer that the
+platform is not responsible for inaccurate Host-provided information -- while also
+implementing a reporting mechanism for inaccurate listings.
+
+Holden v. Holiday Inn Club Vacations Inc.
+
+Court: U.S. Court of Appeals, 11th Circuit | Year: 2024 | Relevance: Credit Reporting &
+Cancellation
+Disputes involving complex contractual issues cannot be pursued under the Fair Credit
+Reporting Act. The key test is whether alleged inaccuracies are objectively verifiable.
+Platform Implication: If the platform reports payment disputes to credit bureaus or
+uses credit data in Host/Guest vetting, it must ensure the disputed information is
+objectively verifiable. Disputes involving subjective assessments of listing quality or
+service should not be reported as credit events.
+
+FTC & Wisconsin v. Carroll et al.
+
+Court: Federal District Court | Year: 2026 | Relevance: Timeshare Exit Scheme
+Enforcement
+A $140 million judgment was entered against the operator of a timeshare exit scheme.
+The scheme violated the FTC Cooling-Off Rule and used deceptive claims. The
+defendant is permanently banned from marketing timeshare exit services. Platform
+Implication: This case underscores the FTC's active enforcement posture in the
+timeshare space. The platform must ensure it does not facilitate, advertise, or link to
+timeshare exit services. All platform communications must be accurate and non-
+deceptive. The "No Timeshare Sales" designation is legally protective in this context.
+SECTION VII: OPERATIONAL COMPLIANCE MATRIX
+
+Compliance      Requirement                       Priority Platform Action
+  Area
+
+                Register as marketplace                      Implement automated tax
+Tax Registration facilitator in all states with Immediate calculation and
+                applicable lodging/sales taxes               remittance engine
+
+Host Identity   Verify government-issued ID for   Immediate  Integrate identity
+Verification    all Hosts                                    verification API (e.g.,
+                                                             Stripe Identity, Persona)
+
+License Number  Collect and display real                   Add license number field
+Collection      estate/rental license numbers     Immediate to Host onboarding;
+                for commercial operators
+                                                           display on listings
+
+Rental          Flag Hosts who exceed casual Short-          Implement automated
+Frequency       rental thresholds                 term       threshold monitoring with
+Monitoring                                                   compliance alerts
+
+Payment         Use licensed third-party                     Implement Stripe Connect
+Escrow          payment processor; do not Immediate with separate trust
+Structure       commingle funds                              accounts
+
+Disclaimer      Display all required disclaimers  Immediate  Implement disclaimer
+Display         on homepage, listings, and                   management system
+                checkout
+
+Guest           Provide defined remedy for Short- Draft and implement
+Protection      Host cancellation or fraud term Guest Protection Policy
+Policy
+
+Fraud           Implement Host identity           Immediate  Integrate fraud detection
+Prevention      verification and transaction                 tools
+                monitoring
+
+MLA             Display MLA notice for            Short- Add MLA notice to
+Compliance servicemember accounts term payment flow
+
+State-Specific  Display FL and CA specific        Immediate  Implement geo-targeted
+Disclosures     disclosures on applicable                    disclosure system
+                listings
+SECTION VIII: REQUIRED DISCLAIMERS & PLATFORM
+NOTICES
+
+8.1 Marketplace Disclaimer (Required -- All Jurisdictions)
+
+Placement: Homepage; footer; all listing pages
+ "Rent-A-Vacation is a technology platform that connects timeshare owners with
+ prospective renters. Rent-A-Vacation is not a party to any rental agreement between
+ Hosts and Guests, does not own or manage any listed property, and is not
+ responsible for the accuracy of Host-provided listing information. All rental
+ agreements are entered into directly between Hosts and Guests."
+
+8.2 No Timeshare Sales Disclaimer (Required -- All Jurisdictions)
+
+Placement: Homepage; all listing pages; header/footer
+ "Rent-A-Vacation facilitates the rental of timeshare periods only. This platform does
+ not facilitate, broker, or assist in the purchase, sale, transfer, or resale of timeshare
+ interests. Rent-A-Vacation is not a timeshare developer, reseller, or exit company."
+
+8.3 Non-Broker / Non-Agent Disclaimer (Required -- All Jurisdictions)
+
+Placement: Terms of Service; About page
+ "Rent-A-Vacation does not act as a real estate broker, real estate agent, travel agent,
+ or fiduciary representative of any Host or Guest. No employee or representative of
+ Rent-A-Vacation is authorized to provide legal, tax, financial, or real estate advice.
+ Users are encouraged to consult qualified professionals before entering into any
+ rental agreement."
+
+8.4 Tax Disclosure (Required -- All Jurisdictions with Applicable Taxes)
+
+Placement: Checkout flow; booking confirmation
+ "Applicable transient occupancy taxes, hotel taxes, and/or sales taxes are included
+ in the total price displayed at checkout. Tax rates are calculated based on the
+ location of the rental property and applicable state and local law. Rent-A-Vacation
+ collects and remits applicable taxes on behalf of Hosts in jurisdictions where
+ required by law."
+
+8.5 Cancellation & Refund Policy (Required -- All Jurisdictions)
+
+Placement: Listing pages; checkout; booking confirmation
+ "Cancellation and refund policies vary by listing and are set by individual Hosts. The
+ applicable policy is displayed on each listing page and must be reviewed before
+ booking. In the event of a Host cancellation within 30 days of check-in, Guests will
+ receive a full refund within 5 business days. Rent-A-Vacation's platform fee is non-
+ refundable except in cases of Host cancellation or verified fraud."
+
+8.6 Limitation of Liability (Required -- All Jurisdictions)
+
+Placement: Terms of Service
+ "To the maximum extent permitted by applicable law, Rent-A-Vacation's total
+ liability to any user for any claim arising out of or relating to these Terms or the use
+ of the platform shall not exceed the total platform fees paid by such user in the
+ twelve (12) months preceding the claim. Rent-A-Vacation shall not be liable for any
+ indirect, incidental, special, consequential, or punitive damages."
+
+8.7 Florida-Specific Disclosure (Required -- Florida Listings)
+
+Placement: All Florida listing pages; Florida checkout flow
+ "This listing is for the rental of a timeshare period only. The rental of timeshare
+ periods is subject to Florida Statute Chapter 721. The property owner is responsible
+ for ensuring that the rental complies with the terms of their timeshare agreement
+ and applicable resort rules. Rent-A-Vacation is not a licensed timeshare resale
+ broker under Florida Statute § 721.20."
+8.8 Escrow / Fund-Holding Notice (Required -- FL, CA, HI; Advisable --
+All Jurisdictions)
+
+Placement: Payment flow; checkout; booking confirmation
+ "Rental payments collected through the Rent-A-Vacation platform are processed by
+ [Payment Processor Name], a licensed payment processor. Guest funds are held in a
+ segregated account and are not commingled with Rent-A-Vacation operating funds.
+ Funds are disbursed to Hosts upon completion of the check-in date, subject to the
+ platform's cancellation and refund policy. Rent-A-Vacation does not act as an
+ escrow agent."
+
+SECTION IX: STRATEGIC RECOMMENDATIONS
+
+Immediate Actions (0­30 Days)
+
+  1. Obtain legal opinions in FL, CA, HI, NV, and AZ on whether the platform's
+   specific activities trigger licensing requirements. Engage counsel in each state.
+
+  2. Implement a compliant payment escrow structure using Stripe Connect or an
+   equivalent licensed payment processor with separate trust accounts. Ensure
+   funds are not commingled.
+
+  3. Register as a marketplace facilitator for tax purposes in all states with
+   applicable lodging/sales taxes. Implement an automated tax calculation and
+   remittance engine.
+
+  4. Deploy all eight required disclaimers on the platform. Ensure geo-targeted
+   display of state-specific disclosures (FL, CA) on applicable listings.
+
+  5. Implement Host identity verification using a licensed identity verification
+   provider. Collect and display real estate/rental license numbers for commercial
+   operators.
+
+Short-Term Actions (30­90 Days)
+
+  1. Draft and implement a Guest Protection Policy providing a defined remedy for
+   Host cancellation or fraud. This both protects Guests and limits the platform's
+   consumer protection exposure.
+  2. Implement rental frequency monitoring to flag Hosts who exceed casual rental
+
+   thresholds. Develop a tiered Host credentialing system (Casual / Multi-Property /
+   Commercial).
+  3. Have counsel review the Terms of Service and listing agreement templates in
+   FL, CA, and HI. Ensure the MLA arbitration carve-out is included.
+  4. Implement a listing accuracy verification process and a reporting mechanism
+   for inaccurate listings. This reduces exposure under Palmer v. FantaSea Resorts.
+  5. Obtain cyber liability and fraud insurance appropriate for a marketplace
+   platform handling consumer payments.
+
+Medium-Term Actions (90­180 Days)
+
+  1. Engage a timeshare industry trade association (e.g., ARDA) to monitor
+   legislative developments and participate in regulatory comment processes.
+
+  2. Develop a state-by-state compliance calendar tracking tax remittance
+   deadlines, license renewal dates, and legislative effective dates.
+
+  3. Commission a formal legal audit of the platform's Terms of Service, privacy
+   policy, and listing agreement templates against the requirements identified in
+   this memorandum.
+
+SECTION X: REFERENCES & AUTHORITIES
+
+Federal Authorities
+
+   South Dakota v. Wayfair, Inc., 585 U.S. 162 (2018) -- Marketplace facilitator tax
+   nexus
+   FTC Act § 5 (15 U.S.C. § 45) -- Unfair or deceptive acts or practices
+   Military Lending Act (10 U.S.C. § 987) -- Consumer protections for
+   servicemembers
+   FTC Cooling-Off Rule (16 C.F.R. Part 429) -- Cancellation rights for door-to-door
+   sales
+
+Key State Statutes
+
+   Florida Statute Chapter 721 -- Florida Vacation Plan and Timesharing Act
+   California Business & Professions Code §§ 11003.5, 10145, 17550 -- Timeshare
+   and Seller of Travel
+   Hawaii Revised Statutes Chapter 514E -- Hawaii Time Sharing Plan Act
+   Nevada Revised Statutes Chapter 119A -- Nevada Timeshare Act
+   Arizona Revised Statutes § 32-2197 -- Arizona Timeshare Act
+   New York Real Property Law § 442 -- Real estate brokerage licensing
+
+Notable Cases
+
+   Steines v. Westgate Palace, LLC, 11th Cir. (2024) -- MLA & arbitration
+   Palmer v. FantaSea Resorts, N.J. App. Div. (2025) -- Deceptive practices
+   Holden v. Holiday Inn Club Vacations Inc., 11th Cir. (2024) -- Credit reporting
+   FTC & Wisconsin v. Carroll et al., Fed. Dist. Ct. (2026) -- Timeshare exit fraud
+
+Secondary Sources
+
+   American Resort Development Association (ARDA) -- State Legislative Tracker
+   (2025­2026)
+   National Conference of State Legislatures -- Short-Term Rental Legislation
+   Database
+   Streamline Tax Solutions -- Marketplace Facilitator Tax Compliance Guide (2025)
+
+End of Memorandum -- Version 3.0 -- May 5, 2026 Rent-A-Vacation ·
+rentavacation.com · Confidential -- For Counsel Review Only
+

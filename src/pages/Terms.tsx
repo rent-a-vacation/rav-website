@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 
 const Terms = () => {
   usePageMeta({
@@ -43,6 +44,11 @@ const Terms = () => {
                   listing, discovery, and booking of vacation rentals but do not own or operate
                   any properties ourselves.
                 </p>
+                <DisclaimerBlock
+                  id="8.3"
+                  variant="minimal"
+                  className="text-base text-muted-foreground leading-relaxed mb-4"
+                />
               </section>
 
               <section className="mb-8">
@@ -114,11 +120,11 @@ const Terms = () => {
                 <h2 className="font-display text-2xl font-semibold text-foreground mb-4">
                   8. Limitation of Liability
                 </h2>
-                <p className="text-muted-foreground mb-4">
-                  Rent-A-Vacation acts as an intermediary between owners and travelers. We are not
-                  responsible for the condition of properties, the conduct of users, or any
-                  damages arising from the use of our service beyond what is required by law.
-                </p>
+                <DisclaimerBlock
+                  id="8.6"
+                  variant="minimal"
+                  className="text-base text-muted-foreground leading-relaxed mb-4"
+                />
               </section>
 
               <section className="mb-8">

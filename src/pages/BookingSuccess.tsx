@@ -11,6 +11,7 @@ import type { Booking, Listing, Property } from "@/types/database";
 import CancelBookingDialog from "@/components/booking/CancelBookingDialog";
 import { computeBookingTimeline } from "@/lib/bookingTimeline";
 import { BookingTimeline } from "@/components/booking/BookingTimeline";
+import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 import { trackEvent } from "@/lib/posthog";
 
 interface BookingWithDetails extends Booking {
@@ -215,6 +216,18 @@ const BookingSuccess = () => {
                 check_out_date: booking.listing?.check_out_date,
               })}
             />
+          </CardContent>
+        </Card>
+
+        {/* Important information — verbatim disclaimers required by Legal Dossier v3 § VIII */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-base">Important information about your booking</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <DisclaimerBlock id="8.4" variant="compact" />
+            <DisclaimerBlock id="8.5" variant="compact" />
+            <DisclaimerBlock id="8.8" variant="compact" />
           </CardContent>
         </Card>
 

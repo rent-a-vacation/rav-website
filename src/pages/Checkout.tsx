@@ -27,6 +27,8 @@ import type { Resort, ResortUnitType } from "@/types/database";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
+import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
+import { StateSpecificDisclaimer } from "@/components/legal/StateSpecificDisclaimer";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { trackEvent } from "@/lib/posthog";
 
@@ -310,17 +312,33 @@ const Checkout = () => {
                 </CardContent>
               </Card>
 
-              {/* Trust Badges */}
+              {/* Trust Badges (visual reassurance) */}
               <div className="flex items-center gap-6 p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Shield className="w-5 h-5 text-primary" />
-                  PaySafe — funds held in escrow until check-in
+                  Pay Safe (powered by Stripe) — funds held until check-in
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Check className="w-5 h-5 text-primary" />
                   TrustShield verified property
                 </div>
               </div>
+
+              {/* Verbatim Escrow / Fund-Holding Notice (Disclaimer 8.8) */}
+              <DisclaimerBlock id="8.8" variant="compact" className="mt-4" />
+
+              {/* Verbatim Cancellation & Refund Policy disclaimer (8.5) — sits next to the
+                  per-listing CancellationPolicyDetail in the sidebar */}
+              <DisclaimerBlock id="8.5" variant="compact" className="mt-4" />
+
+              {/* Florida-Specific Disclosure (8.7) — geo-targeted; renders only when the
+                  property's state matches a registered state disclosure (FL today; CA after
+                  counsel question C10 lands) */}
+              <StateSpecificDisclaimer
+                propertyState={resort?.location?.state}
+                variant="compact"
+                className="mt-4"
+              />
             </div>
 
             {/* Price Summary Sidebar */}
@@ -362,26 +380,9 @@ const Checkout = () => {
                       <span>${fees?.subtotal.toLocaleString()}</span>
                     </div>
 
-                    {/* Tax Disclosure Notice */}
-                    <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg text-xs text-muted-foreground">
-                      <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p>
-                          Applicable occupancy taxes and transient lodging taxes
-                          {resort?.location?.state
-                            ? ` for ${resort.location.state}`
-                            : ""}{" "}
-                          will be calculated and collected at payment.
-                        </p>
-                        <p className="mt-1">
-                          Rent-A-Vacation collects and remits taxes as a marketplace
-                          facilitator where required by law.{" "}
-                          <a href="/terms" className="underline hover:text-foreground">
-                            Learn more
-                          </a>
-                        </p>
-                      </div>
-                    </div>
+                    {/* Verbatim Tax Disclosure (Disclaimer 8.4) — replaces the prior paraphrased
+                        copy that the 2026-05-05 compliance audit flagged as non-compliant */}
+                    <DisclaimerBlock id="8.4" variant="compact" />
 
                     {error && (
                       <div className="flex items-start gap-2 p-3 bg-destructive/10 rounded-lg text-sm text-destructive">
