@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-05-01T02:17:14"
 change_ref: "8a06e90"
-change_type: "session-63"
+change_type: "session-64"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** May 2, 2026 (Session 63: #473 CSP fix shipped; PaySafe gap sweep A/B/C/D/E/G/H + compliance doc — DEC-039 logged)
+> **Last Updated:** May 6, 2026 (Session 64: DEC-040 — sequential Phase numbering retired; new work uses themed milestones)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -106,7 +106,21 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **dev and main:** Session 63 8-PR sweep (PR #474) sits on `dev` awaiting `dev → main` merge (1492 tests, 7 new migrations, 3 new edge fns, 1 refactored).
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-63)
+### Session Handoff (Sessions 25-64)
+
+**Session 64 — Phase numbering retired; themed milestones formalized (May 6, 2026):**
+
+Doc-only checkpoint. User asked how many phases were complete and whether Phase 23 was the next. Walked through GitHub Milestones (authoritative source per CLAUDE.md) vs PROJECT-HUB.md vs COMPLETED-PHASES.md and confirmed: **18 phase milestones closed; Phase 21 + Phase 22 effectively complete; Phase 20 partial (pre-launch shipped, post-launch deferred); Phase 12 deferred per DEC-011; Phase 3 / Phase 21-Partial-Week are placeholders.** No Phase 23 anywhere.
+
+**DEC-040 logged:** Sequential Phase numbering ended at Phase 22. New work (5+ related issues sharing an outcome) is tracked under themed GitHub milestones (`Launch Readiness`, `Security Hardening`, `Role-Based UX Overhaul`, etc.). Standard answer to "what phase are we on?": *"Phase 22 was the last numbered phase; current work is tracked under the Launch Readiness milestone."* Auto-memory `feedback_themed_milestones_for_new_work.md` saved so future sessions default to this.
+
+**SDLC hardening (so this doesn't drift):**
+- `CLAUDE.md` — added a "Milestone strategy" subsection under Project Management that codifies themed-only for new work; updated the issue-creation example to use a themed milestone instead of `Phase 20`; added "Never propose Phase 23+" to What NOT to Do.
+- `scripts/docs-sync-check.ts` — extended with a new `checkPhaseNumbering()` rule that scans `docs/**/*.md` for new "Phase 23"/"Phase 24" references and fails CI if found (allowlist for the historical archive in COMPLETED-PHASES.md and the DEC-040 entry itself).
+
+**No code, no migrations, no test count delta.** PRs touched: PROJECT-HUB, PRIORITY-ROADMAP, CLAUDE.md, docs-sync-check.ts. 1492 tests unchanged.
+
+---
 
 **Session 63 — #473 + PaySafe gap sweep + compliance doc (May 2, 2026):**
 
@@ -1078,6 +1092,36 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-040: Themed Milestones for New Work (Sequential Phase Numbering Retired)
+**Date:** May 6, 2026 (Session 64)
+**Decision:** New work is tracked under **themed GitHub milestones** (named for an outcome), not new sequential Phase numbers. Phase numbering effectively ended at **Phase 22: Customer Support Foundation** (Sessions 57–58). There is no "Phase 23" and there will not be one.
+
+**Trigger to create a new themed milestone:**
+- 5+ related issues that share an outcome a non-engineer can read at a glance
+- A clean "done" state — the milestone closes when the theme is delivered
+- The work cross-cuts code + docs + ops (themes hold all of it; phase numbers historically only held code)
+
+**Counter-cases (do NOT create a new milestone):**
+- One-off bugs → file under existing `Maintenance & Bugs`
+- Single feature with no siblings → standalone issue, no milestone
+
+**Examples of the pattern in flight today:** `Launch Readiness`, `Role-Based UX Overhaul`, `Search & Discovery Enhancement`, `Security Hardening`, `Growth & Marketing`, `Analytics & Monitoring`, `Maintenance & Bugs`. A natural next theme would be **"PaySafe Compliance Hardening"** wrapping #461–#468 + #80 + #438, instead of relabelling that work as Phase 23.
+
+**Rationale:**
+1. **Phase numbers stopped communicating anything by ~Phase 20.** Sequence-by-happenstance, not sequence-by-dependency. New collaborators couldn't infer scope from the number.
+2. **Themes survive scope changes.** Issues can be added to `Launch Readiness` without renumbering anything; you can't add issues to a "Phase" without negotiating what that phase means.
+3. **Stakeholder-readable.** A milestone called "Security Hardening" tells founder, counsel, and marketing what's happening; "Phase 23" tells them nothing.
+4. **Authoritative source clarified.** GitHub Milestones is the source of truth (per CLAUDE.md priority #1). PROJECT-HUB.md and COMPLETED-PHASES.md are derivative — they describe past phases but do not define future ones.
+
+**What changes:**
+- Going forward, no PR or issue should reference a "Phase 23" or higher
+- When asked "what phase are we on?", the standard answer is: *"Phase 22 was the last numbered phase. Current work is tracked under the Launch Readiness milestone (plus themed sub-milestones for cross-cutting work)."*
+- Auto-memory `feedback_themed_milestones_for_new_work.md` saved so future Claude Code sessions default to this approach
+
+**Status:** Active. Supersedes the implicit assumption that Phase numbering would continue.
 
 ---
 

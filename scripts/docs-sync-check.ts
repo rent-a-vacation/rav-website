@@ -12,6 +12,10 @@
  * Also validates docs/support/**\/*.md frontmatter + legal-review freshness
  * (Phase 22 — DEC-036).
  *
+ * Also enforces DEC-040 (themed milestones, not sequential phases): any
+ * "Phase 23+" reference in docs/**\/*.md fails the check unless it appears
+ * in the allowlist (the historical archive and the DEC-040 entry itself).
+ *
  * Complements scripts/docs-audit.ts (which checks frontmatter + orphans).
  *
  * Usage:
@@ -51,6 +55,15 @@ const ROADMAP_MAX_DRIFT = 1;
 const TEST_COUNT_DRIFT_PCT = 0.05;
 // LAUNCH-READINESS change_type must have been bumped within the last N sessions
 const LAUNCH_MAX_SESSION_DRIFT = 3;
+
+// DEC-040 — Phase numbering is retired at Phase 22.
+// New "Phase 23"/"Phase 24"/… references in docs are blocked unless they
+// appear in this allowlist (historical archive + the DEC-040 entry itself).
+const PHASE_NUMBERING_MAX = 22;
+const PHASE_NUMBERING_ALLOWLIST = [
+  'docs/COMPLETED-PHASES.md', // historical archive — keeps old phase mentions intact
+  'docs/exports/',            // pre-DEC-040 exported snapshots
+] as const;
 
 // Support docs (Phase 22)
 const SUPPORT_DOCS_ROOT = 'docs/support';
@@ -379,6 +392,88 @@ function checkSupportDocs(): CheckResult[] {
   ];
 }
 
+function isDec040MetaReference(lines: string[], idx: number): boolean {
+  // A Phase 23+ mention is allowed if it's a meta-reference to DEC-040.
+  // Two ways that's true:
+  //   1. Inside the DEC-040 section (walk upward to nearest `### DEC-NNN`)
+  //   2. Within ±10 lines of any "DEC-040" mention (covers handoff entries,
+  //      revision-history rows, and inline rule citations)
+  for (let i = idx; i >= 0; i--) {
+    const line = lines[i];
+    const decMatch = line.match(/^###\s+DEC-(\d+)/);
+    if (decMatch) {
+      if (decMatch[1] === '040') return true;
+      break; // hit a different DEC heading — stop section-walk
+    }
+    if (/^##\s+/.test(line)) break;
+  }
+  const start = Math.max(0, idx - 10);
+  const end = Math.min(lines.length, idx + 10);
+  for (let i = start; i < end; i++) {
+    if (/DEC-040/.test(lines[i])) return true;
+  }
+  return false;
+}
+
+function checkPhaseNumbering(): CheckResult[] {
+  // DEC-040 guard: any "Phase 23"/"Phase 24"/… in docs/**/*.md fails CI.
+  // Allowlist covers the historical archive and exported snapshots.
+  const docsRoot = 'docs';
+  if (!existsSync(docsRoot)) {
+    return [{ doc: 'docs', status: 'ok', message: 'docs/ folder absent — skipping' }];
+  }
+
+  const files = walkMarkdown(docsRoot);
+  const offenders: { file: string; line: number; phase: number; text: string }[] = [];
+
+  for (const file of files) {
+    if (PHASE_NUMBERING_ALLOWLIST.some((prefix) => file.startsWith(prefix))) continue;
+
+    const content = readFileSync(file, 'utf-8');
+    const lines = content.split(/\r?\n/);
+
+    lines.forEach((line, idx) => {
+      // Match "Phase NN" where NN is 23+. Captures both bare "Phase 23"
+      // and milestone-shaped "Phase 23: …" / "phase-23".
+      for (const m of line.matchAll(/\bPhase[\s-](\d{2,3})\b/gi)) {
+        const n = parseInt(m[1], 10);
+        if (n > PHASE_NUMBERING_MAX) {
+          // Skip the DEC-040 entry itself — it explicitly cites "Phase 23"
+          // as the thing not to do. Walk upward to the nearest section
+          // heading; if it's DEC-040, the mention is intentional.
+          if (isDec040MetaReference(lines, idx)) continue;
+          offenders.push({ file, line: idx + 1, phase: n, text: line.trim() });
+        }
+      }
+    });
+  }
+
+  if (offenders.length === 0) {
+    return [
+      {
+        doc: 'docs/**/*.md (Phase numbering)',
+        status: 'ok',
+        message: `No Phase ${PHASE_NUMBERING_MAX + 1}+ references — DEC-040 themed-milestone convention holds`,
+      },
+    ];
+  }
+
+  return [
+    {
+      doc: 'docs/**/*.md (Phase numbering)',
+      status: 'error',
+      message:
+        `Found ${offenders.length} reference(s) to Phase ${PHASE_NUMBERING_MAX + 1}+ — DEC-040 retired sequential phase numbering. ` +
+        `Use a themed milestone instead. Offenders:\n` +
+        offenders
+          .slice(0, 10)
+          .map((o) => `       • ${o.file}:${o.line} — "Phase ${o.phase}" in: ${o.text.slice(0, 100)}`)
+          .join('\n') +
+        (offenders.length > 10 ? `\n       … and ${offenders.length - 10} more` : ''),
+    },
+  ];
+}
+
 function walkMarkdown(root: string): string[] {
   const out: string[] = [];
   const stack = [root];
@@ -413,6 +508,7 @@ function main(): void {
     checkTestingStatus(),
     checkLaunchReadiness(latestSession),
     ...checkSupportDocs(),
+    ...checkPhaseNumbering(),
   ];
 
   const errors = results.filter((r) => r.status === 'error');
