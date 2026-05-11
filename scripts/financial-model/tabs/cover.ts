@@ -24,7 +24,7 @@ export function buildCoverTab(wb: Workbook, createdLabel: string): void {
   ws.getRow(6).height = 10;
 
   const meta: [string, string][] = [
-    ['Document',     'Financial Model & Funding Planner — v3.1 (Phase 1a)'],
+    ['Document',     'Financial Model & Funding Planner — v3.2 (Phase 1b)'],
     ['Created',      createdLabel],
     ['Company',      'Rent-A-Vacation, Inc. (RAV)'],
     ['Parent Entity','Techsilon.com'],

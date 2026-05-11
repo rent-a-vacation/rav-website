@@ -114,11 +114,17 @@ export function buildUnitEconTab(wb: Workbook): void {
   ws.getRow(r).height = 22;
   note(ws, r++, 2, 4, 'Healthy SaaS benchmark: LTV/CAC > 3:1, payback < 12 months. Lower ratios = burn-funded growth.');
 
-  // Row references for cross-section formulas
-  // To avoid hardcoding rows, use INDEX/MATCH against the labels in this same sheet.
-  const ownerLtvRef = `INDEX(D:D,MATCH("Owner LTV",C:C,0))`;
-  const travLtvRef  = `INDEX(D:D,MATCH("Traveler LTV",C:C,0))`;
-  const cacRef      = `INDEX(D:D,MATCH("Blended CAC",C:C,0))`;
+  // Row references for cross-section formulas. Use a BOUNDED range ($D$1:$D$30)
+  // rather than D:D — Excel treats whole-column references that include the
+  // formula's own row as circular, even though INDEX resolves to a specific
+  // cell that's not the formula itself. Rows 1-30 cover all the data rows
+  // (Owner LTV at 11, Traveler LTV at 23, Blended CAC at 26) while excluding
+  // the LTV/CAC + Payback formulas below at rows 32+.
+  const lookupRange = '$D$1:$D$30';
+  const labelRange  = '$C$1:$C$30';
+  const ownerLtvRef = `INDEX(${lookupRange},MATCH("Owner LTV",${labelRange},0))`;
+  const travLtvRef  = `INDEX(${lookupRange},MATCH("Traveler LTV",${labelRange},0))`;
+  const cacRef      = `INDEX(${lookupRange},MATCH("Blended CAC",${labelRange},0))`;
 
   metric('Owner LTV / CAC',     `IFERROR(${ownerLtvRef}/${cacRef},0)`,   '0.00"x"', 'Owner LTV ÷ Blended CAC. >3x is healthy.', true);
   metric('Traveler LTV / CAC',  `IFERROR(${travLtvRef}/${cacRef},0)`,    '0.00"x"', 'Traveler LTV ÷ Blended CAC. Travelers churn faster — lower ratio expected.', true);
