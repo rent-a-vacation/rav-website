@@ -4,7 +4,14 @@
  * When the Phase 2 web tool is built at /executive-dashboard, it will import
  * from this module — the same inputs / expenses / scenarios feed both the
  * Excel generator and the React UI. Calculation logic lives in calc.ts.
+ *
+ * Issue #510: commission-rate defaults are imported from the central config
+ * (src/config/commission.ts). Changing the platform commission requires
+ * editing ONE file — that change flows here, into src/lib/pricing.ts, and
+ * into every component that imports from either.
  */
+
+import { DEFAULT_COMMISSION } from '../../src/config/commission.ts';
 
 // ─── Input rows ──────────────────────────────────────────────────────────────
 // Each input row produces one editable cell (amber) with a label, value,
@@ -18,11 +25,13 @@ export type InputRow = {
   note: string;
 };
 
-// Section A — Platform Parameters
+// Section A — Platform Parameters.
+// Defaults sourced from src/config/commission.ts so the financial model and
+// the live product (src/lib/pricing.ts) can never drift.
 export const PLATFORM: InputRow[] = [
-  { label: 'Base Commission Rate',          value: 0.15,  fmt: '0.00%',  name: 'pCommBase',    note: 'RAV charges owners this % per booking (system_settings.platform_commission_rate). Editable — adjust as pricing strategy evolves.' },
-  { label: 'Owner Pro Discount',            value: 0.02,  fmt: '0.00%',  name: 'pProDisc',     note: 'Pro tier effective rate = Base − Pro Discount.' },
-  { label: 'Owner Business Discount',       value: 0.05,  fmt: '0.00%',  name: 'pBizDisc',     note: 'Business tier effective rate = Base − Business Discount.' },
+  { label: 'Base Commission Rate',          value: DEFAULT_COMMISSION.base,             fmt: '0.00%',  name: 'pCommBase',    note: 'RAV charges owners this % per booking. Default is sourced from src/config/commission.ts — editing the .xlsx amber cell here only changes THIS scenario; to change the platform default, edit the config file and rebuild.' },
+  { label: 'Owner Pro Discount',            value: DEFAULT_COMMISSION.proDiscount,       fmt: '0.00%',  name: 'pProDisc',     note: 'Pro tier effective rate = Base − Pro Discount. Default from central config.' },
+  { label: 'Owner Business Discount',       value: DEFAULT_COMMISSION.businessDiscount,  fmt: '0.00%',  name: 'pBizDisc',     note: 'Business tier effective rate = Base − Business Discount. Default from central config.' },
   { label: 'Average Booking Value ($)',     value: 2000,  fmt: '$#,##0', name: 'pAvgBooking',  note: 'Typical timeshare week rental price.' },
   { label: 'Average Nights Per Booking',    value: 7,     fmt: '0',      name: 'pAvgNights',   note: 'Most timeshare listings are fixed 7-night weeks.' },
   { label: 'Stripe Processing Fee (%)',     value: 0.029, fmt: '0.000%', name: 'pStripePct',   note: '~2.9% per transaction — absorbed by RAV, baked into margin.' },

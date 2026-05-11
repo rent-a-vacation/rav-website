@@ -6,9 +6,16 @@
  *
  * computeListingPricing — derives owner_price, rav_markup, and final_price
  * from a nightly rate and number of nights.
+ *
+ * Issue #510: the commission rate now lives in src/config/commission.ts.
+ * RAV_MARKUP_RATE is re-exported for backwards compatibility with existing
+ * consumers, but new code should import DEFAULT_COMMISSION from
+ * @/config/commission. Future work: read from system_settings at runtime.
  */
 
-export const RAV_MARKUP_RATE = 0.15; // 15% base commission
+import { DEFAULT_COMMISSION } from '@/config/commission';
+
+export const RAV_MARKUP_RATE = DEFAULT_COMMISSION.base; // sourced from central config (issue #510)
 const STRIPE_RATE = 0.029; // 2.9%
 const STRIPE_FIXED = 0.30; // $0.30 per transaction
 
