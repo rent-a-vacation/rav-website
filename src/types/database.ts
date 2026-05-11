@@ -993,6 +993,45 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_registrations: {
+        Row: {
+          first_return_due: string | null
+          last_return_filed: string | null
+          next_return_due: string | null
+          notes: string | null
+          registered_date: string | null
+          registration_id: string | null
+          registration_status: string
+          state: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          first_return_due?: string | null
+          last_return_filed?: string | null
+          next_return_due?: string | null
+          notes?: string | null
+          registered_date?: string | null
+          registration_id?: string | null
+          registration_status?: string
+          state: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          first_return_due?: string | null
+          last_return_filed?: string | null
+          next_return_due?: string | null
+          notes?: string | null
+          registered_date?: string | null
+          registration_id?: string | null
+          registration_status?: string
+          state?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           bid_id: string | null

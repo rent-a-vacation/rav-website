@@ -39,6 +39,7 @@ import {
   Bell,
   Headphones,
   LifeBuoy,
+  MapPin,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminProperties from "@/components/admin/AdminProperties";
@@ -58,6 +59,7 @@ import { DevTools } from "@/components/admin/DevTools";
 import { VoiceControls } from "@/components/admin/VoiceControls";
 import AdminDisputes from "@/components/admin/AdminDisputes";
 import AdminTaxReporting from "@/components/admin/AdminTaxReporting";
+import { AdminMarketplaceRegistrations } from "@/components/admin/AdminMarketplaceRegistrations";
 import AdminResortImport from "@/components/admin/AdminResortImport";
 import AdminResortTagEditor from "@/components/admin/AdminResortTagEditor";
 import { LaunchReadinessChecklist } from "@/components/admin/LaunchReadinessChecklist";
@@ -243,6 +245,12 @@ const AdminDashboard = () => {
               </TabsTrigger>
             )}
             {isRavAdmin() && (
+              <TabsTrigger value="registrations" className="gap-2">
+                <MapPin className="h-4 w-4" />
+                <span className="hidden sm:inline">Tax registrations</span>
+              </TabsTrigger>
+            )}
+            {isRavAdmin() && (
               <TabsTrigger value="payouts" className="gap-2">
                 <Wallet className="h-4 w-4" />
                 <span className="hidden sm:inline">Payouts</span>
@@ -379,6 +387,12 @@ const AdminDashboard = () => {
           {isRavAdmin() && (
             <TabsContent value="tax">
               <AdminTaxReporting />
+            </TabsContent>
+          )}
+
+          {isRavAdmin() && (
+            <TabsContent value="registrations">
+              <AdminMarketplaceRegistrations />
             </TabsContent>
           )}
 

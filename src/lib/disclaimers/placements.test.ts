@@ -121,6 +121,14 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     ],
     notes: "Checkout must prefer the denormalized listing.state (Migration 074) and fall back to resort.location.state.",
   },
+  {
+    file: "src/pages/AdminDashboard.tsx",
+    required: [
+      `AdminMarketplaceRegistrations`,
+      `value="registrations"`,
+    ],
+    notes: "Admin dashboard must register the marketplace-facilitator tracker tab (#488).",
+  },
 ];
 
 describe("Disclaimer placement audit — required <DisclaimerBlock /> usages per page", () => {
