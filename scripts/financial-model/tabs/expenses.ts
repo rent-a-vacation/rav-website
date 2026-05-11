@@ -96,7 +96,11 @@ export function buildExpensesTab(wb: Workbook): void {
     row++;
   });
 
-  // Buffer rows for additions
+  // Buffer rows for additions. Track lastDataRow so summary SUMIFs can use a
+  // bounded range that excludes the summary cells themselves (otherwise SUMIF
+  // ranges that include the formula's own row trigger Excel circular-reference
+  // warnings — and the summary rows reuse the category names in column C,
+  // which would also cause real self-counting).
   ws.getRow(row).height = 8;
   row++;
   secHead(ws, row++, 2, 10, '  + ADD NEW EXPENSES BELOW — copy format from rows above');
@@ -136,6 +140,11 @@ export function buildExpensesTab(wb: Workbook): void {
     row++;
   }
 
+  // Capture the last data row (last buffer row). Summary formulas below MUST
+  // stop here — extending into the summary rows themselves causes circular
+  // references in Excel AND would double-count via the category-name match.
+  const lastDataRow = row - 1;
+
   // Summary
   row += 2;
   secHead(ws, row++, 2, 10, '  EXPENSE SUMMARY BY CATEGORY');
@@ -147,7 +156,7 @@ export function buildExpensesTab(wb: Workbook): void {
     catCell.value = cat;
     const sumCell = ws.getCell(row, 10);
     styleCell(sumCell, C.TEAL_LIGHT, C.NAVY, 10, true, 'right');
-    sumCell.value = { formula: `SUMIF(C7:C500,"${cat}",J7:J500)` } as never;
+    sumCell.value = { formula: `SUMIF(C7:C${lastDataRow},"${cat}",J7:J${lastDataRow})` } as never;
     sumCell.numFmt = '$#,##0.00';
     row++;
   });
@@ -156,7 +165,7 @@ export function buildExpensesTab(wb: Workbook): void {
   banner(ws, row, 3, 3, 'TOTAL MONTHLY BURN (steady-state)', C.NAVY, C.WHITE, 11, true).alignment = { horizontal: 'left', vertical: 'middle' };
   const burnCell = ws.getCell(row, 10);
   styleCell(burnCell, C.NAVY, C.CORAL, 13, true, 'right');
-  burnCell.value = { formula: 'SUM(J7:J500)' } as never;
+  burnCell.value = { formula: `SUM(J7:J${lastDataRow})` } as never;
   burnCell.numFmt = '$#,##0.00';
   row++;
 
@@ -164,6 +173,6 @@ export function buildExpensesTab(wb: Workbook): void {
   banner(ws, row, 3, 3, 'TOTAL ONE-TIME COSTS', C.NAVY_MID, C.WHITE, 10, true).alignment = { horizontal: 'left', vertical: 'middle' };
   const oneTimeCell = ws.getCell(row, 10);
   styleCell(oneTimeCell, C.NAVY_MID, C.AMBER, 11, true, 'right');
-  oneTimeCell.value = { formula: 'SUMIF(E7:E500,"One-Time",F7:F500)' } as never;
+  oneTimeCell.value = { formula: `SUMIF(E7:E${lastDataRow},"One-Time",F7:F${lastDataRow})` } as never;
   oneTimeCell.numFmt = '$#,##0.00';
 }
