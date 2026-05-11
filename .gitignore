@@ -48,6 +48,15 @@ docs/incorporation/signed/
 # Office app temp/lock files
 ~$*
 
+# Confidential financial model — the .gs source (in docs/financials/) is safe
+# to commit because it contains only structure + formulas. The generated
+# .xlsx artifacts contain real revenue projections, funding ask numbers,
+# and founder context, and MUST NEVER be committed. The artifact lives in
+# the user's OneDrive and is shared with co-founders directly.
+docs/financials/*.xlsx
+docs/financials/*.xls
+docs/financials/*.csv
+
 # Confidential strategy & legal source documents — the rent-a-vacation/rav-website
 # repo is PUBLIC. Files matched here must never be committed (or re-committed if
 # they are already tracked). Note: patterns below preventively block future
