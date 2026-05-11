@@ -90,9 +90,14 @@ export function buildBreakevenTab(wb: Workbook): void {
     revCell.value = { formula: `IFERROR(INDEX('REVENUE MODEL'!${colLetter}:${colLetter},MATCH("TOTAL MONTHLY REVENUE",'REVENUE MODEL'!C:C,0)),0)` } as never;
     revCell.numFmt = '$#,##0';
 
+    // v3.2: pull both the expense line + hiring line and sum them for Total Costs
     const costCell = ws.getCell(row, 5);
     styleCell(costCell, C.RED_LIGHT, C.RED, 10, false, 'right');
-    costCell.value = { formula: `IFERROR(INDEX('REVENUE MODEL'!${colLetter}:${colLetter},MATCH("TOTAL MONTHLY COSTS",'REVENUE MODEL'!C:C,0)),0)` } as never;
+    costCell.value = {
+      formula:
+        `IFERROR(INDEX('REVENUE MODEL'!${colLetter}:${colLetter},MATCH("TOTAL MONTHLY COSTS (Expenses)",'REVENUE MODEL'!C:C,0)),0)` +
+        `+IFERROR(INDEX('REVENUE MODEL'!${colLetter}:${colLetter},MATCH("    Hiring Costs (Eng + Support + BD)",'REVENUE MODEL'!C:C,0)),0)`,
+    } as never;
     costCell.numFmt = '$#,##0';
 
     const netCell = ws.getCell(row, 6);

@@ -1,7 +1,7 @@
 import type { Workbook, Worksheet } from 'exceljs';
 import { C } from '../colors.ts';
 import { banner, styleCell, styleRange, secHead, lbl, inp, calc, note, setColumnPixelWidths } from '../style.ts';
-import { PLATFORM, SUBSCRIPTIONS, GROWTH, SCENARIOS, HORIZON, RESERVES, type InputRow } from '../data.ts';
+import { PLATFORM, SUBSCRIPTIONS, GROWTH, SCENARIOS, HORIZON, RESERVES, HIRING, UNIT_ECON, type InputRow } from '../data.ts';
 
 function writeInputRow(wb: Workbook, ws: Worksheet, row: number, def: InputRow): void {
   ws.getRow(row).height = 26;
@@ -99,6 +99,16 @@ export function buildInputsTab(wb: Workbook): void {
   // ── Section F (new in v3.1) ──
   secHead(ws, r++, 2, 5, 'F.  TAX, CASH & RESERVE INPUTS  —  Drives cumulative cash, churn, founder comp');
   RESERVES.forEach((res) => writeInputRow(wb, ws, r++, res));
+  r += 2;
+
+  // ── Section G (new in v3.2 — Phase 1b) ──
+  secHead(ws, r++, 2, 5, 'G.  HIRING PLAN  —  Set month + burdened $/mo per role. Costs auto-add to Revenue Model from hire month forward.');
+  HIRING.forEach((h) => writeInputRow(wb, ws, r++, h));
+  r += 2;
+
+  // ── Section H (new in v3.2 — Phase 1b) ──
+  secHead(ws, r++, 2, 5, 'H.  UNIT ECONOMICS & COHORT RAMP  —  Drives cohort-based booking velocity, LTV, CAC, payback calculations');
+  UNIT_ECON.forEach((u) => writeInputRow(wb, ws, r++, u));
 
   r++;
   note(ws, r, 2, 5, 'Change any amber cell — Revenue Model, Break-Even, and Funding Ask tabs all update automatically.');

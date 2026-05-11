@@ -19,6 +19,8 @@ import { buildInputsTab }       from './tabs/inputs.ts';
 import { buildExpensesTab }     from './tabs/expenses.ts';
 import { buildRevenueTab }      from './tabs/revenue.ts';
 import { buildBreakevenTab }    from './tabs/breakeven.ts';
+import { buildUnitEconTab }     from './tabs/unit-econ.ts';
+import { buildSensitivityTab }  from './tabs/sensitivity.ts';
 import { buildFundingAskTab }   from './tabs/funding.ts';
 import { buildInstructionsTab } from './tabs/instructions.ts';
 
@@ -43,6 +45,8 @@ async function main(): Promise<void> {
   buildExpensesTab(wb);
   buildRevenueTab(wb);
   buildBreakevenTab(wb);
+  buildUnitEconTab(wb);
+  buildSensitivityTab(wb);
   buildFundingAskTab(wb);
   buildInstructionsTab(wb);
 

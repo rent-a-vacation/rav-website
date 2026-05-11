@@ -22,6 +22,8 @@ export function buildInstructionsTab(wb: Workbook): void {
         ['Section D',        'Scenario multipliers — how Conservative and Optimistic differ from Base.'],
         ['Section E',        'Planning horizon and model start date label.'],
         ['Section F',        'Tax, Cash & Reserves — churn, starting cash, funding inflow (month + amount), founder comp post-funding. Drives cumulative cash position.'],
+      ['Section G (NEW)',  'Hiring Plan — hire month + burdened cost per role (Eng, Support, BD). Auto-adds to Revenue Model from hire month forward.'],
+      ['Section H (NEW)',  'Unit Economics & Cohort Ramp — ramp months, owner lifetime, traveler lifetime, voice overage rate. Drives UNIT ECON + cohort booking velocity.'],
       ],
     },
     {
@@ -48,6 +50,40 @@ export function buildInstructionsTab(wb: Workbook): void {
         ['BREAK-EVEN',       'Month-by-month cumulative cash. Green = profitable, Red = burning cash.'],
         ['KPI row (row 5)',  'One-time costs, monthly burn, break-even month, 6-mo and 12-mo funding needs.'],
         ['Break-even month', 'First month cumulative cash turns positive. "Not in 24mo" if not achieved.'],
+        ['Costs',            'Includes both EXPENSES tab totals + Hiring Costs from REVENUE MODEL.'],
+      ],
+    },
+    {
+      title: '4b. UNIT ECON (new in v3.2)', color: C.EMERALD, items: [
+        ['UNIT ECON',     '24-month rollups for LTV, CAC, payback. Directional — assumes uniform user behavior across cohorts.'],
+        ['Owner LTV',     '(Avg monthly net commission + avg monthly subscription rev per owner) × uOwnLife.'],
+        ['Traveler LTV',  '(Avg monthly subscription rev + avg voice overage per traveler) × uTravLife.'],
+        ['Blended CAC',   'Total marketing spend ÷ net new users over 24 months.'],
+        ['LTV / CAC',     'Healthy benchmark > 3:1. Owner ratio typically higher than Traveler.'],
+        ['Payback',       'CAC ÷ blended monthly revenue per user. < 12 months is healthy seed-stage.'],
+      ],
+    },
+    {
+      title: '4c. SENSITIVITY (new in v3.2)', color: C.NAVY_LIGHT, items: [
+        ['SENSITIVITY',       '24-month revenue + profit impact when commission rate, avg booking value, or booking volume change ±20%.'],
+        ['Linear assumption', 'Each driver varied alone, holding others at Base. For compounding effects, use the Scenario dropdown on REVENUE MODEL.'],
+        ['Use for diligence', 'Pair worst-case from this tab with Conservative scenario to set the funding-ask lower bound.'],
+      ],
+    },
+    {
+      title: '4d. TAX RESERVES — CASH-FLOW NOTE', color: C.AMBER, items: [
+        ['Lodging + sales tax',  'Once Stripe Tax is activated, RAV collects occupancy/lodging tax from travelers and remits it to state/county/city.'],
+        ['Pass-through liability', 'Tax collected sits in the Mercury account briefly but is NOT RAV revenue — it must be remitted on a schedule (typically monthly per state).'],
+        ['Treat as cash, not P&L', 'Cumulative Cash Position in REVENUE MODEL may look temporarily inflated by tax floats. The 24-mo Net P&L excludes tax pass-throughs (they neither hit revenue nor expense in this model).'],
+        ['When this matters',    'Once monthly bookings × avg occupancy tax > ~$5K/mo, automate via Avalara / TaxJar. Until then, manual remit per state is fine.'],
+      ],
+    },
+    {
+      title: '4e. ADDING CHARTS (manual — Phase 2 will automate)', color: C.NAVY_MID, items: [
+        ['Why manual',     'The exceljs library that builds this workbook does not yet support chart serialization. Real interactive charts come in Phase 2 when the model moves into /executive-dashboard (web app, recharts library).'],
+        ['Revenue vs Costs', 'In Excel: open REVENUE MODEL → select row 34 (TOTAL MONTHLY REVENUE) and row 35 (TOTAL MONTHLY COSTS) from columns D:AA → Insert > Line Chart. Takes 10 seconds.'],
+        ['Cumulative Cash',  'Same — select the Cumulative Cash row from D:AA, Insert > Line Chart. Drop a vertical line marker at the break-even month (use the value from BREAK-EVEN tab E5).'],
+        ['Sensitivity bars', 'On SENSITIVITY tab: select the 3-driver matrix, Insert > Bar Chart. Useful for investor decks.'],
       ],
     },
     {
