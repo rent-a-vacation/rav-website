@@ -1,6 +1,6 @@
 import type { Workbook } from 'exceljs';
 import { C } from '../colors.ts';
-import { banner, styleCell, secHead, note, setColumnPixelWidths } from '../style.ts';
+import { banner, styleCell, secHead, note, addNote, setColumnPixelWidths } from '../style.ts';
 
 /**
  * SENSITIVITY tab — shows ±10% / ±20% impact on 24-month outputs for
@@ -78,6 +78,7 @@ export function buildSensitivityTab(wb: Workbook): void {
     const lblCell = ws.getCell(r, 3);
     styleCell(lblCell, C.SAND, C.NAVY, 10, true, 'left');
     lblCell.value = d[0];
+    addNote(lblCell, d[2]);
 
     multipliers.forEach((mult, i) => {
       const cell = ws.getCell(r, 4 + i);
@@ -85,6 +86,8 @@ export function buildSensitivityTab(wb: Workbook): void {
       styleCell(cell, isBase ? C.EMERALD : alt, isBase ? C.WHITE : C.NAVY, 10, isBase, 'right');
       cell.value = { formula: `${d[1]}*${mult}` } as never;
       cell.numFmt = '$#,##0';
+      const pct = mult === 1.0 ? 'Base case' : `${mult > 1 ? '+' : ''}${Math.round((mult - 1) * 100)}%`;
+      addNote(cell, `${pct} on ${d[0]}. Base 24-month Net Commission × ${mult}. Holds all other drivers at base.`);
     });
 
     const noteCell = ws.getCell(r, 9);

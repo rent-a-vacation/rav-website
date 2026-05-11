@@ -1,6 +1,6 @@
 import type { Workbook } from 'exceljs';
 import { C } from '../colors.ts';
-import { banner, styleCell, secHead, setColumnPixelWidths } from '../style.ts';
+import { banner, styleCell, secHead, addNote, setColumnPixelWidths } from '../style.ts';
 
 const MONTHS = 24;
 
@@ -33,11 +33,13 @@ export function buildBreakevenTab(wb: Workbook): void {
   styleCell(oneTime, C.CORAL_LIGHT, C.CORAL, 14, true, 'center');
   oneTime.value = { formula: 'SUMIF(EXPENSES!E7:E500,"One-Time",EXPENSES!F7:F500)' } as never;
   oneTime.numFmt = '$#,##0';
+  addNote(oneTime, 'Sum of all one-time costs on EXPENSES tab: incorporation ($500), attorneys, IP assignments, trademarks (3), ToS/Privacy review, conference (registration + travel + booth), launch ads. Hits cash in the months they\'re scheduled.');
 
   const burn = ws.getCell(5, 4);
   styleCell(burn, C.RED_LIGHT, C.RED, 14, true, 'center');
   burn.value = { formula: 'SUMIF(EXPENSES!E7:E500,"Recurring",EXPENSES!J7:J500)' } as never;
   burn.numFmt = '$#,##0';
+  addNote(burn, 'Steady-state monthly cost — sum of every Recurring row\'s Monthly $ (column J) on EXPENSES tab. This is what you spend every month "to keep the lights on" once everything is running: SaaS subscriptions, insurance amortized, accounting, marketing ads. Multiply by 12 for annual run-rate.');
 
   const breakeven = ws.getCell(5, 5);
   styleCell(breakeven, C.TEAL_LIGHT, C.DEEP_TEAL, 14, true, 'center');
@@ -52,27 +54,38 @@ export function buildBreakevenTab(wb: Workbook): void {
     formula: `IF(COUNTIF(G9:G${8 + MONTHS},">0")=0,"Not in 24mo",MATCH(1,INDEX((G9:G${8 + MONTHS}>0)+0,0),0))`,
   } as never;
   breakeven.numFmt = '0';
+  addNote(breakeven, 'First month in the 24-month projection when Cumulative Cash Position (column G below) turns positive. If never positive within 24 months, displays "Not in 24mo" — which means you need more starting cash, more funding inflow, faster growth, or longer runway than this model captures.');
 
   const sixMo = ws.getCell(5, 6);
   styleCell(sixMo, C.AMBER_LIGHT, C.AMBER, 14, true, 'center');
   sixMo.value = { formula: 'C5+D5*6' } as never;
   sixMo.numFmt = '$#,##0';
+  addNote(sixMo, 'One-Time Costs + (Monthly Burn × 6). Minimum cash needed to survive 6 months from Month 1, assuming zero revenue. Use this as the floor for a "MVP launch" budget.');
 
   const twelveMo = ws.getCell(5, 7);
   styleCell(twelveMo, C.AMBER_LIGHT, C.AMBER, 14, true, 'center');
   twelveMo.value = { formula: 'C5+D5*12' } as never;
   twelveMo.numFmt = '$#,##0';
+  addNote(twelveMo, 'One-Time Costs + (Monthly Burn × 12). The number FUNDING ASK uses for "12-Month Runway". This is what a typical seed-stage runway looks like — enough to launch, iterate, get traction, and start fundraising again.');
 
   ws.getRow(6).height = 8;
 
   let row = 7;
   secHead(ws, row++, 2, 7, '  Month-by-Month: Revenue vs Costs vs Cumulative Cash Position');
 
-  const thdrs = ['Month', 'Monthly Revenue', 'Monthly Costs', 'Net (Rev − Cost)', 'Cumulative Cash', 'Runway Signal'];
-  thdrs.forEach((h, i) => {
+  const thdrs: [string, string][] = [
+    ['Month', 'Month number from gLaunchMo on INPUTS Section C. Pre-launch months still appear but show $0 revenue.'],
+    ['Monthly Revenue', 'Pulled from REVENUE MODEL row "TOTAL MONTHLY REVENUE". Net Commission + Subscription Total + Voice Overage. Read-only — to change, edit INPUTS.'],
+    ['Monthly Costs', 'Pulled from REVENUE MODEL: "TOTAL MONTHLY COSTS (Expenses)" + "Hiring Costs". All recurring SaaS + insurance + any one-time spend hitting this month + active hires.'],
+    ['Net (Rev − Cost)', 'Single-month profit/loss. Negative = burning cash this month; positive = made money this month. Doesn\'t mean you\'re cash-positive overall — see Cumulative Cash column for that.'],
+    ['Cumulative Cash', 'Running total starting from Starting Cash on Hand (INPUTS F) + any Funding Inflow at gFundMonth. Green when positive, red when negative.'],
+    ['Runway Signal', '"Profitable" when Cumulative Cash > 0; "Burning Cash" when < 0. First "Profitable" row = your break-even point.'],
+  ];
+  thdrs.forEach(([h, note], i) => {
     const cell = ws.getCell(row, i + 3);
     styleCell(cell, C.NAVY_MID, C.WHITE, 10, true, 'center');
     cell.value = h;
+    addNote(cell, note);
   });
   ws.getRow(row).height = 26;
   row++;

@@ -1,6 +1,6 @@
 import type { Workbook, BorderStyle } from 'exceljs';
 import { C } from '../colors.ts';
-import { banner, styleCell, secHead, drop, setColumnPixelWidths } from '../style.ts';
+import { banner, styleCell, secHead, drop, addNote, setColumnPixelWidths } from '../style.ts';
 import { EXPENSES, EXPENSE_CATEGORIES, type ExpenseCategory } from '../data.ts';
 
 const CAT_BG: Record<string, string> = {
@@ -66,6 +66,8 @@ export function buildExpensesTab(wb: Workbook): void {
       bottom: { style: 'thin' as BorderStyle, color: { argb: C.AMBER } },
       right: { style: 'thin' as BorderStyle, color: { argb: C.AMBER } },
     };
+    // Hover note surfaces the row's description as a tooltip on the Amount cell
+    addNote(amtCell, `${e.item}\n\n${e.notes}`);
 
     const freqCell = ws.getCell(row, 7);
     styleCell(freqCell, alt, C.NAVY, 10, false, 'left');
@@ -158,6 +160,7 @@ export function buildExpensesTab(wb: Workbook): void {
     styleCell(sumCell, C.TEAL_LIGHT, C.NAVY, 10, true, 'right');
     sumCell.value = { formula: `SUMIF(C7:C${lastDataRow},"${cat}",J7:J${lastDataRow})` } as never;
     sumCell.numFmt = '$#,##0.00';
+    addNote(sumCell, `Steady-state monthly burn for ${cat}. Sum of the "Monthly $" column (J) for every row tagged ${cat}, including amortized annual/quarterly costs.`);
     row++;
   });
 
@@ -167,6 +170,7 @@ export function buildExpensesTab(wb: Workbook): void {
   styleCell(burnCell, C.NAVY, C.CORAL, 13, true, 'right');
   burnCell.value = { formula: `SUM(J7:J${lastDataRow})` } as never;
   burnCell.numFmt = '$#,##0.00';
+  addNote(burnCell, 'Total recurring monthly burn across all categories. Sum of column J. This is the "$X/month to keep the lights on" number — multiply by 12 for annual run-rate.');
   row++;
 
   ws.getRow(row).height = 26;
@@ -175,4 +179,5 @@ export function buildExpensesTab(wb: Workbook): void {
   styleCell(oneTimeCell, C.NAVY_MID, C.AMBER, 11, true, 'right');
   oneTimeCell.value = { formula: `SUMIF(E7:E${lastDataRow},"One-Time",F7:F${lastDataRow})` } as never;
   oneTimeCell.numFmt = '$#,##0.00';
+  addNote(oneTimeCell, 'Sum of all one-time costs — incorporation, attorney fees, trademarks, conference, launch ads. These hit your cash flow once in the month they\'re scheduled (column H).');
 }

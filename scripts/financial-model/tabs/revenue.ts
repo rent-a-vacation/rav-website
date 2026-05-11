@@ -1,6 +1,6 @@
 import type { Workbook, BorderStyle } from 'exceljs';
 import { C } from '../colors.ts';
-import { banner, styleCell, secHead, lbl, drop, colLtr, setColumnPixelWidths } from '../style.ts';
+import { banner, styleCell, secHead, lbl, drop, addNote, colLtr, setColumnPixelWidths } from '../style.ts';
 
 const MONTHS = 24;
 
@@ -66,7 +66,8 @@ export function buildRevenueTab(wb: Workbook): void {
   //   m > gLaunchMo: prev_month × (1 + growth × scenario_multiplier)
   // Previously the formula seeded gStartOwn at Month 1 regardless of gLaunchMo,
   // so any gLaunchMo > 1 left the whole projection at 0.
-  lbl(ws, row, 3, 'Active Owners');
+  addNote(lbl(ws, row, 3, 'Active Owners'),
+    'Pre-launch: 0. Launch month: gStartOwn (seed). After launch: previous month × (1 + gOwnGrowth × scenario multiplier). Edit gStartOwn / gOwnGrowth / gLaunchMo on INPUTS Section C to change.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
@@ -87,7 +88,8 @@ export function buildRevenueTab(wb: Workbook): void {
   const ownRow = row++;
 
   // Active Travelers — same three-case pattern
-  lbl(ws, row, 3, 'Active Travelers');
+  addNote(lbl(ws, row, 3, 'Active Travelers'),
+    'Same logic as Active Owners but with gStartTrav / gTravGrowth. Travelers typically grow faster than owners (lower friction to sign up).');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
@@ -114,7 +116,8 @@ export function buildRevenueTab(wb: Workbook): void {
   // Cohort ramp factor: bookings/owner ramps from 0 to gBookPerOwn over uRampMonths
   // months post-launch. MIN(1, (months_since_launch + 1) / uRampMonths) caps at 1.0.
   // Set uRampMonths = 1 in INPUTS to disable the ramp (immediate full velocity).
-  lbl(ws, row, 3, 'Monthly Bookings (confirmed)');
+  addNote(lbl(ws, row, 3, 'Monthly Bookings (confirmed)'),
+    'Active Owners × gBookPerOwn × cohort-ramp × scenario multiplier. Cohort ramp: new owners take uRampMonths months to reach full booking velocity (33% → 67% → 100% with uRampMonths=3). Set uRampMonths=1 on INPUTS Section H to disable.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
@@ -139,7 +142,8 @@ export function buildRevenueTab(wb: Workbook): void {
   }
   row++;
 
-  lbl(ws, row, 3, '    Gross Booking Value (GBV)');
+  addNote(lbl(ws, row, 3, '    Gross Booking Value (GBV)'),
+    'Bookings × pAvgBooking. The total dollar value of travel sold through the platform in this month — owner payouts + RAV commission + traveler-paid taxes (when activated). Industry benchmark — track as the headline "GMV" metric.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
@@ -167,6 +171,7 @@ export function buildRevenueTab(wb: Workbook): void {
   const grossLbl = ws.getCell(row, 3);
   styleCell(grossLbl, C.DEEP_TEAL, C.WHITE, 11, true, 'left');
   grossLbl.value = 'Gross Commission Revenue';
+  addNote(grossLbl, 'GBV × blended commission rate. Blended = weighted average of Free/Pro/Business owner tier rates, weighted by gMix0/1/2 booking mix from INPUTS Section C.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
@@ -177,7 +182,8 @@ export function buildRevenueTab(wb: Workbook): void {
   const grossCommRow = row++;
 
   // Stripe Fees row (subtractive)
-  lbl(ws, row, 3, '    Stripe Processing Fees (absorbed by RAV)');
+  addNote(lbl(ws, row, 3, '    Stripe Processing Fees (absorbed by RAV)'),
+    'Stripe takes 2.9% + $0.30 per booking on the WHOLE traveler payment (GBV + commission), not just RAV\'s commission slice. RAV absorbs this from its commission margin — so net commission is materially smaller than gross. On a $2,000 booking at 15% commission: gross $300, Stripe ~$67, net ~$233.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cL = colLtr(col);
@@ -192,6 +198,7 @@ export function buildRevenueTab(wb: Workbook): void {
   const netLbl = ws.getCell(row, 3);
   styleCell(netLbl, C.DEEP_TEAL, C.WHITE, 11, true, 'left');
   netLbl.value = 'Net Commission Revenue';
+  addNote(netLbl, 'Gross Commission + Stripe Fees (negative). This is the line that actually flows to Total Monthly Revenue — what RAV keeps after the payment processor takes its cut.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cL = colLtr(col);
@@ -243,7 +250,8 @@ export function buildRevenueTab(wb: Workbook): void {
 
   // 4b. USAGE REVENUE (Voice Overage — new in v3.2 / Phase 1b)
   secHead(ws, row++, 2, 27, '  4b. USAGE REVENUE  (voice / AI overage — non-Premium travelers only)');
-  lbl(ws, row, 3, '    Voice Overage Revenue');
+  addNote(lbl(ws, row, 3, '    Voice Overage Revenue'),
+    'Active Travelers × (1 − gTrav2) × uVoiceOverage. Premium tier travelers have unlimited voice, so they\'re excluded. Edit uVoiceOverage on INPUTS Section H — conservative default $0.50/non-Premium traveler/month.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cL = colLtr(col);
@@ -263,6 +271,7 @@ export function buildRevenueTab(wb: Workbook): void {
   const totRevLbl = ws.getCell(row, 3);
   styleCell(totRevLbl, C.EMERALD, C.WHITE, 12, true, 'left');
   totRevLbl.value = 'TOTAL MONTHLY REVENUE';
+  addNote(totRevLbl, 'Net Commission Revenue + Total Subscription Revenue + Voice Overage Revenue. All three RAV revenue streams summed.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cL = colLtr(col);
@@ -278,6 +287,7 @@ export function buildRevenueTab(wb: Workbook): void {
   const totCostLbl = ws.getCell(row, 3);
   styleCell(totCostLbl, C.RED, C.WHITE, 12, true, 'left');
   totCostLbl.value = 'TOTAL MONTHLY COSTS (Expenses)';
+  addNote(totCostLbl, 'Recurring expenses active this month (from EXPENSES column J, amortized monthly) + one-time expenses scheduled this month (column F where Start Month = this month). Does NOT include hiring costs — see separate Hiring Costs row below.');
   // The EXPENSES J column already holds each row's monthly-equivalent amount
   // (handles Monthly/Annual/Quarterly via row-level IF). So the month-N cost
   // is: (sum of J for active recurring rows) + (sum of F for one-time rows
@@ -306,6 +316,7 @@ export function buildRevenueTab(wb: Workbook): void {
   const hireLbl = ws.getCell(row, 3);
   styleCell(hireLbl, C.NAVY_MID, C.WHITE, 10, true, 'left');
   hireLbl.value = '    Hiring Costs (Eng + Support + BD)';
+  addNote(hireLbl, 'Sum of burdened cost (salary + payroll tax + benefits + tools) for each hire active in this month. Hire month = 0 in INPUTS Section G means "no hire planned" — that role contributes $0.');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
@@ -324,6 +335,7 @@ export function buildRevenueTab(wb: Workbook): void {
   const netLblCell = ws.getCell(row, 3);
   styleCell(netLblCell, C.NAVY, C.AMBER, 12, true, 'left');
   netLblCell.value = 'NET MONTHLY PROFIT / (LOSS)';
+  addNote(netLblCell, 'Total Monthly Revenue − Total Monthly Costs (Expenses) − Hiring Costs. Negative = burning cash; positive = monthly profit. Month-over-month tracking shows when operations turn profitable on a monthly basis (not yet cumulative).');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cL = colLtr(col);
@@ -339,6 +351,7 @@ export function buildRevenueTab(wb: Workbook): void {
   const cumLbl = ws.getCell(row, 3);
   styleCell(cumLbl, C.WARM_GRAY, C.NAVY, 10, true, 'left');
   cumLbl.value = '    Cumulative Cash Position';
+  addNote(cumLbl, 'Running total of cash from Month 1 onwards. Month 1 seeded with gStartCash (INPUTS Section F). Funding inflow added in month matching gFundMonth. Then each month\'s Net P&L is added. Green = positive (you have cash); red = negative (you need funding). The month it first turns positive = break-even point.');
   const cumFirst = ws.getCell(row, 4);
   styleCell(cumFirst, C.WHITE, C.NAVY, 10, false, 'right');
   cumFirst.value = { formula: `gStartCash+IF(gFundMonth=1,gFundAmt,0)+D${netRow}` } as never;
