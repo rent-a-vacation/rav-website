@@ -74,13 +74,33 @@ export const HORIZON: InputRow[] = [
 
 // Section F — Tax, Cash & Reserves (new in v3.1)
 export const RESERVES: InputRow[] = [
-  { label: 'Subscription Churn (monthly %)', value: 0.03, fmt: '0.00%',  name: 'gChurn',     note: 'Monthly subscriber attrition. Industry: 2-5% early-stage SaaS. v3.x interprets the tier % inputs as steady-state post-churn; cohort-decay wiring is Phase 1b.' },
+  { label: 'Subscription Churn (monthly %)', value: 0.03, fmt: '0.00%',  name: 'gChurn',     note: 'Monthly subscriber attrition. Industry: 2-5% early-stage SaaS. v3.x interprets the tier % inputs as steady-state post-churn (gross sign-ups - churn = net growth in Section C).' },
   { label: 'Starting Cash on Hand ($)',      value: 0,    fmt: '$#,##0', name: 'gStartCash', note: 'Cash in Mercury at Month 1. Pre-funding = $0 or founder loan. Post-funding = your seed raise.' },
   { label: 'Funding Inflow — Month',         value: 0,    fmt: '0',      name: 'gFundMonth', note: 'Month number when seed funding hits the bank. 0 = not raising yet.' },
   { label: 'Funding Inflow — Amount ($)',    value: 0,    fmt: '$#,##0', name: 'gFundAmt',   note: 'Seed round size. Adds to cash in the month above.' },
   { label: 'Founder Comp — $/founder/month', value: 0,    fmt: '$#,##0', name: 'gFndComp',   note: 'Post-funding monthly salary per founder. $3-8K typical seed-stage.' },
   { label: 'Number of Salaried Founders',    value: 0,    fmt: '0',      name: 'gFndCount',  note: 'How many founders draw salary post-funding.' },
   { label: 'Funded? (1=yes, 0=no)',          value: 0,    fmt: '0',      name: 'gFunded',    note: 'Toggle gating founder comp activation.' },
+];
+
+// Section G — Hiring Plan (new in v3.2 / Phase 1b)
+// Each role has a hire month + burdened monthly cost. Cost includes salary,
+// employer payroll tax (~7.65%), benefits (~15-20%), tools, etc.
+export const HIRING: InputRow[] = [
+  { label: 'First Engineer — Hire Month',    value: 0,    fmt: '0',      name: 'hEngMonth', note: 'Model month when 1st engineer joins. 0 = no hire planned. Activates after funding typically — depends on gFundMonth.' },
+  { label: 'First Engineer — Burdened $/mo', value: 12000, fmt: '$#,##0', name: 'hEngCost',  note: 'Total monthly cost: base salary + 7.65% payroll tax + ~15-20% benefits + tools. Senior eng $10-15K/mo burdened at seed stage.' },
+  { label: 'First Support — Hire Month',     value: 0,    fmt: '0',      name: 'hSupMonth', note: 'Model month when 1st support hire joins. 0 = no hire planned. Typically Month 8-12 once owner volume justifies.' },
+  { label: 'First Support — Burdened $/mo',  value: 6000,  fmt: '$#,##0', name: 'hSupCost',  note: 'Support role burdened cost. $4-8K/mo typical for remote contractor support.' },
+  { label: 'First BD — Hire Month',          value: 0,    fmt: '0',      name: 'hBDMonth',  note: 'Model month when 1st BD/growth hire joins. 0 = no hire planned. Triggers after product-market fit signal.' },
+  { label: 'First BD — Burdened $/mo',       value: 9000,  fmt: '$#,##0', name: 'hBDCost',   note: 'Business development burdened cost. Often base + commission — model just the base here.' },
+];
+
+// Section H — Unit Economics & Cohort Ramp (new in v3.2 / Phase 1b)
+export const UNIT_ECON: InputRow[] = [
+  { label: 'Cohort Ramp (months to full velocity)', value: 3,    fmt: '0',     name: 'uRampMonths',     note: 'New cohort booking velocity ramps from 0 to gBookPerOwn over this many months. Set 1 = immediate full velocity; 3-6 = gradual onboarding curve.' },
+  { label: 'Average Owner Lifetime (months)',       value: 24,   fmt: '0',     name: 'uOwnLife',        note: 'Average months an active owner stays on the platform before churning. Used for LTV calc. 24mo = ~3% monthly churn equivalent.' },
+  { label: 'Average Traveler Lifetime (months)',    value: 18,   fmt: '0',     name: 'uTravLife',       note: 'Average months an active traveler stays. Travelers churn faster than owners typically.' },
+  { label: 'Voice Overage — $/active traveler/mo',   value: 0.50, fmt: '$0.00', name: 'uVoiceOverage',   note: 'Avg monthly voice overage revenue per non-Premium traveler. Conservative default; scales with adoption of voice features post-launch.' },
 ];
 
 // ─── Expense rows ────────────────────────────────────────────────────────────

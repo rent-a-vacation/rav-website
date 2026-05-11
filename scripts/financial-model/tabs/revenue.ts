@@ -94,12 +94,16 @@ export function buildRevenueTab(wb: Workbook): void {
   // 2. MARKETPLACE ACTIVITY
   secHead(ws, row++, 2, 27, '  2.  MARKETPLACE ACTIVITY  (Listings · Offers · Bookings)');
 
+  // Cohort ramp factor: bookings/owner ramps from 0 to gBookPerOwn over uRampMonths
+  // months post-launch. MIN(1, (months_since_launch + 1) / uRampMonths) caps at 1.0.
+  // Set uRampMonths = 1 in INPUTS to disable the ramp (immediate full velocity).
   lbl(ws, row, 3, 'Monthly Bookings (confirmed)');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
     styleCell(cell, m % 2 === 0 ? C.WHITE : C.CREAM, C.NAVY, 10, false, 'right');
-    cell.value = { formula: `IF(${m}>=gLaunchMo,${colLtr(col)}${ownRow}*gBookPerOwn*${sBook},0)` } as never;
+    const ramp = `MIN(1,(${m}-gLaunchMo+1)/uRampMonths)`;
+    cell.value = { formula: `IF(${m}>=gLaunchMo,${colLtr(col)}${ownRow}*gBookPerOwn*${ramp}*${sBook},0)` } as never;
     cell.numFmt = '#,##0.0';
   }
   const bookRow = row++;
@@ -220,6 +224,21 @@ export function buildRevenueTab(wb: Workbook): void {
   const subRevRow = row;
   row += 2;
 
+  // 4b. USAGE REVENUE (Voice Overage — new in v3.2 / Phase 1b)
+  secHead(ws, row++, 2, 27, '  4b. USAGE REVENUE  (voice / AI overage — non-Premium travelers only)');
+  lbl(ws, row, 3, '    Voice Overage Revenue');
+  for (let m = 1; m <= MONTHS; m++) {
+    const col = m + 3;
+    const cL = colLtr(col);
+    const cell = ws.getCell(row, col);
+    styleCell(cell, m % 2 === 0 ? C.WHITE : C.CREAM, C.NAVY, 10, false, 'right');
+    // Premium travelers (gTrav2) have unlimited voice — exclude. Overage = (Free + Plus) × per-traveler $
+    cell.value = { formula: `IF(${m}>=gLaunchMo,${cL}${travRow}*(1-gTrav2)*uVoiceOverage,0)` } as never;
+    cell.numFmt = '$#,##0';
+  }
+  const voiceRow = row;
+  row += 2;
+
   // 5. TOTALS
   secHead(ws, row++, 2, 27, '  5.  REVENUE vs COSTS vs PROFIT / (LOSS)');
 
@@ -232,7 +251,8 @@ export function buildRevenueTab(wb: Workbook): void {
     const cL = colLtr(col);
     const cell = ws.getCell(row, col);
     styleCell(cell, C.EMERALD, C.WHITE, 12, true, 'right');
-    cell.value = { formula: `${cL}${commRow}+${cL}${subRevRow}` } as never;
+    // v3.2: Total Revenue = Net Commission + Subscription Total + Voice Overage
+    cell.value = { formula: `${cL}${commRow}+${cL}${subRevRow}+${cL}${voiceRow}` } as never;
     cell.numFmt = '$#,##0';
   }
   const totRevRow = row++;
@@ -240,7 +260,7 @@ export function buildRevenueTab(wb: Workbook): void {
   ws.getRow(row).height = 34;
   const totCostLbl = ws.getCell(row, 3);
   styleCell(totCostLbl, C.RED, C.WHITE, 12, true, 'left');
-  totCostLbl.value = 'TOTAL MONTHLY COSTS';
+  totCostLbl.value = 'TOTAL MONTHLY COSTS (Expenses)';
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
@@ -257,6 +277,27 @@ export function buildRevenueTab(wb: Workbook): void {
   }
   const totCostRow = row++;
 
+  // Hiring Costs row (new in v3.2 / Phase 1b)
+  // Each hire's burdened cost activates from its hire month forward.
+  // Hire month = 0 means "no hire planned" (contributes $0).
+  ws.getRow(row).height = 28;
+  const hireLbl = ws.getCell(row, 3);
+  styleCell(hireLbl, C.NAVY_MID, C.WHITE, 10, true, 'left');
+  hireLbl.value = '    Hiring Costs (Eng + Support + BD)';
+  for (let m = 1; m <= MONTHS; m++) {
+    const col = m + 3;
+    const cell = ws.getCell(row, col);
+    styleCell(cell, m % 2 === 0 ? C.RED_LIGHT : C.WHITE, C.RED, 10, false, 'right');
+    cell.value = {
+      formula:
+        `IF(hEngMonth=0,0,IF(${m}>=hEngMonth,hEngCost,0))+` +
+        `IF(hSupMonth=0,0,IF(${m}>=hSupMonth,hSupCost,0))+` +
+        `IF(hBDMonth=0,0,IF(${m}>=hBDMonth,hBDCost,0))`,
+    } as never;
+    cell.numFmt = '$#,##0';
+  }
+  const hireRow = row++;
+
   ws.getRow(row).height = 36;
   const netLblCell = ws.getCell(row, 3);
   styleCell(netLblCell, C.NAVY, C.AMBER, 12, true, 'left');
@@ -266,7 +307,8 @@ export function buildRevenueTab(wb: Workbook): void {
     const cL = colLtr(col);
     const cell = ws.getCell(row, col);
     styleCell(cell, C.NAVY, C.AMBER, 12, true, 'right');
-    cell.value = { formula: `${cL}${totRevRow}-${cL}${totCostRow}` } as never;
+    // v3.2: Net = Revenue - (Expenses + Hiring)
+    cell.value = { formula: `${cL}${totRevRow}-${cL}${totCostRow}-${cL}${hireRow}` } as never;
     cell.numFmt = '$#,##0';
   }
   const netRow = row++;
