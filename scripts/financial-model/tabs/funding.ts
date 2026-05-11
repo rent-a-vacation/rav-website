@@ -57,14 +57,21 @@ export function buildFundingAskTab(wb: Workbook): void {
   ws.getRow(r).height = 26;
   r++;
 
-  // % of Ask divides by $D$8 (the recommended ask), not C8 (label) — fixed in v3.1
+  // 12-month spend by category: One-Time items at full amount + Recurring × 12.
+  // Same formula structure for all 5 categories — v3.2 fixed inconsistencies that
+  // were over-counting Operations & Tools, double-counting Marketing/Compliance/People
+  // one-time items, and missing recurring legal costs.
+  const twelveMonthByCategory = (cat: string) =>
+    `SUMIFS(EXPENSES!F7:F500,EXPENSES!C7:C500,"${cat}",EXPENSES!E7:E500,"One-Time")+` +
+    `SUMIFS(EXPENSES!J7:J500,EXPENSES!C7:C500,"${cat}",EXPENSES!E7:E500,"Recurring")*12`;
+
   const funds: [string, string, string][] = [
-    ['Legal & Formation',   'SUMIF(EXPENSES!C7:C500,"Legal & Formation",EXPENSES!F7:F500)',                                                                          'Incorporation, IP assignments, attorney review, trademark filings'],
-    ['Operations & Tools',  'SUMIF(EXPENSES!C7:C500,"Operations & Tools",EXPENSES!J7:J500)*12',                                                                       'SaaS stack × 12 months'],
-    ['Marketing & Launch',  'SUMIF(EXPENSES!C7:C500,"Marketing & Launch",EXPENSES!F7:F500)+SUMIF(EXPENSES!C7:C500,"Marketing & Launch",EXPENSES!J7:J500)*12',         'Conference, booth, social ads × 12 months'],
-    ['Compliance & Tax',    'SUMIF(EXPENSES!C7:C500,"Compliance & Tax",EXPENSES!F7:F500)+SUMIF(EXPENSES!C7:C500,"Compliance & Tax",EXPENSES!J7:J500)*12',             'EIN, bank, accounting, CPA, franchise tax, insurance'],
-    ['People',              'SUMIF(EXPENSES!C7:C500,"People & Admin",EXPENSES!F7:F500)+SUMIF(EXPENSES!C7:C500,"People & Admin",EXPENSES!J7:J500)*12',                 'Founder stipends, contractors, test management'],
-    ['Contingency Buffer',  'D7',                                                                                                                                       'From The Ask above — 15% buffer on 12-month runway'],
+    ['Legal & Formation',   twelveMonthByCategory('Legal & Formation'),  'Atlas $500 + IP assignments + attorney + ToS/Privacy + 3 trademark filings + Year-1 registered agent (Atlas) — most are one-time'],
+    ['Operations & Tools',  twelveMonthByCategory('Operations & Tools'), 'SaaS stack for 12 months: Claude Max, Vercel, Supabase, VAPI, OpenRouter, Twilio, GitHub, Canva, IDEs, domain — plus Twilio A2P 10DLC one-time'],
+    ['Marketing & Launch',  twelveMonthByCategory('Marketing & Launch'), 'Launch ads + conference (registration + travel + booth) + 6+ months sustained social/Google ads'],
+    ['Compliance & Tax',    twelveMonthByCategory('Compliance & Tax'),   'CPA annual + DE franchise + state franchise + D&O / E&O / GL insurance + Stripe Tax + Puzzle accounting (mostly free tier)'],
+    ['People',              twelveMonthByCategory('People & Admin'),     'Founder stipends + contractor placeholder + test management — set to $0 today; activate via INPUTS Section F (Founder Comp) or by editing EXPENSES directly'],
+    ['Contingency Buffer',  'D7',                                         'From The Ask above — 15% buffer on 12-month runway. Auto-calculated; do not edit here.'],
   ];
   funds.forEach((f, i) => {
     ws.getRow(r).height = 26;

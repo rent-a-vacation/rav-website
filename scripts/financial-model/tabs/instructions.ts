@@ -22,7 +22,7 @@ export function buildInstructionsTab(wb: Workbook): void {
         ['Section D',        'Scenario multipliers — how Conservative and Optimistic differ from Base.'],
         ['Section E',        'Planning horizon and model start date label.'],
         ['Section F',        'Tax, Cash & Reserves — churn, starting cash, funding inflow (month + amount), founder comp post-funding. Drives cumulative cash position.'],
-      ['Section G (NEW)',  'Hiring Plan — hire month + burdened cost per role (Eng, Support, BD). Auto-adds to Revenue Model from hire month forward.'],
+      ['Section G (NEW)',  'Hiring Plan — hire month + burdened cost per role (Eng, Support, BD). Auto-adds as a SEPARATE LINE on Revenue Model (Hiring Costs row) and is summed into Net P&L. Note: hiring costs are NOT in the EXPENSES tab and NOT in FUNDING ASK Use of Funds yet (Phase 2 will integrate them). For now, model hiring costs visibility on REVENUE MODEL; account for them in your funding ask manually if you plan to hire pre-revenue.'],
       ['Section H (NEW)',  'Unit Economics & Cohort Ramp — ramp months, owner lifetime, traveler lifetime, voice overage rate. Drives UNIT ECON + cohort booking velocity.'],
       ],
     },
@@ -88,11 +88,24 @@ export function buildInstructionsTab(wb: Workbook): void {
     },
     {
       title: '5.  FUNDING ASK', color: C.NAVY, items: [
-        ['FUNDING ASK',      'One-page summary. All dollar figures auto-populate from INPUTS and EXPENSES.'],
-        ['THE ASK rows',     'D5 = 6-Month Runway. D6 = 12-Month Runway. D7 = 15% contingency on D6. D8 = D6 + D7 = recommended ask. v3.1 fixed circular refs that previously self-referenced label cells.'],
-        ['Use of Funds',     'SUMIFs against EXPENSES categories. % of Ask divides each by D8 (recommended ask).'],
-        ['Platform facts',   'Pre-loaded from the RAV codebase. Update as the product evolves.'],
-        ['Before meetings',  'Check BRAND-LOCK.md Section 5 (Numerical Claims Registry) before investor conversations.'],
+        ['FUNDING ASK',         'One-page summary. ALL dollar figures auto-populate from INPUTS and EXPENSES — you do not enter Use of Funds amounts manually.'],
+        ['THE ASK rows',        'D5 = 6-Month Runway. D6 = 12-Month Runway. D7 = 15% contingency on D6. D8 = D6 + D7 = recommended seed ask.'],
+        ['Use of Funds = SUMIFs', 'Each category row sums the matching EXPENSES rows: SUMIFS of one-time amounts + SUMIFS of recurring monthly × 12. Edit EXPENSES, this updates automatically.'],
+        ['Want a number to change?', 'Go to EXPENSES tab. Find the row. Edit the Amount cell. Use of Funds + THE ASK + everything else recomputes. The yellow/amber cells on EXPENSES are the editable ones.'],
+        ['% of Ask',            'Each category amount ÷ D8 (recommended seed ask). Shows what fraction of the raise each bucket consumes. Useful for investor questions like "what percent goes to legal vs ops vs marketing?"'],
+        ['Platform facts',      'Pre-loaded from the RAV codebase. Update as the product evolves (edit data.ts → regenerate).'],
+        ['Before meetings',     'Check BRAND-LOCK.md Section 5 (Numerical Claims Registry) before investor conversations.'],
+      ],
+    },
+    {
+      title: '5b. EXPENSES → FUNDING ASK FLOW', color: C.CORAL, items: [
+        ['Big picture',          'EXPENSES tab is where you specify HOW much you spend on WHAT. FUNDING ASK tab summarizes that into a single number to raise.'],
+        ['Categories drive it',  'The 5 buckets on FUNDING ASK (Legal, Ops, Marketing, Compliance, People) correspond 1:1 to the Category column on EXPENSES. Same category names — must match exactly.'],
+        ['Operations & Tools',   'SaaS subscriptions you pay every month (Vercel, Supabase, Claude, IDEs, etc.) plus any one-time setup costs. Funding ask uses 12 months of subscription cost.'],
+        ['Marketing & Launch',   'Conference booth, ads, marketing materials. 12 months of social/Google ads + one-time launch ads + conference one-time costs.'],
+        ['Compliance & Tax',     'CPA filing, Delaware franchise tax, state franchise tax, business insurance (D&O / E&O / GL), Puzzle.io (free for now), R&D tax credit prep. 12 months of recurring + one-time setup.'],
+        ['Legal & Formation',    'Atlas $500 + attorney consultations + IP assignments + ToS/Privacy review + trademark filings. Mostly one-time.'],
+        ['People & Admin',       'Co-founder stipends + contractor placeholders + test tools. Currently $0 baseline — activate by editing values on EXPENSES.'],
       ],
     },
     {
