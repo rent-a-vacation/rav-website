@@ -1,6 +1,6 @@
 import type { Workbook } from 'exceljs';
 import { C } from '../colors.ts';
-import { banner, styleCell, secHead, note, lbl, addNote, setColumnPixelWidths } from '../style.ts';
+import { banner, styleCell, secHead, note, lbl, setColumnPixelWidths } from '../style.ts';
 
 /**
  * UNIT ECONOMICS tab — directional CAC, LTV, payback metrics derived from
@@ -36,9 +36,11 @@ export function buildUnitEconTab(wb: Workbook): void {
   // ─── Section 1: Lifetime Value ────────────────────────────────────────────
   secHead(ws, r++, 2, 4, '  1.  LIFETIME VALUE (LTV)  —  derived from 24-month totals × user lifetime');
 
-  // Helper for one metric row: label | value | note
-  // Hover note on the value cell surfaces the hint text + extra context
-  // (useful when scrolling and the right-side hint column is off-screen).
+  // Helper for one metric row: label | value | inline hint.
+  // No hover-note on the value cell — the inline column to the right
+  // already shows the same explanation, so a hover would duplicate it.
+  // If we ever want hovers here, write content that ADDS to the inline
+  // (e.g., "to raise this number, edit X on INPUTS"), not duplicates it.
   const metric = (label: string, formula: string, fmt: string, hint: string, highlight = false) => {
     ws.getRow(r).height = 26;
     const lblCell = ws.getCell(r, 3);
@@ -48,7 +50,6 @@ export function buildUnitEconTab(wb: Workbook): void {
     styleCell(valCell, highlight ? C.EMERALD : C.TEAL_LIGHT, highlight ? C.WHITE : C.NAVY, highlight ? 12 : 10, true, 'right');
     valCell.value = { formula } as never;
     valCell.numFmt = fmt;
-    addNote(valCell, `${label}\n\n${hint}`);
     const hintCell = ws.getCell(r, 5);
     styleCell(hintCell, C.WHITE, C.SLATE, 9, false, 'left', true);
     hintCell.value = hint;
