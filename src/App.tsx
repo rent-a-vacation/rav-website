@@ -31,6 +31,7 @@ const ListProperty = lazy(() => import("./pages/ListProperty"));
 const OwnerDashboard = lazy(() => import("./pages/OwnerDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const ExecutiveDashboard = lazy(() => import("./pages/ExecutiveDashboard"));
+const FinancialModelDashboard = lazy(() => import("./pages/FinancialModelDashboard"));
 const BiddingMarketplace = lazy(() => import("./pages/BiddingMarketplace"));
 const MyBidsDashboard = lazy(() => import("./pages/MyBidsDashboard"));
 const MyBookings = lazy(() => import("./pages/MyBookings"));
@@ -226,6 +227,7 @@ const App = () => (
             <Route path="/owner-dashboard" element={<ProtectedRoute requiredRole="property_owner"><OwnerDashboard /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/executive-dashboard" element={<ProtectedRoute><ExecutiveDashboard /></ProtectedRoute>} />
+            <Route path="/executive-dashboard/financial-model" element={<ProtectedRoute><FinancialModelDashboard /></ProtectedRoute>} />
             <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/booking-success" element={<ProtectedRoute><BookingSuccess /></ProtectedRoute>} />
             <Route path="/marketplace" element={<ProtectedRoute><BiddingMarketplace /></ProtectedRoute>} />

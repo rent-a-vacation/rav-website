@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { Monitor } from 'lucide-react';
+import { Navigate, Link } from 'react-router-dom';
+import { Monitor, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { HeadlineBar } from '@/components/executive/HeadlineBar';
 import { BusinessPerformance } from '@/components/executive/BusinessPerformance';
@@ -55,6 +55,14 @@ const ExecutiveDashboard = () => {
                 Boardroom-grade intelligence. Real-time marketplace performance, proprietary metrics like Liquidity Score and Bid Spread Index,
                 competitive benchmarking, and industry intelligence — all in one boardroom-ready view.
               </p>
+              <Link
+                to="/executive-dashboard/financial-model"
+                className="inline-flex items-center gap-2 mt-4 text-sm font-medium text-teal-300 hover:text-teal-200 transition group"
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span>View 24-Month Financial Projection</span>
+                <span className="text-slate-500 group-hover:text-slate-400">→</span>
+              </Link>
             </div>
             <IntegrationSettings open={settingsOpen} onOpenChange={setSettingsOpen} />
           </div>
