@@ -47,6 +47,7 @@ const UserJourneys = lazy(() => import("./pages/UserJourneys"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const About = lazy(() => import("./pages/About"));
+const GuestProtection = lazy(() => import("./pages/GuestProtection"));
 const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 const Developers = lazy(() => import("./pages/Developers"));
 const DestinationDetail = lazy(() => import("./pages/DestinationDetail"));
@@ -202,6 +203,7 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/about" element={<About />} />
+            <Route path="/guest-protection" element={<GuestProtection />} />
             <Route path="/pending-approval" element={<PendingApproval />} />
             <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
             <Route path="/documentation" element={<Documentation />} />

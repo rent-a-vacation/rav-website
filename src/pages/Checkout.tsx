@@ -29,6 +29,7 @@ import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 import { StateSpecificDisclaimer } from "@/components/legal/StateSpecificDisclaimer";
+import { GuestProtectionBadge } from "@/components/legal/GuestProtectionBadge";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { trackEvent } from "@/lib/posthog";
 
@@ -391,6 +392,10 @@ const Checkout = () => {
                         <span>{error}</span>
                       </div>
                     )}
+
+                    {/* #489 — RAV Guest Protection banner surfaces the 5-business-day
+                        Host-cancellation refund promise immediately above the Pay button. */}
+                    <GuestProtectionBadge variant="banner" className="mt-2" />
 
                     <Button
                       className="w-full mt-4"
