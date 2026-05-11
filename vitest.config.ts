@@ -40,11 +40,15 @@ export default defineConfig({
         // Test fixtures + mocks — never measure
         "supabase/functions/_shared/__tests__/**",
       ],
+      // Thresholds raised to 70% on 2026-05-11 (actual coverage: ~75% stmts, ~77% branches, ~83% fns).
+      // Gap between actual and threshold is intentional — buffer for new untested code during active dev.
+      // REVIEW TRIGGER: raise to 80% when E2E automation covers 15+ of the 30 manual scenarios,
+      // or before any acquisition due diligence process begins — whichever comes first.
       thresholds: {
-        statements: 25,
-        branches: 25,
-        functions: 30,
-        lines: 25,
+        statements: 70,
+        branches: 70,
+        functions: 70,
+        lines: 70,
       },
     },
     reporters: ["default", "junit"],

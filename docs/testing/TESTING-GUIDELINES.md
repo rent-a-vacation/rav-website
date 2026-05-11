@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-25T06:41:23"
-change_ref: "2dd6116"
-change_type: "session-60"
+last_updated: "2026-05-11T00:00:00"
+change_ref: "manual"
+change_type: "session-65-governance"
 status: "active"
 ---
 # Testing Guidelines — Rent-A-Vacation
@@ -79,8 +79,12 @@ For critical user journeys across multiple pages.
 ### Visual Regression Tests
 For catching unintended visual changes.
 - Use Percy via `@percy/playwright`
-- Run only on PRs (CI gated)
-- Review diffs in Percy dashboard
+- Run only on PRs (CI gated — `if: github.event_name == 'pull_request'` in `ci.yml`)
+- Percy is **active** on the free tier — repo must remain **public** for free tier to work
+- Baseline established: Build #187 (May 2026) — Homepage, Rentals, Login, Signup snapshots approved
+- **Operational rule:** After every PR, someone must log into Percy, review the visual diff, and approve (intentional change) or reject (regression). Unreviewed builds accumulate and waste quota.
+- Percy free tier: 5,000 screenshots/month. Each build = 4 snapshots. ~1,250 builds/month max.
+- Review diffs at: https://percy.io (project: rav-web-app)
 
 ## Mocking Patterns
 
@@ -156,12 +160,106 @@ Coverage is tracked for business logic directories only:
 - `src/contexts/**` — context providers
 
 Thresholds (enforced in `vitest.config.ts`):
-- Statements: 25%
-- Branches: 25%
-- Functions: 30%
-- Lines: 25%
+- Statements: 70%
+- Branches: 70%
+- Functions: 70%
+- Lines: 70%
+
+Actual coverage as of May 2026: ~75% statements, ~77% branches, ~83% functions, ~75% lines.
+**Review trigger:** Raise thresholds to 80% when E2E automation covers 15+ of the 30 manual scenarios, or before acquisition due diligence — whichever comes first.
 
 Run `npm run test:coverage` to see the report locally.
+
+---
+
+## E2E Scenario Governance
+
+This section defines how manual and automated E2E scenarios are created, maintained, and expanded. Follow this process exactly — skipping steps creates unmaintainable tests.
+
+### The 30 Scenarios (S-01 through S-30)
+
+All scenarios live in `docs/testing/E2E-SCENARIO-TESTS.md`. They cover every major RAV business capability across all user roles. **These are the authoritative definition of what the platform is supposed to do.**
+
+### Automation Difficulty Classification
+
+Before scheduling any scenario for automation, classify it:
+
+| Level | Criteria | Examples |
+|-------|----------|----------|
+| **Easy** | Single role, no payment, no realtime, no voice | S-20 (public pages), S-22 (tools), S-16 (search/filter) |
+| **Medium** | Single role, database state required | S-21 (multi-listing), S-28 (iCal), S-25 (exec dashboard) |
+| **Hard** | Multi-role switching required | S-01, S-03, S-04, S-05, S-06 |
+| **Very Hard** | External systems (Stripe, realtime, voice) | S-08 (realtime), S-19 (Stripe edge cases), S-26 (voice) |
+| **Always Manual** | Master lifecycle, judgment calls | S-30 (complete marketplace cycle) |
+
+Multi-role scenarios require Playwright `storageState` — pre-authenticating each user and switching between browser contexts mid-test. Do not attempt these without that architecture in place.
+
+### Phased Automation Plan
+
+| Phase | Scenarios | Prerequisite |
+|-------|-----------|-------------|
+| Phase 1 (now) | S-20, S-22, S-16 (partial) — Easy scenarios | None — start immediately |
+| Phase 2 | S-01, S-03, S-13, S-14 — multi-role with storageState | Playwright storageState architecture built |
+| Phase 3 | S-04, S-05, S-09, S-10 — money flows | Stripe test env wired into CI |
+| Always manual | S-08, S-26, S-30 | — |
+
+**Coverage target:** 15+ automated scenarios before raising CI thresholds to 80%.
+
+### How to Add a New Scenario (S-31 and beyond)
+
+Follow this process every time a new feature ships. No exceptions.
+
+**Step 1 — Write the scenario when the feature ships.**
+Not weeks later. The developer or PM writes the scenario in `E2E-SCENARIO-TESTS.md` following the exact table format of existing scenarios (columns: #, As, Action, Page, Checkpoint). This happens before or alongside the code being merged — not after.
+
+**Step 2 — Assign a number and add to the index.**
+Give it the next sequential number (S-31, S-32, etc.). Add it to:
+- The Scenario Index table at the top of `E2E-SCENARIO-TESTS.md`
+- The appropriate execution Tier (Tier 1 through Tier 7)
+- The Coverage Matrix in the Google Sheets tracking doc
+
+**Step 3 — Run it manually at least twice.**
+A scenario is not considered validated until two clean manual runs have been recorded in the tracking sheet. Record the date, tester, and any bugs found.
+
+**Step 4 — Classify it using the difficulty framework above.**
+Add the classification (Easy / Medium / Hard / Very Hard / Always Manual) to the scenario header in `E2E-SCENARIO-TESTS.md`.
+
+**Step 5 — Schedule automation based on classification.**
+- Easy → schedule in the next available session
+- Medium → schedule within 2 sessions
+- Hard / Very Hard → add to backlog with prerequisite noted
+- Always Manual → document why and leave it
+
+### Percy Visual Regression — Operational Rules
+
+1. **After every PR merge:** Log into Percy, review the 4 snapshots (Homepage, Rentals, Login, Signup)
+2. **Intentional UI change:** Click Approve — this becomes the new baseline
+3. **Unexpected diff:** Click Reject, file a GitHub Issue, do NOT merge until resolved
+4. **Adding new pages:** Add a new `percySnapshot()` call in `e2e/visual/pages.spec.ts` when a major new public page ships
+5. **Quota awareness:** Free tier = 5,000 screenshots/month (~1,250 builds). If approaching limit, restrict Percy to PRs to `main` only, not every push to `dev`
+
+### GitHub Actions Manual Dispatch (for testers)
+
+> **Status: Planned — not yet implemented.** Target: Phase 1 E2E automation session.
+
+Non-developer testers will trigger E2E runs via a “Run workflow” button in GitHub Actions — no terminal or code required. The workflow will support selecting a test suite (all / smoke / specific tier) and environment (dev / prod), with automatic email notification and results link on completion.
+
+Until implemented, testers run scenarios manually using `E2E-SCENARIO-TESTS.md` as the checklist.
+
+### CI Branch Protection Rules
+
+| Job | Required? | Rationale |
+|-----|-----------|----------|
+| Lint & Type Check | **Yes — blocks merge** | Code must compile. Non-negotiable. |
+| Unit & Integration Tests | **Yes — blocks merge** | Business logic must pass. |
+| E2E Tests | No — informational | Suite too small to be a hard gate yet |
+| Visual Regression (Percy) | No — informational | Requires human review in Percy |
+| Lighthouse CI | No — informational | Performance budget aspirational |
+| Documentation Audit | No — informational | Useful signal, not a blocker |
+
+**Review trigger:** Promote E2E to Required when 15+ scenarios are automated and the suite has 3+ consecutive clean CI runs.
+
+---
 
 ## Edge Function Testing (Session 60 / #371)
 
