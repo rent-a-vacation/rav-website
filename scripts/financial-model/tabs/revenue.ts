@@ -278,17 +278,22 @@ export function buildRevenueTab(wb: Workbook): void {
   const totCostLbl = ws.getCell(row, 3);
   styleCell(totCostLbl, C.RED, C.WHITE, 12, true, 'left');
   totCostLbl.value = 'TOTAL MONTHLY COSTS (Expenses)';
+  // The EXPENSES J column already holds each row's monthly-equivalent amount
+  // (handles Monthly/Annual/Quarterly via row-level IF). So the month-N cost
+  // is: (sum of J for active recurring rows) + (sum of F for one-time rows
+  // hitting this exact month). Splitting into two SUMPRODUCTs (no inner IF)
+  // avoids the dynamic-array dependency that broke older Excel versions —
+  // recurring costs were silently dropping to 0 for months past any one-time
+  // spike, making break-even artificially optimistic.
+  // Bounded range (J7:J81) matches the EXPENSES summary fix.
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
     styleCell(cell, C.RED, C.WHITE, 12, true, 'right');
     cell.value = {
       formula:
-        `SUMPRODUCT((EXPENSES!E7:E500="Recurring")*(EXPENSES!H7:H500<=${m})*(EXPENSES!I7:I500>=${m})*` +
-        `IF(EXPENSES!G7:G500="Monthly",EXPENSES!F7:F500,` +
-        `IF(EXPENSES!G7:G500="Annual",EXPENSES!F7:F500/12,` +
-        `IF(EXPENSES!G7:G500="Quarterly",EXPENSES!F7:F500/3,0))))+` +
-        `SUMPRODUCT((EXPENSES!E7:E500="One-Time")*(EXPENSES!H7:H500=${m})*EXPENSES!F7:F500)`,
+        `SUMPRODUCT((EXPENSES!E7:E81="Recurring")*(EXPENSES!H7:H81<=${m})*(EXPENSES!I7:I81>=${m})*EXPENSES!J7:J81)` +
+        `+SUMPRODUCT((EXPENSES!E7:E81="One-Time")*(EXPENSES!H7:H81=${m})*EXPENSES!F7:F81)`,
     } as never;
     cell.numFmt = '$#,##0';
   }

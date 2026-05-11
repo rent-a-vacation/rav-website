@@ -8,7 +8,9 @@ export function buildBreakevenTab(wb: Workbook): void {
   const ws = wb.addWorksheet('BREAK-EVEN', { properties: { tabColor: { argb: C.AMBER } } });
 
   setColumnPixelWidths(ws, [20, 30, 200, 150, 150, 150, 150, 160]);
-  ws.views = [{ state: 'frozen', ySplit: 6 }];
+  // Freeze rows 1-8 — KPI section AND the month-by-month table headers (row 8)
+  // remain visible when the user scrolls through the 24 monthly rows below.
+  ws.views = [{ state: 'frozen', ySplit: 8 }];
 
   ws.getRow(1).height = 52;
   banner(ws, 1, 2, 7, 'RAV BREAK-EVEN & RUNWAY ANALYSIS', C.NAVY, C.AMBER, 16, true);
@@ -39,8 +41,16 @@ export function buildBreakevenTab(wb: Workbook): void {
 
   const breakeven = ws.getCell(5, 5);
   styleCell(breakeven, C.TEAL_LIGHT, C.DEEP_TEAL, 14, true, 'center');
-  // Find the first month (col D=Mo1..AA=Mo24 on this sheet, rows 9..32) where Cumulative Cash > 0
-  breakeven.value = { formula: `IFERROR(MATCH(TRUE,G9:G${8 + MONTHS}>0,0),"Not in 24mo")` } as never;
+  // Find the first month (rows 9..32 on this sheet) where Cumulative Cash > 0.
+  // Old formula MATCH(TRUE, G9:G32>0, 0) required dynamic-array Excel to work
+  // correctly — older versions evaluated only the first cell. New approach:
+  //   1. Check whether ANY month went positive (COUNTIF).
+  //   2. If yes, use the INDEX trick to coerce the comparison to a 0/1 array
+  //      without requiring CSE entry, then MATCH(1, ...) for the first hit.
+  //   3. If no month went positive, fallback to "Not in 24mo".
+  breakeven.value = {
+    formula: `IF(COUNTIF(G9:G${8 + MONTHS},">0")=0,"Not in 24mo",MATCH(1,INDEX((G9:G${8 + MONTHS}>0)+0,0),0))`,
+  } as never;
   breakeven.numFmt = '0';
 
   const sixMo = ws.getCell(5, 6);
