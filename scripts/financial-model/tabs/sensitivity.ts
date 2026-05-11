@@ -78,7 +78,10 @@ export function buildSensitivityTab(wb: Workbook): void {
     const lblCell = ws.getCell(r, 3);
     styleCell(lblCell, C.SAND, C.NAVY, 10, true, 'left');
     lblCell.value = d[0];
-    addNote(lblCell, d[2]);
+    // No hover-note on the driver label — the "Behaviour" text inline to
+    // the right already shows the same explanation. Hovers on the
+    // multiplier cells below DO add value (showing the % shift), so
+    // they're kept.
 
     multipliers.forEach((mult, i) => {
       const cell = ws.getCell(r, 4 + i);

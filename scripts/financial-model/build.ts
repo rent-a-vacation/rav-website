@@ -14,6 +14,33 @@ import path from 'node:path';
 import { mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
+// Monkey-patch exceljs's hardcoded comment-box dimensions. The default size
+// (width:97.8pt × height:59.1pt, hardcoded in vml-shape-xform.js) is too small
+// for our explanatory hover notes — long ones get cut off. We bump it to
+// 280pt × 140pt so a typical 200-300 char note fits comfortably.
+//
+// This patches a private internal of exceljs. If the library reorganizes its
+// internals, this import path may need to be updated.
+type ShapeXformModule = {
+  default?: { V_SHAPE_ATTRIBUTES: (model: unknown, index: number) => Record<string, unknown> };
+  V_SHAPE_ATTRIBUTES?: (model: unknown, index: number) => Record<string, unknown>;
+};
+const shapeXformMod = (await import(
+  // @ts-expect-error — accessing a CJS internal not on the public API
+  'exceljs/lib/xlsx/xform/comment/vml-shape-xform.js'
+)) as ShapeXformModule;
+const VmlShapeXform = (shapeXformMod.default ?? shapeXformMod) as {
+  V_SHAPE_ATTRIBUTES: (model: { note?: { margins?: { insetmode?: string } } }, index: number) => Record<string, unknown>;
+};
+VmlShapeXform.V_SHAPE_ATTRIBUTES = (model, index) => ({
+  id: `_x0000_s${1025 + index}`,
+  type: '#_x0000_t202',
+  style: 'position:absolute; margin-left:105.3pt;margin-top:10.5pt;width:280pt;height:140pt;z-index:1;visibility:hidden',
+  fillcolor: 'infoBackground [80]',
+  strokecolor: 'none [81]',
+  'o:insetmode': model.note?.margins?.insetmode,
+});
+
 import { buildCoverTab }        from './tabs/cover.ts';
 import { buildInputsTab }       from './tabs/inputs.ts';
 import { buildExpensesTab }     from './tabs/expenses.ts';
