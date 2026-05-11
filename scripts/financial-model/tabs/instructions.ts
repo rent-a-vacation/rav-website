@@ -1,0 +1,111 @@
+import type { Workbook } from 'exceljs';
+import { C } from '../colors.ts';
+import { banner, styleCell, setColumnPixelWidths } from '../style.ts';
+
+export function buildInstructionsTab(wb: Workbook): void {
+  const ws = wb.addWorksheet('INSTRUCTIONS', { properties: { tabColor: { argb: C.SLATE } } });
+
+  setColumnPixelWidths(ws, [20, 30, 190, 480]);
+
+  ws.getRow(1).height = 52;
+  banner(ws, 1, 2, 3, 'HOW TO USE — RAV FINANCIAL MODEL', C.NAVY, C.WHITE, 15, true);
+  ws.getRow(2).height = 8;
+
+  type Section = { title: string; color: string; items: [string, string][] };
+  const sections: Section[] = [
+    {
+      title: '1.  INPUTS TAB — START HERE', color: C.DEEP_TEAL, items: [
+        ['INPUTS',           'Your control panel. Every amber cell is editable. Change any value and the entire model updates.'],
+        ['Section A',        'Platform parameters — pre-loaded from RAV codebase. Commission rates, Stripe fees, avg booking value.'],
+        ['Section B',        'Subscription prices — from Stripe sandbox config. Update when production prices are set.'],
+        ['Section C',        'Growth assumptions — your best estimates. Includes Launch Month (drives when revenue turns on).'],
+        ['Section D',        'Scenario multipliers — how Conservative and Optimistic differ from Base.'],
+        ['Section E',        'Planning horizon and model start date label.'],
+        ['Section F',        'Tax, Cash & Reserves — churn, starting cash, funding inflow (month + amount), founder comp post-funding. Drives cumulative cash position.'],
+      ],
+    },
+    {
+      title: '2.  ADDING EXPENSES', color: C.CORAL, items: [
+        ['EXPENSES',         'Pre-populated with 47 known RAV costs. Scroll to green section to add new rows.'],
+        ['Amber cells',      'Amount, Start Month, End Month are editable per row.'],
+        ['Type dropdown',    'One-Time = appears in Start Month only. Recurring = every month between Start and End.'],
+        ['Frequency',        'Monthly / Annual / Quarterly / Once. Annual and Quarterly auto-divide for monthly calc.'],
+        ['Monthly $ column', 'Auto-calculated. Do not edit directly.'],
+      ],
+    },
+    {
+      title: '3.  REVENUE MODEL', color: C.EMERALD, items: [
+        ['REVENUE MODEL',    'Do NOT edit here — all cells pull from INPUTS. Change inputs, this updates.'],
+        ['Scenario dropdown','Cell D4. Switch between Conservative / Base / Optimistic.'],
+        ['Section 2',        'Monthly Bookings = Offers that convert. GBV = bookings × avg booking value.'],
+        ['Section 3',        'Gross Commission = GBV × blended rate. Stripe Fees subtracted (2.9% + $0.30 on whole txn). Net Commission flows to Total Revenue.'],
+        ['Section 4',        'Subscription revenue across Owner Pro/Business + Traveler Plus/Premium.'],
+        ['Section 5',        'Revenue (green), Costs (red, live from Expenses tab), Net P&L, Cumulative Cash (seeded with Starting Cash + Funding Inflow from INPUTS F).'],
+      ],
+    },
+    {
+      title: '4.  BREAK-EVEN', color: C.AMBER, items: [
+        ['BREAK-EVEN',       'Month-by-month cumulative cash. Green = profitable, Red = burning cash.'],
+        ['KPI row (row 5)',  'One-time costs, monthly burn, break-even month, 6-mo and 12-mo funding needs.'],
+        ['Break-even month', 'First month cumulative cash turns positive. "Not in 24mo" if not achieved.'],
+      ],
+    },
+    {
+      title: '5.  FUNDING ASK', color: C.NAVY, items: [
+        ['FUNDING ASK',      'One-page summary. All dollar figures auto-populate from INPUTS and EXPENSES.'],
+        ['THE ASK rows',     'D5 = 6-Month Runway. D6 = 12-Month Runway. D7 = 15% contingency on D6. D8 = D6 + D7 = recommended ask. v3.1 fixed circular refs that previously self-referenced label cells.'],
+        ['Use of Funds',     'SUMIFs against EXPENSES categories. % of Ask divides each by D8 (recommended ask).'],
+        ['Platform facts',   'Pre-loaded from the RAV codebase. Update as the product evolves.'],
+        ['Before meetings',  'Check BRAND-LOCK.md Section 5 (Numerical Claims Registry) before investor conversations.'],
+      ],
+    },
+    {
+      title: '6.  BRAND TERMINOLOGY (BRAND-LOCK.md)', color: C.CORAL, items: [
+        ['Marketplace',     'Two-sided negotiation platform. Single nav link. Tabs inside = Listings + Wishes.'],
+        ['Listing',         'Owner property + dates posted for rent. DB: listings table.'],
+        ['Wish',            'Traveler open call — destination, dates, budget. DB: travel_requests. Never "RAV Wish" in UI.'],
+        ['Offer',           'Proposed deal at a price. Both directions. DB: listing_bids OR travel_proposals. Never "Bid"/"Proposal" in UI.'],
+        ['My Rentals',      'Owner dashboard nav label. Formerly Owner Edge / RAV Edge.'],
+        ['RAV Insights',    'Executive dashboard. Formerly RAV Command.'],
+        ['RAV Ops',         'Admin operations dashboard. Formerly Admin Dashboard.'],
+        ['Savings claim',   'Save 20-40% vs resort-direct [ARDA data]. Never say 50-70% or up to 70%.'],
+      ],
+    },
+    {
+      title: '7.  GLOSSARY', color: C.SLATE, items: [
+        ['GMV / GBV',       'Gross Merchandise/Booking Value — total dollar value of all bookings.'],
+        ['Take Rate',       'RAV commission as % of GBV. Currently ~15% blended.'],
+        ['Blended Rate',    'Weighted commission across Free (15%), Pro (13%), Business (10%) tiers.'],
+        ['Offer Rate',      'Proportion of Offers submitted that result in confirmed bookings.'],
+        ['CAC',             'Customer Acquisition Cost — marketing spend ÷ new users acquired.'],
+        ['LTV',             'Lifetime Value — average revenue per user over their platform lifecycle.'],
+        ['Runway',          'Months the business can operate before running out of cash.'],
+        ['Break-Even',      'Month when monthly revenue first exceeds monthly costs.'],
+        ['One-Time Cost',   'Paid once. Appears only in its Start Month.'],
+        ['Recurring Cost',  'Paid regularly. Appears every month between Start and End Month.'],
+      ],
+    },
+  ];
+
+  let r = 3;
+  sections.forEach((sec) => {
+    ws.getRow(r).height = 30;
+    const bn = banner(ws, r, 2, 3, sec.title, sec.color as never, C.WHITE, 11, true);
+    bn.alignment = { horizontal: 'left', vertical: 'middle' };
+    r++;
+    sec.items.forEach((item) => {
+      ws.getRow(r).height = 30;
+      const lblCell = ws.getCell(r, 3);
+      styleCell(lblCell, C.TEAL_LIGHT, C.DEEP_TEAL, 10, true, 'left');
+      lblCell.value = item[0];
+      const valCell = ws.getCell(r, 4);
+      styleCell(valCell, C.CREAM, C.NAVY, 10, false, 'left', true);
+      valCell.value = item[1];
+      r++;
+    });
+    ws.getRow(r++).height = 10;
+  });
+
+  ws.getRow(r).height = 24;
+  banner(ws, r, 2, 3, 'Projections are estimates. Not financial or legal advice. Consult qualified advisors.', C.RED_LIGHT, C.RED, 9, false).alignment = { horizontal: 'left', vertical: 'middle' };
+}

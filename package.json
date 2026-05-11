@@ -24,7 +24,8 @@
     "docs:sync-check": "npx tsx scripts/docs-sync-check.ts",
     "docs:sync-check:ci": "npx tsx scripts/docs-sync-check.ts --ci",
     "docs:stamp": "bash scripts/docs-stamp.sh",
-    "docs:migrate": "npx tsx scripts/docs-migrate-frontmatter.ts"
+    "docs:migrate": "npx tsx scripts/docs-migrate-frontmatter.ts",
+    "financials:build": "npx tsx scripts/financial-model/build.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -107,6 +108,7 @@
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "exceljs": "^4.4.0",
     "globals": "^15.15.0",
     "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
