@@ -60,31 +60,48 @@ export function buildRevenueTab(wb: Workbook): void {
   // 1. USER GROWTH
   secHead(ws, row++, 2, 27, '  1.  USER GROWTH');
 
+  // Active Owners — three cases per month:
+  //   m < gLaunchMo: 0 (pre-launch)
+  //   m = gLaunchMo: gStartOwn (seed value at launch)
+  //   m > gLaunchMo: prev_month × (1 + growth × scenario_multiplier)
+  // Previously the formula seeded gStartOwn at Month 1 regardless of gLaunchMo,
+  // so any gLaunchMo > 1 left the whole projection at 0.
   lbl(ws, row, 3, 'Active Owners');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
     if (m === 1) {
       styleCell(cell, C.TEAL_LIGHT, C.NAVY, 10, false, 'right');
-      cell.value = { formula: 'IF(1>=gLaunchMo,gStartOwn,0)' } as never;
+      cell.value = { formula: 'IF(1=gLaunchMo,gStartOwn,0)' } as never;
     } else {
       styleCell(cell, m % 2 === 0 ? C.WHITE : C.CREAM, C.NAVY, 10, false, 'right');
-      cell.value = { formula: `IF(${m}>=gLaunchMo,${colLtr(col - 1)}${row}*(1+gOwnGrowth*${sGrow}),0)` } as never;
+      cell.value = {
+        formula:
+          `IF(${m}<gLaunchMo,0,` +
+          `IF(${m}=gLaunchMo,gStartOwn,` +
+          `${colLtr(col - 1)}${row}*(1+gOwnGrowth*${sGrow})))`,
+      } as never;
     }
     cell.numFmt = '#,##0';
   }
   const ownRow = row++;
 
+  // Active Travelers — same three-case pattern
   lbl(ws, row, 3, 'Active Travelers');
   for (let m = 1; m <= MONTHS; m++) {
     const col = m + 3;
     const cell = ws.getCell(row, col);
     if (m === 1) {
       styleCell(cell, C.TEAL_LIGHT, C.NAVY, 10, false, 'right');
-      cell.value = { formula: 'IF(1>=gLaunchMo,gStartTrav,0)' } as never;
+      cell.value = { formula: 'IF(1=gLaunchMo,gStartTrav,0)' } as never;
     } else {
       styleCell(cell, m % 2 === 0 ? C.WHITE : C.CREAM, C.NAVY, 10, false, 'right');
-      cell.value = { formula: `IF(${m}>=gLaunchMo,${colLtr(col - 1)}${row}*(1+gTravGrowth*${sGrow}),0)` } as never;
+      cell.value = {
+        formula:
+          `IF(${m}<gLaunchMo,0,` +
+          `IF(${m}=gLaunchMo,gStartTrav,` +
+          `${colLtr(col - 1)}${row}*(1+gTravGrowth*${sGrow})))`,
+      } as never;
     }
     cell.numFmt = '#,##0';
   }
