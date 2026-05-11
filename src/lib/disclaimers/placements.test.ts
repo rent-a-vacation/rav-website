@@ -129,6 +129,28 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     ],
     notes: "Admin dashboard must register the marketplace-facilitator tracker tab (#488).",
   },
+  {
+    file: "src/pages/PropertyDetail.tsx",
+    required: [
+      `<GuestProtectionBadge />`,
+    ],
+    notes: "Listing page must surface the RAV Guest Protection badge (#489).",
+  },
+  {
+    file: "src/pages/Checkout.tsx",
+    required: [
+      `<GuestProtectionBadge variant="banner"`,
+    ],
+    notes: "Checkout must surface the Guest Protection banner above the Pay button (#489).",
+  },
+  {
+    file: "src/App.tsx",
+    required: [
+      `path="/guest-protection"`,
+      `GuestProtection`,
+    ],
+    notes: "Guest Protection page route must be registered (#489).",
+  },
 ];
 
 describe("Disclaimer placement audit — required <DisclaimerBlock /> usages per page", () => {

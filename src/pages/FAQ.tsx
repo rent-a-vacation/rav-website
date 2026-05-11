@@ -114,7 +114,7 @@ const faqCategories = [
       {
         question: "What is your satisfaction guarantee?",
         answer:
-          "If your accommodation doesn't match the listing or there's a significant issue that can't be resolved, we'll provide a full refund or help you find alternative accommodation.",
+          "RAV Guest Protection: if your Host cancels within 30 days of check-in, you receive a full refund within 5 business days — guaranteed. Renter-initiated cancellations follow the listing's cancellation policy. Post-check-in issues (cleanliness, accuracy, access) are handled through our dispute system. Full policy at /guest-protection.",
       },
     ],
   },

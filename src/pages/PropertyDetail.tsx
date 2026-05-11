@@ -52,6 +52,7 @@ import ReviewSummary from "@/components/reviews/ReviewSummary";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 import { StateSpecificDisclaimer } from "@/components/legal/StateSpecificDisclaimer";
+import { GuestProtectionBadge } from "@/components/legal/GuestProtectionBadge";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { OwnerProfileCard } from "@/components/OwnerProfileCard";
 import { InquiryDialog } from "@/components/InquiryDialog";
@@ -854,6 +855,10 @@ const PropertyDetail = () => {
           aria-label="Listing disclaimers"
         >
           <div className="container mx-auto px-4 max-w-4xl space-y-3">
+            {/* #489 — RAV Guest Protection badge surfaces the 5-business-day refund promise. */}
+            <div className="flex justify-end">
+              <GuestProtectionBadge />
+            </div>
             <DisclaimerBlock id="8.1" variant="compact" />
             <DisclaimerBlock id="8.2" variant="compact" />
             <DisclaimerBlock id="8.5" variant="compact" />
