@@ -151,6 +151,21 @@ export function drop(cell: Cell, opts: string[]): void {
 }
 
 /**
+ * Attach a hover-note (legacy Excel comment) to a cell. Shows as a small
+ * popup when the user hovers — useful to explain WHY a calculated value
+ * is what it is, what an abbreviation means, or where the number comes from.
+ *
+ * Keep notes short (1-3 sentences). Long notes get truncated and lose value.
+ */
+export function addNote(cell: Cell, text: string): Cell {
+  cell.note = {
+    texts: [{ text }],
+    margins: { insetmode: 'auto' },
+  } as never;
+  return cell;
+}
+
+/**
  * Convenience: write a cell with a formula (handles leading '=').
  */
 export function formula(cell: Cell, f: string, fmt?: string): Cell {

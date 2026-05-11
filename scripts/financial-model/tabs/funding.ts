@@ -1,6 +1,6 @@
 import type { Workbook } from 'exceljs';
 import { C } from '../colors.ts';
-import { banner, styleCell, secHead, note, setColumnPixelWidths } from '../style.ts';
+import { banner, styleCell, secHead, note, addNote, setColumnPixelWidths } from '../style.ts';
 import { PLATFORM_FACTS, MILESTONES } from '../data.ts';
 
 export function buildFundingAskTab(wb: Workbook): void {
@@ -27,6 +27,12 @@ export function buildFundingAskTab(wb: Workbook): void {
     ['Contingency Buffer (15%)',          '=D6*0.15',          '15% buffer on 12-month runway for unknowns'],
     ['RECOMMENDED SEED ASK',             '=D6+D7',            'Total: 12-month runway + contingency buffer'],
   ];
+  const askNotes = [
+    'Pulled from BREAK-EVEN tab cell F5 (= One-Time Costs + Monthly Burn × 6). The minimum to survive 6 months from incorporation to platform launch + first owners with zero revenue assumed.',
+    'Pulled from BREAK-EVEN tab cell G5 (= One-Time Costs + Monthly Burn × 12). Industry-standard seed-stage runway: enough to launch, iterate, hit metrics, and start fundraising again before running out.',
+    '15% of 12-Month Runway. Accounts for unknowns: legal review surprises, conference travel expansion, hire ramp-up, marketing channel testing. Below 10% is too tight; above 25% suggests the runway estimate is too speculative.',
+    'D6 (12-month runway) + D7 (contingency) = the recommended seed ask. This is the number to use in investor conversations as "how much we\'re raising". Use of Funds breakdown below shows where it goes.',
+  ];
   asks.forEach((a, i) => {
     const isTotal = i === 3;
     ws.getRow(r).height = isTotal ? 40 : 28;
@@ -38,6 +44,7 @@ export function buildFundingAskTab(wb: Workbook): void {
     styleCell(valCell, isTotal ? C.CORAL : C.TEAL_LIGHT, isTotal ? C.WHITE : C.NAVY, isTotal ? 20 : 13, true, 'right');
     valCell.value = { formula: a[1].replace(/^=/, '') } as never;
     valCell.numFmt = '$#,##0';
+    addNote(valCell, askNotes[i]);
 
     ws.mergeCells(r, 5, r, 6);
     const noteCell = ws.getCell(r, 5);
@@ -83,11 +90,13 @@ export function buildFundingAskTab(wb: Workbook): void {
     styleCell(amtCell, C.TEAL_LIGHT, C.NAVY, 10, false, 'right');
     amtCell.value = { formula: f[1] } as never;
     amtCell.numFmt = '$#,##0';
+    addNote(amtCell, `Sum of all EXPENSES tab rows tagged "${f[0]}": one-time costs at full amount + recurring monthly costs × 12 months. To change this number, edit the matching rows on the EXPENSES tab — this updates automatically.`);
 
     const pctCell = ws.getCell(r, 5);
     styleCell(pctCell, i % 2 === 0 ? C.WHITE : C.CREAM, C.SLATE, 10, false, 'center');
     pctCell.value = { formula: `D${r}/$D$8` } as never;
     pctCell.numFmt = '0.0%';
+    addNote(pctCell, `What share of the recommended seed ask this category consumes (= category total ÷ $D$8). Useful for investor diligence: "where does your money go?"`);
 
     const notesCell = ws.getCell(r, 6);
     styleCell(notesCell, i % 2 === 0 ? C.WHITE : C.CREAM, C.SLATE, 9, false, 'left', true);
