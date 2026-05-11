@@ -151,15 +151,29 @@ export function drop(cell: Cell, opts: string[]): void {
 }
 
 /**
- * Attach a hover-note (legacy Excel comment) to a cell. Shows as a small
- * popup when the user hovers — useful to explain WHY a calculated value
- * is what it is, what an abbreviation means, or where the number comes from.
+ * Attach a hover-note (legacy Excel comment) to a cell. Shows as a popup
+ * when the user hovers — useful to explain WHY a calculated value is what
+ * it is, what an abbreviation means, or where the number comes from.
  *
- * Keep notes short (1-3 sentences). Long notes get truncated and lose value.
+ * Uses Calibri 10pt (matching the rest of the workbook) on RAV navy.
+ * Box dimensions are enlarged via the monkey-patch in build.ts —
+ * approximately 280pt × 140pt, fits 200-300 character notes comfortably.
+ *
+ * If the note text starts with a header line followed by `\n\n`, the
+ * header is rendered bold for visual scan.
  */
 export function addNote(cell: Cell, text: string): Cell {
+  const baseFont = { name: 'Calibri', size: 10, color: { argb: C.NAVY } };
+  const splitIdx = text.indexOf('\n\n');
+  const texts =
+    splitIdx > 0 && splitIdx < 100
+      ? [
+          { font: { ...baseFont, bold: true }, text: text.slice(0, splitIdx) },
+          { font: baseFont, text: text.slice(splitIdx) },
+        ]
+      : [{ font: baseFont, text }];
   cell.note = {
-    texts: [{ text }],
+    texts,
     margins: { insetmode: 'auto' },
   } as never;
   return cell;
