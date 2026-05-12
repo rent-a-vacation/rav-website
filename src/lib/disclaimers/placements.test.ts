@@ -176,6 +176,22 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     ],
     notes: "Terms of Service must contain the MLA arbitration carve-out paragraph in Section 9 (#490).",
   },
+  {
+    file: "src/pages/PropertyDetail.tsx",
+    required: [
+      `ListingAccuracyReportDialog`,
+      `data-testid="report-inaccuracy-button"`,
+    ],
+    notes: "Listing page must surface a 'Report inaccuracy' CTA + dialog (#491, Palmer v. FantaSea).",
+  },
+  {
+    file: "src/pages/AdminDashboard.tsx",
+    required: [
+      `AdminListingAccuracyReports`,
+      `value="accuracy-reports"`,
+    ],
+    notes: "Admin dashboard must register the listing-accuracy-reports tab (#491).",
+  },
 ];
 
 describe("Disclaimer placement audit — required <DisclaimerBlock /> usages per page", () => {
