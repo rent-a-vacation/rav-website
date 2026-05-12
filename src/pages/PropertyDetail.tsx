@@ -53,6 +53,7 @@ import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
 import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 import { StateSpecificDisclaimer } from "@/components/legal/StateSpecificDisclaimer";
 import { GuestProtectionBadge } from "@/components/legal/GuestProtectionBadge";
+import { ListingAccuracyReportDialog } from "@/components/listings/ListingAccuracyReportDialog";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { OwnerProfileCard } from "@/components/OwnerProfileCard";
 import { InquiryDialog } from "@/components/InquiryDialog";
@@ -82,6 +83,8 @@ const PropertyDetail = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
   const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false);
+  // #491 — Listing accuracy reporting (pre-booking; may be anonymous)
+  const [accuracyReportOpen, setAccuracyReportOpen] = useState(false);
 
   // Auth
   const { user } = useAuth();
@@ -855,8 +858,17 @@ const PropertyDetail = () => {
           aria-label="Listing disclaimers"
         >
           <div className="container mx-auto px-4 max-w-4xl space-y-3">
-            {/* #489 — RAV Guest Protection badge surfaces the 5-business-day refund promise. */}
-            <div className="flex justify-end">
+            {/* #489 — RAV Guest Protection badge surfaces the 5-business-day refund promise.
+                #491 — "Report inaccuracy" CTA for pre-booking accuracy complaints (Palmer v. FantaSea). */}
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setAccuracyReportOpen(true)}
+                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                data-testid="report-inaccuracy-button"
+              >
+                Report a listing inaccuracy
+              </button>
               <GuestProtectionBadge />
             </div>
             <DisclaimerBlock id="8.1" variant="compact" />
@@ -932,6 +944,16 @@ const PropertyDetail = () => {
           ownerId={listing.owner_id}
           propertyId={listing.property_id}
           propertyName={displayName}
+        />
+      )}
+
+      {/* #491 — Listing accuracy report dialog (pre-booking, anonymous OK) */}
+      {listing && (
+        <ListingAccuracyReportDialog
+          open={accuracyReportOpen}
+          onOpenChange={setAccuracyReportOpen}
+          listingId={listing.id}
+          listingLabel={displayName}
         />
       )}
 

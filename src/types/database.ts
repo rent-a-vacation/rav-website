@@ -744,6 +744,62 @@ export type Database = {
           },
         ]
       }
+      listing_accuracy_reports: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          listing_id: string
+          reporter_email: string | null
+          reporter_id: string | null
+          reporter_name: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          listing_id: string
+          reporter_email?: string | null
+          reporter_id?: string | null
+          reporter_name?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          listing_id?: string
+          reporter_email?: string | null
+          reporter_id?: string | null
+          reporter_name?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_accuracy_reports_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           admin_phone_verification_notes: string | null
