@@ -121,9 +121,9 @@ describe("AdminListingEditDialog", () => {
         onSaved={vi.fn()}
       />
     );
-    // 7 nights × $200 = $1400 owner, $210 markup, $1610 total
+    // 7 nights × $200 = $1400 owner, $168 markup at 12% commission, $1568 total
     expect(screen.getByText("7 nights × $200/night")).toBeInTheDocument();
-    expect(screen.getByText("$1,610")).toBeInTheDocument();
+    expect(screen.getByText("$1,568")).toBeInTheDocument();
   });
 
   it("disables form for booked listings", () => {
