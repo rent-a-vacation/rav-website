@@ -19,23 +19,33 @@ export const DEFAULT_COMMISSION = {
   /**
    * Base commission rate charged on the booking subtotal.
    * RAV keeps this % of every booking; the rest is owner payout.
-   * 0.15 = 15%.
+   * 0.12 = 12%.
+   *
+   * Set to 12% (was 15%) after competitor analysis on 2026-05-11:
+   *   - RedWeek "Verified Rental" charges 15-20% — high-service tier
+   *   - Koala charges 10% — lighter-feature competitor
+   *   - 12% positions RAV as "premium over Koala, below RedWeek"
+   *     justified by extra service stack (escrow + AI + bid mechanics)
    */
-  base: 0.15,
+  base: 0.12,
 
   /**
    * Discount applied to the base rate for Owner Pro tier subscribers.
    * Effective rate = base - proDiscount.
-   * 0.02 = 2 percentage points off (e.g., 15% base → 13% effective).
+   * 0.02 = 2 percentage points off → 10% effective (matches Koala baseline).
    */
   proDiscount: 0.02,
 
   /**
    * Discount applied to the base rate for Owner Business tier subscribers.
    * Effective rate = base - businessDiscount.
-   * 0.05 = 5 percentage points off (e.g., 15% base → 10% effective).
+   * 0.04 = 4 percentage points off → 8% effective.
+   *
+   * Tightened from 5% (which would give 7% effective at 12% base — below
+   * Koala and aggressively low). 8% is still competitive for high-volume
+   * owners while preserving margin.
    */
-  businessDiscount: 0.05,
+  businessDiscount: 0.04,
 } as const;
 
 /**
