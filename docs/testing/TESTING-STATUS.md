@@ -15,8 +15,8 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1663 |
-| **Test files** | 171 |
+| **Total tests** | 1669 |
+| **Test files** | 169 |
 | **P0 critical-path tests** | 290+ tagged `@p0` (Session 64 added @p0 on disclaimer registry, DisclaimerBlock, StateSpecificDisclaimer, Footer registry sourcing, Terms 8.3+8.6, About page, placement audit) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
