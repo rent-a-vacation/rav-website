@@ -30,6 +30,7 @@ import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail"
 import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 import { StateSpecificDisclaimer } from "@/components/legal/StateSpecificDisclaimer";
 import { GuestProtectionBadge } from "@/components/legal/GuestProtectionBadge";
+import { MLANotice } from "@/components/legal/MLANotice";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { trackEvent } from "@/lib/posthog";
 
@@ -38,7 +39,7 @@ const Checkout = () => {
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, isEmailVerified } = useAuth();
+  const { user, profile, isEmailVerified } = useAuth();
 
   const listingId = searchParams.get("listing");
   const guestsParam = Number(searchParams.get("guests")) || 1;
@@ -396,6 +397,14 @@ const Checkout = () => {
                     {/* #489 — RAV Guest Protection banner surfaces the 5-business-day
                         Host-cancellation refund promise immediately above the Pay button. */}
                     <GuestProtectionBadge variant="banner" className="mt-2" />
+
+                    {/* #490 — MLA notice for self-identified active-duty servicemembers.
+                        The arbitration carve-out in Terms § 9 applies regardless of this
+                        render — protection is by law, not by checkbox (Steines v. Westgate
+                        Palace, 11th Cir. 2024). */}
+                    {profile?.is_active_duty_military === true && (
+                      <MLANotice className="mt-2" />
+                    )}
 
                     <Button
                       className="w-full mt-4"

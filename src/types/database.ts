@@ -1316,6 +1316,7 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          is_active_duty_military: boolean | null
           is_anonymized: boolean
           is_seed_foundation: boolean | null
           maintenance_fee_updated_at: string | null
@@ -1343,6 +1344,7 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
+          is_active_duty_military?: boolean | null
           is_anonymized?: boolean
           is_seed_foundation?: boolean | null
           maintenance_fee_updated_at?: string | null
@@ -1370,6 +1372,7 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          is_active_duty_military?: boolean | null
           is_anonymized?: boolean
           is_seed_foundation?: boolean | null
           maintenance_fee_updated_at?: string | null

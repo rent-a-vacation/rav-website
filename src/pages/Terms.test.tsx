@@ -63,4 +63,15 @@ describe("Terms of Service — required disclaimers", () => {
       /We are not responsible for the condition of properties, the conduct of users, or any damages arising from the use of our service beyond what is required by law/,
     );
   });
+
+  it("contains the Military Lending Act carve-out paragraph in Section 9 (#490)", () => {
+    renderTerms();
+    const carveout = screen.getByTestId("mla-carveout");
+    expect(carveout.textContent).toMatch(/Military Lending Act Carve-Out/);
+    expect(carveout.textContent).toMatch(/10 U\.S\.C\. § 987/);
+    expect(carveout.textContent).toMatch(/32 C\.F\.R\. § 232/);
+    expect(carveout.textContent).toMatch(/the arbitration provision above is not enforceable/i);
+    expect(carveout.textContent).toMatch(/Steines v. Westgate Palace/);
+    expect(carveout.textContent).toMatch(/applies regardless of whether the user has self-identified/i);
+  });
 });
