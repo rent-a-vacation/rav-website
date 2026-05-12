@@ -1,264 +1,242 @@
 ---
-last_updated: "2026-05-05T00:00:00"
+last_updated: "2026-05-12T03:00:00"
 change_ref: "manual-edit"
-change_type: "compliance-audit-2026-05-05"
+change_type: "session-66"
 status: "active"
 ---
 
 # RAV Compliance Gap Analysis & Priority Plan
 
-**Companion to:** `docs/legal/attorney-meeting-compliance-status.md`
-**Audit date:** 2026-05-05
-**Source:** Legal Research Memorandum v3 (Part 4 Priority Build List) + audit findings from 7 parallel codebase subagents
-
-This document organizes the 23 gaps + 9 partials surfaced by the audit into the three priority tiers from Legal Dossier Part 4 (**Immediate** / **Pre-Launch** / **Post-Launch**), and tags each with a build classification:
-
-- **Build now** = unambiguous code work; will ship before counsel meeting under the founder's "build-then-refine" preference (verbatim Legal Dossier text + obvious sense-checks)
-- **Wait for counsel** = requires legal judgment, statutory interpretation, or business decision before any code lands
-- **Mixed** = build the infrastructure now, leave specific text or thresholds slot-filled by counsel
+**Companion to:** `attorney-meeting-compliance-status.md` + `counsel-meeting-prep.md`
+**Audit date:** 2026-05-05 · **Last refreshed:** 2026-05-12 (Session 66 close)
+**Status:** **Build-now phase COMPLETE.** All 12 issues that were classified Build-now in the original analysis have shipped end-to-end (code + tests + migrations + PR + merge + DEV+PROD push). Counsel-pending items remain.
 
 ---
 
-## Tier 1 — Immediate (legal exposure if not addressed before launch)
+## Section A — Current state snapshot
 
-### I-1. All 8 disclaimers deployed via central registry — **Build now**
-**Authority:** All jurisdictions; explicitly required by Compliance Brief § 3.5 ("centrally managed so that when legal counsel recommends changes to disclaimer language, a single update propagates")
-**Current state:** 0 of 8 Implemented; 3 Partial; 5 Gap. Trademark disclaimer (PR #479) is inline anti-pattern.
-**Build:**
-- `src/lib/disclaimers/registry.ts` exporting versioned constants for 8.1–8.8 + trademark, each `{ text, version, lastUpdated, legalReviewRequired, reviewedBy, reviewedDate, requiredLocations[] }`
-- `src/components/legal/DisclaimerBlock.tsx` component (variants: full / compact / minimal) — pulls from registry
-- `src/components/legal/FloridaDisclaimerBlock.tsx` geo-targeted wrapper for 8.7
-- `supabase/functions/_shared/disclaimers.ts` mirror for booking-confirmation emails
-- Place 8.1 (homepage / footer / listings), 8.2 (homepage / listings / header-footer), 8.4 (Checkout / BookingSuccess / email — replaces paraphrased), 8.5 (listings / Checkout / BookingSuccess / email — alongside per-listing policy), 8.8 (Checkout / BookingSuccess / email — replaces "PaySafe" badge)
-- Migrate Footer #479 trademark disclaimer from inline to registry
-**Tests:** Vitest unit test per disclaimer asserting verbatim text + render in each required location
-**Effort:** ~12 hours (registry + component + 8 placements + tests)
+### A.1 Tally
 
-### I-2. Limitation-of-Liability text correction in Terms of Service (8.6) — **Build now**
-**Authority:** All jurisdictions
-**Current state:** `Terms.tsx:115–122` Section 8 contains generic "we are not responsible…" intermediary language. Legal Dossier 8.6 requires verbatim 12-month platform-fee cap with exclusion of indirect/incidental/special/consequential/punitive damages.
-**Build:** Replace `Terms.tsx:115–122` with `<DisclaimerBlock id="8.6" />` once registry exists; verbatim text shipped from registry.
-**Effort:** ~30 minutes (after I-1 lands)
+| Classification | Original (2026-05-05) | After Session 66 (2026-05-12) |
+|---|---|---|
+| **Build now** items | 12 (in `*Tier 1 Immediate* through *Tier 2 Pre-Launch*`) | **0 — all shipped** ✅ |
+| **Wait for counsel** items | 7 | **7 — unchanged** (need C1, C3, C6, C8 answers before code) |
+| **Mixed** items | 5 (build infrastructure, slot in counsel-text later) | **5 — infrastructure shipped**, slots awaiting C4 / C5 / C7 / C9 / C10 / C11 |
 
-### I-3. Non-Broker / Non-Agent text in Terms of Service (8.3) — **Build now**
-**Authority:** FL § 721.20, CA DRE, broker-licensing statutes
-**Current state:** `Terms.tsx` does not contain the 8.3 verbatim text; no `About.tsx` page exists.
-**Build:** Insert `<DisclaimerBlock id="8.3" />` in Terms (always-on); defer About-page placement until either an About page is created or the same disclaimer is duplicated on a homepage section
-**Effort:** ~30 minutes (after I-1 lands)
+### A.2 12 issues filed → 12 issues shipped
 
-### I-4. Pay Safe / Stripe Connect trust-account architecture — **Wait for counsel**
-**Authority:** FL § 721.08, CA B&P § 10145, HI § 514E-9
-**Current state:** ✅ Implemented in code (`process-escrow-release/handler.ts:262–273`, destination-charge model, never holds funds in RAV bank account). Documented in `docs/payments/PAYSAFE-COMPLIANCE.md` and `docs/payments/PAYSAFE-FLOW-SPEC.md`. **Counsel sign-off needed in writing.**
-**Wait for counsel:** Written opinion that this architecture satisfies FL § 721.08, CA § 10145, and HI § 514E-9 — and that no separate escrow license is required.
-**Engineering:** None expected; if counsel finds a gap, scope it then.
+| Issue | Subject | Status | PR | Commit |
+|---|---|---|---|---|
+| #483 | Central disclaimer registry + DisclaimerBlock + 9 placements | ✅ Closed | #495 | `d817eac` |
+| #484 | About page (Disclaimer 8.3 placement) | ✅ Closed | #495 | `d817eac` |
+| #485 | "No Timeshare Sales" listing validation | ✅ Closed | #496 | `34a8391` |
+| #486 | State column on listings (Migration 074) | ✅ Closed | #497 | `c4a1b0d` |
+| #487 | FL + CA disclosure rendering | ✅ Closed | #495 (FL wiring) / #497 (state column) | (CA awaits #493) |
+| #488 | Marketplace-facilitator registration tracker (Migration 075) | ✅ Closed | #502 | `9386ba8` |
+| #489 | Guest Protection Policy product surface | ✅ Closed | #508 | `9259842` |
+| #490 | MLA notice + ToS arbitration carve-out (Migration 076) | ✅ Closed | #520 | `53d6a1c` |
+| #491 | Listing accuracy reporting (Migration 077) | ✅ Closed | #521 | `ad16f5c` |
+| #492 | Fraud reporting (Migration 078) | ✅ Closed | #522 | `a881480` |
+| #481 | CC&R attestation (Migration 079) | ✅ Closed | #523 | `6535052` |
+| #482 | robots.txt + scraping policy | ✅ Closed | #524 | `621d751` |
 
-### I-5. "No Timeshare Sales" listing-creation validation — **Build now**
-**Authority:** FL § 721.11, CA B&P § 11003.5
-**Current state:** No validation on title/description. Disclaimer 8.2 also missing (covered by I-1).
-**Build:**
-- Client-side validation in `ListProperty.tsx` step 2 description textarea + title field — block list of phrases: `"for sale"`, `"for-sale"`, `"deed transfer"`, `"ownership transfer"`, `"buy my"`, `"selling my timeshare"`, `"sell my points"`, `"deed"` (when used as verb)
-- Server-side check in the listing-creation edge function (defense in depth)
-- User-facing error message linking to a one-page "RAV is for rentals only" explainer (with Disclaimer 8.2 verbatim)
-**Tests:** Unit test on the validator with positive + negative phrase fixtures
-**Effort:** ~3 hours
+Plus PR #500 (`bcce059`) closed the Session-63 migration-CLI-drift cleanup.
 
----
+### A.3 Counsel-pending follow-up issues (open)
 
-## Tier 2 — Pre-Launch (must be in place before accepting real money)
+| Issue | Description | Counsel question(s) |
+|---|---|---|
+| **#493** | Add CA-specific disclosure (8.7-CA) verbatim text | C10 |
+| **#494** | Flip disclaimer `reviewedBy` / `reviewedDate` after counsel sign-off across all 9 registry entries | C9 + C11 (if MLA wording revised) |
+| **#480** | Umbrella tracker — stays open until #493 + #494 close | — |
 
-### P-1. State field on `listings` table — **Build now** (architectural prerequisite for I-1's 8.7 + CA disclosure)
-**Authority:** FL § 721.20 (8.7 requirement); CA DRE
-**Current state:** `listings` table has no `state` / `jurisdiction` column. `resort.location` is JSON. Issue #466 tracks this work but is Tier B and blocked on #80.
-**Build:**
-- Migration adding `state` (text, 2-char US state code) to `listings`, NOT NULL with backfill from `resort.location.state` for resort-linked listings; freeform input from owner otherwise
-- `ListProperty.tsx` form field for state (auto-filled from selected resort, editable for off-resort listings)
-- Type sync to `src/types/database.ts`
-**Tests:** Migration backfill test; form-field test
-**Effort:** ~3 hours
-**Note:** Unblocks I-1's 8.7 placement and the CA disclosure (P-2). Issue #466 can be reframed: the "jurisdiction field" component is build-now; the "per-state disclosure logic / rules table" is partly build-now (8.7 wiring) and partly wait-for-counsel (the rules themselves).
+### A.4 What remains unbuilt (counsel-input gated)
 
-### P-2. Florida-Specific Disclosure (8.7) wired to state field — **Build now** (after P-1)
-**Build:** `<FloridaDisclaimerBlock propertyState={listing.state} />` rendering on `PropertyDetail.tsx` and `Checkout.tsx` when state = FL
-**Tests:** Vitest assertion: FL listing → 8.7 visible; TX listing → 8.7 hidden
-**Effort:** ~1 hour
+Per Tier 3 / Wait-for-counsel classification, these items are NOT in the 12-issue build-now scope. They need a counsel answer before scoping.
 
-### P-3. California-Specific Disclosure — **Mixed** (build now wiring; wait for counsel on text)
-**Build now:** Component scaffolding + registry slot (`disclaimers["8.7-CA"]` placeholder) so wiring is identical to 8.7
-**Wait for counsel:** Verbatim CA-specific text (counsel question C10)
-**Effort:** ~1 hour wiring; text drop-in trivial
+- **Host-type classification** (Type 1 / 2 / 3 schema + signup capture + thresholds) — awaits **C4**
+- **Rental-frequency / commercial-threshold monitoring cron** — depends on host-type schema; awaits **C4** + **C5**
+- **State-level licensing gate in FL/CA/HI/NV/AZ** — awaits **C3** + **C5**
+- **License-number collection + display** for Type 2 / 3 hosts — awaits **C3**
+- **Dedicated Stripe Identity / Persona integration** — awaits **C2**
+- **Resort ownership verification** (deed / membership-cert upload + admin review) — awaits **C6**
+- **Counsel-drafted full ToS / Privacy / 8 policy docs** at `docs/support/policies/*.md` — awaits **C8**
+- **Pay Safe architecture written sign-off** for FL § 721.08 / CA § 10145 / HI § 514E-9 — awaits **C1** (no code change expected)
 
-### P-4. Stripe Tax activation — **Wait for counsel + business action** (engineering blocked on #127)
-**Authority:** ~40+ state marketplace-facilitator statutes
-**Current state:** Stripe Tax wired (`create-booking-checkout/handler.ts:247`); env flag `STRIPE_TAX_ENABLED` defaults OFF on PROD; blocked on issue #127 (LLC/EIN).
-**Wait for:** LLC/EIN formation (#127), marketplace-facilitator state registrations, then flip the env flag (~1 hour ops). Counsel question C7.
-
-### P-5. Marketplace-facilitator registration tracker (admin tab) — **Build now**
-**Authority:** Compliance Brief § 3.4 ("the platform should have a state registration status field in its admin dashboard")
-**Build:**
-- Migration creating `marketplace_registrations` table: `state (PK), registration_status (enum: not_required / pending / registered / exempt), registered_date, first_return_due, last_return_filed, next_return_due, registration_id, notes`
-- Seed all 50 + DC with `not_required` default
-- Admin tab `AdminMarketplaceRegistrations.tsx` (pattern from `AdminMemberships.tsx`) for staff to update status
-**Tests:** RLS test (only `rav_admin` / `rav_owner` can write); migration test
-**Effort:** ~5 hours
-**Note:** Counsel question C7 fills the `registration_status` values per state; the table + UI is build-now.
-
-### P-6. Verbatim Disclaimer 8.4 (Tax) replacing the paraphrased text — covered by I-1
-Counted under I-1 above.
-
-### P-7. Verbatim Disclaimer 8.8 (Escrow) replacing the "PaySafe" badge — covered by I-1
-Counted under I-1 above. Specific text uses "Stripe" in place of `[Payment Processor Name]` per the Pay Safe architecture (project memory: Stripe-held escrow, RAV never holds funds).
-
-### P-8. Host identity verification — dedicated provider — **Wait for counsel**
-**Current state:** Stripe Connect Express KYC for every Host. Manual government-ID upload via `OwnerVerification.tsx`. No dedicated Stripe Identity / Persona.
-**Wait for counsel:** Counsel question C2 — is Stripe Connect KYC sufficient or is dedicated Identity required? Drives whether a 1–2 day Stripe Identity integration is needed.
-
-### P-9. Resort ownership verification (deed / membership-cert) — **Wait for counsel**
-**Current state:** Pre-Booked proof workflow (Migration 064) verifies *reservation*, not *ownership*. No deed / membership-cert / points-statement upload.
-**Wait for counsel:** Counsel question C6 — what proof types are acceptable per state? Drives the schema for a new `owner_timeshare_ownerships` table and admin review queue.
-
-### P-10. Host type classification (Type 1 / 2 / 3) — **Mixed** (build infrastructure; wait for counsel on thresholds)
-**Authority:** FL § 721.20, CA DRE, HI § 514E, NV NRS 119A, AZ ARS § 32-2197
-**Current state:** No `host_type` column. No onboarding question.
-**Build now:** Migration adding `host_type` enum (`casual` / `multi_property` / `commercial`), `properties_owned` (int), `annual_rentals_planned` (int) to `profiles`. Onboarding wizard step capturing these (post-approval flow). Self-classification logic in `src/lib/hostType.ts`.
-**Wait for counsel:** Counsel question C4 — confirm the threshold values (1 / 2–5 / 6+ properties; 1–4 / 12 / 12+ rentals/yr).
-**Effort:** ~6 hours infrastructure; thresholds adjust trivially after counsel confirms.
-
-### P-11. License number collection & display for Type 2 / Type 3 Hosts — **Mixed**
-**Build now:** Migration adding `license_number`, `license_state`, `license_verified_at` to `profiles`. Conditional UI in `ListProperty.tsx` rendering license input when `host_type` ∈ {`multi_property`, `commercial`}. Conditional display on `OwnerProfileCard.tsx` and `PropertyDetail.tsx` when `listing.state` ∈ FL/CA/HI/NV/AZ.
-**Wait for counsel:** Counsel questions C3 + C4 — which states require which credential, and is rental-only platform exempt from any of them?
-**Effort:** ~5 hours
-
-### P-12. Guest Protection Policy product surface — **Build now**
-**Authority:** UDAP statutes; consumer-protection baseline
-**Current state:** Refund logic exists; no consumer-facing surface.
-**Build:**
-- New page `src/pages/GuestProtection.tsx` with the verbatim 8.5 protection language plus a plain-English explainer of the 5-business-day refund and 30-day-of-check-in trigger
-- "RAV Guest Protection" badge on `PropertyDetail.tsx` (next to other trust badges) linking to the page
-- Banner on `Checkout.tsx` above the Pay button
-- Update `FAQ.tsx:115–117` "satisfaction guarantee" to link to the new page
-**Tests:** Page renders; badge renders; banner renders
-**Effort:** ~3 hours
-
-### P-13. MLA Notice + Terms-of-Service arbitration carve-out — **Mixed**
-**Authority:** Steines v. Westgate Palace (11th Cir. 2024); 10 U.S.C. § 987
-**Build now:**
-- Migration adding `is_active_duty_military` boolean to `profiles` (nullable, set via signup question)
-- Checkbox at signup: "Are you (or a dependent of) an active-duty servicemember? (Optional — affects how disputes are resolved per the Military Lending Act.)"
-- Conditional MLA notice in checkout flow when `is_active_duty_military = true`
-- Verbatim MLA carve-out paragraph appended to `Terms.tsx:131` arbitration clause
-**Wait for counsel:** Counsel question C11 — confirm the carve-out language is sufficient or supply substitute text.
-**Effort:** ~4 hours
-
-### P-14. Listing accuracy reporting (pre-booking) — **Build now**
-**Authority:** Palmer v. FantaSea Resorts (NJ App. Div. 2025)
-**Build:**
-- "Report Inaccuracy" button on `PropertyDetail.tsx` (in "more options" menu)
-- New `ListingAccuracyReportDialog` component (no `bookingId` required; accepts logged-in or anonymous reports)
-- Migration extending `dispute_category` enum with `listing_inaccuracy`
-- Admin queue: filter `AdminDisputes` by `category = 'listing_inaccuracy'`
-- Documented escalation path: investigate → require correction or delist
-**Tests:** Dialog renders; submission persists; admin filter shows reports
-**Effort:** ~5 hours
-
-### P-15. Fraud reporting + response protocol — **Build now**
-**Authority:** FTC § 5; wire-fraud statutes; FTC v. Carroll (2026)
-**Build:**
-- Migration extending `dispute_category` enum with `suspected_fraud`
-- "Report Suspected Fraud" CTA — Footer link + per-listing menu item
-- Dedicated submission flow (auto-routes to senior admin queue)
-- Documented fraud-response SOP in `docs/support/policies/trust-safety-policy.md` (currently `status: draft` — counsel review unblocks)
-**Tests:** Submission persists; admin queue surfaces
-**Effort:** ~4 hours
-
-### P-16. Two open compliance gaps from 2026-05-04 internal review — **Build now**
-The PR #479 commit body referenced three pre-launch compliance gaps; only the trademark disclaimer (#479) is closed. The other two are not yet filed as standalone GitHub Issues:
-- **CC&R / rental-restriction attestation in owner onboarding** — owner attests that their rental complies with their resort's CC&Rs / use rules. Field on `owner_verifications` table; checkbox in onboarding; copy on `ListProperty.tsx`. ~3 hours.
-- **`robots.txt` / scraping policy** — explicit `robots.txt` plus `terms-of-service.md` clause governing automated scraping of listings. ~1 hour.
-**Action item:** File both as GitHub Issues before counsel meeting so they're visible in the dossier.
+Engineering scope for each is documented below in Tier 3 (Section D).
 
 ---
 
-## Tier 3 — Post-Launch (first 90 days)
+## Section B — Tier 1 (Immediate) follow-up status
 
-### PL-1. Rental frequency monitoring + commercial-threshold cron — **Mixed**
-**Authority:** FL § 721.20, CA DRE, HI § 514E, NV NRS 119A, AZ ARS § 32-2197
-**Build now:** Migration adding `compliance_status` enum (`compliant` / `flagged_type_1` / `flagged_type_2` / `blocked_pending_license` / `blocked_state_restricted`) to `profiles`. Edge function `compliance-threshold-monitor` running nightly via cron.schedule (pattern from Migration 073: `auto-confirm-checkins`, `sla-monitor`). Admin tab `AdminCompliance.tsx` (pattern from `AdminMemberships.tsx`).
-**Wait for counsel:** Counsel question C4 (thresholds) + C5 (gate behavior — hard block, soft warn, manual review).
-**Effort:** ~12 hours infrastructure; ~30 minutes per threshold tweak.
+### I-1 — All 8 disclaimers deployed via central registry · **DONE** ✅
 
-### PL-2. State-level licensing gate on listing creation — **Wait for counsel**
-**Authority:** FL § 721.20 et al.
-**Wait for:** Counsel question C5 — should `ListProperty.tsx` hard-block, soft-warn, or route to manual review when an unlicensed Type 3 Host attempts to list in FL/CA/HI/NV/AZ? Implementation is straightforward once policy is decided.
-**Effort:** ~3 hours after policy decided.
+**Shipped in:** #495 (PR), commit `d817eac`. Total 9 disclaimers + drift detection + 9 placements + per-disclaimer Vitest tests.
 
-### PL-3. Automated tax remittance (TaxJar / Avalara / Puzzle.io) — **Wait for business**
-**Authority:** Marketplace-facilitator statutes
-**Current state:** Stripe Tax collects; manual remittance to each state. Issue #65 (Automated Tax Filing) blocked on #127. Issue #63 (Puzzle.io accounting) blocked on #127.
-**Wait for:** LLC/EIN formation (#127); volume threshold for Avalara (~$5K/mo justifies cost). Counsel question C7 informs registration order.
+- ✅ `src/lib/disclaimers/registry.ts` — versioned constants for 8.1–8.8 + trademark
+- ✅ `<DisclaimerBlock />` component (full / compact / minimal variants)
+- ✅ `<StateSpecificDisclaimer />` geo-targeted wrapper
+- ✅ `supabase/functions/_shared/disclaimers.ts` email mirror with drift-detection test
+- ✅ Placements: homepage, footer, listing pages, Terms § 2 + § 8, About page, Checkout, BookingSuccess, booking-confirmation email
+- 🟡 Counsel sign-off pending — #494
 
-### PL-4. Cyber liability + fraud insurance — **Wait for business**
-**Authority:** Strategic Recommendations § "Short-Term Actions"
-**Wait for:** Insurance broker engagement post-LLC formation; not engineering work.
+### I-2 — Limitation-of-Liability text correction in ToS · **DONE** ✅
 
-### PL-5. State compliance calendar (tax remittance deadlines, license renewals) — **Build now** (light)
-**Build:** Extend `marketplace_registrations` admin table (P-5) with `next_return_due` reminder cadence; daily-summary email already wired (`daily-summary.yml`) — add a "registrations due in next 30 days" section. ~2 hours after P-5.
+**Shipped in:** #495 inside I-1 wave. `Terms.tsx` § 8 replaced with `<DisclaimerBlock id="8.6" />`. The pre-audit generic "intermediary" text is gone (test asserts).
 
-### PL-6. ARDA membership / legislative tracking — **Wait for business**
-Out of engineering scope; founders engage trade association.
+### I-3 — Non-Broker / Non-Agent text in ToS · **DONE** ✅
 
-### PL-7. Formal legal audit of ToS + privacy + listing-agreement templates — **Wait for counsel**
-The 8 policy drafts at `docs/support/policies/*.md` need counsel drafting or review (C8). Engineering action: once counsel returns approved versions, flip frontmatter `status: draft → active`, push via `sync-support-docs.yml` workflow, and update the `legal_review_required` / `reviewed_by` / `reviewed_date` frontmatter fields per DEC-036.
+**Shipped in:** #495 inside I-1 wave. `Terms.tsx` § 2 + new `/about` page both render verbatim Disclaimer 8.3 via the registry.
 
----
+### I-4 — Pay Safe / Stripe trust-account architecture · **BLOCKED on C1**
 
-## Implementation order (build-now items only — proposed)
+**Code state:** ✅ Already deployed. Stripe destination-charge in `process-escrow-release/handler.ts:262-273`. Documented in `docs/payments/PAYSAFE-COMPLIANCE.md`.
 
-This is the order the engineering work would land, optimized for unblocking dependencies and shipping the disclaimers (highest legal exposure) first:
+**Pending:** Counsel **C1** — written opinion that this satisfies FL § 721.08 / CA § 10145 / HI § 514E-9. No code change expected based on the answer; counsel sign-off pastes into PAYSAFE-COMPLIANCE.md § 7.
 
-1. **I-1 disclaimer registry + DisclaimerBlock + 8 placements + trademark migration** (~12h)
-2. **I-2 + I-3 + I-1's 8.4 / 8.5 / 8.6 / 8.8 ToS + Checkout + email replacements** (lands inside I-1)
-3. **I-5 "No Timeshare Sales" validation + linked Disclaimer 8.2 explainer page** (~3h)
-4. **P-1 state field on `listings` table** (~3h) — unblocks P-2 / P-3
-5. **P-2 Florida-Specific Disclosure (8.7) wired** (~1h)
-6. **P-3 CA-Specific Disclosure scaffolding** (~1h, text from counsel)
-7. **P-5 marketplace-facilitator registration admin tab + table** (~5h, status fills from counsel)
-8. **P-12 Guest Protection Policy page + badge + banner** (~3h)
-9. **P-13 MLA notice + arbitration carve-out** (~4h, language confirmed by counsel)
-10. **P-14 Listing accuracy reporting** (~5h)
-11. **P-15 Fraud reporting** (~4h)
-12. **P-16 CC&R attestation + robots.txt** (~4h, file the issues first)
-13. **P-10 host_type infrastructure** (~6h, thresholds from counsel)
-14. **P-11 license number collection + display infrastructure** (~5h, state coverage from counsel)
-15. **PL-1 nightly compliance-threshold cron** (~12h, thresholds + gate behavior from counsel)
-16. **PL-5 compliance calendar augmentation of P-5** (~2h)
+### I-5 — "No Timeshare Sales" listing validation · **DONE** ✅
 
-**Total build-now engineering before counsel meeting:** ~30 hours (items 1–8) — completable this week per the founder's timeline.
-**Total build-now engineering after counsel guidance lands:** ~40 hours (items 9–16) — week after counsel meeting.
+**Shipped in:** #496 (PR), commit `34a8391`.
 
-After items 1–8 ship, the audit scoreboard moves from **3 / 9 / 23** (Implemented / Partial / Gap) to roughly **14 / 6 / 15**.
+- ✅ `src/lib/listingValidation/noSales.ts` — 16-phrase block list, case-insensitive, NFKC normalization
+- ✅ Wired into `ListProperty.tsx` `handleSubmit`
+- ✅ Error message names matched term + field + links to `/about` for context
+- 🟡 DB-level enforcement (BEFORE INSERT trigger) deferred — staff approval workflow remains the secondary defense
 
 ---
 
-## What we will not do without counsel input
+## Section C — Tier 2 (Pre-Launch) follow-up status
 
-- Pretend that any disclaimer is "counsel-approved" — registry entries will say `legalReviewRequired: true, reviewedBy: null, reviewedDate: null` until counsel signs off.
-- Implement state-level licensing gates (PL-2) — gate behavior is a legal-policy decision.
-- Decide whether Stripe Connect Express KYC is sufficient for platform identity verification (P-8) — could trigger a Stripe Identity build that we don't want to scope twice.
-- Specify which states require which credential type for Type 2 / Type 3 Hosts (P-11) — partially state-specific, partially exemption-driven.
-- Decide what counts as acceptable timeshare-ownership proof (P-9) — varies by resort, by state, and by counsel's risk tolerance.
-- Write or modify Terms of Service / Privacy Policy / Listing Agreement substantive content (`docs/support/policies/*.md` at `status: draft`) — counsel must draft or sign off (C8).
-- File marketplace-facilitator registrations in any state — operational, not engineering.
+### P-1 — State field on `listings` table · **DONE** ✅
+
+**Shipped in:** #497 (PR), commit `c4a1b0d`. Migration 074 + backfill + form wiring.
+
+### P-2 — Florida-Specific Disclosure (8.7) wired · **DONE** ✅
+
+**Shipped in:** #495 (component) + #497 (state field). Renders live on every FL listing + FL checkout.
+
+### P-3 — California-Specific Disclosure · **DONE** (wiring) · **PENDING** (text — C10)
+
+**Shipped in:** #495 (component) + #497 (state field). `STATE_DISCLAIMER_MAP.CA → "8.7-CA"`. Registry entry intentionally absent until counsel returns text. Tracked in #493.
+
+### P-4 — Stripe Tax activation · **BLOCKED on #127 (LLC/EIN)**
+
+**Code state:** ✅ Wired (`create-booking-checkout/handler.ts:247`). Env flag `STRIPE_TAX_ENABLED` default OFF. Flipping to TRUE is a 1-hour ops task once #127 lands.
+
+### P-5 — Marketplace-facilitator registration tracker · **DONE** (schema + admin tab) · **PENDING** (values — C7)
+
+**Shipped in:** #502 (PR), commit `9386ba8`. Migration 075 + `AdminMarketplaceRegistrations` admin tab. 51 jurisdictions seeded. RAV staff + tax-pro fill in `registration_status` per state once **C7** lands.
+
+### P-6, P-7 — Verbatim 8.4 + 8.8 in Checkout + email · **DONE** ✅
+
+Covered by I-1's placement work in #495.
+
+### P-8 — Host identity verification dedicated provider · **BLOCKED on C2**
+
+**Current code state:** Stripe Connect Express KYC for every Host. Dedicated Stripe Identity / Persona not built. Audit recommendation deferred to counsel decision.
+
+### P-9 — Resort ownership verification · **BLOCKED on C6**
+
+**Current code state:** Pre-Booked proof workflow verifies reservation, not ownership. CC&R attestation (P-13's new variant — see #481 below) is shipped; ownership verification (deed / membership cert) awaits **C6**.
+
+### P-10 — Host type classification (Type 1 / 2 / 3) · **BLOCKED on C4**
+
+**Schema design ready.** `profiles.host_type` enum + `properties_owned` + `annual_rentals_planned`. Onboarding question. Self-classification logic. Awaits **C4** thresholds.
+
+### P-11 — License number collection & display · **BLOCKED on C3 + C4**
+
+**Depends on:** Host-type classification (P-10) + the license-applicability answer per state. Mixed scope — build now, slot in state list later.
+
+### P-12 — Guest Protection Policy product surface · **DONE** ✅
+
+**Shipped in:** #508 (PR), commit `9259842`.
+
+- ✅ New `/guest-protection` page with verbatim 8.5 text + Pay Safe / Stripe explainer
+- ✅ `<GuestProtectionBadge />` (badge + banner variants) on PropertyDetail + Checkout + Footer + FAQ
+- ✅ Underlying refund logic was already shipped; this added the consumer-facing surface
+
+### P-13 — MLA Notice + ToS arbitration carve-out · **DONE** ✅
+
+**Shipped in:** #520 (PR), commit `53d6a1c`. Migration 076 + signup checkbox + `<MLANotice />` + Terms § 9 carve-out paragraph. Universal protection regardless of self-disclosure (Steines v. Westgate Palace).
+
+- 🟡 Counsel wording confirmation pending — **C11**
+
+### P-14 — Listing accuracy reporting · **DONE** ✅
+
+**Shipped in:** #521 (PR), commit `ad16f5c`. Migration 077 + `<ListingAccuracyReportDialog />` + `AdminListingAccuracyReports` admin tab. Anonymous submissions allowed. RLS gates impersonation.
+
+### P-15 — Fraud reporting + response · **DONE** ✅
+
+**Shipped in:** #522 (PR), commit `a881480`. Migration 078 + `<FraudReportDialog />` (Footer + PropertyDetail) + `AdminFraudReports` senior-admin-only tab. Severity + escalation paths separate from resolution states.
+
+### P-16 — 2026-05-04 review gaps · **DONE** ✅
+
+| Gap | Status | PR |
+|---|---|---|
+| Trademark / affiliation disclaimer in Footer (gap #1 of 3) | ✅ — migrated from inline to registry | Originally #479; restructured in #495 |
+| CC&R / rental-restriction attestation in owner onboarding (gap #2 of 3) | ✅ — Migration 079 + required checkbox | #523 |
+| `robots.txt` + scraping policy clause in ToS (gap #3 of 3) | ✅ — explicit allowlist + Terms § 7.1 with CFAA citation | #524 |
 
 ---
 
-## Decision request for the founder
+## Section D — Tier 3 (Post-Launch) status
 
-Before beginning engineering on the build-now list above, please confirm:
+### PL-1 — Rental frequency monitoring cron · **BLOCKED on C4 + C5**
 
-1. **Is the proposed sequence (items 1–8 = ~30h this week) the right order to maximize what counsel sees as Implemented at the meeting?** Specifically: should disclaimers (I-1 to I-3 + P-2 / P-3) come first, or should Guest Protection Policy + listing/fraud reporting (P-12 / P-14 / P-15) come first because they're more visible to a counsel reviewing the live site?
-2. **Should I file the two missing 2026-05-04-review issues now (CC&R attestation + robots.txt) so they appear in the GitHub Issues compliance view counsel will see?**
-3. **For verbatim disclaimer text in the registry, is "Stripe" the right substitution for `[Payment Processor Name]` in 8.8?** Per the Pay Safe architecture this is correct (Stripe is the licensed processor); confirming because Pay Safe is the customer-facing brand and counsel may want to see the brand referenced too.
-4. **About page placement of Disclaimer 8.3** — there is no `About.tsx` today. Options: (a) create a minimal About page in scope of this work; (b) defer to a separate ticket and accept 8.3 placement only in ToS for now; (c) place 8.3 on `HowItWorks.tsx` (closest analogue to an About page).
-5. **GitHub Issues** — confirm the original Phase-3 plan (open issues only after counsel meeting) still holds, vs. opening issues now for the build-now items so they show progress in the daily Resend digest.
+Cron infrastructure pattern proven via `auto-confirm-checkins` + `sla-monitor` in Migration 073. New cron `compliance-threshold-monitor` would run nightly, flagging Hosts who cross thresholds. ~12h engineering once C4 + C5 land.
 
-*End of document — Version 1.0 — 2026-05-05*
+### PL-2 — State-level licensing gate · **BLOCKED on C5**
+
+Trivial implementation once gate behavior is decided (hard-block vs soft-warn vs route to manual review).
+
+### PL-3 — Automated tax remittance (TaxJar / Avalara / Puzzle.io) · **DEFERRED**
+
+Engineering ~8-16h, deferred until volume exceeds $5K/mo and #127 lands. Manual remittance until then.
+
+### PL-4 — Cyber-liability + fraud insurance · **OUT OF ENGINEERING SCOPE**
+
+Business / insurance-broker engagement.
+
+### PL-5 — State compliance calendar · **PARTIAL** — augments P-5
+
+`marketplace_registrations.next_return_due` column already exists (Migration 075). Daily-summary email integration (~2h) deferred until C7 fills in values worth surfacing.
+
+### PL-6 — ARDA membership / legislative tracking · **OUT OF ENGINEERING SCOPE**
+
+Trade association engagement.
+
+### PL-7 — Formal legal audit of ToS / Privacy / listing agreement · **BLOCKED on C8**
+
+Eight policy drafts at `docs/support/policies/*.md` (`status: draft`, blocked on #80) await counsel.
+
+---
+
+## Section E — Counsel-pending decision matrix
+
+See `counsel-meeting-prep.md` § 4 for the full Q&A version. Quick reference of code dependencies:
+
+| Counsel question | Engineering follow-up | Estimated effort post-decision |
+|---|---|---|
+| C1 (Pay Safe sign-off) | Paste opinion into `PAYSAFE-COMPLIANCE.md` § 7 | 30 min, no code |
+| C2 (Stripe Identity sufficiency) | If "need dedicated": ~1-2 day integration | 0h (default) or 8-16h |
+| C3 (license per state) | If license required: build license-number flow | 0h (exempt) or 5h per state-tier |
+| C4 (host-type thresholds) | Set threshold constants; build P-10 schema if not yet built | 6h once decided |
+| C5 (gate behavior) | Wire gate in ListProperty.tsx | 3h once decided |
+| C6 (ownership proof types) | Build ownership-verification flow | 6-12h |
+| C7 (state-by-state values) | RAV staff data entry — no engineering | 0h |
+| C8 (policy drafting) | Replace drafts; flip status + push via sync-support-docs.yml | 1-2h (mechanical) |
+| C9 (disclaimer approval) | Flip `legalReviewRequired` + fill `reviewedBy`/`reviewedDate` in registry | 1h (PR #494) |
+| C10 (CA text) | Add `"8.7-CA"` registry entry | 30 min (PR #493) |
+| C11 (MLA wording) | Edit Terms § 9 carve-out paragraph + test | 30 min |
+| C12 (legislation prioritization) | Schedule follow-up issues per priority | varies |
+
+---
+
+## Section F — Revision history
+
+| Date | Author | Change |
+|---|---|---|
+| 2026-05-05 | Claude (Session 66 audit) | Initial gap analysis after 7-domain audit |
+| 2026-05-12 | Claude (Session 66 close) | Refreshed to reflect all 12 build-now items shipped; counsel-pending items remain |
+
+*End of document — Version 2.0 — 2026-05-12 (post Session 66)*

@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-05-12T01:50:00"
-change_ref: "025404c"
-change_type: "session-65"
+last_updated: "2026-05-12T03:00:00"
+change_ref: "manual-edit"
+change_type: "session-66"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** May 11-12, 2026 (Session 65: Financial Model Excel + Phase 2 Stage 2a web tool + commission rate to 12%)
+> **Last Updated:** May 12, 2026 (Session 66: Compliance Hardening Sprint — 12 build-now items shipped against Legal Dossier v3)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -93,20 +93,73 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1669 automated tests** (169 test files, all passing), 0 type errors, 0 lint errors, build clean
-- **P0 tests:** 220+ tagged `@p0` — run with `npm run test:p0`
+- **1754 automated tests** (177 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **P0 tests:** 320+ tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-072 (001-059 deployed to DEV + PROD; 060-072 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
+- **Migrations created:** 001-079 + 3 date-based MDM migrations. **All applied to DEV + PROD** as of Session 66 (CLI backlog cleared: 063 reserved-word fix landed in PR #500; subsequent migrations 064–079 pushed in coordinated DEV+PROD rounds).
 - **Edge functions:** 39 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` + `cancel-listing` + `confirm-checkin` + `auto-confirm-checkins` + `sla-monitor` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58). `process-escrow-release` refactored to handler.ts split (Session 63 / DEC-037).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** In sync as of Session 65 close (PR #516 dev→main merged 2026-05-12). Latest release: financial model TS port + Phase 2 Stage 2a + commission rate 12%.
+- **dev and main:** In sync as of Session 66 close (PR #524 dev→main merged 2026-05-12). Latest release: 12-item compliance hardening sprint completing the build-now phase of the 2026-05-05 audit.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-65)
+### Session Handoff (Sessions 25-66)
+
+**Session 66 — Compliance Hardening Sprint (May 6-12, 2026):**
+
+Multi-day arc closing all 12 build-now items from the 2026-05-05 audit against *Legal Research Memorandum v3* + *Compliance Development Brief v1.0*. Every issue shipped end-to-end: code + tests + migrations + PR + merge + DEV+PROD migration push. Umbrella tracker: #480.
+
+**Phase 1 — audit + dossier (May 5):**
+Read both source PDFs in full. Ran 7 parallel codebase audit subagents (one per Part 3 domain) returning Implemented/Partial/Gap with file:line evidence. Generated `docs/legal/attorney-meeting-compliance-status.md` (Part 5 two-column status filled in) + `docs/legal/compliance-gap-analysis.md` (Part 4 priority gaps with build-now / wait-for-counsel / mixed classifications). **Audit scoreboard at start: 3 Implemented · 9 Partial · 23 Gap.**
+
+**Phase 2 — 12 build-now items shipped:**
+
+May 6 (PRs #495, #496, #497, #500, #502):
+1. **#483** Central disclaimer registry (`src/lib/disclaimers/registry.ts`) + `DisclaimerBlock` (full/compact/minimal variants) + 9 placements (homepage, footer, listing pages, Terms, About, Checkout, BookingSuccess, PropertyDetail, booking-confirmation email). Edge-function mirror at `supabase/functions/_shared/disclaimers.ts` with drift-detection test. Trademark disclaimer migrated from Footer.tsx inline anti-pattern to registry.
+2. **#484** Minimal `/about` page hosting Disclaimer 8.3 + Pay Safe / Stripe explainer.
+3. **#485** "No Timeshare Sales" listing-creation validator (`src/lib/listingValidation/noSales.ts`) — block list of phrases, case-insensitive + NFKC normalization.
+4. **#486** Migration 074: `listings.state` column + backfill from `resort.location.state`. Geo-targeted FL disclosure (8.7) now renders live; CA scaffolded waiting on counsel C10.
+5. **#488** Migration 075: `marketplace_registrations` table (51 jurisdictions seeded) + `AdminMarketplaceRegistrations` admin tab with AlertDialog safeguards. RLS: read=any RAV team, write=rav_admin/rav_owner.
+6. **#489** Guest Protection Policy product surface — `/guest-protection` page + `GuestProtectionBadge` (badge + banner variants) on PropertyDetail, Checkout (above Pay button), FAQ, Footer.
+7. **#490** Migration 076: `profiles.is_active_duty_military`. `MLANotice` component conditionally rendered on Checkout. Terms § 9 MLA arbitration carve-out paragraph (Steines v. Westgate Palace, 10 U.S.C. § 987, 32 C.F.R. § 232).
+8. **PR #500** Migration backlog cleanup: fixed `WITH window` reserved-word issue in Migration 063 (`metrics_window` rename, 14 occurrences); full Session-63 backlog (063-074) pushed to DEV via CLI for the first time.
+
+May 11-12 (PRs #520-#524, alongside Session 65 financial-model work):
+9. **#491** Migration 077: `listing_accuracy_reports` table — anon-friendly pre-booking accuracy intake (Palmer v. FantaSea, NJ App. Div. 2025). `ListingAccuracyReportDialog` + `AdminListingAccuracyReports` queue. RLS: anon INSERT (no impersonation), RAV team read+write.
+10. **#492** Migration 078: `fraud_reports` table — anon-friendly fraud intake with severity + explicit escalation paths (FTC v. Carroll, Fed. Dist. Ct. 2026). `FraudReportDialog` from Footer + PropertyDetail. `AdminFraudReports` senior-admin-only tab (RLS strictly rav_admin/rav_owner read).
+11. **#481** Migration 079: `listings.cc_and_r_attested_at` + required checkbox in ListProperty (2026-05-04 brand+ops review gap #2 — owner attests resort CC&Rs permit renting).
+12. **#482** `public/robots.txt` explicit allowlist (Googlebot, Bingbot, DuckDuckBot, BraveBot) with restrictive `User-agent: *` for unknown bots; Terms § 7.1 Automated Access clause citing 18 U.S.C. § 1030 (2026-05-04 review gap #3).
+
+**Final platform stats:**
+- **Tests:** 1492 → **1754** (+262, +17.6%; 22 new test files)
+- **Migrations applied to DEV + PROD:** 17 (063 with reserved-word fix + 064–079). Studio-vs-CLI drift on the Session-63 backlog cleared.
+- **PRs merged:** 11 (#495, #496, #497, #500, #502, #508, #520, #521, #522, #523, #524)
+- **Issues closed:** 12 build-now (#481, #482, #483, #484, #485, #486, #488, #489, #490, #491, #492) + #487 FL/CA wiring (essentially complete; CA awaits #493)
+- **Counsel-pending follow-ups (open):** #493 (CA verbatim text — counsel C10), #494 (post-counsel `reviewedBy` flip across all 9 disclaimer registry entries)
+
+**Audit scoreboard final state (deployed but counsel-pending):**
+The 3 / 9 / 23 audit start moves to approximately **14 Implemented · 6 Partial · 15 Gap** once counsel signs off on the verbatim disclaimer text via #494. Currently every disclaimer carries `legalReviewRequired: true, reviewedBy: null` — the dossier honestly reports these as 🟡 *deployed, counsel-pending* rather than ✅ Implemented. See `docs/legal/counsel-meeting-prep.md` for the meeting agenda + 12-decision matrix.
+
+**Wait-for-counsel items NOT in scope of this session (next compliance push):**
+Need counsel input before code can land — host-type classification thresholds (C4), license-applicability per state (C3), Stripe Identity vs Stripe Connect KYC sufficiency (C2), acceptable timeshare-ownership proof types (C6), full ToS / Privacy / listing-agreement reviews (8 policy drafts at `docs/support/policies/*.md` blocked on #80), Pay Safe Stripe-destination-charge architecture written sign-off for FL § 721.08 / CA § 10145 / HI § 514E-9 (C1).
+
+**New documentation:**
+- `docs/legal/attorney-meeting-compliance-status.md` — Part 5 two-column status with file:line evidence per row (+ PDF)
+- `docs/legal/compliance-gap-analysis.md` — Part 4 priority gaps with classifications (+ PDF)
+- `docs/legal/counsel-meeting-prep.md` (NEW) — counsel-meeting agenda + 12-decision matrix + post-meeting checklist (+ PDF)
+- `docs/legal/_extracted_legal_dossier.txt` + `_extracted_compliance_brief.txt` — searchable plaintext mirrors of the source PDFs
+
+**Process notes:**
+- The PROD push pattern (link PROD → push → relink DEV) exercised across 7 of 17 migrations. Reliable.
+- The placement-audit test pattern (read source files, grep for required markers) caught accidental-revert regressions twice. Recommended for future compliance-style work where the right behavior is "specific component must exist at a specific location."
+- Stash-on-branch-switch saved one near-loss when parallel work in another terminal swapped branches mid-implementation. `git stash list` named `preserve-mla-and-military-wip` recovered all 9 files.
+
+**Platform delta from Session 65 baseline:** +85 tests (1669 → 1754), +5 migrations (075–079) applied to DEV + PROD, no new edge functions.
+
+---
 
 **Session 65 — Financial Model TS port + Phase 2 Stage 2a web tool + commission rate 12% (May 11-12, 2026):**
 
