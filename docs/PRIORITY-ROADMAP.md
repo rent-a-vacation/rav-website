@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-05-12T01:55:00"
-change_ref: "025404c"
-change_type: "session-65"
+last_updated: "2026-05-12T03:30:00"
+change_ref: "manual-edit"
+change_type: "session-66"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -37,35 +37,51 @@ status: "active"
 
 ---
 
-## Next-Session Pickup (confirmed with user end of Session 59)
+## Next-Session Pickup (confirmed with user end of Session 66)
 
-When `/sdlc pickup` runs next, the user has explicitly scoped the next session around four items. Work them in this order; they are independent.
+Session 66 closed out the 12-item compliance hardening sprint. All build-now items shipped end-to-end. The umbrella tracker #480 stays open until counsel signs off on disclaimer text via #494 + CA disclosure text arrives via #493.
 
-1. **#371** — Edge function test harness. Tech-debt; unblocks proper Tests-With-Features coverage for all future edge-fn work. 1-2d (needs scoping).
-2. **#438** — Incorporation documentation starter kit. Draft `docs/incorporation/` folder from Stripe Atlas samples + enhance. Pairs with #80 lawyer-review pass on existing platform ToS drafts. 2-4h.
-3. **#230–#234** — Marketing social setup (Facebook, Instagram, LinkedIn, Google Business, X). Mostly non-code; some admin + content drafting. Sequence in whatever order makes sense per user availability.
-4. **#256** — Pitch deck & investor materials. Brand-aligned + uses PLATFORM-INVENTORY.md from Session 59 as source-of-truth for capability claims.
+**On resume, the highest-value next moves:**
 
-**Also consider after those:** A controlled PROD deploy window for the accumulated Phase 22 + Session 59 changes (migrations 060–065, text-chat updates with support context + 5 tools + classifier, ingest-support-docs + cancel-listing edge fns, support_conversations + listing-proofs + dispute_source schemas). All currently sit on DEV per CLAUDE.md human-confirmation rule.
+1. **Schedule + run the counsel meeting** — non-engineering. Walk into the meeting with `docs/legal/counsel-meeting-prep.md`. Capture decisions on C1–C12. The three legal docs + PDFs in `docs/legal/` are counsel-ready.
+2. **After counsel meeting:** File the focused follow-up PR for **#494** (1h — flip `legalReviewRequired:false` + fill `reviewedBy/reviewedDate` across 9 registry entries; bump version if any text revised). If counsel returned CA text, file **#493** (30 min — one registry entry).
+3. **#510 full scope** — Complete the central-commission-config refactor: DB runtime read (`system_settings.platform_commission_rate` via `useSystemSettings` hook), admin UI for changing the rate with audit log, async pricing-function refactor. ~1-2 days. **Blocks #509.** (Carried over from Session 65.)
+4. **Phase 2 Stage 2b** — Live actuals overlay on `/executive-dashboard/financial-model`. Pull real user counts + bookings + revenue from Supabase. Show "actuals (Mo 1-N)" alongside forecast. ~3-5 days. Independent. (Carried over from Session 65.)
+5. **#509** — Promotional commission rate overrides. **Builds on #510 full.** (Carried over from Session 65.)
 
-## Current Priority Tiers (as of May 11-12, 2026 — Session 65)
+**Also pending — depends on counsel C-answer:**
+- **C4 + C5 returned** → build host-type classification + commercial-threshold cron + state-level licensing gate (P-10 / P-11 / PL-1 / PL-2 in `compliance-gap-analysis.md`). ~3-4 days.
+- **C6 returned** → build resort-ownership verification flow (P-9). ~6-12h.
+- **C8 counsel-drafted policies** → replace 8 drafts at `docs/support/policies/*.md`, flip `status: draft → active`, push via `sync-support-docs.yml`. ~1-2h mechanical.
+
+## Current Priority Tiers (as of May 12, 2026 — Session 66 close)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-**Session 65 close — Financial Model + Phase 2 Stage 2a shipped. Three next-up items confirmed with user (see Session 65 Pickup section below):**
+**Session 66 closed out the compliance build-now sprint. Carry-over items from Session 65 remain at top of Tier A:**
 
-1. **#510 full scope** — Complete the central-commission-config refactor: DB runtime read (`system_settings.platform_commission_rate` via `useSystemSettings` hook), admin UI for changing the rate with audit log, async pricing-function refactor. ~1-2 days. **Blocks #509.**
-2. **Phase 2 Stage 2b** — Live actuals overlay on `/executive-dashboard/financial-model`. Pull real user counts + bookings + revenue from Supabase. Show "actuals (Mo 1-N)" alongside forecast. ~3-5 days. Independent.
-3. **#509** — Promotional commission rate overrides (launch specials, seasonal campaigns, owner-tier promos). DB schema + admin UI + commission resolution chain + booking audit fields. ~1-2 weeks. **Builds on #510 full.**
+1. **#510 full scope** — DB-driven commission rate runtime read + admin UI + audit log. ~1-2 days. **Blocks #509.**
+2. **Phase 2 Stage 2b** — Live actuals overlay on Financial Model dashboard. ~3-5 days. Independent.
+3. **#509** — Promotional commission rate overrides. **Builds on #510 full.**
 
-### Session 65 Pickup (confirmed with user end of Session 65)
+### Session 66 close — compliance hardening (12 of 12 shipped)
 
-User confirmed at session close:
-- Commission rate locked at **12%** per DEC-041 (was status quo 15%)
-- Outstanding doc-only updates (deferred, not blocking): BRAND-LOCK.md § 5 (15% → 12%), `docs/RAV-PRICING-TAXES-ACCOUNTING.md` prose updates
-- A pre-existing git stash on local dev contains another session's MLA Notice + military profile work-in-progress (`supabase/migrations/076_profiles_active_duty_military.sql` + `src/components/legal/MLANotice*` + Checkout/Signup/Terms updates). Preserved via stash; user to decide whether to pop or drop on return.
+User-confirmed compliance posture at session close:
+- 12 build-now items shipped end-to-end against the 2026-05-05 audit against Legal Dossier v3 + Compliance Brief v1.0
+- 17 migrations (063–079) applied to **both DEV + PROD** (Session-63 backlog cleared)
+- Test count 1492 → 1754 (+262, +17.6%)
+- All disclaimers deployed verbatim from central registry; **awaiting counsel sign-off via #494**
+- CA-specific disclosure wired but text-empty; **awaiting counsel C10 via #493**
+- Pay Safe / Stripe destination-charge architecture documented; **awaiting written sign-off per counsel C1**
 
-Work order on resume: **#510 full → Stage 2b → #509** (respects the #510 → #509 dependency).
+**Documentation deliverables for the counsel meeting:**
+- `docs/legal/counsel-meeting-prep.md` (NEW) — agenda + 12-decision matrix
+- `docs/legal/attorney-meeting-compliance-status.md` (refreshed) — Part 5 two-column status
+- `docs/legal/compliance-gap-analysis.md` (refreshed) — Part 4 priority gaps with engineering effort per counsel decision
+
+**Outstanding doc-only updates (deferred, not blocking, carried from Session 65):**
+- BRAND-LOCK.md § 5 (15% → 12%)
+- `docs/RAV-PRICING-TAXES-ACCOUNTING.md` prose updates (15% → 12%)
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -76,17 +92,13 @@ These require decisions, walkthroughs, or external dependencies before coding.
 | #187 | Pre-launch manual verification | Needs systematic walkthrough. Partially done. |
 | #257 | Resort data compliance audit | Legal review of seed data sources. |
 | #322 | RAV Wishes proposal enforcement | Deferred until 30+ days of real proposal data. Post-beta. |
-| **#404** | Phase 22 B5: Legal-blocked public policy docs (privacy, booking-terms, payment-policy, trust-safety, insurance-liability, subscription-terms, refund, cancellation) | Blocked by #80 (legal consult — timeshare lawyer). 8 drafts production-ready in `docs/support/policies/`, held with `status: 'draft'` pending lawyer sign-off. Bundle into the same lawyer pass as #438. |
-| **#438** | Incorporation documentation starter kit (operating agreement, formation checklist, IP assignment, state tax notes, RAV-specific marketplace docs) | **NEXT PICKUP.** Confirmed Session 60: Delaware C-Corp via Stripe Atlas (vs Gust under boardroom review); 4 founders all Florida-based; foreign-entity registration in Florida; scope WIDE — full packet for #80 lawyer engagement. Goal: zero owners onboard before lawyer signs off. |
-| **#461** | PaySafe Gap A — wire up `confirm-checkin` server action (renter arrival button is currently a no-op) | New issue from PaySafe spec §3.2 (DEC-038). Pre-launch. Blocks #462 + #467. **In progress Session 63.** |
-| **#462** | PaySafe Gap B — auto-confirmation cron when renter ignores deadline | Depends on #461. Pre-launch — needed for fraud + dispute analytics. **In progress Session 63.** |
-| **#463** | PaySafe Gap E — enforce per-category dispute role mapping in schema/RLS | Pre-launch (low risk). Brings RLS parity with `AdminDisputes.tsx` UI gating. **In progress Session 63.** |
-| **#464** | PaySafe Gap G — enforce dispute SLAs with alerting + business-hours config | Pre-launch (operational). 2-hour triage on safety/owner-no-show categories cannot be a paper target at launch. **In progress Session 63.** |
-| **#465** | PaySafe Gap H — auto-mirror Stripe `charge.dispute.created` to internal disputes | Pre-launch. Chargeback evidence windows are tight; manual mirroring loses time. **In progress Session 63.** |
-| **#466** | PaySafe Gap I — jurisdiction field on bookings + per-state disclosure logic | Pre-launch. Linked to #80 — counsel input gates seeding the rules table. Decision A/B/C in issue body re: launch jurisdictions. |
-| **#467** | PaySafe Gap C — pre-fill dispute form from check-in issue report | **Promoted to Tier B in Session 63** (was Tier E). Depends on #461. UX polish but legitimate pre-launch given user stance: minimal post-launch deferral. **In progress Session 63.** |
-| **#468** | PaySafe Gap D — move `HOLD_PERIOD_DAYS` to `system_settings` | **Promoted to Tier B in Session 63** (was Tier E). Half-day work; ops needs to tune hold period without redeploy. **In progress Session 63.** |
-| **#473** | Bug — `EvalError` + CSP `script-src` block on /signup (16 users affected) | **In progress Session 63 (PR #474).** PostHog session recording disabled + Sentry beforeSend filter. |
+| **#404** | Phase 22 B5: Legal-blocked public policy docs (privacy, booking-terms, payment-policy, trust-safety, insurance-liability, subscription-terms, refund, cancellation) | Blocked by #80 (legal consult — timeshare lawyer). 8 drafts production-ready in `docs/support/policies/`, held with `status: 'draft'` pending lawyer sign-off. Counsel question **C8** covers drafting/review approach. Bundle into the same lawyer pass as #438. |
+| **#438** | Incorporation documentation starter kit (operating agreement, formation checklist, IP assignment, state tax notes, RAV-specific marketplace docs) | **NEXT PICKUP.** Confirmed Session 60: Delaware C-Corp via Stripe Atlas; 4 founders all Florida-based; foreign-entity registration in Florida; scope WIDE — full packet for #80 lawyer engagement. Goal: zero owners onboard before lawyer signs off. Counsel meeting now scheduled per Session 66. |
+| **#480** | Compliance umbrella — 12 build-now items shipped (Session 66); 2 counsel-pending follow-ups open | **Open until counsel meeting closes.** Tracks #493 (CA disclosure text — C10) + #494 (post-counsel `reviewedBy` flip across 9 registry entries — C9 + possibly C11). |
+| **#493** | CA-specific disclosure (8.7-CA) verbatim text | **Blocked on counsel C10.** 30-min PR after text arrives — adds one registry entry to `src/lib/disclaimers/registry.ts` + email mirror. `<StateSpecificDisclaimer propertyState="CA" />` starts rendering immediately. |
+| **#494** | Post-counsel disclaimer `reviewedBy` / `reviewedDate` flip across 9 registry entries | **Blocked on counsel C9.** 1-hour PR after meeting: flip `legalReviewRequired: false`, set `reviewedBy + reviewedDate`. If text revised, bump versions + edit email mirror in lock-step (drift test asserts). |
+
+**Note (Session 66 cleanup):** All Session-63 PaySafe gap items (#461, #462, #463, #464, #465, #467, #468, #473) are SHIPPED and applied to PROD. Removed from Tier B. PaySafe Gap I (#466) was rendered moot by Migration 074 (`listings.state` column) + `<StateSpecificDisclaimer />` wiring — the per-state disclosure rules table is not needed since the registry-driven approach achieves the same goal cleanly.
 
 ### Tier C: Tier Feature Differentiation — ✅ COMPLETED IN SESSION 53 (PR #367)
 
@@ -160,6 +172,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| May 12, 2026 | 66 | **Compliance Hardening Sprint COMPLETE — 12 build-now items shipped.** Multi-day arc (May 6 + May 11-12) closing all build-now items from the 2026-05-05 audit against *Legal Research Memorandum v3* + *Compliance Development Brief v1.0*. Shipped: central disclaimer registry + 9 placements (#483), About page (#484), No Timeshare Sales validator (#485), `listings.state` + Migration 074 (#486), FL/CA disclosure rendering (#487), marketplace-facilitator tracker + Migration 075 (#488), Guest Protection Policy surface (#489), MLA notice + ToS carve-out + Migration 076 (#490), listing accuracy reporting + Migration 077 (#491), fraud reporting + Migration 078 (#492), CC&R attestation + Migration 079 (#481), robots.txt + scraping policy (#482). PR #500 cleared Session-63 migration backlog. **Tests 1492 → 1754 (+262, +17.6%); 17 migrations applied to both DEV + PROD.** Counsel meeting docs created: `counsel-meeting-prep.md` (NEW) + refreshed `attorney-meeting-compliance-status.md` + `compliance-gap-analysis.md`. Tier B trimmed: 8 SHIPPED PaySafe gap items removed; 2 counsel-pending follow-up issues added (#493, #494) plus umbrella #480. Tier A unchanged — Session 65 carry-overs (#510 / Stage 2b / #509) remain top-of-queue. |
 | May 6, 2026 | 64 | **DEC-040 logged — sequential Phase numbering retired.** Phase 22 was the last numbered phase; new work (5+ related issues sharing an outcome) goes into themed milestones (`Launch Readiness`, `Security Hardening`, `Role-Based UX Overhaul`, etc.). PROJECT-HUB.md, this file, and `CLAUDE.md` updated with the new convention. `scripts/docs-sync-check.ts` extended with `checkPhaseNumbering()` rule that fails CI on any new "Phase 23+" reference outside the allowlist. Auto-memory saved. **No tier changes.** Doc-only Session 64. |
 | May 2, 2026 | 63 | **#473 SHIPPED (PR #474)** — PostHog session recording disabled + Sentry `beforeSend` filter for EvalError/CSP events; resolves 16-user CSP block on /signup. **PaySafe Compliance doc created** (`docs/payments/PAYSAFE-COMPLIANCE.md`) — captures marketplace + Stripe Connect compliance posture, gap closure register, placeholder for incoming counsel references; DEC-039 logged. **PaySafe gaps C (#467), D (#468) promoted Tier E → Tier B**, and #463 (Gap E) consolidated under Tier B per user stance "minimal post-launch deferral." Session 63 working scope: 7 of 9 PaySafe gaps (A, B, C, D, E, G, H) + #473. F deferred (user confirmed); I gated on #80 lawyer pass. |
 | Apr 27–28, 2026 | 61 | **PaySafe Flow Specification SHIPPED (PR #460).** New `docs/payments/PAYSAFE-FLOW-SPEC.md` — authoritative internal spec for the escrow + dispute system across 11 sections. DEC-038 logged. **9 gap issues opened** (#461–#469): pre-launch (#461 confirm-checkin server action, #462 auto-confirm cron, #463 role-mapping enforcement, #464 SLA enforcement, #465 Stripe chargeback auto-mirror, #466 jurisdiction field) and post-launch (#467 issue→dispute pre-fill, #468 hold-period to system_settings, #469 split refunds/holdbacks/credits). Tier B updated with the 5 Launch-Readiness gap issues; Tier E updated with the 3 post-launch gap issues + #463 (Security Hardening). Doc-only PR — no test count change (1394), no migrations, no edge-fn changes. |
