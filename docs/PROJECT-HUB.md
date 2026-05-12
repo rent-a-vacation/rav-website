@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-05-01T02:17:14"
-change_ref: "8a06e90"
-change_type: "session-64"
+last_updated: "2026-05-12T01:50:00"
+change_ref: "025404c"
+change_type: "session-65"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** May 6, 2026 (Session 64: DEC-040 — sequential Phase numbering retired; new work uses themed milestones)
+> **Last Updated:** May 11-12, 2026 (Session 65: Financial Model Excel + Phase 2 Stage 2a web tool + commission rate to 12%)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -93,7 +93,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1492 automated tests** (157 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **1669 automated tests** (169 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 220+ tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
 - **Migrations created:** 001-072 (001-059 deployed to DEV + PROD; 060-072 deployed to DEV only — PROD held per CLAUDE.md) + 3 date-based MDM migrations
@@ -103,10 +103,51 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** Session 63 8-PR sweep (PR #474) sits on `dev` awaiting `dev → main` merge (1492 tests, 7 new migrations, 3 new edge fns, 1 refactored).
+- **dev and main:** In sync as of Session 65 close (PR #516 dev→main merged 2026-05-12). Latest release: financial model TS port + Phase 2 Stage 2a + commission rate 12%.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-64)
+### Session Handoff (Sessions 25-65)
+
+**Session 65 — Financial Model TS port + Phase 2 Stage 2a web tool + commission rate 12% (May 11-12, 2026):**
+
+Long working session covering the full financial-model arc: Excel generator overhaul, then a parallel web-app surface that consumes the same data.
+
+**Financial Model Excel — Phase 1a + 1b (PRs #501–#507):**
+1. **#501** Phase 1a — ported the Google Apps Script .gs generator to TypeScript + exceljs. `scripts/financial-model/` now produces `docs/financials/RAV_Financial_Model_YYYY-MM-DD_HHMM.xlsx` via `npm run financials:build`. Removed the Google Apps Script round-trip. 7 tabs: Cover / INPUTS / EXPENSES / REVENUE MODEL / BREAK-EVEN / FUNDING ASK / INSTRUCTIONS. .xlsx is gitignored (confidential).
+2. **#502** Phase 1b polish — 2 new tabs (UNIT ECON: LTV/CAC/Payback; SENSITIVITY: ±20% on 3 drivers) + REVENUE MODEL additions: cohort booking ramp, voice overage revenue line, hiring plan with burdened costs. INPUTS Sections G (Hiring) + H (Unit Econ & Ramp).
+3. **#503 / #504 / #505** Bug-fix cascade — circular-ref Funding Ask formulas (D7/D8 referencing label cells), consistent SUMIFS for all 5 Use-of-Funds categories, seed users injected at launch month (model previously returned 0 for any gLaunchMo > 1), recurring costs missing from per-month column (SUMPRODUCT inner-IF didn't work without dynamic arrays), break-even MATCH false-negative, freeze pane extended to row 8.
+4. **#506 / #507** Hover-notes layer — 133 → 110 cell hover-notes across calculated tabs (removed duplicative ones per user feedback principle "don't copy nearby cell content"). Enlarged comment box from default 97.8×59.1pt to 280×140pt (monkey-patched exceljs internals). Calibri 10pt RAV navy font. UNIT ECON metrics show "Calculation: ... / In plain terms: ..." dual format.
+
+**Central commission config — #510 MVP (PR #508, merged with Guest Protection):**
+- `src/config/commission.ts` is now the single source of truth for base rate + tier discounts. `src/lib/pricing.ts` and `src/lib/financial-model/data.ts` both import from it. Editing one file flows to live booking pricing AND the financial model. Full DEC-driven runtime read (system_settings.platform_commission_rate via useSystemSettings hook) is the remaining scope of #510.
+
+**Phase 2 Stage 2a — financial-model web tool (PRs #511, #512, #515, #517):**
+- New route **`/executive-dashboard/financial-model`** (RAV team auth-gated). Distinct from `/executive-dashboard` (live metrics). "Forward Projection — Not Live Data" banner enforces the differentiation.
+- New shared `DashboardTabs` component at top of both pages — Live Metrics ↔ Financial Model. Final design: filled teal pill on banded slate-800 background (after iteration on visibility feedback).
+- Pure-TS calc engine at `src/lib/financial-model/calc.ts` mirroring all .xlsx formulas. Inputs: scenario (Conservative/Base/Optimistic). Outputs: 24 monthly rows + aggregates + break-even month.
+- Data file moved to `src/lib/financial-model/data.ts`; `scripts/financial-model/data.ts` is now a re-export shim. ONE data source consumed by both Node-side Excel generator and Vite-side React UI.
+
+**Commission rate decision — 15% → 12% (PR #514):**
+Competitor anchoring: RedWeek Verified Rental 15-20%, Koala 10%. 12% positions RAV "premium over Koala, below RedWeek" justifiable by extra service stack (escrow + AI + bid mechanics). Business discount tightened from 5% → 4% to prevent the highest-volume tier going to an unsustainable 7%. Effective rates: Free **12%**, Pro **10%**, Business **8%**. **DEC-041 logged.**
+
+**Issues filed for follow-up:**
+- **#509** Promotional commission rate overrides — launch specials, seasonal campaigns, owner-tier promos. Pre-launch necessity per user. Needs DB schema + admin UI + commission resolution chain + booking audit fields.
+- **#510** Centralize commission rate config — MVP done (above). Full scope (DB runtime read + admin UI + audit log) is pending.
+
+**Next-Session pickup (user confirmed at session close):**
+1. **#510 full scope** — DB-driven runtime rate, admin UI, audit log (blocks #509)
+2. **Phase 2 Stage 2b** — live actuals overlay on financial model dashboard
+3. **#509** — promotional discount feature
+
+Workflow correction at session close: I'd routed early PRs feature → main directly (bypassed dev). User flagged this; remainder of session followed feature → dev → main correctly. Going forward: all feature branches → dev → main per CLAUDE.md branching strategy.
+
+**Outstanding doc updates (deferred, not blocking):**
+- BRAND-LOCK.md § 5 — "15% commission" → "12%" prose
+- `docs/RAV-PRICING-TAXES-ACCOUNTING.md` — multiple mentions of 15% to update
+
+**Platform delta:** 1492 → 1669 tests (177 new across financial-model + Phase 2 + commission + Guest Protection from parallel session). No new migrations from this session. Two new edge functions from parallel work (auto-confirm-checkins, sla-monitor from Session 63 continuation; confirm-checkin, process-escrow-release split). Single source: `src/config/commission.ts`.
+
+---
 
 **Session 64 — Phase numbering retired; themed milestones formalized (May 6, 2026):**
 
@@ -1092,6 +1133,63 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-042: Financial Model as Distinct Web Tool from Executive Dashboard
+**Date:** May 11-12, 2026 (Session 65)
+**Decision:** The **Financial Model** (24-month forward projection) lives at `/executive-dashboard/financial-model` as a separate page distinct from the **Executive Dashboard** (`/executive-dashboard`, real-time business metrics). Per DEC-014, Executive Dashboard is already a standalone page (not an admin tab); the Financial Model is positioned as its sibling. Both are auth-gated to RAV team only. A shared `DashboardTabs` component navigates between the two — they share top-level chrome but render distinct content.
+
+**Distinction enforced visually:**
+- Executive Dashboard: live Supabase queries, HeadlineBar, real-time KPIs
+- Financial Model: "Forward Projection — Not Live Data" amber banner, scenario toggle (Conservative/Base/Optimistic), forecast-only KPI cards
+- Cells/numbers on one page never duplicate those on the other; the Financial Model can consume Executive Dashboard actuals as a future overlay (Stage 2b), but they never overlap as redundant copies
+
+**Architecture:**
+- `src/lib/financial-model/data.ts` — single source of truth for all model inputs (typed); used by both the Node-side Excel generator (`scripts/financial-model/`) and the React UI (`src/pages/FinancialModelDashboard.tsx`)
+- `src/lib/financial-model/calc.ts` — pure-TS port of every .xlsx formula; same scenarios produce same numbers as the .xlsx
+- `npm run financials:build` produces the .xlsx artifact for sharing; the React UI provides instant-view access without leaving the browser
+
+**Rationale:**
+1. **Live vs forecast are different mental models.** Conflating them in one page risks an investor or co-founder mistaking a forecast for reality (or vice versa). The distinct banner + route eliminates that risk.
+2. **Single source of truth scales.** Both the Excel artifact and the web UI consume the same `data.ts`. Edit it once, both update. Prevents the drift that plagued the Apps Script → Excel → docs reality before Phase 1a.
+3. **Phased delivery.** Stage 2a (this session) is view-only. Stage 2b adds live actuals overlay (forecast vs reality side-by-side). Stage 2c adds interactive input editing + scenario save/load in Supabase. Stage 2d adds recharts + PDF export. Each is a shippable PR.
+
+**Status:** Active. Supersedes the earlier "rebuild it as a tab inside ExecutiveDashboard" framing — implemented as separate child route with shared tabs instead.
+
+---
+
+### DEC-041: Platform Commission Rate Repositioned to 12% (was 15%); Tier Discounts Recalibrated
+**Date:** May 11-12, 2026 (Session 65, PR #514)
+**Decision:** The base platform commission rate is changed from **15% to 12%**. Tier discounts are recalibrated accordingly so the highest-volume Business tier doesn't drop to an aggressive 7%:
+
+| Tier | Effective rate before | Effective rate after |
+|------|------------------------|------------------------|
+| Free Owner | 15% | **12%** |
+| Pro Owner ($10/mo) | 13% (15% − 2pp) | **10%** (12% − 2pp) |
+| Business Owner ($25/mo) | 10% (15% − 5pp) | **8%** (12% − 4pp) — business discount tightened 5pp → 4pp |
+
+**Rationale — competitor anchoring:**
+- **RedWeek "Verified Rental"** charges 15-20% to owners — RAV's most direct full-service competitor
+- **Koala** charges 10% to owners — lighter-feature competitor, RAV beats on escrow + AI + bid mechanics
+- **12% positions RAV as "premium over Koala, below RedWeek"** — defensible by the extra service stack
+- 10% would match Koala exactly, removing price as friction but failing to capture RAV's incremental service value
+- 15% was harder to explain in head-to-head: travelers/owners see "+50% over Koala" before they hear about extra features
+
+**Why 4pp Business discount (not 5pp):**
+- At 12% base, 5pp discount → Business effective 7% — materially below Koala (10%) for no clear strategic gain. Hard to walk back if market doesn't reward it.
+- 8% still rewards high-volume Business owners while preserving sustainable RAV margin.
+
+**Implementation:**
+- One-file edit: `src/config/commission.ts` (single source of truth via DEC-041's prerequisite — central commission config, #510 MVP).
+- Live booking pricing (`src/lib/pricing.ts` → `RAV_MARKUP_RATE`) and the financial model (`src/lib/financial-model/data.ts` PLATFORM rows) both pull from the central config — no code drift possible.
+- Tests updated: `src/lib/pricing.test.ts` (4 hardcoded value assertions) + `src/components/admin/AdminListingEditDialog.test.tsx` (one rendered-text assertion). 1669/1669 pass.
+
+**Status:** Active. Replaces prior 15% rate locked in DEC-022 (Pricing, Tax & Accounting Framework). Outstanding doc updates: BRAND-LOCK.md § 5 numerical claims registry (still says 15%); `docs/RAV-PRICING-TAXES-ACCOUNTING.md` prose. Both pending separate doc-PR follow-up.
+
+**Modeled impact:**
+- At current scenario assumptions, dropping base 15% → 12% reduces 24-month Net Commission Revenue by roughly 20% (base scenario). Sensitivity tab on the financial model shows the full curve. Subscription + voice overage revenue unaffected.
+- The decision is anchored to long-term competitive positioning, not short-term forecast optimization. If the strategic positioning works, the modest revenue compression is recovered through faster owner acquisition.
 
 ---
 

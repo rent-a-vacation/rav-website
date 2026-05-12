@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-28T10:04:52"
-change_ref: "dfba76b"
-change_type: "session-64"
+last_updated: "2026-05-12T01:55:00"
+change_ref: "025404c"
+change_type: "session-65"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -48,15 +48,24 @@ When `/sdlc pickup` runs next, the user has explicitly scoped the next session a
 
 **Also consider after those:** A controlled PROD deploy window for the accumulated Phase 22 + Session 59 changes (migrations 060–065, text-chat updates with support context + 5 tools + classifier, ingest-support-docs + cancel-listing edge fns, support_conversations + listing-proofs + dispute_source schemas). All currently sit on DEV per CLAUDE.md human-confirmation rule.
 
-## Current Priority Tiers (as of May 6, 2026 — Session 64)
+## Current Priority Tiers (as of May 11-12, 2026 — Session 65)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-_Empty after Session 60. #371 + #442 + #445 all shipped (PRs #441, #446). All edge-fn harness work either complete or properly deferred (see Tier E for #443/#444)._
+**Session 65 close — Financial Model + Phase 2 Stage 2a shipped. Three next-up items confirmed with user (see Session 65 Pickup section below):**
 
-> **Phase 22 epic (#395) — COMPLETE (22/22 tickets).** Session 58 closed out C1+C4+C2+C5+C3+D1+D2 across 6 PRs (#428-#433). Session 59 cleared all remaining Tier A pre-launch marketplace items (#376 proof workflow, #378 Open-for-Offers, #381 Action Needed dashboards, #377 cancel-listing cascade, #393 PLATFORM-INVENTORY). Session 60 closed #371 (edge-fn test harness, DEC-037), #442 (Stripe Connect tests), #445 (vitest coverage extension).
->
-> Next pickup is **#438 (incorporation docs starter kit)** — see Tier B.
+1. **#510 full scope** — Complete the central-commission-config refactor: DB runtime read (`system_settings.platform_commission_rate` via `useSystemSettings` hook), admin UI for changing the rate with audit log, async pricing-function refactor. ~1-2 days. **Blocks #509.**
+2. **Phase 2 Stage 2b** — Live actuals overlay on `/executive-dashboard/financial-model`. Pull real user counts + bookings + revenue from Supabase. Show "actuals (Mo 1-N)" alongside forecast. ~3-5 days. Independent.
+3. **#509** — Promotional commission rate overrides (launch specials, seasonal campaigns, owner-tier promos). DB schema + admin UI + commission resolution chain + booking audit fields. ~1-2 weeks. **Builds on #510 full.**
+
+### Session 65 Pickup (confirmed with user end of Session 65)
+
+User confirmed at session close:
+- Commission rate locked at **12%** per DEC-041 (was status quo 15%)
+- Outstanding doc-only updates (deferred, not blocking): BRAND-LOCK.md § 5 (15% → 12%), `docs/RAV-PRICING-TAXES-ACCOUNTING.md` prose updates
+- A pre-existing git stash on local dev contains another session's MLA Notice + military profile work-in-progress (`supabase/migrations/076_profiles_active_duty_military.sql` + `src/components/legal/MLANotice*` + Checkout/Signup/Terms updates). Preserved via stash; user to decide whether to pop or drop on return.
+
+Work order on resume: **#510 full → Stage 2b → #509** (respects the #510 → #509 dependency).
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
