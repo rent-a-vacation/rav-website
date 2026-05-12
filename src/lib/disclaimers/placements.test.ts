@@ -192,6 +192,30 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     ],
     notes: "Admin dashboard must register the listing-accuracy-reports tab (#491).",
   },
+  {
+    file: "src/components/Footer.tsx",
+    required: [
+      `FraudReportDialog`,
+      `data-testid="footer-report-fraud"`,
+    ],
+    notes: "Footer must surface a 'Report fraud' link (#492, FTC v. Carroll).",
+  },
+  {
+    file: "src/pages/PropertyDetail.tsx",
+    required: [
+      `FraudReportDialog`,
+      `data-testid="report-fraud-button"`,
+    ],
+    notes: "Listing page must surface a 'Report fraud' button distinct from the accuracy-report button (#492).",
+  },
+  {
+    file: "src/pages/AdminDashboard.tsx",
+    required: [
+      `AdminFraudReports`,
+      `value="fraud-reports"`,
+    ],
+    notes: "Admin dashboard must register the fraud-reports tab gated to rav_admin (#492).",
+  },
 ];
 
 describe("Disclaimer placement audit — required <DisclaimerBlock /> usages per page", () => {

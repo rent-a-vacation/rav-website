@@ -62,6 +62,7 @@ import AdminDisputes from "@/components/admin/AdminDisputes";
 import AdminTaxReporting from "@/components/admin/AdminTaxReporting";
 import { AdminMarketplaceRegistrations } from "@/components/admin/AdminMarketplaceRegistrations";
 import { AdminListingAccuracyReports } from "@/components/admin/AdminListingAccuracyReports";
+import { AdminFraudReports } from "@/components/admin/AdminFraudReports";
 import AdminResortImport from "@/components/admin/AdminResortImport";
 import AdminResortTagEditor from "@/components/admin/AdminResortTagEditor";
 import { LaunchReadinessChecklist } from "@/components/admin/LaunchReadinessChecklist";
@@ -257,6 +258,12 @@ const AdminDashboard = () => {
               <span className="hidden sm:inline">Accuracy reports</span>
             </TabsTrigger>
             {isRavAdmin() && (
+              <TabsTrigger value="fraud-reports" className="gap-2">
+                <ShieldAlert className="h-4 w-4 text-destructive" />
+                <span className="hidden sm:inline">Fraud reports</span>
+              </TabsTrigger>
+            )}
+            {isRavAdmin() && (
               <TabsTrigger value="payouts" className="gap-2">
                 <Wallet className="h-4 w-4" />
                 <span className="hidden sm:inline">Payouts</span>
@@ -405,6 +412,12 @@ const AdminDashboard = () => {
           <TabsContent value="accuracy-reports">
             <AdminListingAccuracyReports />
           </TabsContent>
+
+          {isRavAdmin() && (
+            <TabsContent value="fraud-reports">
+              <AdminFraudReports />
+            </TabsContent>
+          )}
 
           {isRavAdmin() && (
             <TabsContent value="payouts">

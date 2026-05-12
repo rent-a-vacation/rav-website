@@ -54,6 +54,7 @@ import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 import { StateSpecificDisclaimer } from "@/components/legal/StateSpecificDisclaimer";
 import { GuestProtectionBadge } from "@/components/legal/GuestProtectionBadge";
 import { ListingAccuracyReportDialog } from "@/components/listings/ListingAccuracyReportDialog";
+import { FraudReportDialog } from "@/components/legal/FraudReportDialog";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { OwnerProfileCard } from "@/components/OwnerProfileCard";
 import { InquiryDialog } from "@/components/InquiryDialog";
@@ -85,6 +86,8 @@ const PropertyDetail = () => {
   const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false);
   // #491 — Listing accuracy reporting (pre-booking; may be anonymous)
   const [accuracyReportOpen, setAccuracyReportOpen] = useState(false);
+  // #492 — Fraud reporting (pre-booking; may be anonymous; senior-admin triage)
+  const [fraudReportOpen, setFraudReportOpen] = useState(false);
 
   // Auth
   const { user } = useAuth();
@@ -869,6 +872,14 @@ const PropertyDetail = () => {
               >
                 Report a listing inaccuracy
               </button>
+              <button
+                type="button"
+                onClick={() => setFraudReportOpen(true)}
+                className="text-xs text-destructive/80 hover:text-destructive underline underline-offset-2 transition-colors"
+                data-testid="report-fraud-button"
+              >
+                Report fraud
+              </button>
               <GuestProtectionBadge />
             </div>
             <DisclaimerBlock id="8.1" variant="compact" />
@@ -952,6 +963,16 @@ const PropertyDetail = () => {
         <ListingAccuracyReportDialog
           open={accuracyReportOpen}
           onOpenChange={setAccuracyReportOpen}
+          listingId={listing.id}
+          listingLabel={displayName}
+        />
+      )}
+
+      {/* #492 — Fraud report dialog (pre-booking, anonymous OK, senior-admin triage) */}
+      {listing && (
+        <FraudReportDialog
+          open={fraudReportOpen}
+          onOpenChange={setFraudReportOpen}
           listingId={listing.id}
           listingLabel={displayName}
         />
