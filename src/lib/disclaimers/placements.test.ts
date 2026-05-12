@@ -225,6 +225,15 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     ],
     notes: "Listing creation must gate submit on CC&R attestation + persist timestamp (#481, 2026-05-04 review).",
   },
+  {
+    file: "src/pages/Terms.tsx",
+    required: [
+      `data-testid="automated-access-clause-heading"`,
+      `Automated Access`,
+      `Computer Fraud and Abuse Act`,
+    ],
+    notes: "Terms must contain the Automated Access & Scraping clause in Section 7.1 (#482, 2026-05-04 review).",
+  },
 ];
 
 describe("Disclaimer placement audit — required <DisclaimerBlock /> usages per page", () => {

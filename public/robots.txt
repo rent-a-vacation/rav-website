@@ -1,6 +1,13 @@
+# Rent-A-Vacation — robots policy
+# See /terms § 7 for the legal scraping policy (#482).
+
 Sitemap: https://rent-a-vacation.com/sitemap.xml
 
-User-agent: *
+# ─────────────────────────────────────────────────────────────
+# Allowed search engines — full crawl access except admin / checkout / account paths.
+# ─────────────────────────────────────────────────────────────
+
+User-agent: Googlebot
 Allow: /
 Disallow: /admin
 Disallow: /owner-dashboard
@@ -11,3 +18,64 @@ Disallow: /pending-approval
 Disallow: /my-bookings
 Disallow: /my-bids
 Disallow: /account
+Disallow: /api
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /owner-dashboard
+Disallow: /executive-dashboard
+Disallow: /checkout
+Disallow: /booking-success
+Disallow: /pending-approval
+Disallow: /my-bookings
+Disallow: /my-bids
+Disallow: /account
+Disallow: /api
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin
+Disallow: /owner-dashboard
+Disallow: /executive-dashboard
+Disallow: /checkout
+Disallow: /booking-success
+Disallow: /pending-approval
+Disallow: /my-bookings
+Disallow: /my-bids
+Disallow: /account
+Disallow: /api
+
+User-agent: BraveBot
+Allow: /
+Disallow: /admin
+Disallow: /owner-dashboard
+Disallow: /executive-dashboard
+Disallow: /checkout
+Disallow: /booking-success
+Disallow: /pending-approval
+Disallow: /my-bookings
+Disallow: /my-bids
+Disallow: /account
+Disallow: /api
+
+# ─────────────────────────────────────────────────────────────
+# All other crawlers — restricted. Listings / API / admin are off-limits to
+# unknown bots per the Terms of Service § 7 (Automated Access). Public
+# marketing pages (/, /how-it-works, /about, /faq, etc.) remain accessible.
+# ─────────────────────────────────────────────────────────────
+
+User-agent: *
+Disallow: /admin
+Disallow: /owner-dashboard
+Disallow: /executive-dashboard
+Disallow: /checkout
+Disallow: /booking-success
+Disallow: /pending-approval
+Disallow: /my-bookings
+Disallow: /my-bids
+Disallow: /account
+Disallow: /api
+Disallow: /listings
+Disallow: /resort/
+Disallow: /rentals

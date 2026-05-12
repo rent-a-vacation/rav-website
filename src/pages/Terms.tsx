@@ -114,6 +114,28 @@ const Terms = () => {
                   <li>Harass other users or staff</li>
                   <li>Post content that infringes intellectual property rights</li>
                 </ul>
+
+                <h3
+                  className="font-display text-lg font-semibold text-foreground mt-6 mb-2"
+                  data-testid="automated-access-clause-heading"
+                >
+                  7.1 Automated Access &amp; Scraping
+                </h3>
+                <p
+                  className="text-muted-foreground mb-3"
+                  data-testid="automated-access-clause-body"
+                >
+                  Automated access to this platform — including scraping, crawling, harvesting, or
+                  systematic copying of listings, owner profiles, prices, photos, or any other
+                  content — is prohibited without express prior written permission from
+                  Rent-A-Vacation. Our <code>/robots.txt</code> file is the authoritative policy
+                  for permitted automated access; only the search-engine bots explicitly named
+                  there are allowed to crawl pages outside their stated disallow lists.
+                  Unauthorized automated access violates these Terms and may also violate the
+                  federal Computer Fraud and Abuse Act (18 U.S.C. § 1030) and analogous state
+                  statutes. Rent-A-Vacation reserves the right to block, rate-limit, or pursue
+                  legal action against unauthorized crawlers.
+                </p>
               </section>
 
               <section className="mb-8">

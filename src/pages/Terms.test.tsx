@@ -74,4 +74,15 @@ describe("Terms of Service — required disclaimers", () => {
     expect(carveout.textContent).toMatch(/Steines v. Westgate Palace/);
     expect(carveout.textContent).toMatch(/applies regardless of whether the user has self-identified/i);
   });
+
+  it("contains the Automated Access & Scraping clause in Section 7.1 (#482)", () => {
+    renderTerms();
+    const heading = screen.getByTestId("automated-access-clause-heading");
+    expect(heading.textContent).toMatch(/Automated Access/);
+    const body = screen.getByTestId("automated-access-clause-body");
+    expect(body.textContent).toMatch(/scraping, crawling, harvesting/i);
+    expect(body.textContent).toMatch(/robots\.txt/);
+    expect(body.textContent).toMatch(/Computer Fraud and Abuse Act/);
+    expect(body.textContent).toMatch(/18 U\.S\.C\. § 1030/);
+  });
 });
