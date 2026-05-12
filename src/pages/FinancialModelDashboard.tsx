@@ -1,9 +1,10 @@
 import { Navigate, Link } from 'react-router-dom';
-import { TrendingUp, AlertTriangle, FileSpreadsheet, ArrowLeft } from 'lucide-react';
+import { TrendingUp, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { DashboardTabs } from '@/components/executive/DashboardTabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -57,6 +58,7 @@ export default function FinancialModelDashboard() {
       <Header />
 
       <div className="pt-16 md:pt-20">
+        <DashboardTabs />
         <main className="container mx-auto px-6 py-8 md:py-10">
           {/* Forward Projection banner — distinct from Exec Dashboard live metrics */}
           <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
@@ -71,10 +73,6 @@ export default function FinancialModelDashboard() {
           {/* Page header */}
           <div className="flex items-start justify-between gap-4 mb-8">
             <div>
-              <Link to="/executive-dashboard" className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 transition mb-3">
-                <ArrowLeft className="h-3.5 w-3.5" />
-                Back to Executive Dashboard
-              </Link>
               <div className="text-xs font-medium tracking-widest uppercase text-slate-400 mb-1.5">
                 Financial Model — Forward Projection
               </div>
