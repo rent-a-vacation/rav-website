@@ -216,6 +216,15 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     ],
     notes: "Admin dashboard must register the fraud-reports tab gated to rav_admin (#492).",
   },
+  {
+    file: "src/pages/ListProperty.tsx",
+    required: [
+      `ccAndRAttestationAccepted`,
+      `data-testid="cc-and-r-attestation-checkbox"`,
+      `cc_and_r_attested_at: ccAndRAttestationAccepted`,
+    ],
+    notes: "Listing creation must gate submit on CC&R attestation + persist timestamp (#481, 2026-05-04 review).",
+  },
 ];
 
 describe("Disclaimer placement audit — required <DisclaimerBlock /> usages per page", () => {

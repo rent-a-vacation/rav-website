@@ -136,6 +136,7 @@ interface ListPropertyDraft {
   // localStorage; confirmation number + bidding fields are fine)
   resortConfirmationNumber?: string;
   ownerAttestationAccepted?: boolean;
+  ccAndRAttestationAccepted?: boolean;
   openForBidding?: boolean;
   minBidAmount?: string;
   biddingEndsAt?: string;
@@ -209,6 +210,12 @@ const ListProperty = () => {
   const [ownerAttestationAccepted, setOwnerAttestationAccepted] = useState(
     draft?.ownerAttestationAccepted || false,
   );
+  // #481 — CC&R / rental-restriction attestation. The owner must confirm
+  // their resort's CC&Rs permit renting the listed stay. RAV records the
+  // attestation timestamp; the owner is solely responsible for the truth.
+  const [ccAndRAttestationAccepted, setCcAndRAttestationAccepted] = useState(
+    draft?.ccAndRAttestationAccepted || false,
+  );
 
   // #378 Bidding configuration (data model already exists on listings)
   const [openForBidding, setOpenForBidding] = useState(draft?.openForBidding || false);
@@ -256,6 +263,7 @@ const ListProperty = () => {
         cancellationPolicy,
         resortConfirmationNumber,
         ownerAttestationAccepted,
+        ccAndRAttestationAccepted,
         openForBidding,
         minBidAmount,
         biddingEndsAt,
@@ -263,7 +271,7 @@ const ListProperty = () => {
         allowCounterOffers,
       });
     }
-  }, [formStep, selectedBrand, isManualEntry, resortName, location, bedrooms, bathrooms, sleeps, description, checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy, resortConfirmationNumber, ownerAttestationAccepted, openForBidding, minBidAmount, biddingEndsAt, reservePrice, allowCounterOffers]);
+  }, [formStep, selectedBrand, isManualEntry, resortName, location, bedrooms, bathrooms, sleeps, description, checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy, resortConfirmationNumber, ownerAttestationAccepted, ccAndRAttestationAccepted, openForBidding, minBidAmount, biddingEndsAt, reservePrice, allowCounterOffers]);
 
   // Load full resort details when selected
   useEffect(() => {
@@ -326,11 +334,13 @@ const ListProperty = () => {
       : selectedResort && selectedUnitType;
 
   // Proof requirements (#376) — Pre-Booked listings require proof at list time.
+  // #481 — CC&R attestation is required at submit too (compliance gate).
   const proofReady =
     resortConfirmationNumber.trim().length >= 4 &&
     proofFile !== null &&
     !proofFileError &&
-    ownerAttestationAccepted;
+    ownerAttestationAccepted &&
+    ccAndRAttestationAccepted;
 
   // Bidding requirements (#378) — when enabled, minimum fields must be set.
   const biddingReady =
@@ -481,6 +491,8 @@ const ListProperty = () => {
         confirmation_proof_path: proofPath,
         confirmation_proof_hash: proofHash,
         owner_attestation_accepted_at: new Date().toISOString(),
+        // #481 — CC&R attestation timestamp (canSubmit gates this; should always be true here)
+        cc_and_r_attested_at: ccAndRAttestationAccepted ? new Date().toISOString() : null,
         proof_status: "submitted",
         // #378 bidding fields (only when enabled)
         open_for_bidding: openForBidding,
@@ -1105,6 +1117,26 @@ const ListProperty = () => {
                         suspension and legal action.
                       </Label>
                     </div>
+
+                    {/* #481 — CC&R / rental-restriction attestation. Owner attests that
+                        their resort's CC&Rs permit this rental. RAV records the timestamp;
+                        the owner is solely responsible for the truth of the attestation. */}
+                    <div className="flex items-start gap-2 pt-1">
+                      <Checkbox
+                        id="cc-and-r-attestation"
+                        data-testid="cc-and-r-attestation-checkbox"
+                        checked={ccAndRAttestationAccepted}
+                        onCheckedChange={(checked) => setCcAndRAttestationAccepted(!!checked)}
+                      />
+                      <Label htmlFor="cc-and-r-attestation" className="text-xs leading-snug">
+                        I attest that the CC&amp;Rs (covenants, conditions &amp; restrictions),
+                        resort use rules, and any timeshare-program rules governing this stay
+                        <strong> permit me to rent it</strong>. I understand RAV does not
+                        verify CC&amp;R compliance — I am solely responsible. Renting in
+                        violation of these rules may result in account suspension and may
+                        expose me to action by the resort or program operator.
+                      </Label>
+                    </div>
                   </div>
 
                   {/* Pricing preview */}
@@ -1228,7 +1260,7 @@ const ListProperty = () => {
                               formStep, selectedBrand, isManualEntry, resortName, location,
                               bedrooms, bathrooms, sleeps, description,
                               checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy,
-                              resortConfirmationNumber, ownerAttestationAccepted,
+                              resortConfirmationNumber, ownerAttestationAccepted, ccAndRAttestationAccepted,
                               openForBidding, minBidAmount, biddingEndsAt, reservePrice, allowCounterOffers,
                             });
                             navigate("/signup");
@@ -1254,7 +1286,7 @@ const ListProperty = () => {
                               formStep, selectedBrand, isManualEntry, resortName, location,
                               bedrooms, bathrooms, sleeps, description,
                               checkInDate, checkOutDate, nightlyRate, cleaningFee, cancellationPolicy,
-                              resortConfirmationNumber, ownerAttestationAccepted,
+                              resortConfirmationNumber, ownerAttestationAccepted, ccAndRAttestationAccepted,
                               openForBidding, minBidAmount, biddingEndsAt, reservePrice, allowCounterOffers,
                             });
                             setUpgradeDialogOpen(true);
