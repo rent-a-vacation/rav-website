@@ -7,7 +7,7 @@ status: "active"
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** May 11, 2026 (Session 64+65 — compliance hardening: #483/#484/#485/#486/#488/#489/#490/#491/#492 cumulative; +237 tests, +20 test files for the session)
+> **Last Updated:** May 11, 2026 (Session 64+65 — compliance hardening: 11 issues shipped incl. #483/#484/#485/#486/#488/#489/#490/#491/#492/#481; +246 tests, +21 test files for the session)
 
 ---
 
@@ -15,8 +15,8 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1729 |
-| **Test files** | 175 |
+| **Total tests** | 1738 |
+| **Test files** | 176 |
 | **P0 critical-path tests** | 290+ tagged `@p0` (Session 64 added @p0 on disclaimer registry, DisclaimerBlock, StateSpecificDisclaimer, Footer registry sourcing, Terms 8.3+8.6, About page, placement audit) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |
