@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-05-12T02:00:00"
-change_ref: "025404c"
-change_type: "session-65"
+last_updated: "2026-05-12T03:35:00"
+change_ref: "manual-edit"
+change_type: "session-66"
 status: "active"
 ---
 # Launch Readiness Checklist
@@ -60,10 +60,10 @@ The following major features were completed in Sessions 33-59 and are deployed:
 
 | Metric | Count |
 |--------|-------|
-| Automated tests | 1375 (147 test files) |
-| P0 critical-path tests | 199 tagged `@p0` (run with `npm run test:p0` — ~2s for filtered subset) |
-| SQL migrations | 065 (001-059 deployed to DEV + PROD; 060-065 deployed to DEV only — PROD held per CLAUDE.md human-confirmation rule) |
-| Edge functions | 36 total (27 deployed to PROD + 4 subscription fns on DEV + 3 SMS fns blocked on #127 + `ingest-support-docs` + `cancel-listing` deployed to DEV only). `text-chat` extended in Session 58 with `context: 'support'` branch + 5 agent tools + intent classifier — awaiting PROD deploy. |
+| Automated tests | 1754 (177 test files) |
+| P0 critical-path tests | 320+ tagged `@p0` (run with `npm run test:p0` — ~2s for filtered subset) |
+| SQL migrations | 079 + 3 date-based MDM migrations. **All applied to DEV + PROD as of Session 66.** Session-63 CLI backlog cleared via PR #500 (063 reserved-word fix). |
+| Edge functions | 40+ total. Most on PROD; SMS functions still blocked on #127 (LLC/EIN). |
 | Type errors | 0 |
 | Lint errors | 0 |
 | Build status | Clean |
@@ -102,8 +102,15 @@ The following major features were completed in Sessions 33-59 and are deployed:
 ### Content & Legal
 | # | Check | Type | How to Verify |
 |---|-------|------|---------------|
-| 11 | Terms of Service | Manual | Visit /terms — content reviewed by legal (#80) |
+| 11 | Terms of Service | Manual | Visit /terms — content reviewed by legal (#80). **Session 66:** Verbatim Disclaimers 8.3 + 8.6 + MLA carve-out (§ 9) + Automated Access clause (§ 7.1) deployed. Substantive policy review still needs counsel (#80 / C8). |
 | 12 | Privacy Policy | Manual | Visit /privacy — content reviewed by legal (#80) |
+| 12b | All 8 mandated disclaimers + trademark deployed via central registry | Auto | `npm run test -- src/lib/disclaimers/placements.test.ts` passes (55 placement-audit assertions). Counsel sign-off pending #494. |
+| 12c | Pay Safe / Stripe escrow architecture documented | Manual | `docs/payments/PAYSAFE-COMPLIANCE.md` complete. Counsel sign-off for FL § 721.08 / CA § 10145 / HI § 514E-9 pending (counsel question C1). |
+| 12d | Geo-targeted FL disclosure rendering | Auto | `<StateSpecificDisclaimer />` renders 8.7 verbatim on every FL listing + checkout. CA wiring complete; awaits counsel C10 text via #493. |
+| 12e | Consumer-protection surfaces deployed | Auto | Guest Protection page + badge + Checkout banner (#489); ListingAccuracyReportDialog + admin queue (#491); FraudReportDialog + senior-admin queue (#492); MLA notice (#490). |
+| 12f | Owner attestations on listing creation | Auto | Reservation-genuine attestation (existing) + CC&R rental-restriction attestation (Migration 079 + ListProperty checkbox). |
+| 12g | robots.txt + scraping policy | Auto | `public/robots.txt` explicit allowlist for major search engines + restrictive User-agent:* for unknown bots. Terms § 7.1 Automated Access clause cites 18 U.S.C. § 1030. |
+| 12h | Marketplace-facilitator registration tracker | Auto | `/admin → Tax registrations` tab live (Migration 075, 51 jurisdictions seeded). Values fill in per counsel C7. |
 
 ### Monitoring
 | # | Check | Type | How to Verify |

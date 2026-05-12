@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-04-24T22:04:34"
-change_ref: "6397d67"
-change_type: "session-59"
+last_updated: "2026-05-12T03:30:00"
+change_ref: "manual-edit"
+change_type: "session-66"
 status: "active"
 ---
 
@@ -146,6 +146,25 @@ status: "active"
 | **API key management** | Admin creates keys with optional CIDR IP allowlisting | `AdminApiKeys` admin tab |
 | **Developer portal** | Public OpenAPI Swagger UI | `/developers` · `public-api.yaml` |
 
+### Compliance & Legal (Session 66 hardening)
+
+| Feature | What it is | Key routes / files |
+|---|---|---|
+| **Central disclaimer registry** | Single source of truth for all 8 mandated disclaimers + trademark. Verbatim text from Legal Dossier v3 § VIII; `legalReviewRequired: true` until counsel sign-off via #494. | `src/lib/disclaimers/registry.ts` · `<DisclaimerBlock />` · `<StateSpecificDisclaimer />` · drift-detection test |
+| **Edge-function disclaimer mirror** | Email-side copy of the same disclaimer text; drift test fails CI if mirror diverges. | `supabase/functions/_shared/disclaimers.ts` · `disclaimerHtml()` helper used in booking-confirmation email |
+| **9 disclaimer placements** | Homepage, footer, listing pages, Terms § 2 + § 8, About page, Checkout, BookingSuccess, booking-confirmation email. Geo-targeted FL 8.7 + CA 8.7-CA scaffolded (CA text pending C10). | `src/lib/disclaimers/placements.test.ts` audits each location |
+| **About page** | `/about` page hosts Disclaimer 8.3 + Pay Safe / Stripe explainer. | `src/pages/About.tsx` |
+| **Guest Protection Policy** | `/guest-protection` page + GuestProtectionBadge (badge + banner variants) on PropertyDetail / Checkout / FAQ / Footer. Surfaces the 5-business-day refund promise for Host cancellations within 30 days of check-in. | `src/pages/GuestProtection.tsx` · `src/components/legal/GuestProtectionBadge.tsx` |
+| **MLA notice + Terms § 9 carve-out** | Active-duty servicemember self-disclosure at signup (Migration 076); conditional `<MLANotice />` on Checkout; universal Terms § 9 carve-out paragraph (Steines v. Westgate Palace, 10 U.S.C. § 987). | `src/components/legal/MLANotice.tsx` · `src/pages/Terms.tsx` § 9 |
+| **No-sales listing validator** | Block list of 16 sale-language phrases (case-insensitive + NFKC normalization). Wired into ListProperty submit. | `src/lib/listingValidation/noSales.ts` |
+| **CC&R attestation** | Required checkbox in ListProperty; persists `listings.cc_and_r_attested_at` (Migration 079). | `src/pages/ListProperty.tsx` · Migration 079 |
+| **Listing accuracy reporting** | Pre-booking accuracy intake (Palmer v. FantaSea). Anonymous OK. Admin queue with Triage dialog. | `src/components/listings/ListingAccuracyReportDialog.tsx` · `src/components/admin/AdminListingAccuracyReports.tsx` · Migration 077 |
+| **Fraud reporting** | Pre-booking fraud intake (FTC v. Carroll). Anonymous OK. Senior-admin-only queue with severity + escalation paths. | `src/components/legal/FraudReportDialog.tsx` · `src/components/admin/AdminFraudReports.tsx` · Migration 078 |
+| **Marketplace-facilitator registration tracker** | 51-jurisdiction admin tab; values fill in per counsel C7. | `src/components/admin/AdminMarketplaceRegistrations.tsx` · Migration 075 |
+| **robots.txt + Terms § 7.1** | Explicit allowlist for major search engines; restrictive User-agent:* for unknown bots; ToS clause cites 18 U.S.C. § 1030. | `public/robots.txt` · `src/pages/Terms.tsx` § 7.1 |
+| **Pay Safe / Stripe destination-charge architecture** | Documented compliance posture: RAV never holds Guest funds; Stripe is the licensed processor. Counsel sign-off pending C1. | `docs/payments/PAYSAFE-COMPLIANCE.md` · `process-escrow-release/handler.ts` · Migration 068 |
+| **Counsel-meeting materials** | Three counsel-facing docs + PDFs. | `docs/legal/counsel-meeting-prep.md` (NEW) · `attorney-meeting-compliance-status.md` · `compliance-gap-analysis.md` |
+
 ---
 
 ## §2 — Platform (infrastructure + integrations)
@@ -160,7 +179,7 @@ status: "active"
 
 ### Database
 
-- **Migrations:** 065 numbered + 3 date-based MDM ones (`supabase/migrations/`). Always additive; never mutate shipped migrations.
+- **Migrations:** 079 numbered + 3 date-based MDM ones (`supabase/migrations/`). **All applied to DEV + PROD as of Session 66.** Always additive; never mutate shipped migrations.
 - **Key conventions:**
   - All user-id FK columns reference `profiles(id)` directly (not `auth.users(id)`) — PostgREST traversal requirement.
   - RLS enabled on every user-facing table; service-role pattern for edge functions needing to bypass.
