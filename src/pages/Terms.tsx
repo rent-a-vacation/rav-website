@@ -136,6 +136,18 @@ const Terms = () => {
                   If unsuccessful, Rent-A-Vacation's customer support team can assist with mediation.
                   Unresolved disputes may be subject to binding arbitration.
                 </p>
+                <p
+                  className="text-muted-foreground mb-4"
+                  data-testid="mla-carveout"
+                >
+                  <strong>Military Lending Act Carve-Out.</strong> For active-duty servicemembers of the U.S.
+                  Armed Forces and their dependents (as defined in 10 U.S.C. § 987 and 32 C.F.R. § 232), the
+                  arbitration provision above is not enforceable. Such users retain the right to pursue any
+                  dispute arising out of or relating to these Terms in a court of competent jurisdiction.
+                  This carve-out reflects the holding of <em>Steines v. Westgate Palace</em>, 11th Cir.
+                  (2024), and applies regardless of whether the user has self-identified as a servicemember
+                  to Rent-A-Vacation.
+                </p>
               </section>
 
               <section className="mb-8">

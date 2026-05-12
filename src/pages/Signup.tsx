@@ -23,6 +23,10 @@ const Signup = () => {
     accountType: "renter",
     ageVerified: false,
     termsAccepted: false,
+    // #490 — optional self-disclosure of active-duty status. NULL = not answered.
+    // The MLA carve-out in Terms § 9 applies regardless; this drives the in-checkout
+    // notice render only.
+    isActiveDutyMilitary: null as boolean | null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isSignupComplete, setIsSignupComplete] = useState(false);
@@ -114,6 +118,14 @@ const Signup = () => {
             acceptance_method: "signup_checkbox",
             user_agent: navigator.userAgent,
           });
+          // #490 — Persist optional active-duty disclosure on the profile.
+          // Only writes when the user actively answered (TRUE or FALSE); NULL stays NULL.
+          if (formData.isActiveDutyMilitary !== null) {
+            await supabase
+              .from("profiles")
+              .update({ is_active_duty_military: formData.isActiveDutyMilitary })
+              .eq("id", newUser.id);
+          }
         }
       } catch (auditError) {
         // Audit write is best-effort; log but don't block signup success.
@@ -354,6 +366,38 @@ const Signup = () => {
                       <Link to="/privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
                         Privacy Policy
                       </Link>
+                    </span>
+                  </label>
+
+                  {/* #490 — Optional MLA self-disclosure. The arbitration carve-out in Terms § 9
+                      applies regardless; this checkbox just enables the in-checkout notice render. */}
+                  <label className="flex items-start gap-2 cursor-pointer" data-testid="mla-self-disclosure">
+                    <input
+                      type="checkbox"
+                      className="rounded border-border mt-1"
+                      checked={formData.isActiveDutyMilitary === true}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          isActiveDutyMilitary: e.target.checked ? true : false,
+                        })
+                      }
+                      aria-label="I am (or am a dependent of) an active-duty servicemember of the U.S. Armed Forces"
+                    />
+                    <span className="text-xs text-muted-foreground leading-relaxed">
+                      <strong>Optional:</strong> I (or a dependent of mine) am an active-duty
+                      servicemember of the U.S. Armed Forces. Under the{" "}
+                      <Link
+                        to="/terms"
+                        className="text-primary hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Military Lending Act (10 U.S.C. § 987)
+                      </Link>
+                      , disputes involving servicemembers are not subject to mandatory arbitration.
+                      Checking this box helps us show you the relevant notice at checkout. Your
+                      protection applies either way.
                     </span>
                   </label>
                 </div>

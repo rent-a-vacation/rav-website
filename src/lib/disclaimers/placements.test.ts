@@ -151,6 +151,31 @@ const PLACEMENTS: ReadonlyArray<Placement> = [
     ],
     notes: "Guest Protection page route must be registered (#489).",
   },
+  {
+    file: "src/pages/Checkout.tsx",
+    required: [
+      `MLANotice`,
+      `profile?.is_active_duty_military === true`,
+    ],
+    notes: "Checkout must conditionally render MLANotice for self-identified active-duty servicemembers (#490).",
+  },
+  {
+    file: "src/pages/Signup.tsx",
+    required: [
+      `isActiveDutyMilitary`,
+      `data-testid="mla-self-disclosure"`,
+      `is_active_duty_military: formData.isActiveDutyMilitary`,
+    ],
+    notes: "Signup must offer optional MLA self-disclosure and persist to profiles.is_active_duty_military (#490).",
+  },
+  {
+    file: "src/pages/Terms.tsx",
+    required: [
+      `data-testid="mla-carveout"`,
+      `Military Lending Act Carve-Out`,
+    ],
+    notes: "Terms of Service must contain the MLA arbitration carve-out paragraph in Section 9 (#490).",
+  },
 ];
 
 describe("Disclaimer placement audit — required <DisclaimerBlock /> usages per page", () => {
