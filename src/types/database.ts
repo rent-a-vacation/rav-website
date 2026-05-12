@@ -678,6 +678,69 @@ export type Database = {
         }
         Relationships: []
       }
+      fraud_reports: {
+        Row: {
+          booking_id: string | null
+          category: string
+          created_at: string
+          description: string
+          evidence_urls: string[] | null
+          id: string
+          internal_notes: string | null
+          listing_id: string | null
+          reported_user_id: string | null
+          reporter_email: string | null
+          reporter_id: string | null
+          reporter_name: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id?: string | null
+          category: string
+          created_at?: string
+          description: string
+          evidence_urls?: string[] | null
+          id?: string
+          internal_notes?: string | null
+          listing_id?: string | null
+          reported_user_id?: string | null
+          reporter_email?: string | null
+          reporter_id?: string | null
+          reporter_name?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          evidence_urls?: string[] | null
+          id?: string
+          internal_notes?: string | null
+          listing_id?: string | null
+          reported_user_id?: string | null
+          reporter_email?: string | null
+          reporter_id?: string | null
+          reporter_name?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       listing_bids: {
         Row: {
           bid_amount: number

@@ -1,8 +1,11 @@
-import { Mail, Phone, MapPin, Gavel } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, MapPin, Gavel, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
+import { FraudReportDialog } from "@/components/legal/FraudReportDialog";
 
 const Footer = () => {
+  const [fraudDialogOpen, setFraudDialogOpen] = useState(false);
   return (
     <footer className="bg-foreground text-white/80">
       <div className="container mx-auto px-4 py-16">
@@ -106,10 +109,19 @@ const Footer = () => {
               <Gavel className="w-4 h-4 text-primary" />
               <span>A Marketplace for Renters and Owners</span>
             </div>
-            <div className="flex gap-6 text-sm">
+            <div className="flex flex-wrap gap-6 text-sm">
               <Link to="/about" className="text-white/50 hover:text-white transition-colors">About</Link>
               <Link to="/privacy" className="text-white/50 hover:text-white transition-colors">Privacy Policy</Link>
               <Link to="/terms" className="text-white/50 hover:text-white transition-colors">Terms of Service</Link>
+              <button
+                type="button"
+                onClick={() => setFraudDialogOpen(true)}
+                className="text-white/50 hover:text-white transition-colors inline-flex items-center gap-1"
+                data-testid="footer-report-fraud"
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+                Report fraud
+              </button>
             </div>
           </div>
           <div className="text-center mt-4">
@@ -119,6 +131,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      <FraudReportDialog open={fraudDialogOpen} onOpenChange={setFraudDialogOpen} />
     </footer>
   );
 };

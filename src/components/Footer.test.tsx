@@ -4,9 +4,17 @@
  * Tests for the global Footer — trademark/affiliation disclaimer.
  * GitHub Issue: #479 — Add trademark disclaimer footer
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+
+// Footer mounts <FraudReportDialog /> for the "Report fraud" link (#492); that
+// dialog calls useAuth(). Mock the context so the dialog can render without a
+// real AuthProvider in the test tree.
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: null }),
+}));
+
 import Footer from "./Footer";
 
 const renderFooter = () =>
