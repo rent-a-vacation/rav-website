@@ -49,9 +49,16 @@ jobs:
           OPEN_BLOCKED=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue+is:open+label:blocked&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
           OPEN_IDEAS=$(gh api -X GET "search/issues?q=repo:${REPO}+is:issue+is:open+label:idea+label:future&per_page=1" --jq '.total_count' 2>/dev/null || echo "0")
 
-          # Commits on dev
-          COMMITS=$(gh api "repos/${REPO}/commits?sha=dev&since=${SINCE}&per_page=50" \
-            --jq '.[] | "[\(.sha[0:7])] \(.commit.message | split("\n")[0])"' 2>/dev/null || echo "")
+          # Commits on dev (single fetch — derive both list and authors).
+          # GitHub returns 404 with a JSON error body when no commits match the window;
+          # validate the response is an array before applying jq, otherwise both stay empty.
+          COMMITS_RAW=$(gh api "repos/${REPO}/commits?sha=dev&since=${SINCE}&per_page=50" 2>/dev/null)
+          COMMITS=""
+          DEVS=""
+          if echo "$COMMITS_RAW" | jq -e 'type == "array"' >/dev/null 2>&1; then
+            COMMITS=$(echo "$COMMITS_RAW" | jq -r '.[] | "[\(.sha[0:7])] \(.commit.message | split("\n")[0])"' 2>/dev/null || echo "")
+            DEVS=$(echo "$COMMITS_RAW" | jq -r '[.[].commit.author.name] | unique | join(", ")' 2>/dev/null || echo "")
+          fi
           COMMIT_COUNT=0
           if [ -n "$COMMITS" ]; then
             COMMIT_COUNT=$(echo "$COMMITS" | wc -l)
@@ -69,12 +76,7 @@ jobs:
           EST_TOTAL=$((CLOSED_TOTAL * AVG_HRS))
           EST_TODAY=$((CLOSED_COUNT * AVG_HRS))
 
-          # Developers active today (from commit authors, deduplicated)
-          DEVS=""
-          if [ -n "$COMMITS" ]; then
-            DEVS=$(gh api "repos/${REPO}/commits?sha=dev&since=${SINCE}&per_page=50" \
-              --jq '[.[].commit.author.name] | unique | join(", ")' 2>/dev/null || echo "")
-          fi
+          # Developers active today — derived above from COMMITS_RAW
 
           # Key deliverables — auto-generated from issue close comments
           # Extracts "Completed:" lines from the last comment on each closed issue
@@ -322,7 +324,9 @@ jobs:
           HTMLEOF
 
           if [ -n "$DEVS" ]; then
-            echo "<p style='font-size:12px;color:#6b7280;margin:0 0 8px;'>Developed by: <strong>${DEVS}</strong></p>" >> /tmp/report.html
+            echo "<p style='font-size:12px;color:#6b7280;margin:0 0 8px;'>Developed by: <strong>RAV Engineering Team</strong> (${DEVS})</p>" >> /tmp/report.html
+          else
+            echo "<p style='font-size:12px;color:#6b7280;margin:0 0 8px;'>Developed by: <strong>RAV Engineering Team</strong></p>" >> /tmp/report.html
           fi
 
           cat >> /tmp/report.html << 'HTMLEOF'
