@@ -28,6 +28,11 @@ vi.mock("@/hooks/use-toast", () => ({
   useToast: () => ({ toast: mockToast }),
 }));
 
+vi.mock("@/hooks/useCommissionRate", () => ({
+  useEffectiveCommissionRate: () => 0.12,
+  useCommissionRate: () => ({ data: { base: 0.12, proDiscount: 0.02, businessDiscount: 0.04 }, isLoading: false }),
+}));
+
 interface ListingForEdit extends Listing {
   property?: Property;
 }

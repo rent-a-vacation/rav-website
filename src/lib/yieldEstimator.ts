@@ -21,7 +21,11 @@ const REGIONAL_OCCUPANCY: Record<string, number> = {
   default: 0.70,
 };
 
-const RAV_COMMISSION = 0.15;
+import { DEFAULT_COMMISSION } from '@/config/commission';
+
+// Yield estimator is a calculator surface; uses central default. If the rate
+// needs to vary per call site, accept it as an input parameter (issue #510).
+const RAV_COMMISSION = DEFAULT_COMMISSION.base;
 
 export interface YieldInputs {
   brand: string;

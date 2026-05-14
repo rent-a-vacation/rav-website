@@ -22,6 +22,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import type { ListingWithBidding } from '@/types/bidding';
 import { calculateNights, computeListingPricing } from '@/lib/pricing';
+import { useEffectiveCommissionRate } from '@/hooks/useCommissionRate';
 import { trackEvent } from '@/lib/posthog';
 import { useGetOrCreateConversation, useInsertConversationEvent } from '@/hooks/useConversations';
 
@@ -54,14 +55,15 @@ export function BidFormDialog({ listing, open, onOpenChange, mode = 'bid' }: Bid
   const proposedNights = proposedCheckIn && proposedCheckOut
     ? calculateNights(proposedCheckIn, proposedCheckOut)
     : 0;
+  const commissionRate = useEffectiveCommissionRate();
 
   // Auto-compute bid amount from nightly rate when in date-proposal mode
   useEffect(() => {
     if (mode === 'date-proposal' && nightlyRate > 0 && proposedNights > 0) {
-      const pricing = computeListingPricing(nightlyRate, proposedNights);
+      const pricing = computeListingPricing(nightlyRate, proposedNights, commissionRate);
       setBidAmount(pricing.finalPrice);
     }
-  }, [mode, nightlyRate, proposedNights]);
+  }, [mode, nightlyRate, proposedNights, commissionRate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-05-12T03:00:00"
+last_updated: "2026-05-13T03:00:00"
 change_ref: "manual-edit"
-change_type: "session-66"
+change_type: "session-67"
 status: "active"
 ---
 # PROJECT HUB - Rent-A-Vacation
@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** May 12, 2026 (Session 66: Compliance Hardening Sprint — 12 build-now items shipped against Legal Dossier v3)
+> **Last Updated:** May 13, 2026 (Session 67: Commission rate runtime architecture — issue #510 closure)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -93,20 +93,49 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - Edge functions require `--no-verify-jwt` deployment flag
 
 ### Platform Status
-- **1754 automated tests** (177 test files, all passing), 0 type errors, 0 lint errors, build clean
+- **~1784 automated tests** (~180 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 320+ tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-079 + 3 date-based MDM migrations. **All applied to DEV + PROD** as of Session 66 (CLI backlog cleared: 063 reserved-word fix landed in PR #500; subsequent migrations 064–079 pushed in coordinated DEV+PROD rounds).
+- **Migrations created:** 001-080 + 3 date-based MDM migrations. Migrations 001–079 applied to DEV + PROD as of Session 66. **Migration 080 (commission rate runtime, issue #510) is not yet applied** — push in a coordinated DEV+PROD round when PR feature/issue-510 merges to main.
 - **Edge functions:** 39 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` + `cancel-listing` + `confirm-checkin` + `auto-confirm-checkins` + `sla-monitor` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58). `process-escrow-release` refactored to handler.ts split (Session 63 / DEC-037).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** In sync as of Session 66 close (PR #524 dev→main merged 2026-05-12). Latest release: 12-item compliance hardening sprint completing the build-now phase of the 2026-05-05 audit.
+- **dev and main:** In sync after Session 67's daily-summary workflow fix (PR #527 merged 2026-05-13). Feature branch `feature/issue-510-commission-rate-runtime` is open for the #510 closure PR.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-66)
+### Session Handoff (Sessions 25-67)
+
+**Session 67 — Commission Rate Runtime Architecture (May 13, 2026, issue #510):**
+
+Picked up the Tier-A item carried over from Session 65: complete the central-commission-config refactor with DB runtime read, admin UI, audit log, and async pricing-function variant for edge functions. Also shipped a Session-66 follow-up workflow fix.
+
+**What landed:**
+
+1. **Workflow fix (PR #527, Session-66 follow-up):** `.github/workflows/daily-summary.yml` — the daily status email was rendering the raw 404 JSON body in the Commits section + "Developed by" line whenever zero commits fell in the 24-hour cron window. Fix guards `gh api` response with `jq -e 'type == "array"'`; on non-array (404), `$COMMITS` and `$DEVS` stay empty and existing render guards suppress the section. Tomorrow's 04:30 UTC report will be clean. Merged to main.
+
+2. **#510 full scope (feature branch `feature/issue-510-commission-rate-runtime`):**
+   - **Migration 080** — `admin_audit_log` generic ledger table + `bookings.commission_rate_applied` column + public `get_platform_commission_rate()` SECURITY DEFINER accessor + idempotent UPSERT of `platform_commission_rate` row to DEC-041 values (corrects any stale 15/2/5 left by Migration 011).
+   - **Public hook** `src/hooks/useCommissionRate.ts` — `useCommissionRate()` returns `{base, proDiscount, businessDiscount}` as decimals; `useEffectiveCommissionRate(tier?)` is the single-number convenience wrapper. React Query cache (5 min). Anonymous-safe via the SECURITY DEFINER RPC.
+   - **Edge-function helper** `supabase/functions/_shared/commission.ts` — async `getCommissionRate(supabase)` with the same DEFAULT fallback.
+   - **`pricing.ts` refactor** — `computeListingPricing(nightlyRate, nights, rate?)` and `computeFeeBreakdown(nightlyRate, nights, cleaningFee, rate?)` now accept an explicit rate; default to `DEFAULT_COMMISSION.base`.
+   - **Callers wired** — Checkout, PropertyDetail, BidFormDialog, AdminListingEditDialog, OwnerListings, useBidding (proposal-accept auto-create-listing), and usePublishDraft now pull the live rate from `useEffectiveCommissionRate()`. Hardcoded `0.15` purged from `calculatorLogic.ts`, `costComparator.ts`, `yieldEstimator.ts`, `useBusinessMetrics.ts` (all switched to `DEFAULT_COMMISSION.base`).
+   - **Drift-bug fix** — `useSystemSettings.ts` + `useOwnerCommission.ts` previously had stale 15/2/5 fallback defaults; both now source from `DEFAULT_COMMISSION`.
+   - **Audit logging** — `useSystemSettings.updateSetting(key, value, notes?)` writes a before/after row to `admin_audit_log` on every change (best-effort; failures are logged but don't revert).
+   - **Admin UI completion** — `SystemSettings.tsx` Pro + Business discount inputs are now editable (was display-only); single AlertDialog shows the full before/after diff + optional notes textarea; new "Recent changes" list reads from `admin_audit_log` via `useCommissionAuditLog`.
+   - **Edge-function persistence** — `create-booking-checkout` writes the resolved rate (decimal) to `bookings.commission_rate_applied` on every new booking. `seed-manager` does the same for synthetic test data.
+   - **Tests** — 30 new tests across `useCommissionRate.test.ts`, `_shared/__tests__/commission.test.ts`, and `pricing.test.ts` (rate-parameter expansion). 4 pre-existing test files updated for the 15→12 default + the new React Query dependency (`useOwnerCommission`, `usePublishDraft`, `costComparator`, `AdminListingEditDialog`).
+   - **Docs** — `docs/RAV-PRICING-TAXES-ACCOUNTING.md` and `docs/brand-assets/BRAND-LOCK.md` cleaned up (15% → 12%, tier table 13/10 → 10/8, prose references the new live architecture). DEC-043 added to PROJECT-HUB.
+
+**Unblocks #509** (promotional commission rate overrides) — can now layer per-rule overrides on the resolution chain.
+
+**Test count:** 1754 → ~1784 (+30 new tests; final count after CI run). Tests-with-features policy honored end-to-end.
+
+**Migrations:** 080 created. Not yet applied to DEV or PROD — push in coordinated round when the PR merges.
+
+---
 
 **Session 66 — Compliance Hardening Sprint (May 6-12, 2026):**
 
@@ -1186,6 +1215,30 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-043: Commission Rate Runtime Architecture — DB-First with Per-Booking Persistence
+**Date:** May 13, 2026 (Session 67, issue #510)
+**Decision:** The platform commission rate is now read at **runtime** from `system_settings.platform_commission_rate` (DB) by every consumer that creates or displays priced inventory. The build-time constant in `src/config/commission.ts` (DEC-041 values) is a **fallback only**, used when the DB read fails or the row is absent.
+
+**Architecture:**
+- **DB authoritative source:** `system_settings.platform_commission_rate` JSONB row, seeded to `{rate:12, pro_discount:2, business_discount:4}` by Migration 080.
+- **Public accessor:** `public.get_platform_commission_rate()` — SECURITY DEFINER function granted to `anon`, `authenticated`, and `service_role`. Lets anonymous browsers read the rate without exposing the rest of `system_settings`.
+- **Frontend consumption:** `useCommissionRate()` hook (`src/hooks/useCommissionRate.ts`) returns rates as DECIMALS, with `useEffectiveCommissionRate(tier?)` for callers that need a single number ready to pass to `computeListingPricing(...)` / `computeFeeBreakdown(...)`. React Query cache (5 min). Used by Checkout, PropertyDetail, BidFormDialog, AdminListingEditDialog, OwnerListings, useBidding (proposal-accept auto-create-listing), and usePublishDraft.
+- **Edge-function consumption:** `getCommissionRate(supabase)` in `supabase/functions/_shared/commission.ts`. Async-fetches the live rate; same DEFAULT fallback.
+- **Per-booking persistence:** new column `bookings.commission_rate_applied` (NUMERIC(5,4), nullable for back-fill). `create-booking-checkout` writes the resolved rate (decimal) on every new booking. Refunds/payment-verify/webhook handlers read from this column so post-creation rate changes never retroactively distort historical accounting.
+- **Audit trail:** new generic `admin_audit_log` table (Migration 080) records actor, before/after value, and optional notes on every `system_settings` change. RLS gates reads + writes to RAV team. Surfaced in the admin System Settings tab as a "Recent changes" list.
+
+**Why generic `admin_audit_log` instead of `commission_rate_changes`:**
+Future admin-edited settings (escrow hold period, voice quotas, fee schedules) need the same audit-log pattern. A single ledger keyed by `(entity_type, entity_key)` keeps `system_settings.updateSetting` as the only write path and avoids per-setting audit tables.
+
+**Drift bug fixed in same change:**
+`useSystemSettings.ts` and `useOwnerCommission.ts` previously had stale `{rate:15, pro_discount:2, business_discount:5}` fallback defaults. Both now source from `DEFAULT_COMMISSION` so DEC-041 values flow through automatically; future rate changes only require editing `src/config/commission.ts` (build-time) AND the DB row (runtime).
+
+**Unblocks:** #509 (promotional rate overrides) can now layer per-rule overrides on top of this resolution chain without touching pricing math or display code.
+
+**Status:** Active.
 
 ---
 

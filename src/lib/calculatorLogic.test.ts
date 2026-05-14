@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculateBreakeven, type CalculatorInputs } from './calculatorLogic';
+import { DEFAULT_COMMISSION } from '@/config/commission';
 
 const validInputs: CalculatorInputs = {
   brand: 'hilton_grand_vacations',
@@ -25,19 +26,20 @@ describe('calculateBreakeven', () => {
     expect(calculateBreakeven({ ...validInputs, annualMaintenanceFees: -100 })).toBeNull();
   });
 
-  it('netPerWeek = grossWeekly - 15% RAV fee', () => {
+  it('netPerWeek = grossWeekly - RAV fee', () => {
     const result = calculateBreakeven(validInputs);
     expect(result).not.toBeNull();
     // HGV 1BR = $1,850 gross
     expect(result!.estimatedWeeklyIncome).toBe(1850);
-    expect(result!.ravFeePerWeek).toBe(277.5);
-    expect(result!.netPerWeek).toBe(1572.5);
+    const expectedFee = 1850 * DEFAULT_COMMISSION.base;
+    expect(result!.ravFeePerWeek).toBeCloseTo(expectedFee, 2);
+    expect(result!.netPerWeek).toBeCloseTo(1850 - expectedFee, 2);
   });
 
   it('breakEvenWeeks is correct: fees / netPerWeek', () => {
     const result = calculateBreakeven(validInputs);
-    // 2800 / 1572.5 ≈ 1.7812
-    expect(result!.breakEvenWeeks).toBeCloseTo(2800 / 1572.5, 4);
+    const netPerWeek = 1850 * (1 - DEFAULT_COMMISSION.base);
+    expect(result!.breakEvenWeeks).toBeCloseTo(2800 / netPerWeek, 4);
   });
 
   it('scenario 2 weeks: coverage is 2x single week coverage', () => {

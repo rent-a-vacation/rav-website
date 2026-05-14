@@ -1,13 +1,13 @@
 ---
-last_updated: "2026-05-11T00:00:00"
+last_updated: "2026-05-13T00:00:00"
 change_ref: "manual"
-change_type: "session-65-corrections"
+change_type: "session-67"
 status: "active"
 ---
 # Testing Status
 
 > Current state of the RAV test suite. Updated each session.
-> **Last Updated:** May 11, 2026 (Session 64+65 — compliance hardening: 12 issues shipped incl. #483/#484/#485/#486/#488/#489/#490/#491/#492/#481/#482; +262 tests, +22 test files for the session)
+> **Last Updated:** May 13, 2026 (Session 67 — issue #510 closure: commission rate runtime architecture; +24 net tests across 3 new files)
 
 ---
 
@@ -15,8 +15,8 @@ status: "active"
 
 | Metric | Value |
 |--------|-------|
-| **Total tests** | 1754 |
-| **Test files** | 177 |
+| **Total tests** | 1778 |
+| **Test files** | 178 |
 | **P0 critical-path tests** | 290+ tagged `@p0` (Session 64 added @p0 on disclaimer registry, DisclaimerBlock, StateSpecificDisclaimer, Footer registry sourcing, Terms 8.3+8.6, About page, placement audit) |
 | **E2E smoke tests** | 3 (Playwright) |
 | **Local run time** | ~2.5 min (full), ~2s (P0 only) |

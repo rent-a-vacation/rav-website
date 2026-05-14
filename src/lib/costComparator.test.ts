@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { compareAccommodationCosts } from './costComparator';
+import { DEFAULT_COMMISSION } from '@/config/commission';
 
 describe('costComparator', () => {
   it('returns all three accommodation options', () => {
@@ -14,17 +15,18 @@ describe('costComparator', () => {
     expect(result.airbnb.label).toBe('Airbnb');
   });
 
-  it('calculates RAV total with 15% service fee', () => {
+  it('calculates RAV total with central commission rate', () => {
     const result = compareAccommodationCosts({
       destination: 'florida',
       nights: 7,
       guests: 2,
       ravNightlyRate: 100,
     });
-    // 100 * 7 = 700 base + 105 fee = 805
+    // 100 * 7 = 700 base + (700 * rate) fee
+    const expectedFee = Math.round(700 * DEFAULT_COMMISSION.base);
     expect(result.rav.subtotal).toBe(700);
-    expect(result.rav.fees).toBe(105);
-    expect(result.rav.total).toBe(805);
+    expect(result.rav.fees).toBe(expectedFee);
+    expect(result.rav.total).toBe(700 + expectedFee);
   });
 
   it('adds guest surcharges for 3+ guests', () => {

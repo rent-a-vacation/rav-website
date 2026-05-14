@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-04-20T12:58:39"
 change_ref: "0a2ec90"
-change_type: "session-52-terminology-lock"
+change_type: "session-67"
 status: "active"
 ---
 # BRAND LOCK — Rent-A-Vacation
@@ -76,7 +76,7 @@ Features are presented in this order across all materials. Lead with the **Marke
 ### Methodology
 
 - **Source:** ARDA industry data shows resort-direct bookings carry a 20-40% markup over owner cost
-- **Mechanism:** RAV connects travelers directly with owners who price below resort rates. RAV adds a 15% platform fee (configurable: Pro -2%, Business -5%). The net savings for travelers comes from eliminating the resort markup
+- **Mechanism:** RAV connects travelers directly with owners who price below resort rates. RAV adds a 12% platform fee (DEC-041; configurable: Pro -2pp, Business -4pp). Rate is admin-tunable via System Settings (issue #510) and persisted per-booking in `commission_rate_applied`. The net savings for travelers comes from eliminating the resort markup.
 - **Label:** [INDUSTRY DATA] — based on published resort markup benchmarks (ARDA, industry pricing analysis)
 - **Validation plan:** Once real bookings occur, compare actual RAV transaction prices against published resort rates for the same properties to verify the range
 
@@ -179,8 +179,8 @@ Every number we use in marketing, with its source and label.
 | 825+ automated tests | `npm run test` | Run anytime — count updates with each session |
 | 46 database migrations | `supabase/migrations/` | Count files |
 | 30 edge functions | `supabase/functions/` | Count directories (excluding `_shared`) |
-| 15% default commission | `src/lib/pricing.ts` line 11 | `RAV_MARKUP_RATE = 0.15` |
-| Commission tiers: Pro -2%, Business -5% | Migration 011 | Configurable in admin settings |
+| 12% default commission | `src/config/commission.ts` | `DEFAULT_COMMISSION.base = 0.12` (DEC-041, issue #510). Live runtime read via `useCommissionRate()` / `getCommissionRate(supabase)`. |
+| Commission tiers: Pro -2pp, Business -4pp | Migration 080 | `system_settings.platform_commission_rate`; editable in System Settings tab with audit log. |
 
 ### Projected [PROJECTED]
 

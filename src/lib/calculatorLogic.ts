@@ -31,7 +31,11 @@ export const INCOME_ESTIMATES: Record<string, Record<string, number>> = {
   other:                  { studio: 900,  '1br': 1400, '2br': 2100, '3br': 3100 },
 };
 
-const RAV_FEE_RATE = 0.15; // 15% platform fee (configurable in Admin Settings)
+import { DEFAULT_COMMISSION } from '@/config/commission';
+
+// Build-time default. Calculator pages are informational and rarely need the
+// live rate; if they do, they can accept it as an input (issue #510).
+const RAV_FEE_RATE = DEFAULT_COMMISSION.base;
 
 export interface CalculatorInputs {
   brand: string;

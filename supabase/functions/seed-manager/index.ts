@@ -6,6 +6,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { DEFAULT_COMMISSION } from "../_shared/commission.ts";
 
 // ============================================================
 // CONSTANTS
@@ -567,7 +568,8 @@ async function ensureFoundation(log: string[]): Promise<Map<string, string>> {
       await admin.from("owner_agreements").insert({
         owner_id: userId,
         status: "active",
-        commission_rate: 15,
+        // Stored as percent in owner_agreements (DEC-041).
+        commission_rate: DEFAULT_COMMISSION.base * 100,
         markup_allowed: true,
         max_markup_percent: 25,
         terms_accepted_at: new Date().toISOString(),
@@ -686,7 +688,7 @@ async function createInventory(
     const stayLength = randomInt(3, 10);
     const nightlyRate = randomInt(100, 400);
     const ownerPrice = nightlyRate * stayLength;
-    const ravMarkup = Math.round(ownerPrice * 0.15);
+    const ravMarkup = Math.round(ownerPrice * DEFAULT_COMMISSION.base);
     const finalPrice = ownerPrice + ravMarkup;
 
     let status: string;
@@ -865,7 +867,7 @@ async function createTransactions(
       if (!listing) { bookingIdx++; continue; }
 
       const totalAmount = randomInt(900, 3200);
-      const ravCommission = Math.round(totalAmount * 0.15);
+      const ravCommission = Math.round(totalAmount * DEFAULT_COMMISSION.base);
       const ownerPayout = totalAmount - ravCommission;
       const createdDaysAgo = randomInt(dist.minDays, dist.maxDays);
       const paymentId = `pi_test_seed_${randomHex(8)}`;
@@ -885,6 +887,7 @@ async function createTransactions(
           payout_status: "paid",
           payout_date: daysAgo(Math.max(createdDaysAgo - 7, 0)),
           created_at: daysAgo(createdDaysAgo),
+          commission_rate_applied: DEFAULT_COMMISSION.base,
         })
         .select("id")
         .single();
@@ -936,7 +939,7 @@ async function createTransactions(
     if (!listing) continue;
 
     const totalAmount = randomInt(900, 3200);
-    const ravCommission = Math.round(totalAmount * 0.15);
+    const ravCommission = Math.round(totalAmount * DEFAULT_COMMISSION.base);
     const ownerPayout = totalAmount - ravCommission;
 
     const { data: booking } = await admin
@@ -949,6 +952,7 @@ async function createTransactions(
         rav_commission: ravCommission,
         owner_payout: ownerPayout,
         guest_count: randomInt(1, 4),
+        commission_rate_applied: DEFAULT_COMMISSION.base,
       })
       .select("id")
       .single();
@@ -965,7 +969,7 @@ async function createTransactions(
     if (!listing) continue;
 
     const totalAmount = randomInt(1200, 2800);
-    const ravCommission = Math.round(totalAmount * 0.15);
+    const ravCommission = Math.round(totalAmount * DEFAULT_COMMISSION.base);
     const ownerPayout = totalAmount - ravCommission;
 
     const { data: booking } = await admin

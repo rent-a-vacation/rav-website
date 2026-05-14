@@ -132,7 +132,9 @@ export async function handler(req: Request, deps: Deps): Promise<Response> {
         .single();
 
       const settingVal = commissionSetting?.setting_value as Record<string, unknown> | undefined;
-      const baseRate = (settingVal?.rate as number) ?? 15;
+      // Default mirrors src/config/commission.ts DEFAULT_COMMISSION.base (DEC-041).
+      // Stored as percent in system_settings; multiply by 100 for that unit.
+      const baseRate = (settingVal?.rate as number) ?? 12;
 
       const { data: membership } = await supabase
         .from("user_memberships")
@@ -192,6 +194,10 @@ export async function handler(req: Request, deps: Deps): Promise<Response> {
         special_requests: specialRequests || null,
         source_type: listingSourceType,
         travel_proposal_id: travelProposalId,
+        // Persist the resolved rate (decimal form) on the booking so future
+        // platform rate changes do not retroactively distort accounting
+        // (issue #510 — bookings.commission_rate_applied, migration 080).
+        commission_rate_applied: commissionRate / 100,
       })
       .select()
       .single();
