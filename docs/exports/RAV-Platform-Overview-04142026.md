@@ -20,7 +20,7 @@ status: "active"
 
 ## What It Is
 
-An AI-powered marketplace where vacation club owners rent directly to travelers, and travelers name their price. RAV earns a 15% default commission (Pro −2%, Business −5%) on successful bookings. Think Airbnb, but purpose-built for timeshare inventory across Hilton, Marriott, Disney, and 6 other vacation club brands (117 resorts, 351 unit types). Two marketplace primitives no competitor offers: **Name Your Price** (bidding on any listing) and **RAV Wishes** (travelers post dream trips; verified owners compete with proposals).
+An AI-powered marketplace where vacation club owners rent directly to travelers, and travelers name their price. RAV earns a 12% default commission (Pro −2pp → 10%, Business −4pp → 8%; DEC-041; runtime-configurable) on successful bookings. Think Airbnb, but purpose-built for timeshare inventory across Hilton, Marriott, Disney, and 6 other vacation club brands (117 resorts, 351 unit types). Two marketplace primitives no competitor offers: **Name Your Price** (bidding on any listing) and **RAV Wishes** (travelers post dream trips; verified owners compete with proposals).
 
 > Tagline: **"Name Your Price. Book Your Paradise."**
 

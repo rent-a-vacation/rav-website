@@ -96,14 +96,14 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **~1784 automated tests** (~180 test files, all passing), 0 type errors, 0 lint errors, build clean
 - **P0 tests:** 320+ tagged `@p0` — run with `npm run test:p0`
 - **CI reporting:** GitHub native via dorny/test-reporter (JUnit XML) — PR annotations on every run (Qase removed Mar 2026)
-- **Migrations created:** 001-080 + 3 date-based MDM migrations. Migrations 001–079 applied to DEV + PROD as of Session 66. **Migration 080 (commission rate runtime, issue #510) is not yet applied** — push in a coordinated DEV+PROD round when PR feature/issue-510 merges to main.
+- **Migrations created:** 001-080 + 3 date-based MDM migrations. **All migrations including 080 (commission rate runtime, issue #510) applied to both DEV and PROD as of Session 67 (2026-05-14).** Push procedure for any future numeric migration: `npx supabase db push --linked --include-all` (the legacy `NNN_` versus newer `YYYYMMDD_` mix requires the `--include-all` flag — see [tasks/lessons.md](../tasks/lessons.md) L-002).
 - **Edge functions:** 39 total (27 deployed to PROD + 4 subscription functions on DEV + 3 SMS functions pending LLC/EIN + `ingest-support-docs` + `cancel-listing` + `confirm-checkin` + `auto-confirm-checkins` + `sla-monitor` deployed to DEV only). `text-chat` gains a `context: 'support'` branch with 5 agent tools (Session 58). `process-escrow-release` refactored to handler.ts split (Session 63 / DEC-037).
 - **Stripe Subscription:** Sandbox configured — 4 products, webhook (11 events), Customer Portal. Subscription epic #263 CLOSED (all 9 stories complete)
 - **Stripe Tax:** env-gated via `STRIPE_TAX_ENABLED` (Session 54). Unset on both DEV + PROD → `automatic_tax` disabled → bookings work without tax collection. Flip to `"true"` on PROD only after live Stripe Tax fully activated post-#127.
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** In sync after Session 67's daily-summary workflow fix (PR #527 merged 2026-05-13). Feature branch `feature/issue-510-commission-rate-runtime` is open for the #510 closure PR.
+- **dev and main:** In sync at commit `7028aea` after Session 67's docs-lessons push. PR #527 (daily-summary fix), PR #528 (#510 closure), and PR #529 (CI workflow trigger fix for dev-targeted PRs) all merged. Feature branch `feature/issue-510-commission-rate-runtime` deleted after merge.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
 ### Session Handoff (Sessions 25-67)

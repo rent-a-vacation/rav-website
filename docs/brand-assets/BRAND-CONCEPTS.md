@@ -282,7 +282,7 @@ RAVIO is the named AI personality behind all AI-powered features on the platform
 > "You're paying maintenance fees on weeks you don't use. Rent-A-Vacation lets you list those weeks in minutes, our AI tells you what to charge, and travelers bid on your property. You approve guests, set prices, and earn income that offsets your fees."
 
 ### For an Investor (30 seconds)
-> "Rent-A-Vacation is the first marketplace purpose-built for the $10.5 billion vacation ownership industry. We've built a two-sided Marketplace where renters make Offers on Listings AND owners send Offers on renter Wishes — a true negotiation surface in both directions — plus a 117-resort data layer and AI-powered voice and text search, all fully deployed and tested. The platform is pre-launch, disciplined, and ready to scale. We charge a 15% default commission on successful bookings only — no upfront fees to list — with tier-based discounts for subscribed owners. Projected 85%+ contribution margins."
+> "Rent-A-Vacation is the first marketplace purpose-built for the $10.5 billion vacation ownership industry. We've built a two-sided Marketplace where renters make Offers on Listings AND owners send Offers on renter Wishes — a true negotiation surface in both directions — plus a 117-resort data layer and AI-powered voice and text search, all fully deployed and tested. The platform is pre-launch, disciplined, and ready to scale. We charge a 12% default commission on successful bookings only — no upfront fees to list — with tier-based discounts for subscribed owners (Pro 10%, Business 8%). Projected 85%+ contribution margins."
 
 ### For a Journalist (30 seconds)
 > "There are 10 million American families paying over a thousand dollars a year in timeshare maintenance fees for weeks they never use — and travelers paying inflated prices for those same rooms through other platforms. We built the first Marketplace to connect them directly. Renters can Make an Offer on any Listing or post a Wish for owners to send Offers against — true two-sided negotiation in vacation rentals. We also offer AI-powered voice and text search through our concierge, RAVIO. The platform is fully built, pre-launch, and demonstrable today."
@@ -454,7 +454,7 @@ You approve guests and earn income.
 
 ━━━ The numbers ━━━
 ✓ Listing is FREE — no monthly fees
-✓ 15% default commission on successful bookings only (Pro −2%, Business −5%)
+✓ 12% default commission on successful bookings only (Pro −2pp → 10%, Business −4pp → 8%)
 ✓ RAV SmartEarn shows your break-even and earnings potential
 ✓ TrustShield builds your reputation
 ✓ RAV Edge dashboard tracks everything

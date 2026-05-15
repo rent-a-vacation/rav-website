@@ -220,8 +220,12 @@ paths:
       summary: Create a Stripe checkout session for booking
       description: |
         Creates a pending booking record and generates a Stripe Checkout session URL.
-        Calculates fee breakdown: base amount (nightly rate x nights), 15% service fee,
-        cleaning fee. Supports Stripe Tax (automatic_tax enabled).
+        Calculates fee breakdown: base amount (nightly rate x nights), service fee
+        sourced at runtime from `system_settings.platform_commission_rate` (default 12%,
+        tier-adjusted via `getCommissionRate(supabase)`),
+        cleaning fee. The commission rate in effect at booking creation is persisted
+        on `bookings.commission_rate_applied` so future rate changes do not retroactively
+        affect existing bookings. Supports Stripe Tax (automatic_tax enabled).
 
         **Rate limit:** 5 requests per 5 minutes per user.
       security:

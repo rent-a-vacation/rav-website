@@ -112,8 +112,8 @@ def generate_platform_overview():
     add_body(
         doc,
         "An AI-powered marketplace where vacation club owners rent directly to travelers, "
-        "and travelers name their price. RAV earns a 15% default commission "
-        "(Pro \u22122%, Business \u22125%) on successful bookings. Think Airbnb, but purpose-built "
+        "and travelers name their price. RAV earns a 12% default commission "
+        "(Pro \u22122pp \u2192 10%, Business \u22124pp \u2192 8%; DEC-041) on successful bookings. Think Airbnb, but purpose-built "
         "for timeshare inventory across Hilton, Marriott, Disney, and 6 other vacation "
         "club brands (117 resorts, 351 unit types). Two marketplace primitives no "
         "competitor offers: Name Your Price (bidding on any listing) and RAV Wishes "

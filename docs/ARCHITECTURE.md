@@ -250,7 +250,7 @@ src/
 ├── lib/
 │   ├── supabase.ts            # Supabase client initialization
 │   ├── email.ts               # Client-side email helpers (welcome, contact)
-│   ├── pricing.ts             # calculateNights() + computeListingPricing() (15% RAV markup)
+│   ├── pricing.ts             # calculateNights() + computeListingPricing() (12% RAV markup default, runtime-configurable; rate parameter accepted)
 │   ├── dynamicPricing.ts      # Urgency discount, seasonal factor, demand adjustment
 │   ├── cancellation.ts        # Refund calculation logic
 │   ├── cancellationPolicy.ts  # Policy rules, deadlines, color-coded display utils

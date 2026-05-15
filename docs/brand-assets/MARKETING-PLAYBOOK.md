@@ -48,7 +48,7 @@ We've built the first platform purpose-built for this market, with three structu
 2. **A curated resort data layer** *[BUILT]* — 117 resorts, 351 unit types, auto-populated listing forms designed to cut owner onboarding time dramatically
 3. **AI-powered discovery** *[BUILT]* — voice and text search that understands "Find me a 2-bedroom in Maui under $2,000 next March" and returns results in seconds
 
-The platform is fully built, end-to-end tested with 956 automated tests across 121 test files, and operating at 99.97% uptime in our staging environment. Owners list for free — no upfront fees. We take a configurable 15% default commission on successful bookings only (Pro −2%, Business −5%). The technology is ready — we're now preparing for our public launch.
+The platform is fully built, end-to-end tested with 956 automated tests across 121 test files, and operating at 99.97% uptime in our staging environment. Owners list for free — no upfront fees. We take a runtime-configurable 12% default commission on successful bookings only (Pro −2pp → 10%, Business −4pp → 8%; DEC-041). The technology is ready — we're now preparing for our public launch.
 
 ---
 
@@ -573,7 +573,7 @@ RENT-A-VACATION (Master Brand)
 | Owner Signups | 50/mo | 200/mo | Organic + community outreach |
 | Traveler Signups | 500/mo | 2,000/mo | SEO + paid + referral |
 | Booking Conversion | 3-5% | 5-8% | Marketplace benchmark |
-| Platform Commission | 15% (default; Pro −2%, Business −5%) | 15% (default; Pro −2%, Business −5%) | Tier-based model |
+| Platform Commission | 12% (default; Pro −2pp, Business −4pp) | 12% (default; Pro −2pp, Business −4pp) | Tier-based model (DEC-041; runtime-configurable) |
 | LTV:CAC Ratio (target) | 5:1 | 10:1 | Industry best practice |
 
 ### Industry Reference Points (External Data)
@@ -646,7 +646,7 @@ RENT-A-VACATION (Master Brand)
 | **Market** | U.S. timeshare households | 9.9M | INDUSTRY DATA |
 | **Market** | Industry size | $10.5B | INDUSTRY DATA |
 | **Market** | Avg maintenance fee | $1,120/yr | INDUSTRY DATA |
-| **Business** | Commission model | 15% (default; Pro −2%, Business −5%) | BUILT (configurable) |
+| **Business** | Commission model | 12% (default; Pro −2pp, Business −4pp; DEC-041) | BUILT (runtime-configurable) |
 | **Business** | Membership tiers | 6 (3+3) | BUILT |
 | **Business** | Sessions shipped | 48+ | BUILT |
 

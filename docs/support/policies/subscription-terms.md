@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-04-21T22:53:24"
 change_ref: "e5b8e77"
-change_type: "session-57-phase22-B5"
+change_type: "session-67-commission-rate-update"
 status: "draft"
 title: "Subscription Terms (DRAFT — pending legal review)"
 doc_type: "policy"
@@ -37,9 +37,9 @@ Rent-A-Vacation offers optional paid subscriptions for travelers (Plus, Premium)
 
 | Tier | Monthly | Annual | Benefits |
 |---|---|---|---|
-| Free | $0 | $0 | Standard listing, 15% commission |
-| Pro | $19.99 | $199 | Priority listing placement, 13% commission, 25/day voice |
-| Business | $49.99 | $499 | Dedicated account manager, 10% commission, unlimited voice |
+| Free | $0 | $0 | Standard listing, 12% commission |
+| Pro | $19.99 | $199 | Priority listing placement, 10% commission (2pp discount), 25/day voice |
+| Business | $49.99 | $499 | Dedicated account manager, 8% commission (4pp discount), unlimited voice |
 
 *(Prices subject to change; grandfathered rates for existing subscribers on material changes.)*
 
@@ -87,7 +87,7 @@ Refund requests: `billing@rent-a-vacation.com` with subscription ID.
 ### 8. Tier commitments (for owners)
 
 - **Owner Pro / Business commission rates** applied to bookings made while the subscription is active
-- If subscription lapses mid-booking cycle: commissions for NEW bookings revert to Free-tier 15%; existing confirmed bookings retain the tier rate
+- If subscription lapses mid-booking cycle: commissions for NEW bookings revert to the Free-tier base rate (currently 12%); existing confirmed bookings retain the tier rate that was in effect when they were created (persisted on the booking record).
 
 ### 9. Referral Program
 

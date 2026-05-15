@@ -76,7 +76,7 @@ Between each section, use these transition phrases to maintain narrative continu
 **What to show:** Scroll down to the "How It Works" section on the homepage.
 
 > **Talking point:**
-> "The business model is straightforward. We charge a 15% service fee on each booking. That fee is configurable by membership tier -- Pro owners pay 13%, Business owners pay 10%. The renter sees the total price inclusive of the service fee, and the owner receives their payout minus the fee. Everyone wins: the owner offsets their maintenance fees, the renter gets a luxury resort stay at a fraction of the cost, and we earn a commission for facilitating the transaction."
+> "The business model is straightforward. We charge a 12% service fee on each booking, set at the platform level and runtime-configurable by RAV admins. That fee is tier-adjusted -- Pro owners pay 10%, Business owners pay 8%. The renter sees the total price inclusive of the service fee, and the owner receives their payout minus the fee. Every rate change is recorded in an admin audit log, and each booking persists the rate that was in effect at booking time so future rate changes never retroactively distort historical accounting. Everyone wins: the owner offsets their maintenance fees, the renter gets a luxury resort stay at a fraction of the cost, and we earn a commission for facilitating the transaction."
 
 ### Platform Scale
 
@@ -105,7 +105,7 @@ Between each section, use these transition phrases to maintain narrative continu
 
 - 117 resorts, 9 vacation club brands
 - 351 unit types across 10+ countries
-- 15% base commission rate (tiered discounts for Pro/Business)
+- 12% base commission rate, runtime-configurable (tiered discounts: Pro 10%, Business 8%)
 - 20-40% savings for renters compared to resort-direct booking
 - App version: v0.9.0 (pre-launch)
 
@@ -153,7 +153,7 @@ Between each section, use these transition phrases to maintain narrative continu
 ### Payments
 
 > **Talking point:**
-> "Payments are handled through Stripe. We use Stripe Checkout for secure payment collection, Stripe Connect for automated owner payouts directly to their bank accounts, and we have Stripe Tax integration ready to activate once our business formation is complete. The checkout flow shows itemized fees: base rental, 15% service fee, cleaning fee, and taxes -- full transparency for the renter."
+> "Payments are handled through Stripe. We use Stripe Checkout for secure payment collection, Stripe Connect for automated owner payouts directly to their bank accounts, and we have Stripe Tax integration ready to activate once our business formation is complete. The checkout flow shows itemized fees: base rental, 12% service fee, cleaning fee, and taxes -- full transparency for the renter."
 
 **Key details to mention:**
 - Stripe Checkout with itemized line items
@@ -293,18 +293,18 @@ Between each section, use these transition phrases to maintain narrative continu
 1. Click the "Listings" tab
 2. Click "Create Listing" or "Add Listing"
 3. Walk through: select property, set check-in and check-out dates, set nightly rate
-4. Point out the auto-calculated pricing summary: base price, 15% RAV service fee, total price
+4. Point out the auto-calculated pricing summary: base price, 12% RAV service fee, total price
 5. Set cleaning fee and cancellation policy (flexible, moderate, strict, super strict)
 
 > **Talking point:**
-> "A listing represents a specific date range when the owner's property is available. They set a nightly rate, and the system automatically calculates the total: base price times the number of nights, plus the 15% service fee, plus any cleaning fee. The owner sees exactly what they will earn and what the renter will pay. They also choose a cancellation policy which determines refund percentages if the renter cancels."
+> "A listing represents a specific date range when the owner's property is available. They set a nightly rate, and the system automatically calculates the total: base price times the number of nights, plus the 12% service fee, plus any cleaning fee. The owner sees exactly what they will earn and what the renter will pay. They also choose a cancellation policy which determines refund percentages if the renter cancels."
 
 **Key detail:** The nightly rate is what drives pricing. For example:
 - Nightly rate: $200
 - 7 nights: $1,400 base
-- 15% service fee: $210
+- 12% service fee: $168
 - Cleaning fee: $150
-- Total to renter: $1,760
+- Total to renter: $1,718
 - Owner receives: $1,550 (base + cleaning fee)
 
 ### Step 5: Admin Approval
@@ -380,11 +380,11 @@ If asked about cancellation policies during the owner section, here is the refer
 
 > **Talking point:**
 > "We offer three membership tiers for owners:
-> - **Free** -- 15% commission, basic features
-> - **Pro** ($10/month) -- 13% commission, priority support, analytics
-> - **Business** ($25/month) -- 10% commission, dedicated account manager, premium analytics
+> - **Free** -- 12% commission, basic features
+> - **Pro** ($10/month) -- 10% commission, priority support, analytics
+> - **Business** ($25/month) -- 8% commission, dedicated account manager, premium analytics
 >
-> The commission savings at higher tiers quickly pay for themselves. An owner doing $10,000 in annual bookings saves $200 on Pro and $500 on Business compared to the Free tier."
+> The commission savings at higher tiers quickly pay for themselves. An owner doing $10,000 in annual bookings saves $200 on Pro and $400 on Business compared to the Free tier."
 
 ### Step 11: iCal Export
 
@@ -561,7 +561,7 @@ If asked about cancellation policies during the owner section, here is the refer
 1. The listing summary (property name, dates, location)
 2. The itemized fee breakdown:
    - Base: $X/night x N nights = $X
-   - Service fee (15%): $X
+   - Service fee (12%): $X
    - Cleaning fee: $X
    - Taxes: $X (or "Calculated at checkout" if Stripe Tax is not yet active)
    - Total: $X
@@ -571,7 +571,7 @@ If asked about cancellation policies during the owner section, here is the refer
 6. The "Proceed to Payment" button
 
 > **Talking point:**
-> "The checkout page shows complete pricing transparency. Every line item is broken out: the base rental cost calculated from the nightly rate, our 15% service fee, cleaning fee if the owner set one, and applicable taxes. The renter sees exactly what they are paying for. If their email is not verified, we show a banner prompting them to verify before payment -- this is a security measure to ensure we can reach them with booking confirmations."
+> "The checkout page shows complete pricing transparency. Every line item is broken out: the base rental cost calculated from the nightly rate, our 12% service fee, cleaning fee if the owner set one, and applicable taxes. The renter sees exactly what they are paying for. If their email is not verified, we show a banner prompting them to verify before payment -- this is a security measure to ensure we can reach them with booking confirmations."
 
 **Key detail:** Clicking "Proceed to Payment" invokes the `create-booking-checkout` edge function, which creates a Stripe Checkout Session with separate line items and redirects the user to Stripe's hosted payment page.
 
@@ -992,9 +992,9 @@ Keep these numbers handy for when stakeholders ask during the demo.
 | Vacation club brands | 9 | calculatorLogic.ts `VACATION_CLUB_BRANDS` |
 | Unit types | 351 | Database |
 | Countries | 10+ | Database |
-| Base commission rate | 15% | pricing.ts `RAV_MARKUP_RATE` |
-| Pro commission | 13% | Membership tier config |
-| Business commission | 10% | Membership tier config |
+| Base commission rate | 12% | `src/config/commission.ts` `DEFAULT_COMMISSION.base`; runtime read from `system_settings.platform_commission_rate` via `get_platform_commission_rate()` RPC |
+| Pro commission | 10% | `DEFAULT_COMMISSION.base - DEFAULT_COMMISSION.proDiscount` (12% − 2pp) |
+| Business commission | 8% | `DEFAULT_COMMISSION.base - DEFAULT_COMMISSION.businessDiscount` (12% − 4pp) |
 | Database migrations | 45 | `supabase/migrations/` |
 | Edge functions | 27 | `supabase/functions/` |
 | Automated tests | 771 | Vitest (99 test files) |

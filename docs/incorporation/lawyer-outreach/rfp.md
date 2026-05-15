@@ -18,7 +18,7 @@ status: "active"
 **Rent-A-Vacation** ("RAV") is a software platform / 3-sided marketplace connecting timeshare property owners with travelers seeking short-term vacation rentals at vacation club properties.
 
 **What RAV is:**
-- A marketplace operator earning a 15% commission (default; tier-adjusted) on completed bookings between timeshare owners and travelers
+- A marketplace operator earning a 12% commission (default; tier-adjusted to 10% for Pro owners, 8% for Business owners) on completed bookings between timeshare owners and travelers; the rate is configurable at the platform level via admin settings
 - A software-only company — no property ownership, no title transfer, no acting as a real estate broker
 - Pre-launch: platform feature-complete in development; Staff Only Mode is currently enabled; no real customers; no real transactions yet
 
