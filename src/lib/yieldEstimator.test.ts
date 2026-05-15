@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { estimateYield } from './yieldEstimator';
+import { DEFAULT_COMMISSION } from '@/config/commission';
 
 describe('yieldEstimator', () => {
   it('returns null for missing brand', () => {
@@ -27,7 +28,7 @@ describe('yieldEstimator', () => {
     expect(result!.netWeeklyIncome).toBeLessThan(result!.grossWeeklyIncome);
   });
 
-  it('applies 15% RAV commission', () => {
+  it('applies central RAV commission rate', () => {
     const result = estimateYield({
       brand: 'hilton_grand_vacations',
       unitType: '1br',
@@ -36,7 +37,7 @@ describe('yieldEstimator', () => {
       annualMaintenanceFees: 1000,
     });
     expect(result).not.toBeNull();
-    const expectedFee = Math.round(result!.grossWeeklyIncome * 0.15);
+    const expectedFee = Math.round(result!.grossWeeklyIncome * DEFAULT_COMMISSION.base);
     expect(result!.grossWeeklyIncome - result!.netWeeklyIncome).toBe(expectedFee);
   });
 

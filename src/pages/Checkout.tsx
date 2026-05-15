@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import type { Resort, ResortUnitType } from "@/types/database";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
+import { useEffectiveCommissionRate } from "@/hooks/useCommissionRate";
 import { EmailVerificationBanner } from "@/components/EmailVerificationBanner";
 import { CancellationPolicyDetail } from "@/components/CancellationPolicyDetail";
 import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
@@ -56,7 +57,8 @@ const Checkout = () => {
   const unitType = prop?.unit_type as ResortUnitType | null;
   const nights = listing ? calculateNights(listing.check_in_date, listing.check_out_date) : 0;
   const pricePerNight = listing?.nightly_rate || (nights > 0 && listing ? Math.round(listing.final_price / nights) : 0);
-  const fees = listing ? computeFeeBreakdown(pricePerNight, nights, listing.cleaning_fee || 0) : null;
+  const commissionRate = useEffectiveCommissionRate();
+  const fees = listing ? computeFeeBreakdown(pricePerNight, nights, listing.cleaning_fee || 0, commissionRate) : null;
 
   const displayName = resort?.resort_name && unitType
     ? `${unitType.unit_type_name} at ${resort.resort_name}`

@@ -23,6 +23,11 @@ vi.mock('@/hooks/useConversations', () => ({
   useInsertConversationEvent: () => ({ mutate: vi.fn() }),
 }));
 
+vi.mock('@/hooks/useCommissionRate', () => ({
+  useEffectiveCommissionRate: () => 0.12,
+  useCommissionRate: () => ({ data: { base: 0.12, proDiscount: 0.02, businessDiscount: 0.04 }, isLoading: false }),
+}));
+
 vi.mock('react-router-dom', () => ({
   Link: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
     <a {...props}>{children}</a>

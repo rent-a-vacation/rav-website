@@ -93,7 +93,7 @@ describe('useOwnerCommission', () => {
     expect(result.current.tierName).toBe('Business');
   });
 
-  it('falls back to 15% on RPC error', async () => {
+  it('falls back to DEFAULT_COMMISSION base on RPC error', async () => {
     mockRpc.mockResolvedValue({ data: null, error: { message: 'RPC failed' } });
 
     const { result } = renderHook(() => useOwnerCommission(), {
@@ -102,10 +102,11 @@ describe('useOwnerCommission', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(result.current.effectiveRate).toBe(15);
+    // After DEC-041 the base rate is 12% (was 15%). Drift-bug fix in #510.
+    expect(result.current.effectiveRate).toBe(12);
   });
 
-  it('falls back to 15% when RPC returns null', async () => {
+  it('falls back to DEFAULT_COMMISSION base when RPC returns null', async () => {
     mockRpc.mockResolvedValue({ data: null, error: null });
 
     const { result } = renderHook(() => useOwnerCommission(), {
@@ -114,7 +115,7 @@ describe('useOwnerCommission', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(result.current.effectiveRate).toBe(15);
+    expect(result.current.effectiveRate).toBe(12);
   });
 
   it('returns 0 discount when membership has no tier', async () => {

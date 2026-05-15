@@ -1,7 +1,7 @@
 ---
-last_updated: "2026-05-12T03:30:00"
+last_updated: "2026-05-13T03:30:00"
 change_ref: "manual-edit"
-change_type: "session-66"
+change_type: "session-67"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -54,15 +54,14 @@ Session 66 closed out the 12-item compliance hardening sprint. All build-now ite
 - **C6 returned** → build resort-ownership verification flow (P-9). ~6-12h.
 - **C8 counsel-drafted policies** → replace 8 drafts at `docs/support/policies/*.md`, flip `status: draft → active`, push via `sync-support-docs.yml`. ~1-2h mechanical.
 
-## Current Priority Tiers (as of May 12, 2026 — Session 66 close)
+## Current Priority Tiers (as of May 13, 2026 — Session 67 close)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-**Session 66 closed out the compliance build-now sprint. Carry-over items from Session 65 remain at top of Tier A:**
+**Session 67 closed out #510 (commission rate runtime architecture, full scope). Remaining carry-over items:**
 
-1. **#510 full scope** — DB-driven commission rate runtime read + admin UI + audit log. ~1-2 days. **Blocks #509.**
+1. **#509** — Promotional commission rate overrides. **Now unblocked** by #510 closure (DEC-043 resolution chain in place). ~2-3 days.
 2. **Phase 2 Stage 2b** — Live actuals overlay on Financial Model dashboard. ~3-5 days. Independent.
-3. **#509** — Promotional commission rate overrides. **Builds on #510 full.**
 
 ### Session 66 close — compliance hardening (12 of 12 shipped)
 
@@ -172,6 +171,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| May 13, 2026 | 67 | **#510 SHIPPED — Commission rate runtime architecture (full scope).** DEC-043 logged. Migration 080: `admin_audit_log` generic ledger + `bookings.commission_rate_applied` + public `get_platform_commission_rate()` SECURITY DEFINER RPC + idempotent UPSERT to DEC-041 values. New public `useCommissionRate()` hook + `useEffectiveCommissionRate(tier?)` convenience wrapper (React Query, 5-min cache). Edge-function `getCommissionRate(supabase)` helper in `_shared/commission.ts`. `computeListingPricing` / `computeFeeBreakdown` accept optional rate parameter. 7+ frontend call sites wired through `useEffectiveCommissionRate`. Edge function `create-booking-checkout` persists the resolved rate on `bookings.commission_rate_applied`. Admin UI in `SystemSettings.tsx` now has editable Pro + Business discount inputs, AlertDialog showing full before/after diff + notes textarea, and Recent Changes list reading from `admin_audit_log` via `useCommissionAuditLog`. Drift-bug fix: `useSystemSettings.ts` + `useOwnerCommission.ts` fallback defaults moved from stale 15/2/5 to `DEFAULT_COMMISSION`-sourced 12/2/4. Hardcoded 0.15 purged from `calculatorLogic.ts`, `costComparator.ts`, `yieldEstimator.ts`, `useBusinessMetrics.ts`. Docs updates: PRICING-TAXES (15% → 12% prose + tier table 13/10 → 10/8 + new commission_rate_applied + audit log mentions); BRAND-LOCK § 5 + § 8 (numerical claims refreshed). 30 new tests across `useCommissionRate.test.ts`, `_shared/__tests__/commission.test.ts`, `pricing.test.ts`. 4 pre-existing test files updated to mock `useCommissionRate` (`AdminListingEditDialog`, `BidFormDialog`, `usePublishDraft`) or rebase expectations on `DEFAULT_COMMISSION` (`useOwnerCommission`, `calculatorLogic`, `costComparator`). Also shipped Session-66 follow-up workflow fix: PR #527 (`daily-summary.yml` guards against empty-commit-window 404). **Tier A: #510 done; #509 now unblocked**. |
 | May 12, 2026 | 66 | **Compliance Hardening Sprint COMPLETE — 12 build-now items shipped.** Multi-day arc (May 6 + May 11-12) closing all build-now items from the 2026-05-05 audit against *Legal Research Memorandum v3* + *Compliance Development Brief v1.0*. Shipped: central disclaimer registry + 9 placements (#483), About page (#484), No Timeshare Sales validator (#485), `listings.state` + Migration 074 (#486), FL/CA disclosure rendering (#487), marketplace-facilitator tracker + Migration 075 (#488), Guest Protection Policy surface (#489), MLA notice + ToS carve-out + Migration 076 (#490), listing accuracy reporting + Migration 077 (#491), fraud reporting + Migration 078 (#492), CC&R attestation + Migration 079 (#481), robots.txt + scraping policy (#482). PR #500 cleared Session-63 migration backlog. **Tests 1492 → 1754 (+262, +17.6%); 17 migrations applied to both DEV + PROD.** Counsel meeting docs created: `counsel-meeting-prep.md` (NEW) + refreshed `attorney-meeting-compliance-status.md` + `compliance-gap-analysis.md`. Tier B trimmed: 8 SHIPPED PaySafe gap items removed; 2 counsel-pending follow-up issues added (#493, #494) plus umbrella #480. Tier A unchanged — Session 65 carry-overs (#510 / Stage 2b / #509) remain top-of-queue. |
 | May 6, 2026 | 64 | **DEC-040 logged — sequential Phase numbering retired.** Phase 22 was the last numbered phase; new work (5+ related issues sharing an outcome) goes into themed milestones (`Launch Readiness`, `Security Hardening`, `Role-Based UX Overhaul`, etc.). PROJECT-HUB.md, this file, and `CLAUDE.md` updated with the new convention. `scripts/docs-sync-check.ts` extended with `checkPhaseNumbering()` rule that fails CI on any new "Phase 23+" reference outside the allowlist. Auto-memory saved. **No tier changes.** Doc-only Session 64. |
 | May 2, 2026 | 63 | **#473 SHIPPED (PR #474)** — PostHog session recording disabled + Sentry `beforeSend` filter for EvalError/CSP events; resolves 16-user CSP block on /signup. **PaySafe Compliance doc created** (`docs/payments/PAYSAFE-COMPLIANCE.md`) — captures marketplace + Stripe Connect compliance posture, gap closure register, placeholder for incoming counsel references; DEC-039 logged. **PaySafe gaps C (#467), D (#468) promoted Tier E → Tier B**, and #463 (Gap E) consolidated under Tier B per user stance "minimal post-launch deferral." Session 63 working scope: 7 of 9 PaySafe gaps (A, B, C, D, E, G, H) + #473. F deferred (user confirmed); I gated on #80 lawyer pass. |

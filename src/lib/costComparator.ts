@@ -5,6 +5,8 @@
  * live API integrations. RAV pricing uses real listing data.
  */
 
+import { DEFAULT_COMMISSION } from '@/config/commission';
+
 /** Average nightly hotel rates by destination region (USD). */
 const HOTEL_RATES: Record<string, number> = {
   hawaii: 350,
@@ -81,7 +83,7 @@ export function compareAccommodationCosts(
 
   // --- RAV ---
   const ravBase = ravNightlyRate * n;
-  const ravServiceFee = Math.round(ravBase * 0.15);
+  const ravServiceFee = Math.round(ravBase * DEFAULT_COMMISSION.base);
   const ravTotal = ravBase + ravServiceFee;
 
   const rav: AccommodationCost = {

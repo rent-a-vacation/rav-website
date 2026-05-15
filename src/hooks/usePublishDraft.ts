@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { calculateNights } from "@/lib/pricing";
+import { calculateNights, computeListingPricing } from "@/lib/pricing";
+import { useEffectiveCommissionRate } from "@/hooks/useCommissionRate";
 
 const DRAFT_STORAGE_KEY = "rav-list-property-draft";
 
@@ -40,6 +41,7 @@ export function clearDraft() {
 export function usePublishDraft() {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const commissionRate = useEffectiveCommissionRate();
 
   const publishDraft = useCallback(async (userId: string, draft: ListPropertyDraft) => {
     setIsPending(true);
@@ -83,9 +85,10 @@ export function usePublishDraft() {
       const rate = parseFloat(draft.nightlyRate);
       const cleaning = parseFloat(draft.cleaningFee) || 0;
       const nights = calculateNights(draft.checkInDate, draft.checkOutDate);
-      const ownerPrice = Math.round(rate * nights);
-      const ravMarkup = Math.round(ownerPrice * 0.15);
-      const finalPrice = ownerPrice + ravMarkup;
+      const pricing = computeListingPricing(rate, nights, commissionRate);
+      const ownerPrice = pricing.ownerPrice;
+      const ravMarkup = pricing.ravMarkup;
+      const finalPrice = pricing.finalPrice;
 
       const listingData = {
         property_id: (newProperty as { id: string }).id,
@@ -119,7 +122,7 @@ export function usePublishDraft() {
     } finally {
       setIsPending(false);
     }
-  }, []);
+  }, [commissionRate]);
 
   return { publishDraft, isPending, error };
 }

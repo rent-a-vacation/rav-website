@@ -40,12 +40,21 @@ export interface ListingPricing {
  * Compute the full pricing breakdown from a nightly rate and number of nights.
  *
  * ownerPrice  = nightlyRate * nights
- * ravMarkup   = round(ownerPrice * 0.15)
+ * ravMarkup   = round(ownerPrice * rate)
  * finalPrice  = ownerPrice + ravMarkup
+ *
+ * `rate` is the commission rate as a decimal (0.12 = 12%). Defaults to
+ * the central `DEFAULT_COMMISSION.base`. Callers that have access to the
+ * live rate via `useCommissionRate()` should pass it explicitly so admin
+ * rate changes are reflected without a deploy.
  */
-export function computeListingPricing(nightlyRate: number, nights: number): ListingPricing {
+export function computeListingPricing(
+  nightlyRate: number,
+  nights: number,
+  rate: number = DEFAULT_COMMISSION.base,
+): ListingPricing {
   const ownerPrice = Math.round(nightlyRate * nights);
-  const ravMarkup = Math.round(ownerPrice * RAV_MARKUP_RATE);
+  const ravMarkup = Math.round(ownerPrice * rate);
   const finalPrice = ownerPrice + ravMarkup;
   return { ownerPrice, ravMarkup, finalPrice };
 }
@@ -61,17 +70,22 @@ export interface FeeBreakdown {
 /**
  * Compute itemized fee breakdown for display.
  * baseAmount   = nightlyRate * nights
- * serviceFee   = round(baseAmount * 0.15)
+ * serviceFee   = round(baseAmount * rate)
  * subtotal     = baseAmount + serviceFee + cleaningFee
  * ownerPayout  = baseAmount + cleaningFee
+ *
+ * `rate` defaults to `DEFAULT_COMMISSION.base`. Pass the live rate from
+ * `useCommissionRate()` (or, in edge functions, `getCommissionRate`) to
+ * reflect admin updates without a deploy.
  */
 export function computeFeeBreakdown(
   nightlyRate: number,
   nights: number,
-  cleaningFee = 0
+  cleaningFee = 0,
+  rate: number = DEFAULT_COMMISSION.base,
 ): FeeBreakdown {
   const baseAmount = Math.round(nightlyRate * nights);
-  const serviceFee = Math.round(baseAmount * RAV_MARKUP_RATE);
+  const serviceFee = Math.round(baseAmount * rate);
   const subtotal = baseAmount + serviceFee + cleaningFee;
   const ownerPayout = baseAmount + cleaningFee;
   return { baseAmount, serviceFee, cleaningFee, subtotal, ownerPayout };

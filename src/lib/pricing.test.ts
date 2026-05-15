@@ -127,6 +127,42 @@ describe('computeFeeBreakdown @p0', () => {
     const result = computeFeeBreakdown(100, 1);
     expect(result.cleaningFee).toBe(0);
   });
+
+  it('accepts an explicit commission rate (issue #510)', () => {
+    // Pro effective rate = 10%
+    const result = computeFeeBreakdown(200, 7, 0, 0.10);
+    expect(result.baseAmount).toBe(1400);
+    expect(result.serviceFee).toBe(140); // round(1400 * 0.10)
+    expect(result.subtotal).toBe(1540);
+  });
+
+  it('accepts a 0 commission rate (promo override)', () => {
+    const result = computeFeeBreakdown(200, 7, 0, 0);
+    expect(result.serviceFee).toBe(0);
+    expect(result.subtotal).toBe(1400);
+  });
+});
+
+describe('computeListingPricing with explicit rate (issue #510)', () => {
+  it('uses the passed rate instead of default', () => {
+    // Business effective = 8%
+    const result = computeListingPricing(200, 7, 0.08);
+    expect(result.ownerPrice).toBe(1400);
+    expect(result.ravMarkup).toBe(112); // round(1400 * 0.08)
+    expect(result.finalPrice).toBe(1512);
+  });
+
+  it('defaults to DEFAULT_COMMISSION.base when rate is omitted', () => {
+    const withDefault = computeListingPricing(200, 7);
+    const explicit = computeListingPricing(200, 7, 0.12);
+    expect(withDefault).toEqual(explicit);
+  });
+
+  it('handles a 0 rate (zero-commission promo)', () => {
+    const result = computeListingPricing(200, 7, 0);
+    expect(result.ravMarkup).toBe(0);
+    expect(result.finalPrice).toBe(result.ownerPrice);
+  });
 });
 
 describe('computeOwnerPayoutBreakdown', () => {

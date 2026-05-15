@@ -24,6 +24,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
 import { calculateNights, computeListingPricing } from "@/lib/pricing";
+import { useEffectiveCommissionRate } from "@/hooks/useCommissionRate";
 import type { Listing, Property, CancellationPolicy } from "@/types/database";
 
 const CANCELLATION_OPTIONS: { value: CancellationPolicy; label: string }[] = [
@@ -77,9 +78,11 @@ const AdminListingEditDialog = ({
     }
   }, [open, listing]);
 
-  // Live price calculation
+  // Live price calculation — uses the live platform commission rate so admin
+  // changes propagate immediately (issue #510).
+  const commissionRate = useEffectiveCommissionRate();
   const nights = checkInDate && checkOutDate ? calculateNights(checkInDate, checkOutDate) : 0;
-  const pricing = nights > 0 && nightlyRate > 0 ? computeListingPricing(nightlyRate, nights) : null;
+  const pricing = nights > 0 && nightlyRate > 0 ? computeListingPricing(nightlyRate, nights, commissionRate) : null;
 
   const isDisabledStatus = listing?.status === "booked" || listing?.status === "completed";
 
@@ -89,7 +92,7 @@ const AdminListingEditDialog = ({
     setIsSaving(true);
     try {
       const updatedNights = calculateNights(checkInDate, checkOutDate);
-      const updatedPricing = computeListingPricing(nightlyRate, updatedNights);
+      const updatedPricing = computeListingPricing(nightlyRate, updatedNights, commissionRate);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)

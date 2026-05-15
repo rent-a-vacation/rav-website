@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-04-05T03:03:26"
 change_ref: "04d0bf8"
-change_type: "session-39-docs-update"
+change_type: "session-67"
 status: "active"
 ---
 # Rent-A-Vacation — Pricing, Taxes & Accounting Framework
@@ -19,7 +19,7 @@ Every booking on Rent-A-Vacation involves multiple fee layers. This document def
 | Fee | Who Sets It | Who Collects | Who Remits | Current Status |
 |-----|------------|-------------|-----------|----------------|
 | **Nightly rate** | Property Owner | RAV (at checkout via Stripe) | Paid to owner (minus commission) | ✅ Active |
-| **RAV service fee** | RAV (15% default, tier-adjusted) | RAV (at checkout) | RAV keeps as revenue | ✅ Active |
+| **RAV service fee** | RAV (12% default, tier-adjusted — DEC-041) | RAV (at checkout) | RAV keeps as revenue | ✅ Active |
 | **Cleaning fee** | Owner (optional, per listing) | RAV (at checkout) | Passed through to owner | ✅ Active |
 | **Resort fee** | Resort (disclosed by owner) | Resort (at check-in, not RAV) | Resort | ✅ Display only |
 | **Occupancy / lodging tax** | Government (varies by jurisdiction) | **RAV (marketplace facilitator)** | RAV must remit to tax authority | 🟡 Code ready, pending activation |
@@ -36,12 +36,19 @@ RAV uses a **per-night pricing model** (industry standard — Airbnb, VRBO, Book
 Nightly rate (owner sets)     $257/night
 × Number of nights            × 7 nights
 = Subtotal                    $1,800
-+ RAV service fee (15%)       $270
++ RAV service fee (12%)       $216    ← DEC-041; admin-configurable, see § 3.1
 + Cleaning fee (optional)     $150
 + Occupancy tax (varies)      $TBD (Stripe Tax, pending activation)
 ─────────────────────────────
-Total charged to traveler     $2,220+
+Total charged to traveler     $2,166+
 ```
+
+The 12% figure here is the build-time default. The live runtime rate is read
+from `system_settings.platform_commission_rate` via `useCommissionRate()`
+(frontend) and `getCommissionRate(supabase)` (edge functions) — issue #510.
+Admins can change the rate via the System Settings tab; every change is
+recorded in `admin_audit_log`. Existing bookings keep the rate they were
+created with (persisted on `bookings.commission_rate_applied`).
 
 Benefits of per-night pricing:
 - **Comparison shopping:** Travelers compare 5-night vs 7-night listings fairly
@@ -61,18 +68,20 @@ Benefits of per-night pricing:
 | Free | Traveler | $0 | — | — | — | — |
 | Plus | Traveler | $5 | prod_UHBglcbzfRvApy | price_1TIdJLE8AICp7gyW1QUm6Eu4 | — | — |
 | Premium | Traveler | $15 | prod_UHCMIZLyOj2Eqb | price_1TIdxhE8AICp7gyW52JjvV5C | — | — |
-| Free | Owner | $0 | — | — | 3 max | 15% |
-| Pro | Owner | $10 | prod_UHCUFTZBBYMTrz | price_1TIe5xE8AICp7gyWVVxlxlLD | 10 max | 13% (2% discount) |
-| Business | Owner | $25 | prod_UHCZxftwwwd87K | price_1TIeARE8AICp7gyWsDIWqycw | Unlimited | 10% (5% discount) |
+| Free | Owner | $0 | — | — | 3 max | 12% |
+| Pro | Owner | $10 | prod_UHCUFTZBBYMTrz | price_1TIe5xE8AICp7gyWVVxlxlLD | 10 max | 10% (2pp discount) |
+| Business | Owner | $25 | prod_UHCZxftwwwd87K | price_1TIeARE8AICp7gyWsDIWqycw | Unlimited | 8% (4pp discount) |
 
 Note: These are TEST mode IDs. Production IDs will be different.
 
-**Commission Discount Calculation:**
-- Base commission: 15% (configurable in `system_settings.platform_commission_rate`)
-- Owner Pro discount: 2% → effective rate 13%
-- Owner Business discount: 5% → effective rate 10%
+**Commission Discount Calculation (DEC-041):**
+- Base commission: 12% (live-configurable via `system_settings.platform_commission_rate`; runtime read by `useCommissionRate()` / `getCommissionRate(supabase)` — issue #510)
+- Owner Pro discount: 2pp → effective rate 10%
+- Owner Business discount: 4pp → effective rate 8%
 - Per-owner agreement override: `owner_agreements.commission_rate` takes highest priority
+- Per-booking persistence: `bookings.commission_rate_applied` (decimal) records the rate in effect when the booking was created — future rate changes do not retroactively affect existing bookings.
 - Stripe processing fee (2.9% + $0.30): Deducted by Stripe from total payment, NOT from owner payout
+- Audit log: every commission rate change is recorded in `admin_audit_log` (actor, before/after, optional notes)
 
 **Listing Limit Enforcement:**
 - `check_listing_limit()` RPC checks active + pending_approval listings vs tier max
@@ -90,7 +99,8 @@ Every booking record tracks fees as separate line items:
 | Nightly rate | `nightly_rate` | Owner's per-night price | ✅ Active |
 | Number of nights | `num_nights` | Derived from check-in/check-out dates | ✅ Active |
 | Subtotal | `base_amount` | nightly_rate × num_nights | ✅ Active |
-| RAV service fee | `service_fee` | Commission (15% default, tier-adjusted) | ✅ Active |
+| RAV service fee | `service_fee` | Commission (12% default, tier-adjusted — DEC-041) | ✅ Active |
+| Commission rate applied | `commission_rate_applied` | Decimal (e.g. 0.12) — rate in effect when booking was created (issue #510) | ✅ Active |
 | Cleaning fee | `cleaning_fee` | Optional, set by owner per listing | ✅ Active |
 | Tax amount | `tax_amount` | Calculated by Stripe Tax based on location | 🟡 Ready ($0 until activated) |
 | Tax rate | `tax_rate` | Effective rate for jurisdiction | 🟡 Ready |
@@ -527,7 +537,7 @@ Stripe's OAuth authorization scopes are mode-specific. When Puzzle.io requests a
 7. **Pluggable architecture** for accounting integration — provider-agnostic adapter pattern; swap to QuickBooks/Xero via configuration (valuable for CPA preference, acquisition, or white-label scenarios)
 8. **Staged growth plan** — start free (Puzzle.io), add expense tracking (Ramp/Mercury card), graduate to QB/Xero only if CPA or acquirer requires it
 9. **Resort fees are owner-disclosed, not RAV-collected** ✅
-10. **Stripe processing fees (~2.9%) absorbed by RAV** — baked into 15% service fee margin ✅
+10. **Stripe processing fees (~2.9%) absorbed by RAV** — baked into 12% service fee margin (DEC-041) ✅
 11. **Avalara/TaxJar** for automated tax filing — add when transaction volume justifies the cost
 
 ---

@@ -53,6 +53,7 @@ import { ListingFairValueBadge } from "@/components/fair-value/ListingFairValueB
 import { ListingTypeBadge } from "@/components/marketplace/ListingTypeBadge";
 import { DemandSignal } from "@/components/bidding/DemandSignal";
 import { calculateNights, computeListingPricing } from "@/lib/pricing";
+import { useEffectiveCommissionRate } from "@/hooks/useCommissionRate";
 
 type ListingInsert = Database['public']['Tables']['listings']['Insert'];
 type ListingUpdate = Database['public']['Tables']['listings']['Update'];
@@ -110,6 +111,7 @@ const initialFormData: ListingFormData = {
 const OwnerListings = () => {
   const { user } = useAuth();
   const { canCreate, currentCount, maxListings, tierName } = useCheckListingLimit();
+  const commissionRate = useEffectiveCommissionRate();
   const [listings, setListings] = useState<ListingWithProperty[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -198,7 +200,7 @@ const OwnerListings = () => {
         }
 
         const nights = calculateNights(formData.check_in_date, formData.check_out_date);
-        const pricing = computeListingPricing(formData.nightly_rate, nights);
+        const pricing = computeListingPricing(formData.nightly_rate, nights, commissionRate);
 
         const updateData: ListingUpdate = {
           property_id: formData.property_id,
@@ -224,7 +226,7 @@ const OwnerListings = () => {
       } else {
         // Create new
         const newNights = calculateNights(formData.check_in_date, formData.check_out_date);
-        const newPricing = computeListingPricing(formData.nightly_rate, newNights);
+        const newPricing = computeListingPricing(formData.nightly_rate, newNights, commissionRate);
 
         const insertData: ListingInsert = {
           property_id: formData.property_id,
@@ -253,7 +255,7 @@ const OwnerListings = () => {
       const selectedProperty = properties.find(p => p.id === formData.property_id);
       if (user.email && selectedProperty) {
         const emailNights = calculateNights(formData.check_in_date, formData.check_out_date);
-        const emailPricing = computeListingPricing(formData.nightly_rate, emailNights);
+        const emailPricing = computeListingPricing(formData.nightly_rate, emailNights, commissionRate);
         sendListingSubmittedEmail(
           user.email,
           user.user_metadata?.full_name || "",
@@ -500,7 +502,7 @@ const OwnerListings = () => {
                 />
                 {formData.nightly_rate > 0 && formData.check_in_date && formData.check_out_date && (() => {
                   const formNights = calculateNights(formData.check_in_date, formData.check_out_date);
-                  const formPricing = computeListingPricing(formData.nightly_rate, formNights);
+                  const formPricing = computeListingPricing(formData.nightly_rate, formNights, commissionRate);
                   return formNights > 0 ? (
                     <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
                       <div className="flex justify-between">

@@ -32,10 +32,12 @@ import {
 } from "@/components/ui/table";
 import { useSystemSettings } from "@/hooks/useSystemSettings";
 import { useMembershipTiers } from "@/hooks/useMembership";
+import { useCommissionAuditLog } from "@/hooks/useCommissionAuditLog";
 import { MembershipBadge } from "@/components/MembershipBadge";
 import { toast } from "sonner";
 import { Infinity as InfinityIcon, Timer, ShieldAlert } from "lucide-react";
 import { useConfirmationTimerSettings } from "@/hooks/useOwnerConfirmation";
+import { formatDistanceToNow } from "date-fns";
 
 export function SystemSettings() {
   const {
@@ -65,9 +67,14 @@ export function SystemSettings() {
   const [staffOnlyConfirmOpen, setStaffOnlyConfirmOpen] = useState(false);
   const [staffOnlyPendingValue, setStaffOnlyPendingValue] = useState(false);
 
-  // Commission rate confirmation
+  // Commission rate confirmation — base + Pro + Business all editable
   const [pendingCommissionRate, setPendingCommissionRate] = useState<number | null>(null);
+  const [pendingProDiscount, setPendingProDiscount] = useState<number | null>(null);
+  const [pendingBusinessDiscount, setPendingBusinessDiscount] = useState<number | null>(null);
+  const [commissionNotes, setCommissionNotes] = useState("");
   const [commissionConfirmOpen, setCommissionConfirmOpen] = useState(false);
+
+  const { data: commissionAuditLog = [] } = useCommissionAuditLog(5);
 
   const handleToggleApproval = async (enabled: boolean) => {
     setUpdating(true);
@@ -99,16 +106,31 @@ export function SystemSettings() {
     }
   };
 
-  const handleCommissionRateChange = async (newRate: number) => {
+  const handleCommissionRateChange = async (
+    newRate: number,
+    newProDiscount: number,
+    newBusinessDiscount: number,
+    notes: string,
+  ) => {
     if (newRate < 0 || newRate > 100) return;
+    if (newProDiscount < 0 || newProDiscount > newRate) return;
+    if (newBusinessDiscount < 0 || newBusinessDiscount > newRate) return;
     setUpdatingCommission(true);
     try {
-      await updateSetting("platform_commission_rate", {
-        rate: newRate,
-        pro_discount: platformCommissionRate.proDiscount,
-        business_discount: platformCommissionRate.businessDiscount,
-      });
-      toast.success(`Commission rate updated to ${newRate}%`);
+      await updateSetting(
+        "platform_commission_rate",
+        {
+          rate: newRate,
+          pro_discount: newProDiscount,
+          business_discount: newBusinessDiscount,
+        },
+        notes,
+      );
+      toast.success(`Commission rate updated to ${newRate}% (Pro -${newProDiscount}, Business -${newBusinessDiscount})`);
+      setPendingCommissionRate(null);
+      setPendingProDiscount(null);
+      setPendingBusinessDiscount(null);
+      setCommissionNotes("");
     } catch (error) {
       console.error("Failed to update commission rate:", error);
       toast.error("Failed to update commission rate");
@@ -525,9 +547,46 @@ export function SystemSettings() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Change Commission Rate?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Change commission rate from {platformCommissionRate.rate}% to {pendingCommissionRate}%?
-              This affects all future bookings.
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p>This affects all future bookings. Existing bookings keep the rate they were created with.</p>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-1">Knob</th>
+                      <th className="text-right py-1">Before</th>
+                      <th className="text-right py-1">After</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="py-1">Base rate</td>
+                      <td className="py-1 text-right">{platformCommissionRate.rate}%</td>
+                      <td className="py-1 text-right font-semibold">{pendingCommissionRate ?? platformCommissionRate.rate}%</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1">Pro discount</td>
+                      <td className="py-1 text-right">-{platformCommissionRate.proDiscount}pp</td>
+                      <td className="py-1 text-right font-semibold">-{pendingProDiscount ?? platformCommissionRate.proDiscount}pp</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1">Business discount</td>
+                      <td className="py-1 text-right">-{platformCommissionRate.businessDiscount}pp</td>
+                      <td className="py-1 text-right font-semibold">-{pendingBusinessDiscount ?? platformCommissionRate.businessDiscount}pp</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="space-y-1">
+                  <Label htmlFor="commission-notes" className="text-xs">Reason for change (optional, recorded in audit log)</Label>
+                  <Input
+                    id="commission-notes"
+                    type="text"
+                    value={commissionNotes}
+                    onChange={(e) => setCommissionNotes(e.target.value)}
+                    placeholder="e.g. Launch promo period; competitor anchoring; ..."
+                  />
+                </div>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -535,10 +594,12 @@ export function SystemSettings() {
             <AlertDialogAction
               onClick={async () => {
                 setCommissionConfirmOpen(false);
-                if (pendingCommissionRate !== null) {
-                  await handleCommissionRateChange(pendingCommissionRate);
-                  setPendingCommissionRate(null);
-                }
+                await handleCommissionRateChange(
+                  pendingCommissionRate ?? platformCommissionRate.rate,
+                  pendingProDiscount ?? platformCommissionRate.proDiscount,
+                  pendingBusinessDiscount ?? platformCommissionRate.businessDiscount,
+                  commissionNotes,
+                );
               }}
             >
               Confirm Change
@@ -552,70 +613,143 @@ export function SystemSettings() {
         <CardHeader>
           <CardTitle>Platform Commission</CardTitle>
           <CardDescription>
-            Commission rate charged to property owners on bookings
+            Commission rate charged to property owners on bookings. Changes apply to NEW bookings only; existing bookings keep the rate they were created with.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Label htmlFor="commission-rate">Base rate (%)</Label>
-            <Input
-              id="commission-rate"
-              type="number"
-              className="w-24"
-              value={pendingCommissionRate ?? platformCommissionRate.rate}
-              onChange={(e) => {
-                const val = parseFloat(e.target.value);
-                if (!isNaN(val)) setPendingCommissionRate(val);
-              }}
-              disabled={updatingCommission}
-              min={0}
-              max={100}
-            />
-            <Button
-              size="sm"
-              disabled={
-                updatingCommission ||
-                pendingCommissionRate === null ||
-                pendingCommissionRate === platformCommissionRate.rate
-              }
-              onClick={() => setCommissionConfirmOpen(true)}
-            >
-              Save
-            </Button>
-          </div>
+          {(() => {
+            const effectiveRate = pendingCommissionRate ?? platformCommissionRate.rate;
+            const effectivePro = pendingProDiscount ?? platformCommissionRate.proDiscount;
+            const effectiveBiz = pendingBusinessDiscount ?? platformCommissionRate.businessDiscount;
+            const hasPending =
+              (pendingCommissionRate !== null && pendingCommissionRate !== platformCommissionRate.rate) ||
+              (pendingProDiscount !== null && pendingProDiscount !== platformCommissionRate.proDiscount) ||
+              (pendingBusinessDiscount !== null && pendingBusinessDiscount !== platformCommissionRate.businessDiscount);
+            const invalid =
+              effectiveRate < 0 || effectiveRate > 100 ||
+              effectivePro < 0 || effectivePro > effectiveRate ||
+              effectiveBiz < 0 || effectiveBiz > effectiveRate;
 
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>Pro tier discount</span>
-              <span>{platformCommissionRate.proDiscount}%</span>
-            </div>
-            <div className="flex justify-between text-muted-foreground">
-              <span>Business tier discount</span>
-              <span>{platformCommissionRate.businessDiscount}%</span>
-            </div>
-          </div>
+            return (
+              <>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="commission-rate" className="text-xs">Base rate (%)</Label>
+                    <Input
+                      id="commission-rate"
+                      type="number"
+                      value={effectiveRate}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        if (!isNaN(val)) setPendingCommissionRate(val);
+                      }}
+                      disabled={updatingCommission}
+                      min={0}
+                      max={100}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="commission-pro" className="text-xs">Pro discount (pp)</Label>
+                    <Input
+                      id="commission-pro"
+                      type="number"
+                      value={effectivePro}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        if (!isNaN(val)) setPendingProDiscount(val);
+                      }}
+                      disabled={updatingCommission}
+                      min={0}
+                      max={100}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="commission-business" className="text-xs">Business discount (pp)</Label>
+                    <Input
+                      id="commission-business"
+                      type="number"
+                      value={effectiveBiz}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        if (!isNaN(val)) setPendingBusinessDiscount(val);
+                      }}
+                      disabled={updatingCommission}
+                      min={0}
+                      max={100}
+                    />
+                  </div>
+                </div>
 
-          <div className="border-t pt-4">
-            <p className="text-sm font-medium mb-2">Effective rates</p>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span>Free owners</span>
-                <span className="font-medium">{platformCommissionRate.rate}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Pro owners</span>
-                <span className="font-medium">
-                  {platformCommissionRate.rate - platformCommissionRate.proDiscount}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Business owners</span>
-                <span className="font-medium">
-                  {platformCommissionRate.rate - platformCommissionRate.businessDiscount}%
-                </span>
-              </div>
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    disabled={updatingCommission || !hasPending || invalid}
+                    onClick={() => setCommissionConfirmOpen(true)}
+                  >
+                    Save changes
+                  </Button>
+                </div>
+                {invalid && (
+                  <p className="text-xs text-destructive">
+                    Discounts must be between 0 and the base rate.
+                  </p>
+                )}
+
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium mb-2">Effective rates after change</p>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>Free owners</span>
+                      <span className="font-medium">{effectiveRate}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Pro owners</span>
+                      <span className="font-medium">{Math.max(0, effectiveRate - effectivePro)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Business owners</span>
+                      <span className="font-medium">{Math.max(0, effectiveRate - effectiveBiz)}%</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+
+          {commissionAuditLog.length > 0 && (
+            <div className="border-t pt-4">
+              <p className="text-sm font-medium mb-2">Recent changes</p>
+              <ul className="space-y-2 text-xs">
+                {commissionAuditLog.map((entry) => {
+                  const before = entry.before_value;
+                  const after = entry.after_value;
+                  const changes: string[] = [];
+                  if (before && after) {
+                    if (before.rate !== after.rate) {
+                      changes.push(`base ${before.rate}% -> ${after.rate}%`);
+                    }
+                    if (before.pro_discount !== after.pro_discount) {
+                      changes.push(`Pro -${before.pro_discount}pp -> -${after.pro_discount}pp`);
+                    }
+                    if (before.business_discount !== after.business_discount) {
+                      changes.push(`Business -${before.business_discount}pp -> -${after.business_discount}pp`);
+                    }
+                  }
+                  if (changes.length === 0 && after) {
+                    changes.push(`set base ${after.rate}%, Pro -${after.pro_discount}pp, Business -${after.business_discount}pp`);
+                  }
+                  return (
+                    <li key={entry.id} className="text-muted-foreground">
+                      <span className="font-mono">{formatDistanceToNow(new Date(entry.created_at), { addSuffix: true })}</span>
+                      {" — "}
+                      {changes.join("; ")}
+                      {entry.notes && <span className="italic"> — {entry.notes}</span>}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

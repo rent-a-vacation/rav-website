@@ -1,8 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import type { BusinessMetrics, MonthlyMetric, BidActivityPoint, BidSpreadPoint, RevenueWaterfallPoint } from '@/types/executive';
+import { DEFAULT_COMMISSION } from '@/config/commission';
 
-const COMMISSION_RATE = 0.15; // 15% default (admin-configurable in system_settings)
+// Executive Dashboard derives historical commission revenue from existing
+// bookings. Once `bookings.commission_rate_applied` is back-filled, this
+// helper can switch to the per-booking persisted rate. For now we use the
+// central build-time default (issue #510).
+const COMMISSION_RATE = DEFAULT_COMMISSION.base;
 
 async function fetchBusinessMetrics(): Promise<BusinessMetrics> {
   if (!isSupabaseConfigured()) {

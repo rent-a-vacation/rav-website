@@ -21,6 +21,14 @@ vi.mock("@/lib/supabase", () => ({
   },
 }));
 
+// useCommissionRate (issue #510) needs React Query in a wrapper. The
+// publish flow's commission rate is informational — stub the hook so the
+// test stays focused on the publish-draft logic.
+vi.mock("@/hooks/useCommissionRate", () => ({
+  useEffectiveCommissionRate: () => 0.12,
+  useCommissionRate: () => ({ data: { base: 0.12, proDiscount: 0.02, businessDiscount: 0.04 }, isLoading: false }),
+}));
+
 const baseDraft: ListPropertyDraft = {
   formStep: 3,
   selectedBrand: "hilton_grand_vacations",

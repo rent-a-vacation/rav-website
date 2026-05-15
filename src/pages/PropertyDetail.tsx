@@ -50,6 +50,7 @@ import { FairValueCard } from "@/components/fair-value/FairValueCard";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewSummary from "@/components/reviews/ReviewSummary";
 import { calculateNights, computeFeeBreakdown } from "@/lib/pricing";
+import { useEffectiveCommissionRate } from "@/hooks/useCommissionRate";
 import { DisclaimerBlock } from "@/components/legal/DisclaimerBlock";
 import { StateSpecificDisclaimer } from "@/components/legal/StateSpecificDisclaimer";
 import { GuestProtectionBadge } from "@/components/legal/GuestProtectionBadge";
@@ -139,7 +140,8 @@ const PropertyDetail = () => {
     : prop?.location || '';
   const unitTypeName = unitType?.name || (prop as Record<string, unknown>)?.unit_type_name as string || 'Unit';
   const pricePerNight = listing?.nightly_rate || (nights > 0 && listing ? Math.round(listing.final_price / nights) : 0);
-  const fees = listing ? computeFeeBreakdown(pricePerNight, nights, listing.cleaning_fee || 0) : null;
+  const commissionRate = useEffectiveCommissionRate();
+  const fees = listing ? computeFeeBreakdown(pricePerNight, nights, listing.cleaning_fee || 0, commissionRate) : null;
 
   // Build image array from property/resort data
   const images: string[] = [];

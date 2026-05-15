@@ -6,6 +6,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { computeListingPricing } from '@/lib/pricing';
+import { useEffectiveCommissionRate } from '@/hooks/useCommissionRate';
 import type {
   ListingBid,
   ListingBidWithDetails,
@@ -512,6 +514,7 @@ export function useCreateProposal() {
 // When accepting a proposal that has no listing_id, auto-creates a listing
 export function useUpdateProposalStatus() {
   const queryClient = useQueryClient();
+  const commissionRate = useEffectiveCommissionRate();
 
   return useMutation({
     mutationFn: async ({
@@ -540,9 +543,10 @@ export function useUpdateProposalStatus() {
           (new Date(proposal.proposed_check_out).getTime() - new Date(proposal.proposed_check_in).getTime()) / (1000 * 60 * 60 * 24)
         ));
         const nightlyRate = Math.round(proposal.proposed_price / nights);
-        const ownerPrice = nightlyRate * nights;
-        const ravMarkup = Math.round(ownerPrice * 0.15);
-        const finalPrice = ownerPrice + ravMarkup;
+        const pricing = computeListingPricing(nightlyRate, nights, commissionRate);
+        const ownerPrice = pricing.ownerPrice;
+        const ravMarkup = pricing.ravMarkup;
+        const finalPrice = pricing.finalPrice;
 
         const { data: listing, error: listingError } = await supabase
           .from('listings')
