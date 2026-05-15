@@ -18,6 +18,8 @@ Session 67. After PR #527 (`dev → main`) merged with "auto-delete head branche
 
 **Related:** [[feedback_github_pr_auto_retarget]] (auto-memory — broader than this repo)
 
+**Confirmation 2026-05-15 (Session 68, PR #533):** Lesson held. `origin/dev` was auto-deleted on `dev → main` merge as expected. Re-created from `main` within seconds per the documented procedure. Pre-merge check (`gh pr list --base dev`) returned empty — no PRs got silently re-targeted. Clean recovery. The procedure works; the surprise from Session 67 only bites if open PRs exist at merge time.
+
 ---
 
 ## L-002 — Supabase CLI needs `--include-all` when mixing numeric and timestamp migration prefixes
