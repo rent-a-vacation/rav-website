@@ -9,7 +9,7 @@ status: "active"
 > **Architectural decisions, session context, and agent instructions**
 > **Task tracking has moved to [GitHub Issues & Milestones](https://github.com/rent-a-vacation/rav-website/issues)**
 > **Project board: [RAV Roadmap](https://github.com/orgs/rent-a-vacation/projects/1)**
-> **Last Updated:** May 13, 2026 (Session 67: Commission rate runtime architecture — issue #510 closure)
+> **Last Updated:** May 15, 2026 (Session 68: Session 67 docs cleanup + subscription price sync + #530 security wave 1)
 > **Repository:** https://github.com/rent-a-vacation/rav-website
 > **App Version:** v0.9.0 (build version visible in footer)
 
@@ -103,10 +103,37 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** In sync at commit `7028aea` after Session 67's docs-lessons push. PR #527 (daily-summary fix), PR #528 (#510 closure), and PR #529 (CI workflow trigger fix for dev-targeted PRs) all merged. Feature branch `feature/issue-510-commission-rate-runtime` deleted after merge.
+- **dev and main:** `dev` is **4 commits ahead of `main`** at `8816a4c`, all doc-only or security-patch-only (Session 67 docs lessons, Session 67 28-file commission rate doc sweep, Session 68 subscription price sync, Session 68 #530 wave-1 patch). Awaiting next coordinated `dev → main` release PR. PRs #527/#528/#529 (Sessions 66/67) already merged.
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
-### Session Handoff (Sessions 25-67)
+### Session Handoff (Sessions 25-68)
+
+**Session 68 — Doc cleanup + subscription price sync + #530 security wave 1 (May 14-15, 2026):**
+
+Three-part session that closed loops from Session 67 and started #530:
+
+**Part 1 — Session 67 close-out (May 14):**
+After PR #528 (#510 closure) merged to `main`, applied Migration 080 to **both DEV and PROD** Supabase (commission-rate runtime architecture: `admin_audit_log`, `bookings.commission_rate_applied`, public `get_platform_commission_rate()` RPC). Full E2E smoke test on DEV (RPC + RLS + write/revert via service-role). Captured **L-001** (GitHub PR auto-retarget when base branch is deleted) and **L-002** (Supabase CLI `--include-all` flag needed when migration prefix conventions mix) to `tasks/lessons.md` + auto-memory (commit `7028aea`). Then a 28-file `/docs` sweep aligning every customer-facing, QA, public-reference, generator, marketing, payments-spec, brand, and legal doc to DEC-041 rates (12/10/8%) and the new #510 runtime architecture (commit `a47f6c1`); fixed a stale `system_settings` field-name reference in `PAYSAFE-FLOW-SPEC.md`.
+
+**Part 2 — Subscription price sync (May 15):**
+Investigation triggered by side-finding from Session 67: three docs cited three different Pro/Business subscription prices. Root cause: `membership_tiers` DB table (migration 011) is the actual source of truth — Plus $5 / Premium $15 / Pro $10 / Business $25 — and frontend reads from DB via `useMembership` hooks. **No hardcoded prices in code.** But three docs (`subscription-terms.md`, `PITCH-DECK-SCRIPT.md`, `generate_docx.py`) diverged from DB. Fixed all three; removed invented "Annual" column from subscription-terms (monthly is the only implemented cadence per existing PROJECT-HUB Stripe Subscription decision). Pitch deck also got voice-quota + listing-limit fixes that were stale in the same tables. **Side-bug surfaced and flagged:** `membership_tiers.commission_discount_pct` for Business says 5% but DEC-041 says 4% — real data drift between two tables, fix scoped into #531. Commit `0a64cf4`.
+
+**Follow-up issues opened:**
+- **#531** — Admin-configurable subscription tier prices (Lean MVP). `membership_tiers` admin UI + audit log + manual Stripe Price ID coordination. Mirrors #510 pattern. Pre-launch.
+- **#532** — Subscription pricing full scope. Auto Stripe Price creation via Stripe API + grandfathering + version history + annual schema add. Post-launch backlog.
+
+**Part 3 — #530 Security Hygiene wave 1:**
+Triaged 63 open dependabot alerts (2 Critical / 24 High / 33 Moderate / 4 Low; 39 runtime / 24 dev). `npm update protobufjs basic-ftp` (within existing semver) cleared **2 Criticals + 5 Highs** in a single bump:
+- `protobufjs` 7.5.4 → 7.5.8 (runtime; 4 Highs cleared; dependabot Critical #56 documented as false-positive — vulnerable range `>= 8.0.0, < 8.0.1` does not apply to our 7.x install)
+- `basic-ftp` 5.1.0 → 5.3.1 (dev-only Lighthouse CI chain; 1 Critical + 1 High cleared)
+
+Net: **63 → 40 open alerts (−37%)**. Verified: type-check + build + P0 tests + docs:sync-check all clean. Created `docs/SECURITY-RISK-LOG.md` with per-cluster patch/accept/defer triage for all 40 remaining alerts, cadence policy, and change log. Commit `8816a4c`. Issue #530 updated with wave-1 progress + acceptance-criteria checkpoint.
+
+**Wave 2 queued for next session (#530):** `@remix-run/router` 7.12.0 XSS via open redirects (all-page exposure), `dompurify` 3.4.0 (8 Moderate sanitizer-bypass alerts via mermaid), `picomatch`/runtime `minimatch` ReDoS, `lodash` `_.template` audit, `glob` 11.1.0 hygiene.
+
+**Test count:** 1778 (unchanged — no code logic changed this session). **Migrations:** unchanged (still through 080). **dev/main:** 4 commits ahead; release pending explicit go-ahead.
+
+---
 
 **Session 67 — Commission Rate Runtime Architecture (May 13, 2026, issue #510):**
 

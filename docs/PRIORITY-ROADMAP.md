@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-05-13T03:30:00"
 change_ref: "manual-edit"
-change_type: "session-67"
+change_type: "session-68"
 status: "active"
 ---
 # PRIORITY ROADMAP — Rent-A-Vacation
@@ -54,14 +54,16 @@ Session 66 closed out the 12-item compliance hardening sprint. All build-now ite
 - **C6 returned** → build resort-ownership verification flow (P-9). ~6-12h.
 - **C8 counsel-drafted policies** → replace 8 drafts at `docs/support/policies/*.md`, flip `status: draft → active`, push via `sync-support-docs.yml`. ~1-2h mechanical.
 
-## Current Priority Tiers (as of May 13, 2026 — Session 67 close)
+## Current Priority Tiers (as of May 15, 2026 — Session 68 close)
 
 ### Tier A: Build Next (High Impact, Code-Ready)
 
-**Session 67 closed out #510 (commission rate runtime architecture, full scope). Remaining carry-over items:**
+**Session 68 closed out the Session 67 docs cleanup, subscription price sync, and #530 wave 1. Remaining ordered queue:**
 
-1. **#509** — Promotional commission rate overrides. **Now unblocked** by #510 closure (DEC-043 resolution chain in place). ~2-3 days.
-2. **Phase 2 Stage 2b** — Live actuals overlay on Financial Model dashboard. ~3-5 days. Independent.
+1. **#530 wave 2** — Continue dependabot triage. Runtime High priority: `@remix-run/router` 7.12.0 (XSS via open redirects), `dompurify` 3.4.0 (8 Moderate sanitizer-bypass alerts via mermaid), `picomatch`/runtime `minimatch` ReDoS, `lodash` `_.template` audit, `glob` 11.1.0 hygiene. ~1 session. **Wave 1 already cleared 23 alerts including both Criticals.**
+2. **#531** — Admin-configurable subscription tier prices (Lean MVP). `membership_tiers` admin UI + audit log + manual Stripe Price ID coordination. Mirrors #510 pattern. Also fixes a real data drift bug: `membership_tiers.commission_discount_pct` for Business is 5 but DEC-041 says 4. **NEW this session.** Pre-launch. ~1-2 days.
+3. **#509** — Promotional commission rate overrides. **Unblocked** by #510 closure (DEC-043 resolution chain in place). ~2-3 days.
+4. **Phase 2 Stage 2b** — Live actuals overlay on Financial Model dashboard. ~3-5 days. Independent.
 
 ### Session 66 close — compliance hardening (12 of 12 shipped)
 
@@ -78,9 +80,11 @@ User-confirmed compliance posture at session close:
 - `docs/legal/attorney-meeting-compliance-status.md` (refreshed) — Part 5 two-column status
 - `docs/legal/compliance-gap-analysis.md` (refreshed) — Part 4 priority gaps with engineering effort per counsel decision
 
-**Outstanding doc-only updates (deferred, not blocking, carried from Session 65):**
-- BRAND-LOCK.md § 5 (15% → 12%)
-- `docs/RAV-PRICING-TAXES-ACCOUNTING.md` prose updates (15% → 12%)
+**Outstanding doc-only updates from Session 65 carry-over: ✅ ALL CLEARED.**
+- BRAND-LOCK.md § 5 (15% → 12%) — completed Session 67 via #510 closure
+- `docs/RAV-PRICING-TAXES-ACCOUNTING.md` prose updates (15% → 12%) — completed Session 67 + further refreshed Session 68 (v2.2 header bump with #510 changelog)
+- 28-doc sweep in Session 67 aligned every customer-facing, QA, public-reference, generator, marketing, payments-spec, brand, and legal doc to DEC-041 rates
+- Subscription tier prices synced to live DB seed in Session 68 (3 docs were diverging)
 
 ### Tier B: Pre-Launch Important (Needs Human Input)
 
@@ -171,6 +175,7 @@ These unblock when the LLC is formed. Not code-dependent.
 
 | Date | Session | Changes |
 |------|---------|---------|
+| May 14-15, 2026 | 68 | **Session 67 close-out + #530 Security Hygiene wave 1 + subscription price sync.** Three parts: (1) Migration 080 pushed to **both DEV and PROD** with full E2E smoke test on DEV; lessons L-001 (GitHub PR auto-retarget when base branch deleted) + L-002 (Supabase `--include-all` flag) captured to `tasks/lessons.md` + auto-memory (commit `7028aea`); 28-file `/docs` sweep aligning every customer-facing, QA, public-reference, generator, marketing, payments-spec, brand, and legal doc to DEC-041 rates and #510 runtime architecture (commit `a47f6c1`). (2) Subscription price reconciliation: confirmed `membership_tiers` DB table is the source of truth (frontend reads via `useMembership` hooks — no hardcoded prices); fixed 3 diverging docs (`subscription-terms.md` $9.99/$19.99/$29.99/$49.99 → $5/$10/$15/$25, removed invented Annual column; `PITCH-DECK-SCRIPT.md` $29.99/$99.99 + stale voice quotas/listing limits → DB values; `generate_docx.py` two tier tables corrected; commit `0a64cf4`). Two follow-up issues opened: **#531** (Lean MVP admin UI for membership_tiers + audit log + manual Stripe coordination; mirrors #510 pattern) and **#532** (full scope: auto Stripe Price creation + grandfathering + version history + annual schema). Side-bug surfaced: `membership_tiers.commission_discount_pct` for Business = 5 but DEC-041 = 4, fix scoped into #531. (3) #530 Security Hygiene wave 1: triaged 63 open dependabot alerts (2 Critical / 24 High / 33 Moderate / 4 Low; 39 runtime / 24 dev); `npm update protobufjs basic-ftp` cleared 2 Criticals + 5 Highs (63 → 40, −37%); protobufjs 7.5.4 → 7.5.8 (4 Highs); basic-ftp 5.1.0 → 5.3.1 (Critical + High, dev-only Lighthouse CI chain); dependabot Critical #56 documented as false-positive (range 8.0.0–8.0.1 doesn't apply to our 7.x install); created `docs/SECURITY-RISK-LOG.md` with per-cluster patch/accept/defer triage + cadence policy; commit `8816a4c`; issue #530 updated with wave-1 progress. **Test count unchanged at 1778; migrations unchanged at 080; dev is 4 commits ahead of main pending release approval.** Tier A reordered: #530 wave 2 → #531 → #509 → Phase 2 Stage 2b. |
 | May 13, 2026 | 67 | **#510 SHIPPED — Commission rate runtime architecture (full scope).** DEC-043 logged. Migration 080: `admin_audit_log` generic ledger + `bookings.commission_rate_applied` + public `get_platform_commission_rate()` SECURITY DEFINER RPC + idempotent UPSERT to DEC-041 values. New public `useCommissionRate()` hook + `useEffectiveCommissionRate(tier?)` convenience wrapper (React Query, 5-min cache). Edge-function `getCommissionRate(supabase)` helper in `_shared/commission.ts`. `computeListingPricing` / `computeFeeBreakdown` accept optional rate parameter. 7+ frontend call sites wired through `useEffectiveCommissionRate`. Edge function `create-booking-checkout` persists the resolved rate on `bookings.commission_rate_applied`. Admin UI in `SystemSettings.tsx` now has editable Pro + Business discount inputs, AlertDialog showing full before/after diff + notes textarea, and Recent Changes list reading from `admin_audit_log` via `useCommissionAuditLog`. Drift-bug fix: `useSystemSettings.ts` + `useOwnerCommission.ts` fallback defaults moved from stale 15/2/5 to `DEFAULT_COMMISSION`-sourced 12/2/4. Hardcoded 0.15 purged from `calculatorLogic.ts`, `costComparator.ts`, `yieldEstimator.ts`, `useBusinessMetrics.ts`. Docs updates: PRICING-TAXES (15% → 12% prose + tier table 13/10 → 10/8 + new commission_rate_applied + audit log mentions); BRAND-LOCK § 5 + § 8 (numerical claims refreshed). 30 new tests across `useCommissionRate.test.ts`, `_shared/__tests__/commission.test.ts`, `pricing.test.ts`. 4 pre-existing test files updated to mock `useCommissionRate` (`AdminListingEditDialog`, `BidFormDialog`, `usePublishDraft`) or rebase expectations on `DEFAULT_COMMISSION` (`useOwnerCommission`, `calculatorLogic`, `costComparator`). Also shipped Session-66 follow-up workflow fix: PR #527 (`daily-summary.yml` guards against empty-commit-window 404). **Tier A: #510 done; #509 now unblocked**. |
 | May 12, 2026 | 66 | **Compliance Hardening Sprint COMPLETE — 12 build-now items shipped.** Multi-day arc (May 6 + May 11-12) closing all build-now items from the 2026-05-05 audit against *Legal Research Memorandum v3* + *Compliance Development Brief v1.0*. Shipped: central disclaimer registry + 9 placements (#483), About page (#484), No Timeshare Sales validator (#485), `listings.state` + Migration 074 (#486), FL/CA disclosure rendering (#487), marketplace-facilitator tracker + Migration 075 (#488), Guest Protection Policy surface (#489), MLA notice + ToS carve-out + Migration 076 (#490), listing accuracy reporting + Migration 077 (#491), fraud reporting + Migration 078 (#492), CC&R attestation + Migration 079 (#481), robots.txt + scraping policy (#482). PR #500 cleared Session-63 migration backlog. **Tests 1492 → 1754 (+262, +17.6%); 17 migrations applied to both DEV + PROD.** Counsel meeting docs created: `counsel-meeting-prep.md` (NEW) + refreshed `attorney-meeting-compliance-status.md` + `compliance-gap-analysis.md`. Tier B trimmed: 8 SHIPPED PaySafe gap items removed; 2 counsel-pending follow-up issues added (#493, #494) plus umbrella #480. Tier A unchanged — Session 65 carry-overs (#510 / Stage 2b / #509) remain top-of-queue. |
 | May 6, 2026 | 64 | **DEC-040 logged — sequential Phase numbering retired.** Phase 22 was the last numbered phase; new work (5+ related issues sharing an outcome) goes into themed milestones (`Launch Readiness`, `Security Hardening`, `Role-Based UX Overhaul`, etc.). PROJECT-HUB.md, this file, and `CLAUDE.md` updated with the new convention. `scripts/docs-sync-check.ts` extended with `checkPhaseNumbering()` rule that fails CI on any new "Phase 23+" reference outside the allowlist. Auto-memory saved. **No tier changes.** Doc-only Session 64. |
