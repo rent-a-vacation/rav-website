@@ -19,9 +19,12 @@
 
 // SupabaseClient type is intentionally loose — Deno-side typing varies
 // between deploy targets. Callers pass either an authenticated user
-// client or the service-role client; both work.
-// deno-lint-ignore no-explicit-any
-type SupabaseLike = { rpc: (fn: string, args?: any) => Promise<{ data: any; error: any }> };
+// client or the service-role client; both work. `unknown` is correct
+// here because nothing reads structure off the args or response without
+// narrowing it first inside getCommissionRate.
+type SupabaseLike = {
+  rpc: (fn: string, args?: unknown) => Promise<{ data: unknown; error: unknown }>;
+};
 
 export interface EdgeCommissionRate {
   base: number; // 0.12

@@ -122,7 +122,7 @@ export function usePublishDraft() {
     } finally {
       setIsPending(false);
     }
-  }, []);
+  }, [commissionRate]);
 
   return { publishDraft, isPending, error };
 }
