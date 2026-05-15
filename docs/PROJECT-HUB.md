@@ -103,7 +103,7 @@ gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." -
 - **Marketplace flow distinction (DEC-034):** `listings.source_type` + `bookings.source_type` + `bookings.travel_proposal_id` live. Pre-Booked Stay = instant confirm; Wish-Matched Stay = owner-confirmation required. Implemented via #380 Phases 1–5 (PRs #385–#389).
 - **PROD platform:** locked (Staff Only Mode enabled)
 - **Supabase CLI:** currently linked to DEV
-- **dev and main:** `dev` is **4 commits ahead of `main`** at `8816a4c`, all doc-only or security-patch-only (Session 67 docs lessons, Session 67 28-file commission rate doc sweep, Session 68 subscription price sync, Session 68 #530 wave-1 patch). Awaiting next coordinated `dev → main` release PR. PRs #527/#528/#529 (Sessions 66/67) already merged.
+- **dev and main:** **In sync at commit `1132d1d`** after PR #533 release (merged 2026-05-15T15:41 UTC). Sessions 67-68 batch (5 commits: lessons L-001/L-002, 28-doc commission sweep, subscription price sync, security wave 1, housekeeping) all landed on `main`. L-001 verified in real-time: `origin/dev` was auto-deleted on merge, recreated from `main` immediately per the documented recovery procedure; no open PRs were silently re-targeted this time (clean recovery — contrast with Session 67 surprise that originated the lesson).
 - **GitHub Project:** RAV Roadmap — 202 issues, all with Status/Category/Sub-Category/Type populated. Auto-add workflow enabled. PRs excluded.
 
 ### Session Handoff (Sessions 25-68)
