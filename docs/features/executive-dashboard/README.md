@@ -9,9 +9,11 @@ status: "active"
 **Route:** `/executive-dashboard`  
 **Access:** `rav_owner` role only  
 **Phase:** 14  
-**Status:** ✅ Completed (Session 14)
+**Status:** ✅ Built and shipped (Session 14; financial-model sub-route added Session ~67)
 **Created:** February 20, 2026
-**Note:** Standalone page at `/executive-dashboard` per DEC-014 (not a tab in admin)
+**Note:** Standalone page at `/executive-dashboard` per DEC-014 (not a tab in admin). Financial model lives at `/executive-dashboard/financial-model`.
+
+> **Drift fix (Session 68, 2026-05-15):** the Status column in the Dashboard Sections table previously claimed "Not built" for all 6 sections — that was stale. Verified components exist at `src/components/executive/` (15 files) and hooks at `src/hooks/executive/` (5 files). Status updated to reflect reality.
 
 ---
 
@@ -37,14 +39,15 @@ A premium, investor-grade strategic dashboard for the RAV Owner. Designed to imp
 
 ## Dashboard Sections
 
-| # | Section | Data Source | Status |
-|---|---------|------------|--------|
-| 1 | Headline Bar (5 KPI pills) | Tier 1 — Supabase | ⬜ Not built |
-| 2 | Business Performance (4 charts) | Tier 1 — Supabase | ⬜ Not built |
-| 3 | Marketplace Health (3 proprietary) | Tier 1 — Supabase | ⬜ Not built |
-| 4 | Market Intelligence (BYOK) | Tier 3 — AirDNA/STR | ⬜ Not built |
-| 5 | Industry Intelligence Feed | Tier 2 — NewsAPI/FRED | ⬜ Not built |
-| 6 | Unit Economics | Tier 1 — Supabase | ⬜ Not built |
+| # | Section | Data Source | Component | Status |
+|---|---------|------------|-----------|--------|
+| 1 | Headline Bar (5 KPI pills) | Tier 1 — Supabase | `HeadlineBar.tsx` | ✅ Built |
+| 2 | Business Performance (4 charts) | Tier 1 — Supabase | `BusinessPerformance.tsx` (`useBusinessMetrics`) | ✅ Built |
+| 3 | Marketplace Health (3 proprietary) | Tier 1 — Supabase | `MarketplaceHealth.tsx` + `LiquidityGauge.tsx` + `SupplyDemandMap.tsx` + `VoiceFunnel.tsx` (`useMarketplaceHealth`) | ✅ Built |
+| 4 | Market Intelligence (BYOK) | Tier 3 — AirDNA/STR | `MarketIntelligence.tsx` + `BYOKCard.tsx` (`useMarketIntelligence`) | ✅ Built |
+| 5 | Industry Intelligence Feed | Tier 2 — NewsAPI/FRED | `IndustryFeed.tsx` (`useIndustryFeed`) | ✅ Built |
+| 6 | Unit Economics | Tier 1 — Supabase | `UnitEconomics.tsx` | ✅ Built |
+| + | Financial Model (sub-route) | Tier 1 — calc lib | `src/pages/FinancialModelDashboard.tsx` at `/executive-dashboard/financial-model` | ✅ Built (Session ~67) |
 
 ---
 
