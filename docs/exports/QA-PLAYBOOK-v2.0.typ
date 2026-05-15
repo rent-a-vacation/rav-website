@@ -142,7 +142,7 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
     "Review the traveler and owner sections",
     "Check the pricing section",
   ),
-  expected: "Page explains the platform for both travelers and owners. Commission rate shown as 15%.",
+  expected: "Page explains the platform for both travelers and owners. Commission rate shown as 12% (live from get_platform_commission_rate() RPC).",
 )
 
 #test-case("TC-T-003", "Browse Vacation Rentals",
@@ -267,7 +267,7 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
   steps: (
     "Click \"Propose Different Dates\"",
     "Select check-in and check-out dates",
-    "Observe auto-computed bid (nightly rate × nights + 15%)",
+    "Observe auto-computed bid (nightly rate × nights + 12%)",
     "Submit the date proposal",
   ),
   expected: "Date proposal sent. Auto-computed price reflects nightly rate × nights with markup.",
@@ -548,7 +548,7 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
   page: "/list-property (step 2)",
   steps: (
     "Enter nightly rate",
-    "Observe live price summary (nightly × nights + 15% markup = total)",
+    "Observe live price summary (nightly × nights + 12% markup = total)",
     "Check pricing suggestion from market data",
     "Set check-in/check-out dates",
     "Choose cancellation policy",
@@ -607,7 +607,7 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
     "Edit a listing's nightly rate",
     "Observe price recalculation",
   ),
-  expected: "All owned items displayed. Editing rate recalculates total with 15% markup.",
+  expected: "All owned items displayed. Editing rate recalculates total with 12% markup.",
 )
 
 #test-case("TC-O-008", "Dashboard — Bookings & Earnings Tab",
@@ -723,7 +723,7 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
     "Check pricing intelligence",
     "Observe dynamic pricing factors (urgency, season, demand)",
   ),
-  expected: "Earnings show gross, commission (15%), net. Dynamic pricing shows factor badges.",
+  expected: "Earnings show gross, commission (tier-adjusted: Free 12% / Pro 10% / Business 8%), net. Dynamic pricing shows factor badges.",
 )
 
 == Referral & Profile
@@ -881,11 +881,11 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
 #test-case("TC-O-034", "Commission Discount Verification",
   page: "/owner-dashboard?tab=bookings-earnings",
   steps: (
-    "Log in as owner1 (Pro tier, 2% discount)",
+    "Log in as owner1 (Pro tier, 2pp discount)",
     "Check earnings breakdown",
-    "Verify commission shows 13% (not 15%)",
+    "Verify commission shows 10% (not 12% base)",
   ),
-  expected: "Service fee shows 13% for Pro tier. Owner2 (Business) would show 10%.",
+  expected: "Service fee shows 10% for Pro tier. Owner2 (Business) would show 8%.",
 )
 
 #pagebreak()
@@ -1051,7 +1051,7 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
     "Review revenue, commission, payout summaries",
     "Check date range filters",
   ),
-  expected: "Financial overview with total revenue, 15% commission, owner payouts. Filterable by date.",
+  expected: "Financial overview with total revenue, 12% base commission (tier-adjusted per booking via commission_rate_applied), owner payouts. Filterable by date.",
 )
 
 #test-case("TC-A-003", "Tax & 1099 Tab",
@@ -1097,7 +1097,7 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
     "Review system settings (commission rate, platform mode)",
     "Toggle Staff Only Mode",
   ),
-  expected: "Settings editable. Commission = 15%. Staff Only Mode locks platform for non-team.",
+  expected: "Settings editable. Commission = 12% (live from system_settings.platform_commission_rate; changes write to admin_audit_log). Staff Only Mode locks platform for non-team.",
 )
 
 #test-case("TC-A-008", "Voice Controls Tab",
@@ -1455,7 +1455,7 @@ Create a GitHub Issue with: Title ("Bug: ..."), labels (bug + area), steps to re
   page: "Multiple pages",
   steps: (
     "Admin: Override owner3 from Free to Business tier (admin notes: \"testing\")",
-    "Owner3: Log in → check commission in earnings (should show 10%)",
+    "Owner3: Log in → check commission in earnings (should show 8% — Business tier rate)",
     "Admin: Go to Memberships → verify \"Admin Override\" badge on owner3",
     "Admin: Clear override → verify badge removed",
   ),

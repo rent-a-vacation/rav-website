@@ -144,7 +144,7 @@ Unlike the QA Playbook (individual test cases per function), this document tests
 | 1 | Owner 1 | Navigate to `/list-property` | /list-property | 3-step form loads: Property Details → Dates & Pricing → Review |
 | 2 | Owner 1 | **Step 1:** Fill property details — name, location (Las Vegas, NV), brand (Hilton Grand Vacations), bedrooms: 2, bathrooms: 2, sleeps: 6, description, select amenities | /list-property | All fields accept input, amenity checkboxes work |
 | 3 | Owner 1 | Click "Next" | /list-property | Advances to Step 2: Dates & Pricing |
-| 4 | Owner 1 | **Step 2:** Set check-in date (60 days out), check-out (67 days out = 7 nights), nightly rate: $200, cancellation policy: Moderate, enable "Open for Bidding" | /list-property | Price summary shows: nightly $200 × 7 nights = $1,400 owner price, $1,610 with 15% RAV markup. PricingSuggestion component shows market comparison if similar listings exist |
+| 4 | Owner 1 | **Step 2:** Set check-in date (60 days out), check-out (67 days out = 7 nights), nightly rate: $200, cancellation policy: Moderate, enable "Open for Bidding" | /list-property | Price summary shows: nightly $200 × 7 nights = $1,400 owner price, $1,568 with 12% RAV markup (DEC-041). PricingSuggestion component shows market comparison if similar listings exist |
 | 5 | Owner 1 | Click "Next" | /list-property | Advances to Step 3: Review & Submit |
 | 6 | Owner 1 | **Step 3:** Review all details → Click "Submit for Review" | /list-property | Success toast, redirected to `/owner-dashboard?tab=my-listings` |
 | 7 | Owner 1 | Check listing in My Listings tab | /owner-dashboard?tab=my-listings | New listing visible with status "Pending Approval" |
@@ -377,7 +377,7 @@ Unlike the QA Playbook (individual test cases per function), this document tests
 |---|-----|--------|------|------------|
 | 1 | Owner 2 | Log in → `/owner-dashboard` (Dashboard tab) | /owner-dashboard | Earnings summary card shows total, pending, and paid amounts |
 | 2 | Owner 2 | Navigate to Bookings & Earnings tab | /owner-dashboard?tab=bookings-earnings | Completed bookings list with individual earning amounts |
-| 3 | Owner 2 | Verify commission calculation on a completed booking | /owner-dashboard | Owner earning = total amount − 10% commission (Business tier gets 10%, not 15%) |
+| 3 | Owner 2 | Verify commission calculation on a completed booking | /owner-dashboard | Owner earning = total amount − 8% commission (Business tier gets 8%, not 12% base) |
 | 4 | Owner 2 | Check Stripe Connect status (StripeConnectBanner) | /owner-dashboard | If not connected: "Connect Stripe" banner. If connected: "Payouts enabled" |
 | 5 | Admin | Log in → `/admin?tab=payouts` | /admin | Owner 2's pending payout visible |
 | 6 | Admin | Click "Pay via Stripe" (or initiate manual payout) → Confirm in AlertDialog | /admin | Payout initiated, status changes to "Processing" or "Paid" |
@@ -400,7 +400,7 @@ Unlike the QA Playbook (individual test cases per function), this document tests
 | # | As | Action | Page | Checkpoint |
 |---|-----|--------|------|------------|
 | 1 | Owner 3 | Log in → `/owner-dashboard?tab=account` | /owner-dashboard | Current tier shown: "Free", listing limit: 3 |
-| 2 | Owner 3 | Click "Upgrade Plan" → MembershipPlans component loads | /owner-dashboard | Tier comparison: Free (3 listings, 15%) vs Pro (10 listings, 13%) vs Business (25 listings, 10%) |
+| 2 | Owner 3 | Click "Upgrade Plan" → MembershipPlans component loads | /owner-dashboard | Tier comparison: Free (3 listings, 12%) vs Pro (10 listings, 10%) vs Business (25 listings, 8%) |
 | 3 | Owner 3 | Select "Pro" tier → Redirected to Stripe Checkout | Stripe Checkout | Stripe payment page shows Pro plan at $10/month |
 | 4 | Owner 3 | Complete payment with test card | Stripe → /subscription-success | Subscription confirmed |
 | 5 | Owner 3 | Navigate back to `/owner-dashboard?tab=account` | /owner-dashboard | Tier now shows "Pro", listing limit: 10 |
@@ -862,7 +862,7 @@ Unlike the QA Playbook (individual test cases per function), this document tests
 | # | As | Action | Page | Checkpoint |
 |---|-----|--------|------|------------|
 | 17 | Renter 1 | After stay: submit review (5 stars, "Amazing property!") | /my-trips | Review submitted |
-| 18 | Owner 1 | Check Bookings & Earnings → payout status | /owner-dashboard | Payout = $1,750 − 13% commission (Pro tier) = $1,522.50 |
+| 18 | Owner 1 | Check Bookings & Earnings → payout status | /owner-dashboard | Payout = $1,750 − 10% commission (Pro tier) = $1,575.00 |
 | 19 | Admin | `/admin?tab=payouts` → verify payout amount → initiate | /admin | Payout processed |
 | 20 | Owner 1 | Verify earnings updated | /owner-dashboard | Payout status: "Paid" |
 

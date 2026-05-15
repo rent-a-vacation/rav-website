@@ -86,7 +86,7 @@ The `test:p0` npm script uses Vitest's `--testNamePattern` to run only P0-tagged
 
 **P0-SUB-02:** Owner selects Pro tier → Stripe Checkout → webhook fires → membership updates to Pro. Critical: revenue path.
 
-**P0-SUB-03:** Commission discount applied correctly per tier — Free: 15%, Pro: 13%, Business: 10%. Verified in checkout edge function (`create-booking-checkout`).
+**P0-SUB-03:** Commission discount applied correctly per tier — Free: 12%, Pro: 10%, Business: 8% (DEC-041; runtime-configurable via `system_settings.platform_commission_rate`). Verified in checkout edge function (`create-booking-checkout`), which uses the shared edge helper `getCommissionRate(supabase)` to source the live rate.
 
 **P0-SUB-04:** Admin sets `admin_override=true` → tier changes → webhook respects override.
 

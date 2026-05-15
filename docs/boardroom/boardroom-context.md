@@ -34,8 +34,8 @@ Rent-A-Vacation (RAV) is a dual-sided bidding marketplace for timeshare and vaca
 
 ## Business Model
 
-- **Take rate:** 15% service fee on each booking (charged to traveler)
-- **Owner commission:** Variable 0–15% depending on tier and owner agreement
+- **Take rate:** 12% service fee on each booking, runtime-configurable by RAV admins via System Settings (DEC-041; charged to traveler, transparent in checkout breakdown)
+- **Owner commission:** Tier-adjusted — Free 12%, Pro 10% (2pp discount), Business 8% (4pp discount); per-owner-agreement override available via `owner_agreements.commission_rate`
 - **Escrow:** PaySafe holds funds until resort confirmation is verified
 - **Payouts:** Stripe Connect — owner paid after checkout + 5 days
 
@@ -134,7 +134,7 @@ Active decisions the boardroom should be equipped to address:
 2. **Go-to-market sequence** — recruit owners first or travelers first?
 3. **RAVIO positioning** — is voice AI the headline differentiator or a supporting feature for the bidding marketplace?
 4. **Mobile app** — before beta or after? Capacitor (cross-platform) is the planned approach
-5. **Take rate** — current 15% service fee; is this right for the market?
+5. **Take rate** — current 12% service fee (tier-adjusted: Pro 10%, Business 8%; repositioned from 15% per DEC-041 on 2026-05-11); is this right for the market?
 6. **Investor/acquirer outreach** — pipeline not yet started; Apollo.io identified as first tool
 7. **Public API expansion** — Phase B (write endpoints) timing post-launch
 

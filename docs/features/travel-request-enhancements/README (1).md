@@ -17,7 +17,7 @@ status: "active"
 - **Migration 020** (`020_flexible_dates_nightly_pricing.sql`): `nightly_rate` on listings (backfilled), `requested_check_in/out` on `listing_bids`, `source_listing_id` + `target_owner_only` on `travel_requests`
 - **InspiredTravelRequestDialog** (`src/components/bidding/InspiredTravelRequestDialog.tsx`): Pre-fills TravelRequestForm from a listing, includes "Send to this owner first" toggle (`target_owner_only`)
 - **Dual-mode BidFormDialog** (`src/components/bidding/BidFormDialog.tsx`): Supports `'bid' | 'date-proposal'` modes — date pickers + auto-computed bid in date-proposal mode
-- **Shared pricing utility** (`src/lib/pricing.ts`): `calculateNights()` + `computeListingPricing()` (15% RAV markup) — replaced 4 duplicated pricing functions
+- **Shared pricing utility** (`src/lib/pricing.ts`): `calculateNights()` + `computeListingPricing(nightlyRate, nights, rate?)` (12% RAV markup default — DEC-041, runtime-configurable; rate parameter optional) — replaced 4 duplicated pricing functions
 - **Tests:** `pricing.test.ts` (11 tests), `BidFormDialog.test.tsx` (5 tests)
 
 ---

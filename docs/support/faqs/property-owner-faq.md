@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-04-21T22:35:57"
 change_ref: "1d0c62c"
-change_type: "session-57-phase22-B3"
+change_type: "session-67-commission-rate-update"
 status: "active"
 title: "Property Owner FAQ"
 doc_type: "faq"
@@ -45,9 +45,9 @@ No. Verification requires proof of ownership. If you're in the process of acquir
 
 Use the built-in **RAV SmartEarn** calculator and the pricing suggestions during listing creation. They compare to other brands/destinations. You'll also see a Fair Value badge that tells travelers how your price compares to market — aim for "Great" or better to increase bookings.
 
-#### What's the 15% commission?
+#### What's the platform commission?
 
-RAV takes 15% of every booking (included in the displayed total, so travelers see one price). Tier discounts: Owner Pro gets 13%, Owner Business gets 10%.
+RAV takes a 12% commission on every booking (included in the displayed total, so travelers see one price). Tier discounts: Owner Pro gets 10%, Owner Business gets 8%. The rate is set at the platform level by RAV admins and is runtime-configurable — every change is logged in an admin audit trail, and the rate that was active when your booking was created is permanently recorded on that booking so future rate changes never retroactively affect your earnings.
 
 #### Can I change my price after listing?
 
@@ -142,9 +142,9 @@ Use the Cancel Booking dialog from the booking detail. **Owner cancellations alw
 
 ### Tier features (Free / Pro / Business)
 
-- **Free:** standard listing + Offer management
-- **Pro:** priority listing placement + lower commission (13%)
-- **Business:** dedicated account manager + lowest commission (10%)
+- **Free:** standard listing + Offer management (12% commission)
+- **Pro:** priority listing placement + lower commission (10%)
+- **Business:** dedicated account manager + lowest commission (8%)
 
 See [`subscription-terms.md`](../policies/subscription-terms.md).
 

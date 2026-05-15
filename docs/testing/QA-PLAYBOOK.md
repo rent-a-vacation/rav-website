@@ -15,7 +15,7 @@ status: "active"
 
 ## About Rent-A-Vacation
 
-Rent-A-Vacation (RAV) is a peer-to-peer marketplace connecting timeshare owners with travelers seeking premium vacation rentals at below-market rates. The platform handles property listing, bidding, booking, payment (via Stripe), and post-stay operations with a 15% commission model.
+Rent-A-Vacation (RAV) is a peer-to-peer marketplace connecting timeshare owners with travelers seeking premium vacation rentals at below-market rates. The platform handles property listing, bidding, booking, payment (via Stripe), and post-stay operations with a 12% commission model (tier-adjusted: Pro 10%, Business 8% — DEC-041; runtime-configurable via System Settings).
 
 **Purpose of this document:** Step-by-step manual QA reference for team testers. Follow each scenario, mark Pass/Fail, and file bugs via GitHub Issues.
 
@@ -126,7 +126,7 @@ Body:
 2. Review the traveler and owner sections
 3. Check the pricing section
 
-**Expected:** Page explains the platform for both travelers and owners. Commission rate shown as 15%.
+**Expected:** Page explains the platform for both travelers and owners. Commission rate shown as 12% (live value from `get_platform_commission_rate()` RPC).
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 
@@ -278,7 +278,7 @@ Body:
 3. Observe auto-computed bid amount based on nightly rate
 4. Submit the date proposal
 
-**Expected:** Date proposal sent. Auto-computed price reflects nightly rate × nights with 15% markup.
+**Expected:** Date proposal sent. Auto-computed price reflects nightly rate × nights with 12% markup.
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 
@@ -610,7 +610,7 @@ Body:
 **Page:** `/list-property` (step 2)
 **Steps:**
 1. Enter nightly rate
-2. Observe live price summary (nightly rate × nights + 15% RAV markup = total)
+2. Observe live price summary (nightly rate × nights + 12% RAV markup = total)
 3. Check pricing suggestion from market data
 4. Set check-in/check-out dates
 5. Choose cancellation policy (flexible/moderate/strict/super_strict)
@@ -679,7 +679,7 @@ Body:
 3. Edit a listing's nightly rate
 4. Observe live price recalculation
 
-**Expected:** All owned properties and listings displayed. Editing nightly rate recalculates total with 15% markup.
+**Expected:** All owned properties and listings displayed. Editing nightly rate recalculates total with 12% markup.
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 
@@ -819,7 +819,7 @@ Body:
 2. Check pricing intelligence section
 3. Observe dynamic pricing factors (urgency, season, demand)
 
-**Expected:** Earnings show gross, commission (15%), and net. Dynamic pricing shows factor badges with percentages.
+**Expected:** Earnings show gross, commission (tier-adjusted — Free 12%, Pro 10%, Business 8%), and net. Dynamic pricing shows factor badges with percentages.
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 
@@ -965,7 +965,7 @@ Body:
 2. Click "Upgrade to Pro"
 3. Complete Stripe Checkout with test card `4242 4242 4242 4242`
 
-**Expected:** Redirected to `/subscription/success`. SubscriptionManagement shows "Pro" tier. Listing limit increased to 10. Commission shows 13% (2% discount).
+**Expected:** Redirected to `/subscription/success`. SubscriptionManagement shows "Pro" tier. Listing limit increased to 10. Commission shows 10% (2pp discount from 12% base).
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 
@@ -1197,7 +1197,7 @@ Body:
 2. Review revenue, commission, and payout summaries
 3. Check date range filters
 
-**Expected:** Financial overview with total revenue, RAV commission (15%), owner payouts. Filterable by date.
+**Expected:** Financial overview with total revenue, RAV commission (12% base, tier-adjusted per booking via `commission_rate_applied`), owner payouts. Filterable by date.
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 
@@ -1258,7 +1258,7 @@ Body:
 2. Review system settings (commission rate, platform mode, etc.)
 3. Toggle Staff Only Mode
 
-**Expected:** Settings editable. Commission rate shows 15% (admin-configurable). Staff Only Mode locks platform for non-team users.
+**Expected:** Settings editable. Commission rate shows 12% (live value from `system_settings.platform_commission_rate`; rate changes write to `admin_audit_log`). Staff Only Mode locks platform for non-team users.
 **Status:** [ ] Pass  [ ] Fail
 **Notes:** _______________
 

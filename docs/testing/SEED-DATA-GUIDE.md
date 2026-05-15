@@ -68,8 +68,8 @@ Owner and renter accounts are assigned membership tiers for testing subscription
 
 | Account | Tier | Stripe Customer ID | Notes |
 |---------|------|--------------------|-------|
-| Owner1 (Alex Rivera) | Pro | `cus_test_owner1_pro` | 10 listing limit, 13% commission |
-| Owner2 (Maria Chen) | Business | `cus_test_owner2_biz` | 25 listing limit, 10% commission |
+| Owner1 (Alex Rivera) | Pro | `cus_test_owner1_pro` | 10 listing limit, 10% commission (2pp discount from 12% base) |
+| Owner2 (Maria Chen) | Business | `cus_test_owner2_biz` | 25 listing limit, 8% commission (4pp discount from 12% base) |
 | Owner3 (James Thompson) | Free | — | Default, 3 listing limit |
 | Owner4 (Priya Patel) | Free | — | Default, 3 listing limit |
 | Owner5 (Robert Kim) | Free | — | Default, 3 listing limit |
@@ -133,7 +133,7 @@ curl -X POST https://oukbxqnlxnkainnligfz.supabase.co/functions/v1/seed-manager 
 - 10 bidding (open_for_bidding = true, 7-14 days remaining)
 - 5 draft
 - Check-in dates: 30-180 days from now
-- Pricing: owner_price $700-$3,000, 15% RAV markup
+- Pricing: owner_price $700-$3,000, 12% RAV markup (DEC-041 — runtime-configurable via `system_settings.platform_commission_rate`)
 
 ### Bookings (105)
 - 90 completed (growth curve: 15 → 30 → 45 over 90 days)

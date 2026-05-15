@@ -335,7 +335,7 @@ Mandatory conventions for every session:
 - **Email template rule:** always `buildEmailHtml()` — never inline HTML.
 - **Seed manager rule:** every new table → seed manager extended before PR.
 - **Admin safeguards:** destructive / financial / role-change / tier-override actions require AlertDialog confirmation — never bare `window.confirm`.
-- **Content accuracy:** 15% commission · 117 resorts · tier-based voice quotas · v0.9.0.
+- **Content accuracy:** 12% commission (tier-adjusted: Pro 10%, Business 8% — DEC-041; runtime-configurable) · 117 resorts · tier-based voice quotas · v0.9.0.
 
 ### CLAUDE.md — root (`/Repos/CLAUDE.md`)
 

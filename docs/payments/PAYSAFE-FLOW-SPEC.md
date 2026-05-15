@@ -130,7 +130,7 @@ These gaps do not block today's escrow auto-release because release is gated on 
 ### 4.3 Execution
 
 - `process-escrow-release/index.ts:191–207` calls `stripe.transfers.create()` against the owner's connected account, in USD, for `bookings.owner_payout` (computed at booking time as gross less platform commission).
-- Commission is **15% default**, with **−2% for Pro owners** and **−5% for Business owners**, sourced from `system_settings` (`commission_rate_default`, `commission_pro_discount`, `commission_business_discount`).
+- Commission is **12% default** (DEC-041), with **−2pp for Pro owners** (effective 10%) and **−4pp for Business owners** (effective 8%), sourced at runtime from `system_settings.platform_commission_rate` (single JSONB row with keys `rate` / `pro_discount` / `business_discount`, percentages not decimals) via the public `get_platform_commission_rate()` SECURITY DEFINER RPC. Every booking persists the resolved decimal rate on `bookings.commission_rate_applied` at creation time so future rate changes do not retroactively affect existing transactions. Rate changes are recorded in `admin_audit_log` (migration 080).
 - On success: `escrow_status='released'`, `escrow_released_at=NOW()`, `auto_released=true`, `bookings.payout_status='processing'`, `bookings.stripe_transfer_id=<id>`. The owner receives an email via Resend (lines 224–251).
 - On Stripe failure: status stays `verified`, `bookings.payout_status='failed'`, error logged. Cron retries on the next run; admin can clear and retry from the Escrow tab.
 

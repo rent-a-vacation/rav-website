@@ -7,8 +7,12 @@ status: "active"
 # Rent-A-Vacation — Pricing, Taxes & Accounting Framework
 
 > **Document for:** RAV Partners & Stakeholders
-> **Date:** February 21, 2026 | **Updated:** February 28, 2026
-> **Version:** 2.1 — Added staged growth plan, environment mapping, Puzzle.io clarification
+> **Date:** February 21, 2026 | **Updated:** May 14, 2026
+> **Version:** 2.2 — Commission rate is now runtime-configurable (#510 / migration 080): live value read from `system_settings.platform_commission_rate` via `get_platform_commission_rate()` RPC; every change recorded in `admin_audit_log`; each booking persists `commission_rate_applied` so historical accounting is not retroactively distorted
+>
+> **Changelog:**
+> - **v2.2** (May 14, 2026) — Runtime commission rate + audit log + per-booking rate persistence (issue #510, DEC-043)
+> - **v2.1** (Feb 28, 2026) — Added staged growth plan, environment mapping, Puzzle.io clarification
 
 ---
 

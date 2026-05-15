@@ -181,7 +181,7 @@ Why pay resort rates when you can rent directly from an owner?
 Slide 1: "Your Timeshare. Your Income. Your Terms." (teal background)
 Slide 2: "Step 1: List your unused week (5 minutes)"
 Slide 3: "Step 2: SmartPrice AI suggests the right rate"
-Slide 4: "Step 3: Approve guests and earn income. 15% commission — no upfront fees."
+Slide 4: "Step 3: Approve guests and earn income. 12% commission — no upfront fees."
 
 Caption:
 You're paying maintenance fees for weeks you don't use.

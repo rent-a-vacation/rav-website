@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-04-21T22:53:24"
 change_ref: "e5b8e77"
-change_type: "session-57-phase22-B5"
+change_type: "session-67-commission-rate-update"
 status: "draft"
 title: "Payment Policy (DRAFT — pending legal review)"
 doc_type: "policy"
@@ -19,7 +19,7 @@ tags: ["payment", "stripe", "fees", "commission", "payout", "draft", "legal-bloc
 
 ## Summary
 
-All payments on Rent-A-Vacation are processed by Stripe. RAV retains a 15% commission on each booking; the remainder flows to the property owner after stay completion. Subscription fees for Plus/Premium/Pro/Business are billed per cycle with no mid-cycle refunds for voluntary downgrades.
+All payments on Rent-A-Vacation are processed by Stripe. RAV retains a 12% commission on each booking (tier-adjusted: Pro 10%, Business 8%); the remainder flows to the property owner after stay completion. The commission rate is set platform-wide by RAV admins and is runtime-configurable — each booking records the rate in effect at booking time so rate changes never retroactively affect existing transactions. Subscription fees for Plus/Premium/Pro/Business are billed per cycle with no mid-cycle refunds for voluntary downgrades.
 
 ## Details
 
@@ -34,11 +34,13 @@ All payments on Rent-A-Vacation are processed by Stripe. RAV retains a 15% commi
 | Component | Rate |
 |---|---|
 | Owner's nightly rate × nights | Set by Owner |
-| RAV platform commission | 15% (Free tier) |
-| RAV platform commission | 13% (Owner Pro) |
-| RAV platform commission | 10% (Owner Business) |
+| RAV platform commission | 12% (Free tier) |
+| RAV platform commission | 10% (Owner Pro — 2pp discount) |
+| RAV platform commission | 8% (Owner Business — 4pp discount) |
 | Stripe payment processing fee | Varies by card/region |
 | Taxes | Per Stripe Tax where applicable |
+
+The commission rate is set platform-wide and is runtime-configurable by RAV admins; the rate at the time of each booking is recorded on the booking record so future platform-level rate changes do not retroactively affect existing transactions.
 
 Renter sees the all-in total at checkout. Owner sees net payout before accepting/listing.
 

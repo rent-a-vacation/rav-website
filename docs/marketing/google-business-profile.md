@@ -65,7 +65,7 @@ Search 117+ luxury resorts across Hilton, Marriott, and Disney brands. Filter by
 
 **Product 4: List Your Week**
 ```
-Own a timeshare you're not using? List your week in minutes. Our SmartPrice AI tells you what to charge, and travelers come to you. 15% commission on successful bookings only — no upfront fees.
+Own a timeshare you're not using? List your week in minutes. Our SmartPrice AI tells you what to charge, and travelers come to you. 12% commission on successful bookings only — no upfront fees.
 ```
 
 **Product 5: RAV SmartEarn Calculator**

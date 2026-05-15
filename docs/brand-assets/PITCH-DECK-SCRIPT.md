@@ -428,17 +428,19 @@ Vitest + Playwright + Percy (Testing)
 ```
 BUSINESS MODEL                                          [BUILT — configurable in platform]
 
-REVENUE: No upfront fees to list. 15% default commission on successful bookings only (configurable; Pro −2%, Business −5%)
+REVENUE: No upfront fees to list. 12% default commission on successful bookings only (runtime-configurable via System Settings; Pro −2pp, Business −4pp; DEC-041)
 
 COMMISSION TIERS:
-Free Owner:     15% commission  |  1 listing    |  $0/mo
-Pro Owner:      13% commission  |  5 listings   |  $29.99/mo
-Business Owner: 10% commission  |  Unlimited    |  $99.99/mo
+Free Owner:     12% commission  |  3 listings   |  $0/mo
+Pro Owner:      10% commission  |  10 listings  |  $10/mo
+Business Owner:  8% commission  |  Unlimited    |  $25/mo
 
 TRAVELER TIERS:
-Free:     Basic search, 10 voice searches/day     |  $0/mo
-Plus:     Enhanced filters, 50 voice/day           |  $9.99/mo
-Premium:  Unlimited voice, early access            |  $19.99/mo
+Free:     Basic search, 5 voice searches/day      |  $0/mo
+Plus:     Enhanced filters, 25 voice/day           |  $5/mo
+Premium:  Unlimited voice, early access            |  $15/mo
+
+(All tier values from membership_tiers DB seed — migration 011; monthly billing only, annual planned)
 
 ADDITIONAL REVENUE STREAMS:
 • Public API with tiered rate limits         [BUILT]
@@ -451,7 +453,7 @@ ADDITIONAL REVENUE STREAMS:
 **Labels:** Commission model and tiers are [BUILT]. Revenue streams marked "Future" are [PROJECTED].
 
 **Speaker Notes:**
-> "Our revenue model is straightforward. We take a 15% default commission on every booking, tiered by the owner's membership level. Free owners pay 15%; Pro owners get a 2% discount for $30 a month; Business owners get a 5% discount for $100 a month. On the traveler side, we offer free access with limited voice search, and paid tiers with expanded quotas and features. The entire tier system, commission calculation, and payment flow is built and operational. Future revenue streams include featured placements, premium analytics, and data licensing — but those are clearly future additions."
+> "Our revenue model is straightforward. We take a 12% default commission on every booking, tiered by the owner's membership level. Free owners pay 12%; Pro owners get a 2-percentage-point discount (10% effective) for $10 a month; Business owners get a 4-percentage-point discount (8% effective) for $25 a month. The commission rate is runtime-configurable by our team and recorded per booking, so future adjustments don't retroactively distort historical accounting. On the traveler side, we offer free access with limited voice search, and paid tiers — Plus at $5/month and Premium at $15/month — with expanded quotas and features. The entire tier system, commission calculation, and payment flow is built and operational. Future revenue streams include featured placements, premium analytics, and data licensing — but those are clearly future additions."
 
 ---
 
@@ -466,8 +468,8 @@ UNIT ECONOMICS — PROJECTED TARGETS                      [ALL PROJECTED]
 Based on our commission model and industry benchmarks:
 
 Average Booking Value:    $1,200    (industry avg for vacation club rentals)
-Platform Commission:      15%       (blended, across tiers)
-Revenue per Booking:      $180      (target)
+Platform Commission:      12%       (blended, across tiers; DEC-041)
+Revenue per Booking:      $144      (target — $1,200 × 12% base)
 Target CAC:               $40-68    (blended across channels)
 Target LTV:               $500+     (repeat bookings over 24 months)
 Target LTV:CAC Ratio:     8-12:1    (industry best practice: 3:1)
@@ -479,7 +481,7 @@ Target Payback Period:    <4 weeks   (from first booking)
 ```
 
 **Speaker Notes:**
-> "Let me be transparent about where we are. These are projected unit economics based on our commission model and industry benchmarks — not actuals. We haven't launched publicly yet, so we don't have real traction data. What we DO have is a fully built platform, a clear revenue model, and targets grounded in industry data. The average vacation club rental books at around $1,200. At our blended 15% commission, that's $180 per booking to us. With efficient acquisition through our calculator tool and SEO content, we're targeting CAC under $68. These numbers will be validated the moment we launch — and we'll be tracking from day one."
+> "Let me be transparent about where we are. These are projected unit economics based on our commission model and industry benchmarks — not actuals. We haven't launched publicly yet, so we don't have real traction data. What we DO have is a fully built platform, a clear revenue model, and targets grounded in industry data. The average vacation club rental books at around $1,200. At our 12% commission, that's $144 per booking to us at the base tier. With efficient acquisition through our calculator tool and SEO content, we're targeting CAC under $68 — still well inside a single booking's revenue, even at the base rate. These numbers will be validated the moment we launch — and we'll be tracking from day one."
 
 ---
 

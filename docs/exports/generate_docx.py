@@ -389,9 +389,9 @@ def generate_roadmap():
         ["Aspect", "Detail"],
         [
             ["Atomic Pricing Unit", "Per-night rate (nightly_rate) — all prices computed from this base"],
-            ["Platform Commission", "15% default (admin-configurable via System Settings)"],
-            ["Pro Owner Discount", "13% commission (−2%)"],
-            ["Business Owner Discount", "10% commission (−5%)"],
+            ["Platform Commission", "12% default (runtime-configurable via System Settings; DEC-041)"],
+            ["Pro Owner Discount", "10% commission (−2pp)"],
+            ["Business Owner Discount", "8% commission (−4pp)"],
             ["Stripe Processing", "~2.9% absorbed by RAV within service fee margin"],
             ["Payout Timing", "Owner receives payout after checkout date + 5 days"],
         ]
@@ -457,20 +457,20 @@ def generate_roadmap():
         ["Tier", "Monthly Price", "Voice Searches/Day", "Key Benefits"],
         [
             ["Free", "$0", "5", "Browse listings, place bids, post travel requests"],
-            ["Plus", "$9.99", "25", "Priority support, saved searches"],
-            ["Premium", "$24.99", "Unlimited", "Early access to new listings, concierge service"],
+            ["Plus", "$5", "25", "Priority support, saved searches"],
+            ["Premium", "$15", "Unlimited", "Early access to new listings, concierge service"],
         ]
     )
     doc.add_heading("3.2 Owner Tiers", level=2)
     add_table_from_data(doc,
-        ["Tier", "Monthly Price", "Commission Rate", "Key Benefits"],
+        ["Tier", "Monthly Price", "Commission Rate", "Listing Limit", "Key Benefits"],
         [
-            ["Free", "$0", "15% (default)", "List properties, basic dashboard, bid management"],
-            ["Pro", "$19.99", "13% (−2% discount)", "Analytics, priority listing placement"],
-            ["Business", "$49.99", "10% (−5% discount)", "Multi-property management, API access, dedicated support"],
+            ["Free", "$0", "12% (default)", "3", "List properties, basic dashboard, bid management"],
+            ["Pro", "$10", "10% (−2pp discount)", "10", "Analytics, priority listing placement"],
+            ["Business", "$25", "8% (−4pp discount)", "Unlimited", "Multi-property management, API access, dedicated support"],
         ]
     )
-    add_blockquote(doc, "Source: Migration 011 (membership_tiers table). Commission rate is admin-configurable in System Settings.")
+    add_blockquote(doc, "Source: Prices, voice quotas, and listing limits from membership_tiers DB seed (migration 011). Commission rate UPSERT'd to DEC-041 values in Migration 080; runtime-configurable in System Settings via get_platform_commission_rate() RPC, changes recorded in admin_audit_log, each booking persists commission_rate_applied at creation time. Subscription billing is monthly only; annual is a planned future option.")
 
     # 4. Supported Brands
     doc.add_heading("4. Supported Vacation Club Brands (9)", level=1)
@@ -684,7 +684,7 @@ def generate_roadmap():
             ["F: Automated Tax Filing", "Avalara or TaxJar integration for auto-filing per jurisdiction. Quarterly remittance reports.", "8-16h", "When volume justifies"],
         ]
     )
-    add_blockquote(doc, "Context: Stripe processing fees (~2.9%) are absorbed by RAV within the 15% service fee margin. The platform commission rate (15% default) is admin-configurable. Pro owners pay 13%, Business owners pay 10%.")
+    add_blockquote(doc, "Context: Stripe processing fees (~2.9%) are absorbed by RAV within the 12% service fee margin (DEC-041). The platform commission rate (12% default) is runtime-configurable via System Settings; Pro owners pay 10% (−2pp), Business owners pay 8% (−4pp).")
 
     # 8.2 SEO Optimization
     doc.add_heading("8.2 SEO Optimization", level=2)
@@ -823,7 +823,7 @@ def generate_roadmap():
             ["DEC-018", "Staff Only Mode for pre-launch lock", "Global system settings toggle. 3-layer enforcement (DB + Login + Signup). Flip off in admin to go live — no code deploy needed", "Final"],
             ["DEC-019", "Seed Data System", "3-layer edge function approach with foundation user protection. Idempotent, admin UI for one-click reset, production guard via env variable", "Final"],
             ["DEC-020", "Two-tier AI: VAPI voice + OpenRouter text", "Text chat 10-100x cheaper per interaction, works in all environments. Shared search module avoids duplication", "Final"],
-            ["DEC-022", "Pricing & Tax Framework", "Per-night pricing + separated fee line items + Stripe Tax before launch + QuickBooks post-launch. Stripe processing fees (~2.9%) absorbed by RAV within the 15% service fee margin", "Approved"],
+            ["DEC-022", "Pricing & Tax Framework", "Per-night pricing + separated fee line items + Stripe Tax before launch + QuickBooks post-launch. Stripe processing fees (~2.9%) absorbed by RAV within the 12% service fee margin (per DEC-041)", "Approved"],
             ["DEC-023", "Flexible dates: 3-phase approach", "Bid with dates (reuses bidding) > inspired-by requests > partial-week splits. Start lightweight, validate demand, then build full flexibility", "Approved"],
         ]
     )
@@ -1080,21 +1080,21 @@ def generate_status_report():
         ["Tier", "Monthly Price", "Voice Searches/Day", "Benefits"],
         [
             ["Free", "$0", "5", "Browse listings, place bids, post travel requests"],
-            ["Plus", "$9.99", "25", "Priority support, saved searches"],
-            ["Premium", "$24.99", "Unlimited", "Early access, concierge service"],
+            ["Plus", "$5", "25", "Priority support, saved searches"],
+            ["Premium", "$15", "Unlimited", "Early access, concierge service"],
         ]
     )
     doc.add_paragraph()
     add_body(doc, "Owner Tiers:", bold=True)
     add_table_from_data(doc,
-        ["Tier", "Monthly Price", "Commission Rate", "Benefits"],
+        ["Tier", "Monthly Price", "Commission Rate", "Listing Limit", "Benefits"],
         [
-            ["Free", "$0", "15% (default)", "List properties, basic dashboard, bid management"],
-            ["Pro", "$19.99", "13% (−2%)", "Analytics, priority listing placement"],
-            ["Business", "$49.99", "10% (−5%)", "Multi-property management, API access, dedicated support"],
+            ["Free", "$0", "12% (default)", "3", "List properties, basic dashboard, bid management"],
+            ["Pro", "$10", "10% (−2pp)", "10", "Analytics, priority listing placement"],
+            ["Business", "$25", "8% (−4pp)", "Unlimited", "Multi-property management, API access, dedicated support"],
         ]
     )
-    add_blockquote(doc, "Source: Migration 011 (membership_tiers table). The base commission rate (currently 15%) is admin-configurable in Admin > System Settings (platform_commission_rate). Stripe processing fees (~2.9%) are absorbed by RAV within the service fee margin.")
+    add_blockquote(doc, "Source: Prices, voice quotas, and listing limits from membership_tiers DB seed (migration 011). The base commission rate (currently 12%) is runtime-configurable in Admin > System Settings via the get_platform_commission_rate() RPC (DEC-041); every change is recorded in admin_audit_log, and each booking persists commission_rate_applied at creation. Stripe processing fees (~2.9%) are absorbed by RAV within the service fee margin. Subscription billing is monthly only; annual is a planned future option.")
 
     # 4.2 Brands
     doc.add_heading("4.2 Supported Vacation Club Brands (9)", level=2)

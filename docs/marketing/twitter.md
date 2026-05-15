@@ -60,7 +60,7 @@ List your unused week in 5 minutes.
 SmartPrice AI tells you what to charge.
 Approve every guest. Earn on your terms.
 
-15% commission on bookings only. No upfront fees. No monthly charges.
+12% commission on bookings only. No upfront fees. No monthly charges.
 ```
 
 ```

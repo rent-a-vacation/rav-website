@@ -39,7 +39,7 @@ FOR TRAVELERS:
 Browse 117+ resorts across Hilton Grand Vacations, Marriott Vacation Club, Disney Vacation Club, and more. Name Your Price — bid on any listing. Post a RAV Wish and let owners compete for your trip. Every owner is verified through TrustShield. Every payment is protected by PaySafe escrow. Or ask RAVIO, our AI concierge, to search by voice or text. Save 20-40% compared to booking direct.
 
 FOR TIMESHARE OWNERS:
-Turn your unused maintenance fee weeks into income. List your property in minutes. Our SmartPrice AI tells you what to charge. You approve every guest. You set the terms. 15% commission on successful bookings only — no upfront fees, no monthly charges.
+Turn your unused maintenance fee weeks into income. List your property in minutes. Our SmartPrice AI tells you what to charge. You approve every guest. You set the terms. 12% commission on successful bookings only — no upfront fees, no monthly charges.
 
 FEATURES:
 - Name Your Price: Bid on any listing — the first negotiation engine in vacation rentals
@@ -95,7 +95,7 @@ Paying maintenance fees for a timeshare you're not using? Here's how to turn tho
 4. You approve every guest
 5. Get paid via Stripe after check-in
 
-No upfront cost. No monthly fees. Just 15% on successful bookings.
+No upfront cost. No monthly fees. Just 12% on successful bookings.
 
 Try our free SmartEarn Calculator to see how many weeks it takes to cover your annual fees: rent-a-vacation.com/calculator
 
