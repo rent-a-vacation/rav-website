@@ -1,7 +1,7 @@
 ---
 last_updated: "2026-04-21T22:53:24"
 change_ref: "e5b8e77"
-change_type: "session-67-commission-rate-update"
+change_type: "session-68-subscription-price-sync"
 status: "draft"
 title: "Subscription Terms (DRAFT — pending legal review)"
 doc_type: "policy"
@@ -25,21 +25,23 @@ Rent-A-Vacation offers optional paid subscriptions for travelers (Plus, Premium)
 
 ### 1. Available plans
 
+Prices below reflect the live values stored in the `membership_tiers` table (sourced from migration 011 seed, current as of platform launch). Subscription billing is currently monthly only; annual billing is a planned future option and not yet offered.
+
 **Traveler:**
 
-| Tier | Monthly | Annual | Benefits |
-|---|---|---|---|
-| Free | $0 | $0 | RAVIO text chat, 5/day voice, basic booking |
-| Plus | $9.99 | $99 | 25/day voice, early access to new listings, exclusive deals |
-| Premium | $29.99 | $299 | Unlimited voice, Concierge support, priority support SLA |
+| Tier | Monthly | Benefits |
+|---|---|---|
+| Free | $0 | RAVIO text chat, 5/day voice, basic booking |
+| Plus | $5 | 25/day voice, early access to new listings, exclusive deals |
+| Premium | $15 | Unlimited voice, Concierge support, priority support SLA |
 
 **Owner:**
 
-| Tier | Monthly | Annual | Benefits |
-|---|---|---|---|
-| Free | $0 | $0 | Standard listing, 12% commission |
-| Pro | $19.99 | $199 | Priority listing placement, 10% commission (2pp discount), 25/day voice |
-| Business | $49.99 | $499 | Dedicated account manager, 8% commission (4pp discount), unlimited voice |
+| Tier | Monthly | Benefits |
+|---|---|---|
+| Free | $0 | Standard listing, 12% commission |
+| Pro | $10 | Priority listing placement, 10% commission (2pp discount), 25/day voice |
+| Business | $25 | Dedicated account manager, 8% commission (4pp discount), unlimited voice |
 
 *(Prices subject to change; grandfathered rates for existing subscribers on material changes.)*
 

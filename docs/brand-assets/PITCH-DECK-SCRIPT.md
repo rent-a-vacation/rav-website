@@ -431,14 +431,16 @@ BUSINESS MODEL                                          [BUILT — configurable 
 REVENUE: No upfront fees to list. 12% default commission on successful bookings only (runtime-configurable via System Settings; Pro −2pp, Business −4pp; DEC-041)
 
 COMMISSION TIERS:
-Free Owner:     12% commission  |  1 listing    |  $0/mo
-Pro Owner:      10% commission  |  5 listings   |  $29.99/mo
-Business Owner:  8% commission  |  Unlimited    |  $99.99/mo
+Free Owner:     12% commission  |  3 listings   |  $0/mo
+Pro Owner:      10% commission  |  10 listings  |  $10/mo
+Business Owner:  8% commission  |  Unlimited    |  $25/mo
 
 TRAVELER TIERS:
-Free:     Basic search, 10 voice searches/day     |  $0/mo
-Plus:     Enhanced filters, 50 voice/day           |  $9.99/mo
-Premium:  Unlimited voice, early access            |  $19.99/mo
+Free:     Basic search, 5 voice searches/day      |  $0/mo
+Plus:     Enhanced filters, 25 voice/day           |  $5/mo
+Premium:  Unlimited voice, early access            |  $15/mo
+
+(All tier values from membership_tiers DB seed — migration 011; monthly billing only, annual planned)
 
 ADDITIONAL REVENUE STREAMS:
 • Public API with tiered rate limits         [BUILT]
@@ -451,7 +453,7 @@ ADDITIONAL REVENUE STREAMS:
 **Labels:** Commission model and tiers are [BUILT]. Revenue streams marked "Future" are [PROJECTED].
 
 **Speaker Notes:**
-> "Our revenue model is straightforward. We take a 12% default commission on every booking, tiered by the owner's membership level. Free owners pay 12%; Pro owners get a 2-percentage-point discount (10% effective) for $30 a month; Business owners get a 4-percentage-point discount (8% effective) for $100 a month. The commission rate is runtime-configurable by our team and recorded per booking, so future adjustments don't retroactively distort historical accounting. On the traveler side, we offer free access with limited voice search, and paid tiers with expanded quotas and features. The entire tier system, commission calculation, and payment flow is built and operational. Future revenue streams include featured placements, premium analytics, and data licensing — but those are clearly future additions."
+> "Our revenue model is straightforward. We take a 12% default commission on every booking, tiered by the owner's membership level. Free owners pay 12%; Pro owners get a 2-percentage-point discount (10% effective) for $10 a month; Business owners get a 4-percentage-point discount (8% effective) for $25 a month. The commission rate is runtime-configurable by our team and recorded per booking, so future adjustments don't retroactively distort historical accounting. On the traveler side, we offer free access with limited voice search, and paid tiers — Plus at $5/month and Premium at $15/month — with expanded quotas and features. The entire tier system, commission calculation, and payment flow is built and operational. Future revenue streams include featured placements, premium analytics, and data licensing — but those are clearly future additions."
 
 ---
 

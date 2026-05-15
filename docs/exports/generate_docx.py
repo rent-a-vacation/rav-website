@@ -457,20 +457,20 @@ def generate_roadmap():
         ["Tier", "Monthly Price", "Voice Searches/Day", "Key Benefits"],
         [
             ["Free", "$0", "5", "Browse listings, place bids, post travel requests"],
-            ["Plus", "$9.99", "25", "Priority support, saved searches"],
-            ["Premium", "$24.99", "Unlimited", "Early access to new listings, concierge service"],
+            ["Plus", "$5", "25", "Priority support, saved searches"],
+            ["Premium", "$15", "Unlimited", "Early access to new listings, concierge service"],
         ]
     )
     doc.add_heading("3.2 Owner Tiers", level=2)
     add_table_from_data(doc,
-        ["Tier", "Monthly Price", "Commission Rate", "Key Benefits"],
+        ["Tier", "Monthly Price", "Commission Rate", "Listing Limit", "Key Benefits"],
         [
-            ["Free", "$0", "12% (default)", "List properties, basic dashboard, bid management"],
-            ["Pro", "$19.99", "10% (−2pp discount)", "Analytics, priority listing placement"],
-            ["Business", "$49.99", "8% (−4pp discount)", "Multi-property management, API access, dedicated support"],
+            ["Free", "$0", "12% (default)", "3", "List properties, basic dashboard, bid management"],
+            ["Pro", "$10", "10% (−2pp discount)", "10", "Analytics, priority listing placement"],
+            ["Business", "$25", "8% (−4pp discount)", "Unlimited", "Multi-property management, API access, dedicated support"],
         ]
     )
-    add_blockquote(doc, "Source: Migration 011 (membership_tiers table); UPSERT'd to DEC-041 values in Migration 080. Commission rate is runtime-configurable in System Settings via get_platform_commission_rate() RPC; changes are recorded in admin_audit_log and each booking persists commission_rate_applied at creation time.")
+    add_blockquote(doc, "Source: Prices, voice quotas, and listing limits from membership_tiers DB seed (migration 011). Commission rate UPSERT'd to DEC-041 values in Migration 080; runtime-configurable in System Settings via get_platform_commission_rate() RPC, changes recorded in admin_audit_log, each booking persists commission_rate_applied at creation time. Subscription billing is monthly only; annual is a planned future option.")
 
     # 4. Supported Brands
     doc.add_heading("4. Supported Vacation Club Brands (9)", level=1)
@@ -1080,21 +1080,21 @@ def generate_status_report():
         ["Tier", "Monthly Price", "Voice Searches/Day", "Benefits"],
         [
             ["Free", "$0", "5", "Browse listings, place bids, post travel requests"],
-            ["Plus", "$9.99", "25", "Priority support, saved searches"],
-            ["Premium", "$24.99", "Unlimited", "Early access, concierge service"],
+            ["Plus", "$5", "25", "Priority support, saved searches"],
+            ["Premium", "$15", "Unlimited", "Early access, concierge service"],
         ]
     )
     doc.add_paragraph()
     add_body(doc, "Owner Tiers:", bold=True)
     add_table_from_data(doc,
-        ["Tier", "Monthly Price", "Commission Rate", "Benefits"],
+        ["Tier", "Monthly Price", "Commission Rate", "Listing Limit", "Benefits"],
         [
-            ["Free", "$0", "12% (default)", "List properties, basic dashboard, bid management"],
-            ["Pro", "$19.99", "10% (−2pp)", "Analytics, priority listing placement"],
-            ["Business", "$49.99", "8% (−4pp)", "Multi-property management, API access, dedicated support"],
+            ["Free", "$0", "12% (default)", "3", "List properties, basic dashboard, bid management"],
+            ["Pro", "$10", "10% (−2pp)", "10", "Analytics, priority listing placement"],
+            ["Business", "$25", "8% (−4pp)", "Unlimited", "Multi-property management, API access, dedicated support"],
         ]
     )
-    add_blockquote(doc, "Source: Migration 011 (membership_tiers table); UPSERT'd to DEC-041 values in Migration 080. The base commission rate (currently 12%) is runtime-configurable in Admin > System Settings; the live value is read via the get_platform_commission_rate() RPC, every change is recorded in admin_audit_log, and each booking persists commission_rate_applied at creation. Stripe processing fees (~2.9%) are absorbed by RAV within the service fee margin.")
+    add_blockquote(doc, "Source: Prices, voice quotas, and listing limits from membership_tiers DB seed (migration 011). The base commission rate (currently 12%) is runtime-configurable in Admin > System Settings via the get_platform_commission_rate() RPC (DEC-041); every change is recorded in admin_audit_log, and each booking persists commission_rate_applied at creation. Stripe processing fees (~2.9%) are absorbed by RAV within the service fee margin. Subscription billing is monthly only; annual is a planned future option.")
 
     # 4.2 Brands
     doc.add_heading("4.2 Supported Vacation Club Brands (9)", level=2)
