@@ -48,6 +48,18 @@ Three `/generate-docs` sub-commands produce founder-facing briefs that compose f
 
 These are the conversational primers; the rich `.xlsx` model + web dashboard remain the deep-dive sources. See [`.claude/skills/generate-docs/SKILL.md`](../../.claude/skills/generate-docs/SKILL.md) for the full sub-command list.
 
+## Upcoming stages (`/executive-dashboard/financial-model` roadmap)
+
+Current state: Stage 2a (view-only MVP) shipped. Stages 2b/2c/2d **resequenced 2026-05-16** to maximize pre-launch value — see DEC-042 in `PROJECT-HUB.md` for full rationale.
+
+| Stage | Issue | Scope | When |
+|---|---|---|---|
+| **2c** | [#550](https://github.com/rent-a-vacation/rav-website/issues/550) | Interactive editing + per-user scenarios + sparse overrides in Supabase + drift banner + reset-to-baseline + live commission read from DB (closes the small build-time-vs-runtime drift) | **Next pre-launch** |
+| **2d** | [#551](https://github.com/rent-a-vacation/rav-website/issues/551) | Functional .xlsx download from web — refactor `build.ts` to pure function shared with browser; two download buttons (baseline + active scenario); CLI behavior unchanged | After 2c, pre-launch |
+| **2b** | [#545](https://github.com/rent-a-vacation/rav-website/issues/545) | Live actuals overlay on monthly trajectory (forecast vs reality) | **Post-launch** (resequenced — needs real bookings to validate) |
+
+Once 2c + 2d ship, the web tool functionally replaces the `.xlsx` for day-to-day editing while the CLI `.xlsx` remains canonical for offline / sharing use.
+
 ### CLI behavior (`npm run financials:build`)
 
 ```
