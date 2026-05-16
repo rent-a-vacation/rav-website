@@ -25,7 +25,8 @@ allowed-tools: Bash(npm run docs:gen:*) Bash(python docs/exports/*) Read Glob
 | `--operating-model` | `docs/exports/RAV-Platform-Overview-YYYYMMDD.docx` | `generate_platform_overview.py` (existing) | Hand-curated platform inventory + brand terminology table. Uses dynamic date. |
 | `--pitch-brief` | `docs/exports/RAV-pitch-brief-YYYY-MM-DD.md` | `generate_pitch_brief.py` (NEW) | Curated "what is RAV" elevator brief (1-2 pages, 60-90 sec read) + live PLATFORM_FACTS + MILESTONES from `src/lib/financial-model/data.ts` + live test/migration/edge-fn counts from canonical sources. For advisor / mentor / warm-intro conversations. |
 | `--spend-brief` | `docs/exports/RAV-spend-brief-YYYY-MM-DD.md` | `generate_spend_brief.py` (NEW) | High-level "what we expect to spend" brief (1 page, 60 sec read). Today's run-rate + 12-month curve + top categories + recurring-vs-one-time + "what's NOT in this number". Pulls live from EXPENSES rows via `scripts/financial-model/dump-spend-summary.ts`. Companion to `--pitch-brief`. |
-| `--all` | All eight | runs each in sequence | Combined run (sequential `npm run docs:gen:all`) |
+| `--investor-faq` | `docs/exports/RAV-investor-faq-YYYY-MM-DD.md` | `generate_investor_faq.py` (NEW) | Q&A markdown answering 10 questions an investor actually asks: commission structure, subscription tiers, monthly burn, break-even per scenario, 24-month GMV/revenue projections, revenue mix, funding ask, user/booking growth projections, cost structure, unit economics. Pulls live from `dump-investor-faq.ts` which calls `project()` for all scenarios + reads SUBSCRIPTIONS / RESERVES / UNIT_ECON / EXPENSES from data.ts. **Also auto-generated as a companion to the .xlsx by `npm run financials:build`** — one command, both artifacts. |
+| `--all` | All nine | runs each in sequence | Combined run (sequential `npm run docs:gen:all`) |
 
 ---
 
@@ -41,6 +42,7 @@ allowed-tools: Bash(npm run docs:gen:*) Bash(python docs/exports/*) Read Glob
 /generate-docs --operating-model
 /generate-docs --pitch-brief         # 1-2 page founder elevator brief
 /generate-docs --spend-brief         # 1 page burn-rate brief
+/generate-docs --investor-faq        # Q&A markdown for investor conversations
 /generate-docs --all
 ```
 
@@ -54,7 +56,11 @@ npm run docs:gen:status
 npm run docs:gen:operating-model
 npm run docs:gen:pitch-brief
 npm run docs:gen:spend-brief
+npm run docs:gen:investor-faq
 npm run docs:gen:all
+
+# Bundled with the Excel build (one command, .xlsx + investor-faq.md both):
+npm run financials:build
 ```
 
 ### Direct Python (for debugging or CI)
@@ -107,6 +113,7 @@ Older dated artifacts in `docs/exports/` are moved to `docs/exports/archive/` by
 | New collaborator onboarding | `--operating-model` |
 | Advisor / mentor / warm-intro conversation: "what is RAV?" | `--pitch-brief` |
 | Same conversation: "what does it cost to run?" | `--spend-brief` (pair with `--pitch-brief`) |
+| Investor conversation: "answer my financial questions" | `--investor-faq` (pair with `--pitch-brief`) |
 | Quarterly archive sweep | `--all` |
 
 ---

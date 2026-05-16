@@ -40,12 +40,22 @@ Tabs (7): Cover, INPUTS (incl. Section F: Tax/Cash/Reserves), EXPENSES (~47 rows
 
 ## Generated briefs (companion artifacts)
 
-Two `/generate-docs` sub-commands produce founder-facing briefs that compose from this model's data:
+Three `/generate-docs` sub-commands produce founder-facing briefs that compose from this model's data:
 
 - **`/generate-docs --pitch-brief`** → `docs/exports/RAV-pitch-brief-YYYY-MM-DD.md` — 1-2 page elevator brief ("what is RAV") for advisor / mentor / warm-intro conversations. Pulls `PLATFORM_FACTS` + `MILESTONES` from `src/lib/financial-model/data.ts` + live test/migration/edge-fn counts.
 - **`/generate-docs --spend-brief`** → `docs/exports/RAV-spend-brief-YYYY-MM-DD.md` — 1 page burn-rate brief ("what we expect to spend"). Pulls live monthly spend curve from `EXPENSES` rows via `dump-spend-summary.ts`.
+- **`/generate-docs --investor-faq`** → `docs/exports/RAV-investor-faq-YYYY-MM-DD.md` — Q&A markdown answering 10 questions investors actually ask (commission, tiers, burn, break-even per scenario, GMV/revenue at 24mo, revenue mix, funding ask, growth projections, cost structure, unit economics). Pulls live from `dump-investor-faq.ts` which calls `project()` for all scenarios. **Auto-bundled with `npm run financials:build`** — one CLI command produces both the `.xlsx` AND this `.md` so they're always in sync.
 
 These are the conversational primers; the rich `.xlsx` model + web dashboard remain the deep-dive sources. See [`.claude/skills/generate-docs/SKILL.md`](../../.claude/skills/generate-docs/SKILL.md) for the full sub-command list.
+
+### CLI behavior (`npm run financials:build`)
+
+```
+✓ Wrote docs/financials/RAV_Financial_Model_<stamp>.xlsx
+Generated: docs/exports/RAV-investor-faq-<date>.md
+```
+
+Both artifacts produced from the same model in one command. The `.xlsx` build is the canonical step — FAQ generation is failure-isolated (if the Python generator can't run, the `.xlsx` still writes and a warning is logged).
 
 ## Related docs
 

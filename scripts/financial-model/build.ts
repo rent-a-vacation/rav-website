@@ -85,6 +85,38 @@ async function main(): Promise<void> {
   await wb.xlsx.writeFile(outPath);
   // eslint-disable-next-line no-console
   console.log(`✓ Wrote ${outPath}`);
+
+  // Bundle the investor FAQ .md alongside (per founder request — one command,
+  // both artifacts always in sync). Failure-isolated: a broken FAQ generator
+  // logs a warning but doesn't fail the .xlsx build.
+  await generateInvestorFaq();
+}
+
+async function generateInvestorFaq(): Promise<void> {
+  const { spawn } = await import('node:child_process');
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const repoRoot = path.resolve(__dirname, '..', '..');
+  const isWin = process.platform === 'win32';
+
+  return new Promise<void>((resolve) => {
+    const proc = spawn(isWin ? 'python.exe' : 'python', ['docs/exports/generate_investor_faq.py'], {
+      cwd: repoRoot,
+      stdio: 'inherit',
+      shell: isWin, // .py launcher on Windows resolves via shell PATH
+    });
+    proc.on('close', (code) => {
+      if (code !== 0) {
+        // eslint-disable-next-line no-console
+        console.warn(`⚠ Investor FAQ generator exited with code ${code}. .xlsx is still written.`);
+      }
+      resolve();
+    });
+    proc.on('error', (err) => {
+      // eslint-disable-next-line no-console
+      console.warn(`⚠ Could not run investor FAQ generator (${err.message}). .xlsx is still written.`);
+      resolve();
+    });
+  });
 }
 
 main().catch((err) => {
