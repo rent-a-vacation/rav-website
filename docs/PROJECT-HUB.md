@@ -1397,9 +1397,34 @@ Future admin-edited settings (escrow hold period, voice quotas, fee schedules) n
 **Rationale:**
 1. **Live vs forecast are different mental models.** Conflating them in one page risks an investor or co-founder mistaking a forecast for reality (or vice versa). The distinct banner + route eliminates that risk.
 2. **Single source of truth scales.** Both the Excel artifact and the web UI consume the same `data.ts`. Edit it once, both update. Prevents the drift that plagued the Apps Script → Excel → docs reality before Phase 1a.
-3. **Phased delivery.** Stage 2a (this session) is view-only. Stage 2b adds live actuals overlay (forecast vs reality side-by-side). Stage 2c adds interactive input editing + scenario save/load in Supabase. Stage 2d adds recharts + PDF export. Each is a shippable PR.
+3. **Phased delivery.** Stage 2a (Session ~65, shipped) is view-only. Stages 2b/2c/2d sequenced separately — see revision note below.
 
-**Status:** Active. Supersedes the earlier "rebuild it as a tab inside ExecutiveDashboard" framing — implemented as separate child route with shared tabs instead.
+### Revision (2026-05-16, Session 68 close) — Stage resequence + locked design
+
+**Original order:** 2a → 2b → 2c → 2d (no documented rationale for 2b-first).
+
+**New order:** 2a (shipped) → **2c (#550)** → **2d (#551)** → **2b (#545)**.
+
+**Rationale for resequence:**
+- **Pre-launch posture inverts 2b's value curve.** Live actuals overlay (2b) has nothing to overlay until launch (Model Month 5 / ~Sep 2026). Building it pre-launch means dev-testing against `actuals = 0 / users = 4 / bookings = 0` — can't validate the feature works without real data.
+- **2c removes daily friction NOW.** Founders currently open `.xlsx` weekly to tweak assumptions. Interactive editing on the web means stop maintaining a separate spreadsheet workflow.
+- **2c + 2d together = the web replaces the .xlsx as primary** (CLI .xlsx still works for offline / sharing scenarios). That's a real ops win pre-launch.
+- **2b becomes valuable Month 5+** (real bookings flow), most useful Month 12+ (forecast-vs-actual variance becomes the conversation).
+
+**Locked design for 2c (#550) + 2d (#551):**
+
+- **Two categories of input, governed differently:**
+  - **Category A — Live operational config** (commission rate per DEC-043): always read from `system_settings` DB. Admin-edits via SystemSettings UI. Reset doesn't apply.
+  - **Category B — Forecast assumptions** (growth, expenses, hiring, scenarios): baseline in `src/lib/financial-model/data.ts`. Web edits = sparse Supabase overrides. Reset = discard overrides, re-read baseline.
+- **Scenarios:** per-user by default with optional "share to RAV team" flag. Sparse override JSON in Supabase. Unsaved drafts in localStorage (survives refresh, doesn't sync across devices).
+- **Drift indicator:** persistent banner ("Editing 'X' — N inputs differ from baseline. [Show diff] [Reset]") + per-input dot when value differs.
+- **CLI is absolute truth.** `npm run financials:build` is canonical. Default reads commission live from DB (`--use-live-config` is the default); new `--use-defaults` flag for offline runs.
+- **Web download has TWO buttons:** "Download baseline" (identical to current CLI output) + "Download active scenario" (.xlsx with overrides baked into amber cells + banner cell at top: "Scenario: <Name>"). Both use the SAME workbook-construction code as the CLI (refactored to pure function that runs in Node or browser via exceljs).
+- **data.ts stays canonical baseline.** Web edits NEVER mutate it. CLI always produces baseline .xlsx unless explicitly given a scenario.
+- **Web financial model reads commission from DB** (closes small drift surface: financial model currently uses build-time fallback, live pricing uses DB).
+- **Baseline updates remain code-edit only** (edit data.ts + PR). "Promote scenario to baseline" admin button deferred until we see how often baseline actually changes.
+
+**Status:** Active. Supersedes the earlier "rebuild it as a tab inside ExecutiveDashboard" framing — implemented as separate child route with shared tabs instead. **Resequence locked Session 68 close (2026-05-16) per founder discussion;** original 2b-first ordering had no documented justification.
 
 ---
 
