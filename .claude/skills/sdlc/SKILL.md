@@ -221,6 +221,20 @@ After every merged PR, walk through this checklist. **No session ends with stale
 
 If the answer to any of these is "no", fix it before closing.
 
+### Automated pre-PR doc-sync check
+
+Before opening a PR to `main`, run [`/sdlc-docs`](../sdlc-docs/SKILL.md):
+
+```bash
+npm run sdlc-docs:audit       # warn-mode preview (same as dev-push CI)
+npm run sdlc-docs:audit:gate  # gate-mode dry-run (what the PR-to-main CI will block on)
+```
+
+The `/sdlc-docs` watchdog enforces the source-doc-map and runs heuristic rules
+(UserGuide / flow-manifest / seed-manager / SECURITY-RISK-LOG drift). It runs
+**warn-only on dev push** and **gates PR-to-main merges** via
+`.github/workflows/sdlc-docs.yml`. Running it locally first avoids surprises.
+
 ---
 
 ## Quick Reference
