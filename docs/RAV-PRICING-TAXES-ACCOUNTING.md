@@ -7,10 +7,11 @@ status: "active"
 # Rent-A-Vacation — Pricing, Taxes & Accounting Framework
 
 > **Document for:** RAV Partners & Stakeholders
-> **Date:** February 21, 2026 | **Updated:** May 14, 2026
-> **Version:** 2.2 — Commission rate is now runtime-configurable (#510 / migration 080): live value read from `system_settings.platform_commission_rate` via `get_platform_commission_rate()` RPC; every change recorded in `admin_audit_log`; each booking persists `commission_rate_applied` so historical accounting is not retroactively distorted
+> **Date:** February 21, 2026 | **Updated:** May 15, 2026
+> **Version:** 2.3 — Status corrections (subscription billing live in PROD; financial model web dashboard shipped); content from v2.2 unchanged
 >
 > **Changelog:**
+> - **v2.3** (May 15, 2026) — Phase H subscription billing reclassified ✅ Complete (PRs #272/#294 merged Apr 4-6); financial model web dashboard noted as shipped at `/executive-dashboard/financial-model` (Session 68 verification pass)
 > - **v2.2** (May 14, 2026) — Runtime commission rate + audit log + per-booking rate persistence (issue #510, DEC-043)
 > - **v2.1** (Feb 28, 2026) — Added staged growth plan, environment mapping, Puzzle.io clarification
 
@@ -372,14 +373,15 @@ The admin dashboard includes an Accounting Integration panel:
 | **Phase F** | 1099-K compliance | ✅ Handled by Stripe Connect | $2.99/form |
 | **Phase G** | Automated tax filing (Avalara/TaxJar) | 📋 Future — when volume justifies | 8-16 hours |
 
-**Phase H — Subscription Billing (Session 43-44, Apr 2026):**
-- Stripe Products created (4 paid tiers)
+**Phase H — Subscription Billing (Sessions 43-44, Apr 2026): ✅ Complete (in PROD)**
+- Stripe Products created (4 paid tiers — see § 3.1)
 - Subscription checkout, upgrade/downgrade, cancellation via edge functions
 - Webhook handlers for 5 subscription events
 - Customer Portal for billing self-service
-- Listing limit enforcement (3-layer)
+- Listing limit enforcement (3-layer: hook + dialog + BEFORE INSERT trigger)
 - Admin MRR dashboard + manual tier override
-- Status: DEV complete, pending PR to main
+- Shipped via PR #272 (feat: Stripe subscription system, merged 2026-04-04), PR #289 (seed + QA docs), PR #290 (QA Playbook v2.0), PR #294 (Session 44 final handoff — subscription epic closed, merged 2026-04-06)
+- **Open follow-ups:** #531 (admin-configurable subscription tier prices, pre-launch), #532 (full pricing scope, post-launch)
 
 ### Phase E Breakdown — Accounting Integration
 

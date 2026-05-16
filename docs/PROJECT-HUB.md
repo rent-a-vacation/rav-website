@@ -133,6 +133,42 @@ Net: **63 → 40 open alerts (−37%)**. Verified: type-check + build + P0 tests
 
 **Test count:** 1778 (unchanged — no code logic changed this session). **Migrations:** unchanged (still through 080). **dev/main:** 4 commits ahead; release pending explicit go-ahead.
 
+**Part 4 — Documentation Management Framework + Accounting Doc Refresh (May 15):**
+
+User-requested doc refresh + framework scaffold for keeping platform docs current without manual review every session. Approved scope and constraints captured in [`tasks/todo.md`](../tasks/todo.md). **Top-priority constraint locked into auto-memory:** no new doc duplicates content already in another doc — refresh canonical + dated snapshot, never parallel.
+
+**What landed (PR1 of planned 4-PR series):**
+
+1. **Accounting docs refreshed:**
+   - `docs/RAV-PRICING-TAXES-ACCOUNTING.md` bumped to **v2.3** — Phase H (subscription billing) status corrected from "DEV complete, pending PR to main" to "✅ Complete (PRs #272/#294 merged Apr 4-6)" with #531/#532 follow-ups noted; financial model web dashboard noted as shipped at `/executive-dashboard/financial-model`.
+   - PAYSAFE-COMPLIANCE.md and PAYSAFE-FLOW-SPEC.md verified current (Session 63 closures match code).
+
+2. **`docs/INDEX.md` created** — master doc map: every topic → canonical doc; every folder → owner; archival convention; naming convention; related infrastructure. The new entry-point for "where does X live."
+
+3. **`docs/features/accounting/README.md` created** — thin index pointing to canonical accounting docs (no content duplication; explicitly enforces the no-duplication rule).
+
+4. **`docs/financials/README.md` created** — clarifies the gitignored `.xlsx` is generated; canonical TS source lives at `scripts/financial-model/`; web dashboard at `src/pages/FinancialModelDashboard.tsx`.
+
+5. **3 missing-feature READMEs written** (audit identified 8 folders with zero docs; picked top 3 by business impact):
+   - `docs/features/notification-center/README.md` — multi-channel system, 18 catalog types, TCPA opt-in, edge fns, migration 046
+   - `docs/features/resort-master-data/README.md` — 117 resorts / 351 unit types; clarifies relationship with sister `mdm-resort-data/` folder (same workstream, different phase — keep both)
+   - `docs/features/seo-optimization/README.md` — current built state (~95% per Session 41), known gaps (server-side OG, slug field on properties)
+   - 5 follow-up issues filed for remaining missing READMEs: **#535–#539** (functional-search-bar, mdm-resort-data, posthog-analytics, travel-request-enhancements, voice-auth-approval)
+
+6. **Naming-convention enforcement:** `docs/PLATFORM-REVIEW-03022026.md` was actually a UX Review (spawned issues #150-#164), not a platform inventory. Moved to `docs/archive/Platform-UX-Review-2026-03-02.md` (renamed for self-explanatory clarity); stub redirect left at original path. New convention captured in `docs/INDEX.md`: future UX reviews use `Platform-UX-Review-YYYY-MM-DD.md` to avoid the "review of what?" ambiguity.
+
+7. **Drift fix:** `docs/features/executive-dashboard/README.md` Status table claimed "Not built" for all 6 sections — verified all 15 components + 5 hooks exist in `src/components/executive/` and `src/hooks/executive/`; updated Status to ✅ with component file refs + added drift-fix note.
+
+**DEC-044 scaffolded — full sign-off pending (PRs 2-4 next session):**
+- `/sdlc-docs` skill (doc-sync watchdog; auto-fix + summary mode; auto-archive on unambiguous supersession; warn-on-dev-push + gate-on-main-PR)
+- `/generate-docs` skill (snapshot composer; sub-commands `--accounting --financials --operating-model --product-roadmap --status --security-posture`; wraps existing `docs/exports/generate_*.py` + adds 3 new generators)
+- SECURITY-RISK-LOG integration (auto-detect security-relevant changes via source-doc-map; weekly `npm audit` `/schedule` routine)
+- CLAUDE.md sections + DEC-044 entry deferred until skills ship.
+
+**Test count:** 1778 (no code changes). **Migrations:** unchanged (080). **dev/main:** still 4 commits ahead pre-PR1; will be 5+ after PR1 merge.
+
+**Memory updated:** `feedback-no-doc-duplication` saved (top-priority rule); `reference-financial-model` corrected (web dashboard has shipped; was previously memoed as deferred).
+
 ---
 
 **Session 67 — Commission Rate Runtime Architecture (May 13, 2026, issue #510):**
