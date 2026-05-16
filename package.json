@@ -35,7 +35,9 @@
     "docs:gen:accounting": "python docs/exports/generate_accounting.py",
     "docs:gen:financials": "python docs/exports/generate_financials.py",
     "docs:gen:security-posture": "python docs/exports/generate_security_posture.py",
-    "docs:gen:all": "npm run docs:gen:roadmap && npm run docs:gen:status && npm run docs:gen:operating-model && npm run docs:gen:accounting && npm run docs:gen:financials && npm run docs:gen:security-posture",
+    "docs:gen:pitch-brief": "python docs/exports/generate_pitch_brief.py",
+    "docs:gen:spend-brief": "python docs/exports/generate_spend_brief.py",
+    "docs:gen:all": "npm run docs:gen:roadmap && npm run docs:gen:status && npm run docs:gen:operating-model && npm run docs:gen:accounting && npm run docs:gen:financials && npm run docs:gen:security-posture && npm run docs:gen:pitch-brief && npm run docs:gen:spend-brief",
     "financials:build": "npx tsx scripts/financial-model/build.ts"
   },
   "lint-staged": {

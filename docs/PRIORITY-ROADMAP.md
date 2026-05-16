@@ -46,7 +46,7 @@ Session 66 closed out the 12-item compliance hardening sprint. All build-now ite
 1. **Schedule + run the counsel meeting** — non-engineering. Walk into the meeting with `docs/legal/counsel-meeting-prep.md`. Capture decisions on C1–C12. The three legal docs + PDFs in `docs/legal/` are counsel-ready.
 2. **After counsel meeting:** File the focused follow-up PR for **#494** (1h — flip `legalReviewRequired:false` + fill `reviewedBy/reviewedDate` across 9 registry entries; bump version if any text revised). If counsel returned CA text, file **#493** (30 min — one registry entry).
 3. **#510 full scope** — Complete the central-commission-config refactor: DB runtime read (`system_settings.platform_commission_rate` via `useSystemSettings` hook), admin UI for changing the rate with audit log, async pricing-function refactor. ~1-2 days. **Blocks #509.** (Carried over from Session 65.)
-4. **Phase 2 Stage 2b** — Live actuals overlay on `/executive-dashboard/financial-model`. Pull real user counts + bookings + revenue from Supabase. Show "actuals (Mo 1-N)" alongside forecast. ~3-5 days. Independent. (Carried over from Session 65.)
+4. **Phase 2 Stage 2b** ([#545](https://github.com/rent-a-vacation/rav-website/issues/545)) — Live actuals overlay on `/executive-dashboard/financial-model`. Pull real user counts + bookings + revenue from Supabase. Show "actuals (Mo 1-N)" alongside forecast. ~3-5 days. Independent. Filed as discrete issue Session 68 close. **Next-session pickup.**
 5. **#509** — Promotional commission rate overrides. **Builds on #510 full.** (Carried over from Session 65.)
 
 **Also pending — depends on counsel C-answer:**
@@ -154,6 +154,7 @@ Park these until after launch or until specific triggers.
 | **#443** | Edge-fn test for ingest-support-docs (admin ETL) | Low-risk admin ETL. Implementation guide posted as comment on issue (Session 60). Can be picked up anytime — ~2-3h work. |
 | **#444** | Edge-fn tests for notification stack (notification-dispatcher, sms-scheduler, twilio-webhook) | Blocked on A2P 10DLC anyway (#127 chain). Wait until SMS handles production traffic before adding tests. |
 | **#469** | PaySafe Gap F — native split refunds, holdbacks, rebooking credits, fee waivers | Post-launch. Confirmed deferral by user in Session 63 — admin handles complex disputes manually for the first ~10 cases. Real feature epic when promoted. |
+| **#546** | Standalone Financial Dashboard for Property Owners (mirror exec-dashboard/financial-model pattern) | Filed Session 68 close. Needs tier-assignment decision: pre-launch (CSV export for tax-prep) vs post-launch (consolidation polish). Sister to #545 (different role + different page). |
 
 ---
 

@@ -23,7 +23,9 @@ allowed-tools: Bash(npm run docs:gen:*) Bash(python docs/exports/*) Read Glob
 | `--product-roadmap` | `docs/exports/RAV-roadmap-draft-MMDDYYYY.docx` | `generate_docx.py --roadmap` (existing) | Hand-curated content (uses brand template). Note: dates baked in; refresh manually for current-period content. |
 | `--status` | `docs/exports/RAV-Development-Status-Report-MMDDYYYY.docx` | `generate_docx.py --status` (existing) | Same — hand-curated .docx with brand styling. |
 | `--operating-model` | `docs/exports/RAV-Platform-Overview-YYYYMMDD.docx` | `generate_platform_overview.py` (existing) | Hand-curated platform inventory + brand terminology table. Uses dynamic date. |
-| `--all` | All six | runs each in sequence | Combined run (sequential `npm run docs:gen:all`) |
+| `--pitch-brief` | `docs/exports/RAV-pitch-brief-YYYY-MM-DD.md` | `generate_pitch_brief.py` (NEW) | Curated "what is RAV" elevator brief (1-2 pages, 60-90 sec read) + live PLATFORM_FACTS + MILESTONES from `src/lib/financial-model/data.ts` + live test/migration/edge-fn counts from canonical sources. For advisor / mentor / warm-intro conversations. |
+| `--spend-brief` | `docs/exports/RAV-spend-brief-YYYY-MM-DD.md` | `generate_spend_brief.py` (NEW) | High-level "what we expect to spend" brief (1 page, 60 sec read). Today's run-rate + 12-month curve + top categories + recurring-vs-one-time + "what's NOT in this number". Pulls live from EXPENSES rows via `scripts/financial-model/dump-spend-summary.ts`. Companion to `--pitch-brief`. |
+| `--all` | All eight | runs each in sequence | Combined run (sequential `npm run docs:gen:all`) |
 
 ---
 
@@ -37,6 +39,8 @@ allowed-tools: Bash(npm run docs:gen:*) Bash(python docs/exports/*) Read Glob
 /generate-docs --product-roadmap
 /generate-docs --status
 /generate-docs --operating-model
+/generate-docs --pitch-brief         # 1-2 page founder elevator brief
+/generate-docs --spend-brief         # 1 page burn-rate brief
 /generate-docs --all
 ```
 
@@ -48,6 +52,8 @@ npm run docs:gen:security-posture
 npm run docs:gen:roadmap
 npm run docs:gen:status
 npm run docs:gen:operating-model
+npm run docs:gen:pitch-brief
+npm run docs:gen:spend-brief
 npm run docs:gen:all
 ```
 
@@ -99,6 +105,8 @@ Older dated artifacts in `docs/exports/` are moved to `docs/exports/archive/` by
 | Board update on roadmap | `--product-roadmap` |
 | Internal status standup / weekly | `--status` |
 | New collaborator onboarding | `--operating-model` |
+| Advisor / mentor / warm-intro conversation: "what is RAV?" | `--pitch-brief` |
+| Same conversation: "what does it cost to run?" | `--spend-brief` (pair with `--pitch-brief`) |
 | Quarterly archive sweep | `--all` |
 
 ---
