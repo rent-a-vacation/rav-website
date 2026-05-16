@@ -1,13 +1,15 @@
 ---
 last_updated: "2026-03-21T02:05:09"
 change_ref: "94959eb"
-change_type: "session-40"
+change_type: "session-68-pr3"
 status: "active"
 ---
 
 # Automated Documentation Audit System
 
 > Prevents documentation from going stale by enforcing YAML frontmatter audit trails and automated staleness detection in CI.
+
+> **Companion system added Session 68 (PR3):** [`/sdlc-docs`](../../../.claude/skills/sdlc-docs/SKILL.md) adds a PR-aware diff watchdog. See [Related systems](#related-systems-sdlc-docs) at the bottom.
 
 ## Problem
 
@@ -115,3 +117,17 @@ npm run docs:migrate
 - **Adding a source-doc mapping:** Edit `scripts/source-doc-map.json` to add the new entry.
 - **Archiving a doc:** Set `status: "archived"` in its frontmatter. It will skip staleness checks.
 - **Adjusting staleness threshold:** Change `STALENESS_DAYS` in `scripts/docs-audit.ts` (default: 30).
+
+## Related systems: `/sdlc-docs`
+
+`scripts/docs-audit.ts` is one of three complementary doc-sync systems. They run side-by-side and check different things:
+
+| Script | What it checks | Diff window | CI behavior |
+|---|---|---|---|
+| `scripts/docs-audit.ts` (this doc) | Frontmatter on every doc + source-doc-map using `HEAD~1..HEAD` | Last commit only | Fails on missing-frontmatter ERRORS; warns on staleness/drift |
+| `scripts/docs-sync-check.ts` | Currency of 4 bootstrap docs (PROJECT-HUB, PRIORITY-ROADMAP, TESTING-STATUS, LAUNCH-READINESS) + support-docs frontmatter + DEC-040 Phase numbering | Whole-repo state | Fails on out-of-currency bootstrap docs |
+| **`scripts/sdlc-docs.ts`** (new — Session 68 PR3) | Source-doc-map using **PR-wide diff** (against merge base) + heuristic rules (UserGuide / flow-manifest / seed-manager / SECURITY-RISK-LOG drift) | `origin/main...HEAD` (full PR) | **WARN** on dev push (never blocks); **GATE** on PR to main (blocks merge on source-doc-map drift) |
+
+The three together: `docs-stamp.sh` (pre-commit) → `docs-audit.ts` + `docs-sync-check.ts` (every push/PR) → `sdlc-docs.ts` (warn on dev push, gate on main PR). Each layer catches a different class of drift.
+
+Source-doc-map (`scripts/source-doc-map.json`) is shared by `docs-audit.ts` and `sdlc-docs.ts` — entries added there are enforced by both.

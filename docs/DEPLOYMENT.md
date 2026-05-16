@@ -186,6 +186,20 @@ supabase secrets set IS_DEV_ENVIRONMENT=true --project-ref <PROJECT_REF>
 - Uses separate Resend API key (`RESEND_GITHUB_NOTIFICATIONS_KEY`) from edge functions
 - **Currently disabled** to conserve Resend quota
 
+**Documentation Audit** (`.github/workflows/docs-audit.yml`):
+- Triggers on: push to `dev`/`main`, PRs to `main`/`dev`
+- Runs `npm run docs:audit:ci` and `npm run docs:sync-check:ci`
+- Posts results as PR comment + uploads reports as artifacts
+- Fails CI on missing-frontmatter errors or out-of-currency bootstrap docs
+
+**SDLC Docs Sync** (`.github/workflows/sdlc-docs.yml`) — added Session 68 PR3:
+- Triggers on: push to `dev` (warn mode), PRs to `main` (gate mode)
+- Runs `npm run sdlc-docs:audit -- --warn|--gate --base origin/main`
+- **Warn mode (dev push):** prints findings; never blocks
+- **Gate mode (PR to main):** blocks merge on source-doc-map drift; heuristic warnings still print
+- Posts findings as a single sticky PR comment (creates or updates)
+- Rules + modes documented in [`.claude/skills/sdlc-docs/SKILL.md`](../.claude/skills/sdlc-docs/SKILL.md)
+
 ---
 
 ## Database Setup
