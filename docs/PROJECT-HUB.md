@@ -159,15 +159,30 @@ User-requested doc refresh + framework scaffold for keeping platform docs curren
 
 7. **Drift fix:** `docs/features/executive-dashboard/README.md` Status table claimed "Not built" for all 6 sections — verified all 15 components + 5 hooks exist in `src/components/executive/` and `src/hooks/executive/`; updated Status to ✅ with component file refs + added drift-fix note.
 
-**DEC-044 scaffolded — full sign-off pending (PRs 2-4 next session):**
-- `/sdlc-docs` skill (doc-sync watchdog; auto-fix + summary mode; auto-archive on unambiguous supersession; warn-on-dev-push + gate-on-main-PR)
-- `/generate-docs` skill (snapshot composer; sub-commands `--accounting --financials --operating-model --product-roadmap --status --security-posture`; wraps existing `docs/exports/generate_*.py` + adds 3 new generators)
-- SECURITY-RISK-LOG integration (auto-detect security-relevant changes via source-doc-map; weekly `npm audit` `/schedule` routine)
-- CLAUDE.md sections + DEC-044 entry deferred until skills ship.
+**ALL 4 PRs LANDED (2026-05-16):**
 
-**Test count:** 1778 (no code changes). **Migrations:** unchanged (080). **dev/main:** still 4 commits ahead pre-PR1; will be 5+ after PR1 merge.
+- **PR #540** (merged 2026-05-16): Foundation — RAV-PRICING-TAXES v2.3, `docs/INDEX.md`, `docs/features/accounting/README.md` (thin index), `docs/financials/README.md`, 3 missing-feature READMEs (notification-center, resort-master-data, seo-optimization), 5 follow-up issues #535-#539, Platform-UX-Review archived per new naming convention.
+- **PR #541** (merged 2026-05-16): `/generate-docs` skill auto-discovered. New `docs/exports/_compose.py` shared helpers + 3 new Python generators (`generate_accounting.py`, `generate_financials.py`, `generate_security_posture.py`). Existing `generate_docx.py` extended with `--roadmap`/`--status` flags. 7 new npm scripts. First-run dated snapshots committed as proof. `.gitignore` narrowed so `.claude/skills/` ships repo-wide.
+- **PR #543** (merged 2026-05-16): `/sdlc-docs` skill auto-discovered. New `scripts/sdlc-docs.ts` with 5 detection rules (1 GATE + 4 WARN). New `.github/workflows/sdlc-docs.yml` (warn on dev push, gate on PR to main, sticky PR comments). 7 new source-doc-map entries. Dogfooded — caught 2 real drift issues on its own PR. Filed follow-up #542 (docs-audit gitignore false positive).
+- **PR #? (this PR)**: DEC-044 logged here in the Key Decisions Log + CLAUDE.md "Documentation Management" subsection + What-NOT-To-Do additions + `/sdlc` SECURITY-RISK-LOG checkpoint at session end + this Session 68 Part 4 close-out + PRIORITY-ROADMAP revision history entry.
 
-**Memory updated:** `feedback-no-doc-duplication` saved (top-priority rule); `reference-financial-model` corrected (web dashboard has shipped; was previously memoed as deferred).
+**Net outcome of Session 68 Part 4:**
+- Sustainable doc-management framework live in PROD across all 4 PRs.
+- Zero net code changes outside `docs/`, `scripts/sdlc-docs.ts`, `docs/exports/_compose.py + generators`, `.claude/skills/`, `.github/workflows/sdlc-docs.yml`, and small updates to `package.json` + `.gitignore` + `source-doc-map.json`.
+- `npm run sdlc-docs:audit:gate` is now the local pre-PR dry-run; `/sdlc-docs audit` is the agent-facing equivalent.
+- `/generate-docs --accounting` produces a fresh dated snapshot of the four-source-of-truth accounting picture on demand.
+
+**Open follow-ups filed for this framework:**
+- #535 — docs/features/functional-search-bar/ README
+- #536 — docs/features/mdm-resort-data/ README
+- #537 — docs/features/posthog-analytics/ README
+- #538 — docs/features/travel-request-enhancements/ README
+- #539 — docs/features/voice-auth-approval/ README
+- #542 — docs-audit.ts should respect .gitignore
+
+**Test count:** 1778 (no code-logic changes across all 4 PRs). **Migrations:** unchanged (080). **dev/main:** in sync at `1754be4` after PR #543 merge; will advance once PR #pending lands.
+
+**Memory updated this session:** `feedback-no-doc-duplication` saved (top-priority rule); `reference-financial-model` corrected (web dashboard has shipped at `/executive-dashboard/financial-model`).
 
 ---
 
@@ -1278,6 +1293,66 @@ Three workstreams shipped plus Phase 21 DoD cleanup. All backed by GitHub issues
 - #190 — Webhook delivery to partners (event notifications)
 - #191 — Chat endpoint (`/v1/chat`) via gateway
 - #192 — SDK packages for partners (npm, Python)
+
+---
+
+### DEC-044: Documentation Management Framework — /sdlc-docs (Watchdog) + /generate-docs (Snapshot Composer) Split
+**Date:** May 15-16, 2026 (Session 68 Part 4, PRs #540 → #541 → #543 → #pending PR4)
+**Decision:** Platform documentation is governed by two complementary Claude Code skills with strict separation of concerns. Top-priority constraint locked into auto-memory: **no new doc duplicates content already in another doc** — refresh the canonical doc + (optionally) compose a dated snapshot, never spawn a parallel source of truth.
+
+**Two skills, two distinct jobs:**
+
+| Skill | Purpose | When | Source | Edits docs? |
+|---|---|---|---|---|
+| **`/sdlc-docs`** (PR #543) | Doc-sync watchdog. PR-aware diff checker. | Auto (push to dev / PR to main) | Code diff vs. base | No — reports only |
+| **`/generate-docs`** (PR #541) | Snapshot composer. Dated artifacts. | Manual (`/generate-docs --x`) | Canonical docs + live data | Yes — writes to `docs/exports/` |
+
+**`/sdlc-docs` enforcement model:**
+- **Warn mode** on push to `dev` (informational; never blocks)
+- **Gate mode** on PR to `main` (blocks merge on `source-doc-map` drift; heuristic warnings still print)
+- Five rules: `source-doc-map` (GATE) + `user-guide-drift` / `flow-manifest-drift` / `seed-manager-drift` / `security-risk-log-trigger` (WARN)
+- Runs side-by-side with existing `docs-audit.ts` (frontmatter) + `docs-sync-check.ts` (bootstrap-doc currency). Three layers, different signals, no overlap.
+
+**`/generate-docs` output convention:**
+- Outputs to `docs/exports/<RAV-Topic-snapshot-YYYY-MM-DD>.md` (new generators) or `<RAV-Topic-MMDDYYYY>.docx` (existing brand-styled generators)
+- Frontmatter carries `doc_kind: "snapshot"` so `/sdlc-docs` skips them in canonical-doc rules
+- Six sub-commands: `--accounting`, `--financials`, `--security-posture`, `--operating-model`, `--product-roadmap`, `--status`
+- New Python generators (`generate_accounting.py`, `generate_financials.py`, `generate_security_posture.py`) reuse shared helpers in `docs/exports/_compose.py` (frontmatter, source-table, git-ref, live extraction)
+
+**Naming convention enforced this session (PR1 #540):**
+- Self-explanatory file names. `PLATFORM-REVIEW-03022026.md` (actually a UX review) renamed and archived to `docs/archive/Platform-UX-Review-2026-03-02.md` to disambiguate from `RAV-Platform-Overview-*.md` (architectural inventory). Future UX reviews use `Platform-UX-Review-YYYY-MM-DD.md`.
+- Dated artifacts use ISO-style `YYYY-MM-DD` (sortable).
+- Per-feature READMEs at `docs/features/<feature-slug>/README.md`.
+
+**Archive convention:**
+- Superseded docs move to `docs/archive/<original-folder>/<self-explanatory-name>-YYYY-MM-DD.md`
+- Stub redirect (`status: archived`) at original path preserves inbound links
+- `/sdlc-docs report` flags misfiled `status: archived` docs
+
+**Source-doc map ownership:**
+- `scripts/source-doc-map.json` is the single registry. New entries added here are enforced by BOTH `docs-audit.ts` (last-commit window) AND `sdlc-docs.ts` (PR-wide window).
+- PR3 #543 added 7 new entries: financial-model, notification-center, resort-master-data, SEO, accounting index, sdlc-docs self-ref, generate-docs self-ref.
+
+**`docs/INDEX.md` is the master map** (added PR1 #540). Topic → canonical doc + which generator (if any) produces the dated snapshot. First stop for "where does X live."
+
+**What this REPLACES:**
+- Manual at-session-end CLAUDE.md documentation checklist (still present, but `/sdlc-docs` now enforces it programmatically at PR boundary)
+- Ad-hoc generation of dated stakeholder artifacts (now standardized via `/generate-docs`)
+- Confusion about archive vs. canonical (`docs/INDEX.md` + naming convention enforces self-evident state)
+
+**Implementation status:**
+- **PR #540** (merged 2026-05-16): foundation — accounting refresh, INDEX, features cleanup
+- **PR #541** (merged 2026-05-16): `/generate-docs` skill + 3 new generators + 3 first-run snapshots
+- **PR #543** (merged 2026-05-16): `/sdlc-docs` skill + CI gate + source-doc-map extensions
+- **PR #? (this PR)**: DEC-044 + CLAUDE.md conventions + Session 68 close-out
+
+**Open follow-ups:**
+- Auto-archive `archive-stale --apply` subcommand for `/sdlc-docs` (deferred — file moves are hard to reverse; manual review preferred for v1)
+- Weekly `npm audit` `/schedule` routine (offered separately — uses API quota)
+- `docs-audit.ts` should respect `.gitignore` (#542)
+- Remaining 5 missing-doc folders need READMEs (#535-#539)
+
+**Status:** Active.
 
 ---
 

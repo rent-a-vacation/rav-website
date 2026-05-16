@@ -204,12 +204,18 @@ After every merged PR, walk through this checklist. **No session ends with stale
     - Move session-handoff entries older than ~5 sessions from PROJECT-HUB to this archive
     - Keep PROJECT-HUB "Session Handoff" section lean (current + last 5 sessions)
 
-11. **Create follow-up issues** for anything discovered during implementation:
+11. **`docs/SECURITY-RISK-LOG.md`** — if security posture changed (DEC-044 / Session 68 PR4)
+    - Triggers: new/updated dependency, edge-function auth change, RLS migration, CI workflow change, security-relevant migration
+    - `/sdlc-docs audit` flags these as `security-risk-log-trigger` warnings
+    - If the change affects threat surface (not just hygiene), add a triage entry with: severity, vector, mitigation status, follow-up issue ref
+    - For a current snapshot, run `/generate-docs --security-posture` (composes the log with live `npm audit` + dependabot state)
+
+12. **Create follow-up issues** for anything discovered during implementation:
     ```bash
     gh issue create --repo rent-a-vacation/rav-website --title "..." --label "..." --milestone "Launch Readiness" --body "..."
     ```
 
-12. **Update memory** if anything session-persistent was learned (see `auto memory` system prompt — feedback / project / user memories)
+13. **Update memory** if anything session-persistent was learned (see `auto memory` system prompt — feedback / project / user memories)
 
 ### Before calling a session done, ask yourself:
 - [ ] Does `/sdlc status` (which reads live docs) give an accurate picture?
