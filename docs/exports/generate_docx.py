@@ -1273,7 +1273,16 @@ def generate_status_report():
 
 
 if __name__ == "__main__":
-    print("Generating branded .docx files...")
-    generate_roadmap()
-    generate_status_report()
+    import sys
+    args = sys.argv[1:]
+    if "--roadmap" in args:
+        print("Generating roadmap .docx...")
+        generate_roadmap()
+    elif "--status" in args:
+        print("Generating status report .docx...")
+        generate_status_report()
+    else:
+        print("Generating branded .docx files (roadmap + status)...")
+        generate_roadmap()
+        generate_status_report()
     print("Done!")
