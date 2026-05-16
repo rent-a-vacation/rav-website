@@ -25,6 +25,13 @@
     "docs:sync-check:ci": "npx tsx scripts/docs-sync-check.ts --ci",
     "docs:stamp": "bash scripts/docs-stamp.sh",
     "docs:migrate": "npx tsx scripts/docs-migrate-frontmatter.ts",
+    "docs:gen:roadmap": "python docs/exports/generate_docx.py --roadmap",
+    "docs:gen:status": "python docs/exports/generate_docx.py --status",
+    "docs:gen:operating-model": "python docs/exports/generate_platform_overview.py",
+    "docs:gen:accounting": "python docs/exports/generate_accounting.py",
+    "docs:gen:financials": "python docs/exports/generate_financials.py",
+    "docs:gen:security-posture": "python docs/exports/generate_security_posture.py",
+    "docs:gen:all": "npm run docs:gen:roadmap && npm run docs:gen:status && npm run docs:gen:operating-model && npm run docs:gen:accounting && npm run docs:gen:financials && npm run docs:gen:security-posture",
     "financials:build": "npx tsx scripts/financial-model/build.ts"
   },
   "lint-staged": {
