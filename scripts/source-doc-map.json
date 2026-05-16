@@ -68,6 +68,34 @@
     {
       "source": ["scripts/docs-audit.ts", "scripts/docs-stamp.sh", "scripts/source-doc-map.json"],
       "docs": ["docs/features/docs-audit/README.md"]
+    },
+    {
+      "source": ["scripts/financial-model/**", "src/lib/financial-model/**", "src/pages/FinancialModelDashboard.tsx"],
+      "docs": ["docs/financials/README.md"]
+    },
+    {
+      "source": ["src/components/notifications/**", "src/components/admin/AdminNotificationCenter.tsx", "src/hooks/useNotifications.ts", "src/hooks/useNotificationPreferences.ts", "supabase/functions/notification-dispatcher/**", "supabase/functions/sms-scheduler/**", "supabase/functions/twilio-webhook/**"],
+      "docs": ["docs/features/notification-center/README.md"]
+    },
+    {
+      "source": ["src/components/resort/**", "src/components/FeaturedResorts.tsx", "src/lib/resortImportUtils.ts", "src/lib/resortDataQuality.ts", "src/lib/resortQuiz.ts", "src/pages/ResortQuiz.tsx", "scripts/import-resort-data.ts", "scripts/generate-resort-descriptions.ts", "scripts/normalise-resort-data.ts", "scripts/audit-resort-data-quality.ts"],
+      "docs": ["docs/features/resort-master-data/README.md"]
+    },
+    {
+      "source": ["src/hooks/usePageMeta.ts", "src/hooks/useJsonLd.ts", "src/lib/breadcrumbSchema.ts", "scripts/generate-sitemap.ts", "public/robots.txt"],
+      "docs": ["docs/features/seo-optimization/README.md"]
+    },
+    {
+      "source": ["docs/RAV-PRICING-TAXES-ACCOUNTING.md", "docs/payments/PAYSAFE-COMPLIANCE.md", "docs/payments/PAYSAFE-FLOW-SPEC.md", "src/lib/pricing.ts", "src/config/commission.ts"],
+      "docs": ["docs/features/accounting/README.md"]
+    },
+    {
+      "source": ["scripts/sdlc-docs.ts", ".github/workflows/sdlc-docs.yml"],
+      "docs": [".claude/skills/sdlc-docs/SKILL.md"]
+    },
+    {
+      "source": ["docs/exports/_compose.py", "docs/exports/generate_accounting.py", "docs/exports/generate_financials.py", "docs/exports/generate_security_posture.py"],
+      "docs": [".claude/skills/generate-docs/SKILL.md"]
     }
   ]
 }
