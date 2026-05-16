@@ -15,7 +15,7 @@ status: "active"
 
 | Layer | Location | Purpose |
 |---|---|---|
-| **TypeScript build** | [`scripts/financial-model/`](../../scripts/financial-model/) | Generates the `.xlsx` artifact via `exceljs`. Entry: `build.ts`. Run: `npm run financials:build`. |
+| **TypeScript build** | [`scripts/financial-model/`](../../scripts/financial-model/) | Generates the `.xlsx` artifact via `exceljs`. Entry: `build.ts`. Run: `npm run financials:build`. Also hosts dump scripts (`dump-spend-summary.ts`, `dump-platform-facts.ts`) that the `/generate-docs --spend-brief` and `--pitch-brief` Python generators consume — single source of truth shared with .xlsx + web dashboard. |
 | **Web dashboard** | [`src/pages/FinancialModelDashboard.tsx`](../../src/pages/FinancialModelDashboard.tsx) | Live web view of the model — route `/executive-dashboard/financial-model` (rav_owner only). Shipped in Session ~67. |
 | **Shared calc** | [`src/lib/financial-model/`](../../src/lib/financial-model/) | `data.ts` (typed inputs, scenarios, milestones), `calc.ts` (calculation logic). Shared between Excel generator and React dashboard. |
 | **Operational financials** | [`src/components/admin/AdminFinancials.tsx`](../../src/components/admin/AdminFinancials.tsx) | NOT the same as the model dashboard. Shows live revenue/payouts/commissions in `/admin-dashboard?tab=financials`. |
@@ -37,6 +37,15 @@ npm run financials:build
 ```
 
 Tabs (7): Cover, INPUTS (incl. Section F: Tax/Cash/Reserves), EXPENSES (~47 rows), REVENUE MODEL (24-month with Stripe fee netting), BREAK-EVEN, FUNDING ASK, INSTRUCTIONS. ~41 named ranges drive all formulas.
+
+## Generated briefs (companion artifacts)
+
+Two `/generate-docs` sub-commands produce founder-facing briefs that compose from this model's data:
+
+- **`/generate-docs --pitch-brief`** → `docs/exports/RAV-pitch-brief-YYYY-MM-DD.md` — 1-2 page elevator brief ("what is RAV") for advisor / mentor / warm-intro conversations. Pulls `PLATFORM_FACTS` + `MILESTONES` from `src/lib/financial-model/data.ts` + live test/migration/edge-fn counts.
+- **`/generate-docs --spend-brief`** → `docs/exports/RAV-spend-brief-YYYY-MM-DD.md` — 1 page burn-rate brief ("what we expect to spend"). Pulls live monthly spend curve from `EXPENSES` rows via `dump-spend-summary.ts`.
+
+These are the conversational primers; the rich `.xlsx` model + web dashboard remain the deep-dive sources. See [`.claude/skills/generate-docs/SKILL.md`](../../.claude/skills/generate-docs/SKILL.md) for the full sub-command list.
 
 ## Related docs
 
