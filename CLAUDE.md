@@ -472,6 +472,92 @@ npm run docs:audit:ci   # CI mode (exits 1 on errors)
 
 ---
 
+## Documentation Management Framework (MANDATORY)
+
+> **Locked Session 68 PR4 (DEC-044).** Two complementary skills govern docs. See [`docs/INDEX.md`](docs/INDEX.md) for the master doc map.
+
+### Top-priority constraint: no doc duplication
+
+**Never create a new doc that duplicates content already in another doc.** Refresh the canonical doc + (optionally) compose a dated snapshot via `/generate-docs`. Never spawn a parallel source of truth. Captured in auto-memory `feedback_no_doc_duplication.md`.
+
+Before creating any new `.md` file, audit existing docs that touch the same topic. If an existing one serves the purpose, refresh it instead.
+
+### `/sdlc-docs` — doc-sync watchdog (does NOT edit docs)
+
+PR-aware diff checker. Cross-references PR-wide changes against `scripts/source-doc-map.json` + applies heuristic rules. Reports drift; never edits.
+
+```bash
+npm run sdlc-docs:audit       # warn mode (same as dev-push CI)
+npm run sdlc-docs:audit:gate  # gate mode (what PR-to-main CI blocks on)
+npm run sdlc-docs:report      # health snapshot
+```
+
+**CI behavior** (`.github/workflows/sdlc-docs.yml`):
+- **Push to dev** → WARN mode (never blocks; informational)
+- **PR to main** → GATE mode (blocks merge on `source-doc-map` drift; heuristic warnings still print)
+
+Five rules:
+
+| Rule | Severity | Catches |
+|---|---|---|
+| `source-doc-map` | **GATE** | A mapped source file changed but the mapped doc wasn't touched |
+| `user-guide-drift` | warn | Public-page changes without UserGuide.tsx/FAQ.tsx update |
+| `flow-manifest-drift` | warn | App.tsx changes without `src/flows/` update |
+| `seed-manager-drift` | warn | New `CREATE TABLE` migration without seed-manager update |
+| `security-risk-log-trigger` | warn | Deps/auth/RLS/CI changes without SECURITY-RISK-LOG.md entry |
+
+Full skill spec: [`.claude/skills/sdlc-docs/SKILL.md`](.claude/skills/sdlc-docs/SKILL.md).
+
+### `/generate-docs` — snapshot composer (writes to `docs/exports/` only)
+
+On-demand dated artifacts. Composes from canonical sources — links, quotes, extracts. Never duplicates.
+
+```bash
+npm run docs:gen:accounting        # → docs/exports/RAV-accounting-snapshot-YYYY-MM-DD.md
+npm run docs:gen:financials        # → docs/exports/RAV-financials-snapshot-YYYY-MM-DD.md
+npm run docs:gen:security-posture  # → docs/exports/RAV-security-posture-YYYY-MM-DD.md
+npm run docs:gen:roadmap           # → docs/exports/RAV-roadmap-draft-MMDDYYYY.docx
+npm run docs:gen:status            # → docs/exports/RAV-Development-Status-Report-MMDDYYYY.docx
+npm run docs:gen:operating-model   # → docs/exports/RAV-Platform-Overview-YYYYMMDD.docx
+npm run docs:gen:all               # all six in sequence
+```
+
+Snapshots carry `doc_kind: "snapshot"` frontmatter so `/sdlc-docs` skips them in canonical-doc audits.
+
+Full skill spec: [`.claude/skills/generate-docs/SKILL.md`](.claude/skills/generate-docs/SKILL.md).
+
+### Naming convention (MANDATORY)
+
+- **Self-explanatory file names.** `PLATFORM-REVIEW` was ambiguous (review of what?) → renamed to `Platform-UX-Review`. Future UX reviews use `Platform-UX-Review-YYYY-MM-DD.md`.
+- **Dated artifacts** use ISO-style `YYYY-MM-DD` (sortable).
+- **Per-feature READMEs** at `docs/features/<feature-slug>/README.md`.
+- **Generated snapshots** at `docs/exports/RAV-<topic>-YYYY-MM-DD.{md,docx}`.
+
+### Archive convention (MANDATORY)
+
+When a doc is superseded:
+
+1. **Move** to `docs/archive/<original-folder>/<self-explanatory-name>-YYYY-MM-DD.md` (rename to make purpose obvious)
+2. **Leave a stub** at original path with `status: archived` frontmatter + one-line redirect to new location (preserves inbound links)
+3. **Update `docs/INDEX.md`** if the topic mapping changes
+4. `/sdlc-docs report` flags misfiled `status: archived` docs
+
+### Source-doc map (`scripts/source-doc-map.json`)
+
+Single registry of source-code → docs relationships. New entries are enforced by BOTH `docs-audit.ts` (last-commit window) AND `sdlc-docs.ts` (PR-wide window). Add a mapping when:
+
+- A new feature ships with its own doc (`docs/features/<feature>/README.md`)
+- A source file is the canonical implementation of a documented concept
+- A refactor moves a code path → corresponding doc paragraph
+
+### SECURITY-RISK-LOG.md
+
+`docs/SECURITY-RISK-LOG.md` is the canonical security triage log. `/sdlc-docs` flags changes to `package.json`, `package-lock.json`, `supabase/functions/_shared/auth.ts`, `.github/workflows/`, or RLS-touching migrations as potential triggers — surface in the PR; add a triage entry if the change affects threat surface.
+
+A weekly `npm audit` `/schedule` routine is the recommended automation for catching new dependabot alerts; opt in via `/schedule` skill.
+
+---
+
 ## Email Template Convention (MANDATORY)
 
 All emails sent by Rent-A-Vacation MUST use the shared branded template:
@@ -526,6 +612,8 @@ All admin actions that modify data MUST have appropriate confirmation dialogs:
 ## What NOT to Do
 
 - ❌ Never push directly to `main`
+- ❌ Never create a new doc that duplicates content in another doc — refresh the canonical doc + compose a dated snapshot (see Documentation Management Framework / DEC-044)
+- ❌ Never edit a snapshot in `docs/exports/` directly — regenerate via `/generate-docs --<topic>`. Snapshots are read-only composites of canonical sources.
 - ❌ Never commit with failing tests
 - ❌ Never ship new business logic without corresponding tests (see Tests-With-Features Policy)
 - ❌ Never hardcode business metrics without verifying against docs
