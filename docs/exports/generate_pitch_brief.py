@@ -170,11 +170,29 @@ def generate_pitch_brief() -> str:
         "infrastructure (escrow, identity verification, dispute resolution) that the existing channels lack.\n\n"
     )
 
+    body.append("## How RAV works — two listing models\n\n")
+    body.append(
+        "RAV runs **two distinct listing models** in production today. Most marketplaces only run Model 2. "
+        "**Model 1 is the differentiator.**\n\n"
+        "### Model 1 — RAV Wishes (reverse marketplace) — *the differentiator*\n\n"
+        "The traveler posts the trip they want — destination, dates (with flexibility), budget range, bedrooms, "
+        "amenities. Owners with matching inventory submit **Offers** (price + dates they can fulfill). When the "
+        "traveler accepts an Offer, RAV gives the owner a **60-minute countdown** to lock in the actual resort "
+        "confirmation (up to two 30-min extensions). If the owner misses the deadline, the traveler is "
+        "automatically refunded — they're never left without a stay. **Nobody else in vacation-club rental does "
+        "this.**\n\n"
+        "### Model 2 — Traditional Pre-Booked Listing\n\n"
+        "The owner already holds a confirmed resort week and lists it directly with proof-of-booking. The listing "
+        "can be a **fixed price** OR opted into **bidding** (owner sets reserve price + decides whether counter-"
+        "offers are allowed). Travelers can buy at the listed price, submit a bid, or counter the owner's counter. "
+        "Reduces price-discovery friction and increases the chance of a deal closing.\n\n"
+    )
+
     body.append("## What makes RAV different\n\n")
     body.append(
-        "- **Name Your Price + RAV Wishes (reverse-auction).** Travelers don't just accept listed prices — they bid, "
-        "propose alternative dates, or post a wish list that owners compete to fulfill. Owners see live demand "
-        "signals while pricing their listings.\n"
+        "- **Smart matching.** When a new listing is approved, RAV's `match-travel-requests` edge function "
+        "auto-scans open Wishes by destination, dates (±30 days + flexibility), bedrooms, budget, and brand — "
+        "and notifies the relevant parties. Owners see live demand signals while creating a listing.\n"
         "- **PaySafe escrow.** Stripe holds the funds through Stripe Connect; RAV releases to the owner 5 days "
         "after check-out, with the traveler confirming arrival. RAV is **not** a money services business — Stripe "
         "carries that compliance load.\n"
