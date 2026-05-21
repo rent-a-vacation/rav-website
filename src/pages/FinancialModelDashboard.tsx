@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { project, type Scenario } from '@/lib/financial-model/calc';
-import { DEFAULT_COMMISSION, EFFECTIVE_RATES, formatRate } from '@/config/commission';
+import { DEFAULT_COMMISSION, formatRate } from '@/config/commission';
+import { useCommissionRate } from '@/hooks/useCommissionRate';
 import { useState } from 'react';
 
 /**
@@ -47,11 +48,13 @@ export default function FinancialModelDashboard() {
 
   const { user, isRavTeam, isLoading } = useAuth();
   const [scenario, setScenario] = useState<Scenario>('Base');
+  const { data: rate } = useCommissionRate();
 
   if (isLoading) return null;
   if (!user || !isRavTeam()) return <Navigate to="/" replace />;
 
-  const result = project(scenario);
+  const effectiveRate = rate ?? DEFAULT_COMMISSION;
+  const result = project(scenario, undefined, effectiveRate);
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -157,16 +160,16 @@ export default function FinancialModelDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <RateTile label="Free Owner" rate={EFFECTIVE_RATES.free} sub={`Base rate, no discount`} />
-                <RateTile label="Pro Owner" rate={EFFECTIVE_RATES.pro}  sub={`Base ${formatRate(DEFAULT_COMMISSION.base)} − ${formatRate(DEFAULT_COMMISSION.proDiscount)} Pro discount`} />
-                <RateTile label="Business Owner" rate={EFFECTIVE_RATES.business} sub={`Base ${formatRate(DEFAULT_COMMISSION.base)} − ${formatRate(DEFAULT_COMMISSION.businessDiscount)} Business discount`} />
+                <RateTile label="Free Owner" rate={effectiveRate.base} sub={`Base rate, no discount`} />
+                <RateTile label="Pro Owner" rate={Math.max(0, effectiveRate.base - effectiveRate.proDiscount)}  sub={`Base ${formatRate(effectiveRate.base)} − ${formatRate(effectiveRate.proDiscount)} Pro discount`} />
+                <RateTile label="Business Owner" rate={Math.max(0, effectiveRate.base - effectiveRate.businessDiscount)} sub={`Base ${formatRate(effectiveRate.base)} − ${formatRate(effectiveRate.businessDiscount)} Business discount`} />
               </div>
               <div className="mt-4 text-xs text-slate-400">
                 Blended rate this scenario: <strong className="text-slate-200">{formatRate(result.totals.blendedCommissionRate)}</strong>
                 {' '}— weighted by booking-mix assumptions (Free/Pro/Business owners).
               </div>
               <div className="mt-3 text-xs text-slate-500">
-                To change rates: edit <code className="rounded bg-slate-900 px-1 py-0.5">src/config/commission.ts</code> (single source of truth — propagates to live pricing and the financial model both).
+                Rates are live from <code className="rounded bg-slate-900 px-1 py-0.5">system_settings.platform_commission_rate</code> (per DEC-043). Edit via System Settings — admin audit log captures changes.
               </div>
             </CardContent>
           </Card>
