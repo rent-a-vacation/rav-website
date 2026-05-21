@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { TrendingUp, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,8 +10,32 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { project, type Scenario } from '@/lib/financial-model/calc';
-import { DEFAULT_COMMISSION, EFFECTIVE_RATES, formatRate } from '@/config/commission';
-import { useState } from 'react';
+import { DEFAULT_COMMISSION, formatRate } from '@/config/commission';
+import { useCommissionRate } from '@/hooks/useCommissionRate';
+import { ScenarioPicker } from '@/components/financial-model/ScenarioPicker';
+import { ScenarioActions } from '@/components/financial-model/ScenarioActions';
+import { SaveScenarioDialog } from '@/components/financial-model/SaveScenarioDialog';
+import { useToast } from '@/hooks/use-toast';
+import { InputSectionAccordion } from '@/components/financial-model/InputSectionAccordion';
+import { ReadOnlyInputRow } from '@/components/financial-model/ReadOnlyInputRow';
+import { EditableInputRow } from '@/components/financial-model/EditableInputRow';
+import { ExpenseSection } from '@/components/financial-model/ExpenseSection';
+import { DriftBanner } from '@/components/financial-model/DriftBanner';
+import {
+  DiffDialog,
+  type DiffEntry,
+  type ExpenseDiffEntry,
+} from '@/components/financial-model/DiffDialog';
+import { INPUT_SECTIONS, type InputSectionId } from '@/components/financial-model/sectionMeta';
+import { useFinancialModelScenarios } from '@/hooks/useFinancialModelScenarios';
+import { useActiveScenario } from '@/hooks/useActiveScenario';
+import { useActiveScenarioInputs } from '@/hooks/useActiveScenarioInputs';
+import { useScenarioDraft } from '@/hooks/useScenarioDraft';
+import { EXPENSES } from '@/lib/financial-model/data';
+import {
+  findSystemScenario,
+  isSystemScenarioId,
+} from '@/lib/financial-model/system-scenarios';
 
 /**
  * Financial Model Dashboard — Phase 2 Stage 2a.
@@ -46,12 +71,142 @@ export default function FinancialModelDashboard() {
   );
 
   const { user, isRavTeam, isLoading } = useAuth();
-  const [scenario, setScenario] = useState<Scenario>('Base');
+  const { activeId, setActiveId } = useActiveScenario();
+  const { scenarios, create, update, remove } = useFinancialModelScenarios();
+  const { data: rate } = useCommissionRate();
+  const inputs = useActiveScenarioInputs();
+  const draft = useScenarioDraft(activeId);
+  const { toast } = useToast();
+  const [showDiff, setShowDiff] = useState(false);
+  const [saveDialog, setSaveDialog] = useState<{
+    open: boolean;
+    mode: 'save-as' | 'duplicate';
+  }>({ open: false, mode: 'save-as' });
 
   if (isLoading) return null;
   if (!user || !isRavTeam()) return <Navigate to="/" replace />;
 
-  const result = project(scenario);
+  const effectiveRate = rate ?? DEFAULT_COMMISSION;
+  const result = project(inputs.multiplier, inputs, effectiveRate);
+  const scenario: Scenario = inputs.multiplier;
+  const readOnly = !inputs.isSystem && inputs.active != null && inputs.active.owner_id !== user.id;
+
+  const scenarioName = isSystemScenarioId(activeId)
+    ? findSystemScenario(activeId)?.name ?? 'Base'
+    : inputs.active?.name ?? 'Base';
+
+  const diffEntries: DiffEntry[] = [];
+  for (const section of INPUT_SECTIONS) {
+    const sectionInputs = sectionInputsFor(inputs, section.id);
+    for (const baselineRow of section.baseline) {
+      if (inputs.dirtyKeys.has(baselineRow.name)) {
+        const current = sectionInputs.find((r) => r.name === baselineRow.name)?.value ?? baselineRow.value;
+        diffEntries.push({
+          key: baselineRow.name,
+          label: baselineRow.label,
+          baseline: baselineRow.value,
+          current,
+        });
+      }
+    }
+  }
+
+  const expenseDiffEntries: ExpenseDiffEntry[] = inputs.expenses
+    .filter((e) => inputs.dirtyExpenseKeys.has(`${e.category}|${e.item}`))
+    .map((e) => {
+      const baseline = EXPENSES.find((b) => b.category === e.category && b.item === e.item)!;
+      return {
+        category: e.category,
+        item: e.item,
+        baseline: baseline.amount,
+        current: e.amount,
+      };
+    });
+
+  const handleSave = async () => {
+    if (!inputs.active) return;
+    try {
+      await update(inputs.active.id, {
+        overrides: { ...inputs.active.overrides, ...draft.draft.overrides },
+        expense_overrides: dedupeExpenseOverrides([
+          ...(inputs.active.expense_overrides ?? []),
+          ...draft.draft.expenseOverrides,
+        ]),
+      });
+      draft.clear();
+      toast({ title: 'Scenario saved' });
+    } catch (err) {
+      toast({
+        title: 'Failed to save',
+        description: (err as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleSaveAsSubmit = async ({ name, isShared }: { name: string; isShared: boolean }) => {
+    try {
+      const inserted = await create({
+        name,
+        multiplier: inputs.multiplier,
+        overrides: { ...(inputs.active?.overrides ?? {}), ...draft.draft.overrides },
+        expense_overrides: dedupeExpenseOverrides([
+          ...(inputs.active?.expense_overrides ?? []),
+          ...draft.draft.expenseOverrides,
+        ]),
+        is_shared: isShared,
+      });
+      if (inserted) {
+        setActiveId(inserted.id);
+        draft.clear();
+        toast({
+          title: saveDialog.mode === 'duplicate' ? 'Scenario duplicated' : 'Scenario created',
+        });
+      }
+    } catch (err) {
+      toast({
+        title: 'Failed to create',
+        description: (err as Error).message,
+        variant: 'destructive',
+      });
+    } finally {
+      setSaveDialog({ open: false, mode: 'save-as' });
+    }
+  };
+
+  const handleDuplicate = () => {
+    setSaveDialog({ open: true, mode: 'duplicate' });
+  };
+
+  const handleToggleShare = async (next: boolean) => {
+    if (!inputs.active) return;
+    try {
+      await update(inputs.active.id, { is_shared: next });
+      toast({ title: next ? 'Shared with RAV team' : 'Sharing turned off' });
+    } catch (err) {
+      toast({
+        title: 'Failed to update sharing',
+        description: (err as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!inputs.active) return;
+    if (!confirm(`Delete scenario "${inputs.active.name}"? This cannot be undone.`)) return;
+    try {
+      await remove(inputs.active.id);
+      setActiveId(null);
+      toast({ title: 'Scenario deleted' });
+    } catch (err) {
+      toast({
+        title: 'Failed to delete',
+        description: (err as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -84,22 +239,36 @@ export default function FinancialModelDashboard() {
               </p>
             </div>
 
-            {/* Scenario selector */}
-            <div className="flex items-center gap-1 rounded-md border border-slate-700 bg-slate-800/50 p-1">
-              {(['Conservative', 'Base', 'Optimistic'] as Scenario[]).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setScenario(s)}
-                  className={`px-3 py-1.5 text-sm rounded transition ${
-                    scenario === s ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700/60'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Scenario picker — system + own + shared in one dropdown */}
+              <ScenarioPicker
+                scenarios={scenarios}
+                currentUserId={user?.id ?? null}
+                activeId={activeId}
+                onChange={setActiveId}
+              />
+              <ScenarioActions
+                isSystem={inputs.isSystem}
+                scenario={inputs.active}
+                currentUserId={user?.id ?? null}
+                isDirty={inputs.isDirty}
+                onSave={handleSave}
+                onSaveAs={() => setSaveDialog({ open: true, mode: 'save-as' })}
+                onDuplicate={handleDuplicate}
+                onDiscard={() => draft.clear()}
+                onToggleShare={handleToggleShare}
+                onDelete={handleDelete}
+              />
             </div>
           </div>
+
+          {/* Drift banner — appears only when active scenario has overrides */}
+          <DriftBanner
+            dirtyCount={inputs.dirtyKeys.size + inputs.dirtyExpenseKeys.size}
+            scenarioName={scenarioName}
+            onShowDiff={() => setShowDiff(true)}
+            onResetAll={() => draft.clear()}
+          />
 
           {/* Top-line KPIs */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -157,16 +326,16 @@ export default function FinancialModelDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <RateTile label="Free Owner" rate={EFFECTIVE_RATES.free} sub={`Base rate, no discount`} />
-                <RateTile label="Pro Owner" rate={EFFECTIVE_RATES.pro}  sub={`Base ${formatRate(DEFAULT_COMMISSION.base)} − ${formatRate(DEFAULT_COMMISSION.proDiscount)} Pro discount`} />
-                <RateTile label="Business Owner" rate={EFFECTIVE_RATES.business} sub={`Base ${formatRate(DEFAULT_COMMISSION.base)} − ${formatRate(DEFAULT_COMMISSION.businessDiscount)} Business discount`} />
+                <RateTile label="Free Owner" rate={effectiveRate.base} sub={`Base rate, no discount`} />
+                <RateTile label="Pro Owner" rate={Math.max(0, effectiveRate.base - effectiveRate.proDiscount)}  sub={`Base ${formatRate(effectiveRate.base)} − ${formatRate(effectiveRate.proDiscount)} Pro discount`} />
+                <RateTile label="Business Owner" rate={Math.max(0, effectiveRate.base - effectiveRate.businessDiscount)} sub={`Base ${formatRate(effectiveRate.base)} − ${formatRate(effectiveRate.businessDiscount)} Business discount`} />
               </div>
               <div className="mt-4 text-xs text-slate-400">
                 Blended rate this scenario: <strong className="text-slate-200">{formatRate(result.totals.blendedCommissionRate)}</strong>
                 {' '}— weighted by booking-mix assumptions (Free/Pro/Business owners).
               </div>
               <div className="mt-3 text-xs text-slate-500">
-                To change rates: edit <code className="rounded bg-slate-900 px-1 py-0.5">src/config/commission.ts</code> (single source of truth — propagates to live pricing and the financial model both).
+                Rates are live from <code className="rounded bg-slate-900 px-1 py-0.5">system_settings.platform_commission_rate</code> (per DEC-043). Edit via System Settings — admin audit log captures changes.
               </div>
             </CardContent>
           </Card>
@@ -220,6 +389,48 @@ export default function FinancialModelDashboard() {
             </CardContent>
           </Card>
 
+          {/* Model Inputs — editable accordions (PR3). Drift banner + diff dialog come in PR4. */}
+          <div className="mt-8 mb-8">
+            <h2 className="text-lg font-semibold text-white mb-4">Model Inputs</h2>
+            {INPUT_SECTIONS.map((section) => {
+              const sectionInputs = sectionInputsFor(inputs, section.id);
+              const liveSet = new Set(section.liveConfigKeys ?? []);
+              return (
+                <InputSectionAccordion
+                  key={section.id}
+                  section={section}
+                  dirtyKeys={inputs.dirtyKeys}
+                  onResetSection={() => draft.resetSection(section.baseline.map((r) => r.name))}
+                >
+                  {sectionInputs.map((row) => {
+                    if (liveSet.has(row.name)) {
+                      return <ReadOnlyInputRow key={row.name} row={row} liveConfig />;
+                    }
+                    const baselineRow = section.baseline.find((b) => b.name === row.name)!;
+                    return (
+                      <EditableInputRow
+                        key={row.name}
+                        row={row}
+                        baselineValue={baselineRow.value}
+                        dirty={inputs.dirtyKeys.has(row.name)}
+                        readOnly={readOnly}
+                        onChange={(v) => draft.setField(row.name, v)}
+                        onReset={() => draft.resetField(row.name)}
+                      />
+                    );
+                  })}
+                </InputSectionAccordion>
+              );
+            })}
+            <ExpenseSection
+              expenses={inputs.expenses}
+              dirtyExpenseKeys={inputs.dirtyExpenseKeys}
+              readOnly={readOnly}
+              onAmountChange={draft.setExpenseAmount}
+              onResetAmount={draft.resetExpense}
+            />
+          </div>
+
           {/* Excel export */}
           <Card className="bg-slate-800/50 border-slate-700">
             <CardHeader>
@@ -244,7 +455,7 @@ export default function FinancialModelDashboard() {
 
           {/* Footer note */}
           <div className="text-center text-xs text-slate-500 mt-12">
-            Stage 2a — view-only MVP. Same data and formulas as the .xlsx; same source of truth (<code>src/lib/financial-model/data.ts</code>).
+            Stage 2c complete — interactive scenarios with sparse Supabase overrides + drift indicator + read-only share. Excel download from web ships in Stage 2d (#551).
           </div>
         </main>
 
@@ -252,8 +463,56 @@ export default function FinancialModelDashboard() {
           <Footer />
         </div>
       </div>
+
+      {/* Diff dialog — opened from drift banner */}
+      <DiffDialog
+        open={showDiff}
+        diffs={diffEntries}
+        expenseDiffs={expenseDiffEntries}
+        onClose={() => setShowDiff(false)}
+        onResetField={(key) => draft.resetField(key)}
+        onResetExpense={(category, item) => draft.resetExpense(category, item)}
+      />
+
+      {/* Save scenario dialog — opened from header actions */}
+      <SaveScenarioDialog
+        open={saveDialog.open}
+        title={saveDialog.mode === 'duplicate' ? 'Duplicate scenario' : 'Save scenario as…'}
+        initialName={
+          saveDialog.mode === 'duplicate' ? `${inputs.active?.name ?? 'Base'} (copy)` : ''
+        }
+        initialShared={false}
+        onSubmit={handleSaveAsSubmit}
+        onCancel={() => setSaveDialog({ open: false, mode: 'save-as' })}
+      />
     </div>
   );
+}
+
+function dedupeExpenseOverrides(
+  arr: Array<{ category: string; item: string; amount?: number }>,
+): Array<{ category: string; item: string; amount?: number }> {
+  const map = new Map<string, { category: string; item: string; amount?: number }>();
+  for (const e of arr) map.set(`${e.category}|${e.item}`, e);
+  return Array.from(map.values());
+}
+
+// ─── Section-input router ────────────────────────────────────────────────────
+
+function sectionInputsFor(
+  inputs: ReturnType<typeof useActiveScenarioInputs>,
+  sectionId: InputSectionId,
+) {
+  switch (sectionId) {
+    case 'platform':      return inputs.platform;
+    case 'subscriptions': return inputs.subscriptions;
+    case 'growth':        return inputs.growth;
+    case 'scenarios':     return inputs.scenarios;
+    case 'horizon':       return inputs.horizon;
+    case 'reserves':      return inputs.reserves;
+    case 'hiring':        return inputs.hiring;
+    case 'unitEcon':      return inputs.unitEcon;
+  }
 }
 
 // ─── Helper subcomponents ────────────────────────────────────────────────────
