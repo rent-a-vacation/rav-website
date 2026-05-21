@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { TrendingUp, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,11 +17,22 @@ import { InputSectionAccordion } from '@/components/financial-model/InputSection
 import { ReadOnlyInputRow } from '@/components/financial-model/ReadOnlyInputRow';
 import { EditableInputRow } from '@/components/financial-model/EditableInputRow';
 import { ExpenseSection } from '@/components/financial-model/ExpenseSection';
+import { DriftBanner } from '@/components/financial-model/DriftBanner';
+import {
+  DiffDialog,
+  type DiffEntry,
+  type ExpenseDiffEntry,
+} from '@/components/financial-model/DiffDialog';
 import { INPUT_SECTIONS, type InputSectionId } from '@/components/financial-model/sectionMeta';
 import { useFinancialModelScenarios } from '@/hooks/useFinancialModelScenarios';
 import { useActiveScenario } from '@/hooks/useActiveScenario';
 import { useActiveScenarioInputs } from '@/hooks/useActiveScenarioInputs';
 import { useScenarioDraft } from '@/hooks/useScenarioDraft';
+import { EXPENSES } from '@/lib/financial-model/data';
+import {
+  findSystemScenario,
+  isSystemScenarioId,
+} from '@/lib/financial-model/system-scenarios';
 
 /**
  * Financial Model Dashboard — Phase 2 Stage 2a.
@@ -61,6 +73,7 @@ export default function FinancialModelDashboard() {
   const { data: rate } = useCommissionRate();
   const inputs = useActiveScenarioInputs();
   const draft = useScenarioDraft(activeId);
+  const [showDiff, setShowDiff] = useState(false);
 
   if (isLoading) return null;
   if (!user || !isRavTeam()) return <Navigate to="/" replace />;
@@ -69,6 +82,38 @@ export default function FinancialModelDashboard() {
   const result = project(inputs.multiplier, inputs, effectiveRate);
   const scenario: Scenario = inputs.multiplier;
   const readOnly = !inputs.isSystem && inputs.active != null && inputs.active.owner_id !== user.id;
+
+  const scenarioName = isSystemScenarioId(activeId)
+    ? findSystemScenario(activeId)?.name ?? 'Base'
+    : inputs.active?.name ?? 'Base';
+
+  const diffEntries: DiffEntry[] = [];
+  for (const section of INPUT_SECTIONS) {
+    const sectionInputs = sectionInputsFor(inputs, section.id);
+    for (const baselineRow of section.baseline) {
+      if (inputs.dirtyKeys.has(baselineRow.name)) {
+        const current = sectionInputs.find((r) => r.name === baselineRow.name)?.value ?? baselineRow.value;
+        diffEntries.push({
+          key: baselineRow.name,
+          label: baselineRow.label,
+          baseline: baselineRow.value,
+          current,
+        });
+      }
+    }
+  }
+
+  const expenseDiffEntries: ExpenseDiffEntry[] = inputs.expenses
+    .filter((e) => inputs.dirtyExpenseKeys.has(`${e.category}|${e.item}`))
+    .map((e) => {
+      const baseline = EXPENSES.find((b) => b.category === e.category && b.item === e.item)!;
+      return {
+        category: e.category,
+        item: e.item,
+        baseline: baseline.amount,
+        current: e.amount,
+      };
+    });
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -109,6 +154,14 @@ export default function FinancialModelDashboard() {
               onChange={setActiveId}
             />
           </div>
+
+          {/* Drift banner — appears only when active scenario has overrides */}
+          <DriftBanner
+            dirtyCount={inputs.dirtyKeys.size + inputs.dirtyExpenseKeys.size}
+            scenarioName={scenarioName}
+            onShowDiff={() => setShowDiff(true)}
+            onResetAll={() => draft.clear()}
+          />
 
           {/* Top-line KPIs */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -295,7 +348,7 @@ export default function FinancialModelDashboard() {
 
           {/* Footer note */}
           <div className="text-center text-xs text-slate-500 mt-12">
-            Stage 2c PR3 — editable inputs + per-input dirty dot. Drift banner + diff dialog land in PR4; Save/Save As/Duplicate/Share in PR5.
+            Stage 2c PR4 — drift banner + per-input/section/all reset + diff dialog. Save/Save As/Duplicate/Share comes in PR5.
           </div>
         </main>
 
@@ -303,6 +356,16 @@ export default function FinancialModelDashboard() {
           <Footer />
         </div>
       </div>
+
+      {/* Diff dialog — opened from drift banner */}
+      <DiffDialog
+        open={showDiff}
+        diffs={diffEntries}
+        expenseDiffs={expenseDiffEntries}
+        onClose={() => setShowDiff(false)}
+        onResetField={(key) => draft.resetField(key)}
+        onResetExpense={(category, item) => draft.resetExpense(category, item)}
+      />
     </div>
   );
 }
