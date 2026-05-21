@@ -14,11 +14,13 @@ import { useCommissionRate } from '@/hooks/useCommissionRate';
 import { ScenarioPicker } from '@/components/financial-model/ScenarioPicker';
 import { InputSectionAccordion } from '@/components/financial-model/InputSectionAccordion';
 import { ReadOnlyInputRow } from '@/components/financial-model/ReadOnlyInputRow';
+import { EditableInputRow } from '@/components/financial-model/EditableInputRow';
 import { ExpenseSection } from '@/components/financial-model/ExpenseSection';
-import { INPUT_SECTIONS } from '@/components/financial-model/sectionMeta';
+import { INPUT_SECTIONS, type InputSectionId } from '@/components/financial-model/sectionMeta';
 import { useFinancialModelScenarios } from '@/hooks/useFinancialModelScenarios';
 import { useActiveScenario } from '@/hooks/useActiveScenario';
-import { isSystemScenarioId, findSystemScenario } from '@/lib/financial-model/system-scenarios';
+import { useActiveScenarioInputs } from '@/hooks/useActiveScenarioInputs';
+import { useScenarioDraft } from '@/hooks/useScenarioDraft';
 
 /**
  * Financial Model Dashboard — Phase 2 Stage 2a.
@@ -57,16 +59,16 @@ export default function FinancialModelDashboard() {
   const { activeId, setActiveId } = useActiveScenario();
   const { scenarios } = useFinancialModelScenarios();
   const { data: rate } = useCommissionRate();
+  const inputs = useActiveScenarioInputs();
+  const draft = useScenarioDraft(activeId);
 
   if (isLoading) return null;
   if (!user || !isRavTeam()) return <Navigate to="/" replace />;
 
-  const activeSystemScenario = isSystemScenarioId(activeId) ? findSystemScenario(activeId) : undefined;
-  const activeUserScenario = !activeSystemScenario ? scenarios.find((s) => s.id === activeId) : undefined;
-  const scenario: Scenario = (activeSystemScenario?.multiplier ?? activeUserScenario?.multiplier ?? 'Base') as Scenario;
-
   const effectiveRate = rate ?? DEFAULT_COMMISSION;
-  const result = project(scenario, undefined, effectiveRate);
+  const result = project(inputs.multiplier, inputs, effectiveRate);
+  const scenario: Scenario = inputs.multiplier;
+  const readOnly = !inputs.isSystem && inputs.active != null && inputs.active.owner_id !== user.id;
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -227,21 +229,46 @@ export default function FinancialModelDashboard() {
             </CardContent>
           </Card>
 
-          {/* Model Inputs — read-only accordions (PR2). Editing comes in PR3. */}
+          {/* Model Inputs — editable accordions (PR3). Drift banner + diff dialog come in PR4. */}
           <div className="mt-8 mb-8">
             <h2 className="text-lg font-semibold text-white mb-4">Model Inputs</h2>
-            {INPUT_SECTIONS.map((section) => (
-              <InputSectionAccordion key={section.id} section={section} dirtyKeys={new Set()}>
-                {section.baseline.map((row) => (
-                  <ReadOnlyInputRow
-                    key={row.name}
-                    row={row}
-                    liveConfig={section.liveConfigKeys?.includes(row.name)}
-                  />
-                ))}
-              </InputSectionAccordion>
-            ))}
-            <ExpenseSection readOnly />
+            {INPUT_SECTIONS.map((section) => {
+              const sectionInputs = sectionInputsFor(inputs, section.id);
+              const liveSet = new Set(section.liveConfigKeys ?? []);
+              return (
+                <InputSectionAccordion
+                  key={section.id}
+                  section={section}
+                  dirtyKeys={inputs.dirtyKeys}
+                  onResetSection={() => draft.resetSection(section.baseline.map((r) => r.name))}
+                >
+                  {sectionInputs.map((row) => {
+                    if (liveSet.has(row.name)) {
+                      return <ReadOnlyInputRow key={row.name} row={row} liveConfig />;
+                    }
+                    const baselineRow = section.baseline.find((b) => b.name === row.name)!;
+                    return (
+                      <EditableInputRow
+                        key={row.name}
+                        row={row}
+                        baselineValue={baselineRow.value}
+                        dirty={inputs.dirtyKeys.has(row.name)}
+                        readOnly={readOnly}
+                        onChange={(v) => draft.setField(row.name, v)}
+                        onReset={() => draft.resetField(row.name)}
+                      />
+                    );
+                  })}
+                </InputSectionAccordion>
+              );
+            })}
+            <ExpenseSection
+              expenses={inputs.expenses}
+              dirtyExpenseKeys={inputs.dirtyExpenseKeys}
+              readOnly={readOnly}
+              onAmountChange={draft.setExpenseAmount}
+              onResetAmount={draft.resetExpense}
+            />
           </div>
 
           {/* Excel export */}
@@ -268,7 +295,7 @@ export default function FinancialModelDashboard() {
 
           {/* Footer note */}
           <div className="text-center text-xs text-slate-500 mt-12">
-            Stage 2c PR2 — unified scenario picker + read-only input accordions. Editing + drift + save coming in PR3-PR5.
+            Stage 2c PR3 — editable inputs + per-input dirty dot. Drift banner + diff dialog land in PR4; Save/Save As/Duplicate/Share in PR5.
           </div>
         </main>
 
@@ -278,6 +305,24 @@ export default function FinancialModelDashboard() {
       </div>
     </div>
   );
+}
+
+// ─── Section-input router ────────────────────────────────────────────────────
+
+function sectionInputsFor(
+  inputs: ReturnType<typeof useActiveScenarioInputs>,
+  sectionId: InputSectionId,
+) {
+  switch (sectionId) {
+    case 'platform':      return inputs.platform;
+    case 'subscriptions': return inputs.subscriptions;
+    case 'growth':        return inputs.growth;
+    case 'scenarios':     return inputs.scenarios;
+    case 'horizon':       return inputs.horizon;
+    case 'reserves':      return inputs.reserves;
+    case 'hiring':        return inputs.hiring;
+    case 'unitEcon':      return inputs.unitEcon;
+  }
 }
 
 // ─── Helper subcomponents ────────────────────────────────────────────────────
