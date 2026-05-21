@@ -13,6 +13,9 @@ import { project, type Scenario } from '@/lib/financial-model/calc';
 import { DEFAULT_COMMISSION, formatRate } from '@/config/commission';
 import { useCommissionRate } from '@/hooks/useCommissionRate';
 import { ScenarioPicker } from '@/components/financial-model/ScenarioPicker';
+import { ScenarioActions } from '@/components/financial-model/ScenarioActions';
+import { SaveScenarioDialog } from '@/components/financial-model/SaveScenarioDialog';
+import { useToast } from '@/hooks/use-toast';
 import { InputSectionAccordion } from '@/components/financial-model/InputSectionAccordion';
 import { ReadOnlyInputRow } from '@/components/financial-model/ReadOnlyInputRow';
 import { EditableInputRow } from '@/components/financial-model/EditableInputRow';
@@ -69,11 +72,16 @@ export default function FinancialModelDashboard() {
 
   const { user, isRavTeam, isLoading } = useAuth();
   const { activeId, setActiveId } = useActiveScenario();
-  const { scenarios } = useFinancialModelScenarios();
+  const { scenarios, create, update, remove } = useFinancialModelScenarios();
   const { data: rate } = useCommissionRate();
   const inputs = useActiveScenarioInputs();
   const draft = useScenarioDraft(activeId);
+  const { toast } = useToast();
   const [showDiff, setShowDiff] = useState(false);
+  const [saveDialog, setSaveDialog] = useState<{
+    open: boolean;
+    mode: 'save-as' | 'duplicate';
+  }>({ open: false, mode: 'save-as' });
 
   if (isLoading) return null;
   if (!user || !isRavTeam()) return <Navigate to="/" replace />;
@@ -115,6 +123,91 @@ export default function FinancialModelDashboard() {
       };
     });
 
+  const handleSave = async () => {
+    if (!inputs.active) return;
+    try {
+      await update(inputs.active.id, {
+        overrides: { ...inputs.active.overrides, ...draft.draft.overrides },
+        expense_overrides: dedupeExpenseOverrides([
+          ...(inputs.active.expense_overrides ?? []),
+          ...draft.draft.expenseOverrides,
+        ]),
+      });
+      draft.clear();
+      toast({ title: 'Scenario saved' });
+    } catch (err) {
+      toast({
+        title: 'Failed to save',
+        description: (err as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleSaveAsSubmit = async ({ name, isShared }: { name: string; isShared: boolean }) => {
+    try {
+      const inserted = await create({
+        name,
+        multiplier: inputs.multiplier,
+        overrides: { ...(inputs.active?.overrides ?? {}), ...draft.draft.overrides },
+        expense_overrides: dedupeExpenseOverrides([
+          ...(inputs.active?.expense_overrides ?? []),
+          ...draft.draft.expenseOverrides,
+        ]),
+        is_shared: isShared,
+      });
+      if (inserted) {
+        setActiveId(inserted.id);
+        draft.clear();
+        toast({
+          title: saveDialog.mode === 'duplicate' ? 'Scenario duplicated' : 'Scenario created',
+        });
+      }
+    } catch (err) {
+      toast({
+        title: 'Failed to create',
+        description: (err as Error).message,
+        variant: 'destructive',
+      });
+    } finally {
+      setSaveDialog({ open: false, mode: 'save-as' });
+    }
+  };
+
+  const handleDuplicate = () => {
+    setSaveDialog({ open: true, mode: 'duplicate' });
+  };
+
+  const handleToggleShare = async (next: boolean) => {
+    if (!inputs.active) return;
+    try {
+      await update(inputs.active.id, { is_shared: next });
+      toast({ title: next ? 'Shared with RAV team' : 'Sharing turned off' });
+    } catch (err) {
+      toast({
+        title: 'Failed to update sharing',
+        description: (err as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!inputs.active) return;
+    if (!confirm(`Delete scenario "${inputs.active.name}"? This cannot be undone.`)) return;
+    try {
+      await remove(inputs.active.id);
+      setActiveId(null);
+      toast({ title: 'Scenario deleted' });
+    } catch (err) {
+      toast({
+        title: 'Failed to delete',
+        description: (err as Error).message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-900">
       <Header />
@@ -146,13 +239,27 @@ export default function FinancialModelDashboard() {
               </p>
             </div>
 
-            {/* Scenario picker — system + own + shared in one dropdown */}
-            <ScenarioPicker
-              scenarios={scenarios}
-              currentUserId={user?.id ?? null}
-              activeId={activeId}
-              onChange={setActiveId}
-            />
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Scenario picker — system + own + shared in one dropdown */}
+              <ScenarioPicker
+                scenarios={scenarios}
+                currentUserId={user?.id ?? null}
+                activeId={activeId}
+                onChange={setActiveId}
+              />
+              <ScenarioActions
+                isSystem={inputs.isSystem}
+                scenario={inputs.active}
+                currentUserId={user?.id ?? null}
+                isDirty={inputs.isDirty}
+                onSave={handleSave}
+                onSaveAs={() => setSaveDialog({ open: true, mode: 'save-as' })}
+                onDuplicate={handleDuplicate}
+                onDiscard={() => draft.clear()}
+                onToggleShare={handleToggleShare}
+                onDelete={handleDelete}
+              />
+            </div>
           </div>
 
           {/* Drift banner — appears only when active scenario has overrides */}
@@ -348,7 +455,7 @@ export default function FinancialModelDashboard() {
 
           {/* Footer note */}
           <div className="text-center text-xs text-slate-500 mt-12">
-            Stage 2c PR4 — drift banner + per-input/section/all reset + diff dialog. Save/Save As/Duplicate/Share comes in PR5.
+            Stage 2c complete — interactive scenarios with sparse Supabase overrides + drift indicator + read-only share. Excel download from web ships in Stage 2d (#551).
           </div>
         </main>
 
@@ -366,8 +473,28 @@ export default function FinancialModelDashboard() {
         onResetField={(key) => draft.resetField(key)}
         onResetExpense={(category, item) => draft.resetExpense(category, item)}
       />
+
+      {/* Save scenario dialog — opened from header actions */}
+      <SaveScenarioDialog
+        open={saveDialog.open}
+        title={saveDialog.mode === 'duplicate' ? 'Duplicate scenario' : 'Save scenario as…'}
+        initialName={
+          saveDialog.mode === 'duplicate' ? `${inputs.active?.name ?? 'Base'} (copy)` : ''
+        }
+        initialShared={false}
+        onSubmit={handleSaveAsSubmit}
+        onCancel={() => setSaveDialog({ open: false, mode: 'save-as' })}
+      />
     </div>
   );
+}
+
+function dedupeExpenseOverrides(
+  arr: Array<{ category: string; item: string; amount?: number }>,
+): Array<{ category: string; item: string; amount?: number }> {
+  const map = new Map<string, { category: string; item: string; amount?: number }>();
+  for (const e of arr) map.set(`${e.category}|${e.item}`, e);
+  return Array.from(map.values());
 }
 
 // ─── Section-input router ────────────────────────────────────────────────────
