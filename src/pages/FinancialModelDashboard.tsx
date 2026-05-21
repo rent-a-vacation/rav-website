@@ -11,7 +11,14 @@ import { Button } from '@/components/ui/button';
 import { project, type Scenario } from '@/lib/financial-model/calc';
 import { DEFAULT_COMMISSION, formatRate } from '@/config/commission';
 import { useCommissionRate } from '@/hooks/useCommissionRate';
-import { useState } from 'react';
+import { ScenarioPicker } from '@/components/financial-model/ScenarioPicker';
+import { InputSectionAccordion } from '@/components/financial-model/InputSectionAccordion';
+import { ReadOnlyInputRow } from '@/components/financial-model/ReadOnlyInputRow';
+import { ExpenseSection } from '@/components/financial-model/ExpenseSection';
+import { INPUT_SECTIONS } from '@/components/financial-model/sectionMeta';
+import { useFinancialModelScenarios } from '@/hooks/useFinancialModelScenarios';
+import { useActiveScenario } from '@/hooks/useActiveScenario';
+import { isSystemScenarioId, findSystemScenario } from '@/lib/financial-model/system-scenarios';
 
 /**
  * Financial Model Dashboard — Phase 2 Stage 2a.
@@ -47,11 +54,16 @@ export default function FinancialModelDashboard() {
   );
 
   const { user, isRavTeam, isLoading } = useAuth();
-  const [scenario, setScenario] = useState<Scenario>('Base');
+  const { activeId, setActiveId } = useActiveScenario();
+  const { scenarios } = useFinancialModelScenarios();
   const { data: rate } = useCommissionRate();
 
   if (isLoading) return null;
   if (!user || !isRavTeam()) return <Navigate to="/" replace />;
+
+  const activeSystemScenario = isSystemScenarioId(activeId) ? findSystemScenario(activeId) : undefined;
+  const activeUserScenario = !activeSystemScenario ? scenarios.find((s) => s.id === activeId) : undefined;
+  const scenario: Scenario = (activeSystemScenario?.multiplier ?? activeUserScenario?.multiplier ?? 'Base') as Scenario;
 
   const effectiveRate = rate ?? DEFAULT_COMMISSION;
   const result = project(scenario, undefined, effectiveRate);
@@ -87,21 +99,13 @@ export default function FinancialModelDashboard() {
               </p>
             </div>
 
-            {/* Scenario selector */}
-            <div className="flex items-center gap-1 rounded-md border border-slate-700 bg-slate-800/50 p-1">
-              {(['Conservative', 'Base', 'Optimistic'] as Scenario[]).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setScenario(s)}
-                  className={`px-3 py-1.5 text-sm rounded transition ${
-                    scenario === s ? 'bg-teal-600 text-white' : 'text-slate-300 hover:bg-slate-700/60'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
+            {/* Scenario picker — system + own + shared in one dropdown */}
+            <ScenarioPicker
+              scenarios={scenarios}
+              currentUserId={user?.id ?? null}
+              activeId={activeId}
+              onChange={setActiveId}
+            />
           </div>
 
           {/* Top-line KPIs */}
@@ -223,6 +227,23 @@ export default function FinancialModelDashboard() {
             </CardContent>
           </Card>
 
+          {/* Model Inputs — read-only accordions (PR2). Editing comes in PR3. */}
+          <div className="mt-8 mb-8">
+            <h2 className="text-lg font-semibold text-white mb-4">Model Inputs</h2>
+            {INPUT_SECTIONS.map((section) => (
+              <InputSectionAccordion key={section.id} section={section} dirtyKeys={new Set()}>
+                {section.baseline.map((row) => (
+                  <ReadOnlyInputRow
+                    key={row.name}
+                    row={row}
+                    liveConfig={section.liveConfigKeys?.includes(row.name)}
+                  />
+                ))}
+              </InputSectionAccordion>
+            ))}
+            <ExpenseSection readOnly />
+          </div>
+
           {/* Excel export */}
           <Card className="bg-slate-800/50 border-slate-700">
             <CardHeader>
@@ -247,7 +268,7 @@ export default function FinancialModelDashboard() {
 
           {/* Footer note */}
           <div className="text-center text-xs text-slate-500 mt-12">
-            Stage 2a — view-only MVP. Same data and formulas as the .xlsx; same source of truth (<code>src/lib/financial-model/data.ts</code>).
+            Stage 2c PR2 — unified scenario picker + read-only input accordions. Editing + drift + save coming in PR3-PR5.
           </div>
         </main>
 
